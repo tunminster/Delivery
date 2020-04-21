@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -18,15 +20,35 @@ namespace Delivery.Api.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        //private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        
+        private readonly IEmailSender _emailSender;
+
+        public WeatherForecastController(ILogger<WeatherForecastController> logger,
+             UserManager<IdentityUser> userManager,
+            
+             IEmailSender emailSender)
         {
             _logger = logger;
+            _userManager = userManager;
+            //_signInManager = signInManager;
+            _emailSender = emailSender;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IEnumerable<WeatherForecast>> Get()
         {
             var rng = new Random();
+
+            var user = new IdentityUser { UserName = "test", Email = "test123@gmail.com" };
+            var result = await _userManager.CreateAsync(user, "Password123");
+
+            if(result.Succeeded)
+            {
+                var test = "ok";
+            }
+
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
