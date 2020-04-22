@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +22,12 @@ namespace Delivery.Api.Controllers
         private readonly ILogger<WeatherForecastController> _logger;
 
         //private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         
         private readonly IEmailSender _emailSender;
 
         public WeatherForecastController(ILogger<WeatherForecastController> logger,
-             UserManager<IdentityUser> userManager,
+             UserManager<ApplicationUser> userManager,
             
              IEmailSender emailSender)
         {
@@ -41,7 +42,7 @@ namespace Delivery.Api.Controllers
         {
             var rng = new Random();
 
-            var user = new IdentityUser { UserName = "test", Email = "test123@gmail.com" };
+            var user = new ApplicationUser { UserName = "test", Email = "test123@gmail.com" };
             var result = await _userManager.CreateAsync(user, "Password123");
 
             if(result.Succeeded)

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Delivery.Api.Data
 {
     //public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
-    public class ApplicationDbContext : ApiAuthorizationDbContext<IdentityUser>
+    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
         public ApplicationDbContext(
             DbContextOptions options,
