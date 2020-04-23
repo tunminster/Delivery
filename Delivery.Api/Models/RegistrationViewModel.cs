@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Delivery.Api.Models
 {
-    public class InputModel
+    public class RegistrationViewModel
     {
         [Required]
         [EmailAddress]

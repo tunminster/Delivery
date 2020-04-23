@@ -1,4 +1,5 @@
-﻿using Delivery.Api.Models;
+﻿using Delivery.Api.Entities;
+using Delivery.Api.Models;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Identity;
@@ -19,5 +20,7 @@ namespace Delivery.Api.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
+
+        public DbSet<Customer> Customers { get; set; }
     }
 }
