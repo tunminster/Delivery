@@ -59,7 +59,7 @@ stages:
     variables:
         repository-image: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
         acr-secret-name: 'hn-prod-acr-secret'
-        appsettings-secret-name: 'delivery-api--appsettings-secret'
+        appsettings-secret-name: 'delivery-api-appsettings-secret'
         host-url: 'delivery-api.harveynetwork.com'
         env-name: 'Development'
         env-namespace: 'hn-prod'
