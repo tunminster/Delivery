@@ -50,3 +50,63 @@ stages:
             command: test
             projects: '**/*[Tt]ests/*.csproj'
             arguments: --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+  - stage: DeployDev
+    displayName: Deploy Development Env
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/develop'))
+
+    variables:
+        repository-image: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
+        acr-secret-name: 'hn-prod-acr-secret'
+        appsettings-secret-name: 'delivery-api--appsettings-secret'
+        host-url: 'delivery-api.harveynetwork.com'
+        env-name: 'Development'
+        env-namespace: 'hn-prod'
+    jobs:
+      - job: DeployApiApp
+        displayName: Deploy Api App
+        pool: 
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: DockerInstaller@0
+            inputs:
+              dockerVersion: '17.09.0-ce'
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'hn-acr-connection'
+              repository: '$(imageRepository)'
+              command: 'buildAndPush'
+              Dockerfile: '**/Delivery.Api/Dockerfile'
+              buildContext: .
+              tags: |
+                $(tag)
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps'
+              Contents: 'delivery-api-deploy.yaml'  
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops'
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in deploy file'
+            inputs:
+              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops'
+              targetFiles: 'delivery-api-deploy.yaml'
+              escapeType: none 
+
+          - script: 'cat $(Build.ArtifactStagingDirectory)/devops/delivery-api-deploy.yaml'
+            displayName: 'Cat deploy'
+          - task: KubectlInstaller@0
+            inputs:
+              kubectlVersion: 'latest'  
+
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              namespace: 'hn-prod'
+              command: 'apply'
+              arguments: '-f $(Build.ArtifactStagingDirectory)/devops/delivery-api-deploy.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Container Registry'
+              dockerRegistryEndpoint: 'hn-acr-connection'
+              secretName: 'hn-prod-acr-secret'               
