@@ -46,15 +46,15 @@ namespace Delivery.Api.Controllers
         {
             var rng = new Random();
 
-            var user = new ApplicationUser { UserName = "test3@gmail.com", Email = "test3@gmail.com" };
-            var result = await _userManager.CreateAsync(user, "Password123");
+            //var user = new ApplicationUser { UserName = "test3@gmail.com", Email = "test3@gmail.com" };
+            //var result = await _userManager.CreateAsync(user, "Password123");
 
-            if(result.Succeeded)
-            {
-                await _appDbContext.Customers.AddAsync(new Customer { IdentityId = user.Id, Username = user.Email });
-                await _appDbContext.SaveChangesAsync();
-                var test = "ok";
-            }
+            //if(result.Succeeded)
+            //{
+            //    await _appDbContext.Customers.AddAsync(new Customer { IdentityId = user.Id, Username = user.Email });
+            //    await _appDbContext.SaveChangesAsync();
+            //    var test = "ok";
+            //}
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

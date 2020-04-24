@@ -39,7 +39,7 @@ namespace Delivery.Api.Controllers
         }
 
         // POST: api/User
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<IActionResult> Post([FromBody] RegistrationViewModel model)
         {
             if (!ModelState.IsValid)
