@@ -61,6 +61,9 @@ stages:
         acr-secret-name: 'hn-prod-acr-secret'
         appsettings-secret-name: 'delivery-api-appsettings-secret'
         host-url: 'delivery-api.harveynetwork.com'
+        file-storage-account-name: 'pngosa'
+        file-path: 'delivery-api/prod.appsettings.secret.json'
+        dest-path: '/devops/appsettings.secret.json'
         env-name: 'Development'
         env-namespace: 'hn-prod'
     jobs:
@@ -95,9 +98,27 @@ stages:
 
           - script: 'cat $(Build.ArtifactStagingDirectory)/devops/delivery-api-deploy.yaml'
             displayName: 'Cat deploy'
+
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
+              scriptType: 'batch'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az storage file download --account-name $(file-storage-account-name) --account-key $(file-storage-account-key) --share-name hn-prod --path $(file-path)  --dest $(Build.ArtifactStagingDirectory)$(dest-path) --output none'''
+
           - task: KubectlInstaller@0
             inputs:
               kubectlVersion: 'latest'  
+
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              namespace: 'hn-prod'
+              command: 
+              secretType: 'generic'
+              secretArguments: '--from-file=$(Build.ArtifactStagingDirectory/devops/appsettings.secret.json'
+              secretName: '$(appsettings-secret-name)'
 
           - task: Kubernetes@1
             inputs:
