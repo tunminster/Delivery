@@ -54,7 +54,7 @@ stages:
   - stage: DeployDev
     displayName: Deploy Development Env
     dependsOn: Build
-    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/develop'))
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
 
     variables:
         repository-image: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
@@ -62,7 +62,7 @@ stages:
         appsettings-secret-name: 'delivery-api-appsettings-secret'
         host-url: 'delivery-api.harveynetwork.com'
         file-storage-account-name: 'pngosa'
-        file-path: 'delivery-api/prod.appsettings.secret.json'
+        file-path: 'deliver-api/prod.appsettings.secret.json'
         dest-path: '/devops/appsettings.secret.json'
         env-name: 'Development'
         env-namespace: 'hn-prod'
@@ -102,9 +102,16 @@ stages:
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
-              scriptType: 'batch'
+              scriptType: 'bash'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az storage file download --account-name $(file-storage-account-name) --account-key $(file-storage-account-key) --share-name hn-prod --path $(file-path)  --dest $(Build.ArtifactStagingDirectory)$(dest-path) --output none'''
+              inlineScript: 'az aks list'
+              addSpnToEnvironment: true
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az storage file download --account-name $(file-storage-account-name) --account-key $(file-storage-account-key) --share-name hn-prod --path $(file-path) --dest $(Build.ArtifactStagingDirectory)$(dest-path) --output none'
 
           - task: KubectlInstaller@0
             inputs:
@@ -117,7 +124,7 @@ stages:
               namespace: 'hn-prod'
               command: 
               secretType: 'generic'
-              secretArguments: '--from-file=$(Build.ArtifactStagingDirectory/devops/appsettings.secret.json'
+              secretArguments: '--from-file=$(Build.ArtifactStagingDirectory)/devops/appsettings.secret.json'
               secretName: '$(appsettings-secret-name)'
 
           - task: Kubernetes@1
