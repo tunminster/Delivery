@@ -124,7 +124,7 @@ stages:
               namespace: 'hn-prod'
               command: 
               secretType: 'generic'
-              secretArguments: '--from-file=$(Build.ArtifactStagingDirectory/devops/appsettings.secret.json'
+              secretArguments: '--from-file=$(Build.ArtifactStagingDirectory)/devops/appsettings.secret.json'
               secretName: '$(appsettings-secret-name)'
 
           - task: Kubernetes@1
