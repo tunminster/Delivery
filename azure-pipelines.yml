@@ -54,7 +54,7 @@ stages:
   - stage: DeployDev
     displayName: Deploy Development Env
     dependsOn: Build
-    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/develop'))
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
 
     variables:
         repository-image: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
