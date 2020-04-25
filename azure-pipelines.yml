@@ -102,6 +102,13 @@ stages:
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az aks list'
+              addSpnToEnvironment: true
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
               scriptType: 'batch'
               scriptLocation: 'inlineScript'
               inlineScript: 'az storage file download --account-name pngosa --account-key tTDzCsds8ksdWuNUjlI44e2EfophhZ6PQhsxD3GgIBzU7VLSk7JiLXy+o03LkTkTIH+BdvxdvW+sLHA/yTDyYA== --share-name hn-prod --path deliver-api/prod.appsettings.secret.json --dest $(Build.ArtifactStagingDirectory)/devops/appsettings.secret.json --output none'
