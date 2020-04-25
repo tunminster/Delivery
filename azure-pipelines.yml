@@ -62,7 +62,7 @@ stages:
         appsettings-secret-name: 'delivery-api-appsettings-secret'
         host-url: 'delivery-api.harveynetwork.com'
         file-storage-account-name: 'pngosa'
-        file-path: 'delivery-api/prod.appsettings.secret.json'
+        file-path: 'deliver-api/prod.appsettings.secret.json'
         dest-path: '/devops/appsettings.secret.json'
         env-name: 'Development'
         env-namespace: 'hn-prod'
