@@ -66,8 +66,8 @@ metadata:
 spec:
   tls:
   - hosts:
-    - deliveryapi.harveynetwork.com
-    secretName: delivery-api-tls
+    - delivery-api.harveynetwork.com
+    secretName: delivery-ingress-tls
   rules:
     - host: #{host-url}#
       http:
