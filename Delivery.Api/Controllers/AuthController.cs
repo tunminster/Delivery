@@ -59,7 +59,7 @@ namespace Delivery.Api.Controllers
             {
                 return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
             }
-
+            _logger.LogInformation(string.Concat(@model.UserName, " logged."));
             var jwt = await Tokens.GenerateJwt(identity, _jwtFactory, model.UserName, _jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
             return new OkObjectResult(jwt);
         }
