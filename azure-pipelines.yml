@@ -104,7 +104,7 @@ stages:
               azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
               scriptType: 'batch'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az storage file download --account-name $(file-storage-account-name) --account-key $(file-storage-account-key) --share-name hn-prod --path $(file-path) --dest $(Build.ArtifactStagingDirectory)$(dest-path) --output none'
+              inlineScript: 'az storage file download --account-name $(file-storage-account-name) --account-key $(file-storage-account-key) --share-name hn-prod --path deliver-api/prod.appsettings.secret.json --dest $(Build.ArtifactStagingDirectory)/DevOps/appsettings.secret.json --output none'
 
           - task: KubectlInstaller@0
             inputs:
