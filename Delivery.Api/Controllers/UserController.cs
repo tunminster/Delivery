@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using Delivery.Api.Helpers;
+using Delivery.Api.Data;
+using Delivery.Api.Entities;
 
 namespace Delivery.Api.Controllers
 {
@@ -25,7 +27,7 @@ namespace Delivery.Api.Controllers
 
         private readonly IEmailSender _emailSender;
         private readonly JwtIssuerOptions _jwtOptions;
-
+        private readonly ApplicationDbContext _appDbContext;
 
         public UserController(ILogger<UserController> logger,
              UserManager<ApplicationUser> userManager,
@@ -52,6 +54,8 @@ namespace Delivery.Api.Controllers
 
             if (result.Succeeded)
             {
+                await _appDbContext.Customers.AddAsync(new Customer { IdentityId = user.Id, Username = user.Email });
+                await _appDbContext.SaveChangesAsync();
                 return new OkObjectResult("Account created");
             }
             return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
