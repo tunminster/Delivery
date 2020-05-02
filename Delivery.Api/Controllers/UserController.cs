@@ -32,12 +32,14 @@ namespace Delivery.Api.Controllers
         public UserController(ILogger<UserController> logger,
              UserManager<ApplicationUser> userManager,
              SignInManager<ApplicationUser> signInManager,
-             IEmailSender emailSender)
+             IEmailSender emailSender,
+             ApplicationDbContext appDbContext)
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _appDbContext = appDbContext;
         }
 
         // POST: api/User

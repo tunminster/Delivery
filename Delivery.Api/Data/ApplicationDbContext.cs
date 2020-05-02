@@ -22,5 +22,6 @@ namespace Delivery.Api.Data
         }
 
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Category> Categories {get; set;}
     }
 }

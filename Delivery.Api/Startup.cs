@@ -134,7 +134,7 @@ namespace Delivery.Api
             //services.AddAuthentication()
             //    .AddIdentityServerJwt();
 
-
+            services.AddResponseCaching();
 
             services.AddControllers();
         }
@@ -182,6 +182,22 @@ namespace Delivery.Api
             app.UseAuthentication();
             //app.UseIdentityServer();
             app.UseAuthorization();
+
+            // use middelware response cache
+            app.UseResponseCaching();
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl = 
+                    new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromSeconds(10)
+                    };
+                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] = 
+                    new string[] { "Accept-Encoding" };
+
+                await next();
+            });
 
             app.UseEndpoints(endpoints =>
             {
