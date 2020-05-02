@@ -64,8 +64,10 @@ stages:
         file-storage-account-name: 'pngosa'
         file-path: 'deliver-api/prod.appsettings.secret.json'
         dest-path: '/devops/appsettings.secret.json'
+        dbContext: 'ApplicationDbContext'
         env-name: 'Development'
         env-namespace: 'hn-prod'
+
     jobs:
       - job: DeployApiApp
         displayName: Deploy Api App
