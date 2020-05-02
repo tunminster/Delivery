@@ -53,6 +53,9 @@ namespace Delivery.Api.Controllers
             }
         }
 
+        [HttpGet("/getAllCategoriesByParentId/{parentId}")]        
+        [ProducesResponseType(typeof(List<Category>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCategoriesByParentId(int parentId, CancellationToken cancellationToken = default)
         {
             try
@@ -68,6 +71,50 @@ namespace Delivery.Api.Controllers
                 return InternalServerErrorResult(errorMessage);
             }
 
+        }
+
+        [HttpGet("GetCategoryById/{id}")]
+        [ProducesResponseType(typeof(Category), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult>GetCategoryById(int id)
+        {
+            try
+            {
+                var result = await _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                var errorMessage = "Fetching category by id";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
+        }
+
+
+        [HttpPost("Create")]
+        [ProducesResponseType(typeof(Category), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AddCategory(Category category)
+        {
+            
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _appDbContext.Categories.AddAsync(category);
+                return CreatedAtAction(nameof(GetCategoryById), new {id = category.Id}, category);
+            }
+            catch(Exception ex)
+            {
+                var errorMessage = "Error occurred in creating category";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
         }
 
     }
