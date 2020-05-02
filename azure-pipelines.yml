@@ -128,6 +128,14 @@ stages:
             inputs:
               kubectlVersion: 'latest'  
 
+          - task: SqlAzureDacpacDeployment@1
+            inputs:
+              azureSubscription: 'AzureDevSub'
+              AuthenticationType: 'connectionString'
+              ConnectionString: '$(system.SQLConnectionString)'
+              deployType: 'SqlTask'
+              SqlFile: '$(Build.ArtifactStagingDirectory)/$(scriptName).sql'
+              IpDetectionMethod: 'AutoDetect'
           - task: Kubernetes@1
             inputs:
               connectionType: 'Kubernetes Service Connection'
