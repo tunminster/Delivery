@@ -99,6 +99,10 @@ stages:
           - script: 'cat $(Build.ArtifactStagingDirectory)/devops/delivery-api-deploy.yaml'
             displayName: 'Cat deploy'
 
+          - script: 'dotnet ef migrations script --output $(Build.ArtifactStagingDirectory)/$(scriptName)  --context $(dbContext)  --idempotent'
+            workingDirectory: Delivery/Delivery.Api
+            displayName: 'EF Migration'   
+
           - task: AzureCLI@2
             displayName: 'Download appsetting'
             inputs:
