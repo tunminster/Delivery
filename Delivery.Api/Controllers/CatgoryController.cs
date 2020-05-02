@@ -107,6 +107,7 @@ namespace Delivery.Api.Controllers
             try
             {
                 var result = await _appDbContext.Categories.AddAsync(category);
+                await _appDbContext.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetCategoryById), new {id = category.Id}, category);
             }
             catch(Exception ex)
