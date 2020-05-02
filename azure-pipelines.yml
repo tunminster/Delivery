@@ -103,7 +103,7 @@ stages:
             displayName: 'Cat deploy'
 
           - script: 'dotnet ef migrations script --output $(Build.ArtifactStagingDirectory)/$(scriptName)  --context $(dbContext)  --idempotent'
-            workingDirectory: Delivery/Delivery.Api
+            workingDirectory: Delivery.Api
             displayName: 'EF Migration'   
 
           - task: AzureCLI@2
