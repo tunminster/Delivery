@@ -78,6 +78,9 @@ stages:
           - task: DockerInstaller@0
             inputs:
               dockerVersion: '17.09.0-ce'
+              
+          - script: 'dotnet tool install -g dotnet-ef --version 3.0.0'
+            displayName: dotnet tool install    
           - task: Docker@2
             inputs:
               containerRegistry: 'hn-acr-connection'
