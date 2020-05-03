@@ -25,6 +25,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace Delivery.Api
 {
@@ -44,6 +45,7 @@ namespace Delivery.Api
         {
 
             services.AddCors();
+            services.AddHealthChecks();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -136,6 +138,13 @@ namespace Delivery.Api
 
             services.AddResponseCaching();
 
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Delivery Api", Version = "v1" });
+                c.CustomSchemaIds(x => x.FullName);
+            });
+
             services.AddControllers();
         }
 
@@ -197,6 +206,16 @@ namespace Delivery.Api
                     new string[] { "Accept-Encoding" };
 
                 await next();
+            });
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
             app.UseEndpoints(endpoints =>
