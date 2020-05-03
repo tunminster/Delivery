@@ -118,5 +118,49 @@ namespace Delivery.Api.Controllers
             }
         }
 
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> PutCategory(int id, Category category)
+        {
+            if (id != category.Id)
+            {
+                return BadRequest();
+            }
+
+            var result = await _appDbContext.Categories.FindAsync(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            _appDbContext.Entry(category).State = EntityState.Modified;
+            try
+            {
+                await _appDbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = "Error occurred in updating category";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var category = await _appDbContext.Categories.FindAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            _appDbContext.Categories.Remove(category);
+            await _appDbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
     }
 }

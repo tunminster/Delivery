@@ -120,5 +120,21 @@ namespace Delivery.Api.Controllers
             return NoContent();
         }
 
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _appDbContext.Products.FindAsync(id);
+            if(product == null)
+            {
+                return NotFound();
+            }
+
+            _appDbContext.Products.Remove(product);
+            await _appDbContext.SaveChangesAsync();
+
+            return NoContent();
+
+        }
+
     }
 }
