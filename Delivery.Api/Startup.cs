@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Delivery.Api.Auth;
 using Delivery.Api.Data;
 using Delivery.Api.Extensions;
@@ -144,6 +145,8 @@ namespace Delivery.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Delivery Api", Version = "v1" });
                 c.CustomSchemaIds(x => x.FullName);
             });
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();
         }

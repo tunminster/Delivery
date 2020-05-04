@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Delivery.Api.Data;
 using Delivery.Api.Entities;
+using Delivery.Api.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +23,15 @@ namespace Delivery.Api.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly ApplicationDbContext _appDbContext;
+        private readonly IMapper _mapper;
 
         public ProductController(ILogger<UserController> logger,
-        ApplicationDbContext appDbContext)
+        ApplicationDbContext appDbContext,
+        IMapper mapper)
         {
             _logger = logger;
             _appDbContext = appDbContext;
+            _mapper = mapper;
         }
 
         [HttpGet("/getAllProducts")]
@@ -48,15 +53,15 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetProductById/{id}")]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetProductById(int id)
         {
             try
             {
                 var result = await _appDbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
-
-                return Ok(result);
+                var productDto = _mapper.Map<ProductDto>(result);
+                return Ok(productDto);
             }
             catch (Exception ex)
             {
