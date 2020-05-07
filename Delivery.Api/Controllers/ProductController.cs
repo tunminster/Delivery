@@ -35,14 +35,15 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("/getAllProducts")]
-        [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
         {
             try
             {
                 var result = await _appDbContext.Products.ToListAsync(cancellationToken);
-                return Ok(result);
+                var productDtoList = _mapper.Map<List<ProductDto>>(result);
+                return Ok(productDtoList);
             }
             catch (Exception ex)
             {
@@ -72,9 +73,9 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddProduct(Product product)
+        public async Task<IActionResult> AddProduct(ProductDto productDto)
         {
 
             if (!ModelState.IsValid)
@@ -84,9 +85,10 @@ namespace Delivery.Api.Controllers
 
             try
             {
+                var product = _mapper.Map<Product>(productDto);
                 await _appDbContext.Products.AddAsync(product);
                 await _appDbContext.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+                return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, productDto);
             }
             catch (Exception ex)
             {
@@ -97,9 +99,9 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> PutProduct(int id, Product product)
+        public async Task<IActionResult> PutProduct(int id, ProductDto productDto)
         {
-            if(id != product.Id)
+            if(id != productDto.Id)
             {
                 return BadRequest();
             }
@@ -109,6 +111,8 @@ namespace Delivery.Api.Controllers
             {
                 return NotFound();
             }
+
+            var product = _mapper.Map<Product>(productDto);
 
             _appDbContext.Entry(product).State = EntityState.Modified;
             try
