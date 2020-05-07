@@ -34,7 +34,7 @@ namespace Delivery.Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("/getAllProducts")]
+        [HttpGet("getAllProducts")]
         [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(CancellationToken cancellationToken = default)

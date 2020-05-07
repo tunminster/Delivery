@@ -35,7 +35,7 @@ namespace Delivery.Api.Controllers
             _appDbContext = appDbContext;
         }
 
-        [HttpGet("/getAllCategories")]
+        [HttpGet("getAllCategories")]
         [ProducesResponseType(typeof(List<Category>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
@@ -53,7 +53,7 @@ namespace Delivery.Api.Controllers
             }
         }
 
-        [HttpGet("/getAllCategoriesByParentId/{parentId}")]        
+        [HttpGet("getAllCategoriesByParentId/{parentId}")]        
         [ProducesResponseType(typeof(List<Category>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCategoriesByParentId(int parentId, CancellationToken cancellationToken = default)
