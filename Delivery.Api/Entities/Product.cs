@@ -12,9 +12,12 @@ namespace Delivery.Api.Entities
         [Key]
         public int Id { get; set; }
         public string ProductName { get; set; }
+        public string Description { get; set; }
         public string ProductImage { get; set; }
         public string ProductImageUrl { get; set; }
         public string UnitPrice { get; set; }
+        public string Currency { get; set; }
+        public string CurrencySign { get; set; }
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
