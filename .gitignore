@@ -32,7 +32,7 @@ bld/
 msbuild.log
 msbuild.err
 msbuild.wrn
-secret/
+secrets/
 
 # Visual Studio 2015
 .vs/
