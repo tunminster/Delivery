@@ -147,6 +147,7 @@ namespace Delivery.Api
             });
 
             services.AddAutoMapper(typeof(Startup));
+            services.Configure<AzureStorageConfig>(Configuration.GetSection("AzureStorageConfig"));
 
             services.AddControllers();
         }
