@@ -23,6 +23,10 @@ namespace Delivery.Api
                 {
                     webBuilder.UseStartup<Startup>();
                 })
+                .ConfigureAppConfiguration((HostingAbstractionsHostExtensions, config) =>
+                {
+                    config.AddJsonFile("secrets/appsettings.secret.json", true, true);
+                })
                 .ConfigureLogging(logging =>
                 {
                     // clear default logging providers
