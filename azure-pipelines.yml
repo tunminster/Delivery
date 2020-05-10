@@ -112,10 +112,6 @@ stages:
           - script: 'cat $(Build.ArtifactStagingDirectory)/devops/delivery-api-deploy.yaml'
             displayName: 'Cat deploy'
 
-          - script: 'dotnet ef migrations script --output $(Build.ArtifactStagingDirectory)/$(scriptName)  --context $(dbContext) --ConnectionString $(SQLConnectionString)  --idempotent'
-            workingDirectory: Delivery.Api
-            displayName: 'EF Migration'   
-
           - task: AzureCLI@2
             displayName: 'Download appsetting'
             inputs:
@@ -123,6 +119,10 @@ stages:
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: 'az storage file download --account-name $(file-storage-account-name) --account-key $(file-storage-account-key) --share-name hn-prod --path $(file-path) --dest $(Build.ArtifactStagingDirectory)$(dest-path) --output none'
+
+          - script: 'dotnet ef migrations script --output $(Build.ArtifactStagingDirectory)/$(scriptName)  --context $(dbContext) --ConnectionString $(SQLConnectionString)  --idempotent'
+            workingDirectory: Delivery.Api
+            displayName: 'EF Migration'  
 
           - task: KubectlInstaller@0
             inputs:
