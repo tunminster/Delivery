@@ -148,6 +148,7 @@ namespace Delivery.Api
 
             services.AddAutoMapper(typeof(Startup));
             services.Configure<AzureStorageConfig>(Configuration.GetSection("AzureStorageConfig"));
+            services.Configure<AzureLogConfig>(Configuration.GetSection("AzureLogConfig"));
 
             services.AddControllers();
         }

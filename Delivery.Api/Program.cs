@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Api.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Delivery.Api
 {
@@ -13,6 +15,18 @@ namespace Delivery.Api
     {
         public static void Main(string[] args)
         {
+            // var config = new ConfigurationBuilder()
+            //     .AddJsonFile("secrets/appsettings.secret.json", optional: true)
+            //     .Build();
+            // AzureLogConfig azureLogConfig = new AzureLogConfig(); 
+            // config.GetSection("AzureLogConfig").Bind(azureLogConfig);   
+
+            // Log.Logger = new LoggerConfiguration()
+            //     .WriteTo.AzureAnalytics(workspaceId: azureLogConfig.WorkspaceId, 
+            //                             authenticationId: azureLogConfig.PrimaryKey)
+            //     .CreateLogger();
+
+            
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -27,6 +41,7 @@ namespace Delivery.Api
                 {
                     config.AddJsonFile("secrets/appsettings.secret.json", true, true);
                 })
+                
                 .ConfigureLogging(logging =>
                 {
                     // clear default logging providers
@@ -40,5 +55,6 @@ namespace Delivery.Api
                     
                     //logging.AddTraceSource(sourceSwitchName);
                 });
+                //.UseSerilog();
     }
 }
