@@ -12,7 +12,7 @@ namespace Delivery.Api.Extensions
     {
         public AutoMapping()
         {
-            CreateMap<Product, ProductDto>();
+            CreateMap<Product, ProductDto>().ReverseMap();
         }
     }
 }
