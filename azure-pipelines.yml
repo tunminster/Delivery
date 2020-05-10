@@ -120,9 +120,9 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: 'az storage file download --account-name $(file-storage-account-name) --account-key $(file-storage-account-key) --share-name hn-prod --path $(file-path) --dest $(Build.ArtifactStagingDirectory)$(dest-path) --output none'
 
-          - script: 'dotnet ef migrations script --output $(Build.ArtifactStagingDirectory)/$(scriptName)  --context $(dbContext)  --idempotent'
-            workingDirectory: Delivery.Api
-            displayName: 'EF Migration'  
+          # - script: 'dotnet ef migrations script --output $(Build.ArtifactStagingDirectory)/$(scriptName)  --context $(dbContext)  --idempotent'
+          #   workingDirectory: Delivery.Api
+          #   displayName: 'EF Migration'  
 
           - task: KubectlInstaller@0
             inputs:
