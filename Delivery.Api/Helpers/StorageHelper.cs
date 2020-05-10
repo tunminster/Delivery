@@ -3,6 +3,8 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Delivery.Api.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -55,13 +57,13 @@ namespace Delivery.Api.Helpers
             List<string> thumbnailUrls = new List<string>();
 
             // Create a URI to the storage account
-            Uri accountUri = new Uri("https://" + _storageConfig.AccountName + ".blob.core.windows.net/");
+            Uri accountUri = new Uri("https://" + _storageConfig.AccountName + ".blob.core.windows.net/" + _storageConfig.SasKey);
 
             // Create BlobServiceClient from the account URI
             BlobServiceClient blobServiceClient = new BlobServiceClient(accountUri);
 
             // Get reference to the container
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(_storageConfig.ThumbnailContainer);
+            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(_storageConfig.ImageContainer);
 
             if (container.Exists())
             {
