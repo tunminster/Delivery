@@ -96,6 +96,8 @@ namespace Delivery.Api.Controllers
                 await _appDbContext.Products.AddAsync(product);
                 await _appDbContext.SaveChangesAsync();
 
+                productDto.Id = product.Id;
+
                 return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, productDto);
             }
             catch (Exception ex)
