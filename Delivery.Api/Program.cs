@@ -49,7 +49,7 @@ namespace Delivery.Api
 
                     // add built-in providers manually, as needed 
                     logging.AddConsole();
-                    logging.AddDebug();
+                    //logging.AddDebug();
                     //logging.AddEventLog();
                     //logging.AddEventSourceLogger();
                     
