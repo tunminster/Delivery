@@ -54,7 +54,7 @@ namespace Delivery.Api
                     //logging.AddEventSourceLogger();
                     
                     //logging.AddTraceSource(sourceSwitchName);
-                });
-                //.UseSerilog();
+                })
+                .UseSerilog();
     }
 }
