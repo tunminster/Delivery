@@ -62,6 +62,7 @@ namespace Delivery.Api.Controllers
             {
                 var result = await _appDbContext.Categories.Where(x => x.ParentCategoryId == parentId)
                             .ToListAsync(cancellationToken);
+                _logger.LogInformation(string.Concat("GetCategoriesByParentId: ",parentId, " called."));
                 return Ok(result);
             }
             catch(Exception ex)
