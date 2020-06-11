@@ -25,8 +25,17 @@ namespace Delivery.Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Customer entity
             modelBuilder.Entity<Customer>().Property(p => p.Username).HasMaxLength(256);
+            
+            // Category entity
             modelBuilder.Entity<Category>().Property(p => p.CategoryName).HasMaxLength(300);
+            
+            // Product entity
+            modelBuilder.Entity<Product>().Property(p => p.ProductName).HasMaxLength(300);
+            modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(4000);
+            modelBuilder.Entity<Product>().Property(p => p.Currency).HasMaxLength(50);
+            modelBuilder.Entity<Product>().Property(p => p.CurrencySign).HasMaxLength(20);
 
         }
 
