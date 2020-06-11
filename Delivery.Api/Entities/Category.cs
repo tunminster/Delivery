@@ -15,7 +15,7 @@ namespace Delivery.Api.Entities
         [MaxLength(300)]
         public string CategoryName { get; set; }
 
-        [Column(TypeName = "VARCHAR(4000)")]        
+        [MaxLength(4000)]
         public string Description { get; set; }
         public int ParentCategoryId { get; set; }
         public int Order { get; set;  }
