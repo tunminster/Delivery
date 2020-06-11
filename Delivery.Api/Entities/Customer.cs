@@ -12,5 +12,7 @@ namespace Delivery.Api.Entities
         public string IdentityId { get; set; }
         public string Username { get; set; }
         public ApplicationUser Identity { get; set; }  // navigation property
+
+        public virtual IList<Address> Addresses { get; set; }
     }
 }
