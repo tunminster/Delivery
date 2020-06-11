@@ -12,8 +12,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Delivery.Api.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
+    
+    //[ApiController]
+    //[Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
