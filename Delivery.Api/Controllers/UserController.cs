@@ -13,6 +13,8 @@ using System.IdentityModel.Tokens.Jwt;
 using Delivery.Api.Helpers;
 using Delivery.Api.Data;
 using Delivery.Api.Entities;
+using static Delivery.Api.Extensions.HttpResults;
+
 
 namespace Delivery.Api.Controllers
 {
@@ -62,6 +64,24 @@ namespace Delivery.Api.Controllers
             }
             return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
 
+        }
+
+        [HttpGet("GetUser")]
+        [ProducesResponseType(typeof(ApplicationUser), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public IActionResult GetUser()
+        {
+            try
+            {
+                var result = new ApplicationUser { UserName = User.Identity.Name, Email = User.Identity.Name };
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                var errorMessage = "Error occurred in getting User details";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
         }
 
         
