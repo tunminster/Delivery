@@ -21,6 +21,14 @@ namespace Delivery.Api.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Customer>().Property(p => p.Username).HasMaxLength(256);       
+
+        }
+
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Category> Categories {get; set;}
         public DbSet<Product> Products { get; set; }
