@@ -25,7 +25,8 @@ namespace Delivery.Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Customer>().Property(p => p.Username).HasMaxLength(256);       
+            modelBuilder.Entity<Customer>().Property(p => p.Username).HasMaxLength(256);
+            modelBuilder.Entity<Category>().Property(p => p.CategoryName).HasMaxLength(300);
 
         }
 
