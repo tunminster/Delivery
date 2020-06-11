@@ -18,6 +18,6 @@ namespace Delivery.Api.Entities
         public string Username { get; set; }
         public ApplicationUser Identity { get; set; }  // navigation property
 
-        public virtual IList<Address> Addresses { get; set; }
+        public virtual ICollection<Address> Addresses { get; set; }
     }
 }

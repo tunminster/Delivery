@@ -45,13 +45,15 @@ namespace Delivery.Api.Controllers
             try
             {
                 string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-                var result = await _appDbContext.Customers.Where(x => x.Username.ToLower() == userName.ToLower()).FirstOrDefaultAsync();
+                var result = await _appDbContext.Customers.Where(x => x.Username.ToLower() == userName.ToLower()).Include(x => x.Addresses).FirstOrDefaultAsync();
+                var customerDto = _mapper.Map<CustomerDto>(result);
 
-                return Ok(result);
+
+                return Ok(customerDto);
             }
             catch (Exception ex)
             {
-                var errorMessage = "Error occurred in getting User details";
+                var errorMessage = "Error occurred in getting customer details";
                 _logger.LogError(ex, errorMessage);
                 return InternalServerErrorResult(errorMessage);
             }
