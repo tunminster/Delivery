@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Delivery.Api.Data;
+using Delivery.Api.Entities;
 using Delivery.Api.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -45,8 +46,8 @@ namespace Delivery.Api.Controllers
             try
             {
                 var result = await _appDbContext.Addresses.Where(x => x.CustomerId == customerId).ToListAsync(cancellationToken);
-                var productDtoList = _mapper.Map<List<ProductDto>>(result);
-                return Ok(productDtoList);
+                var addressDtoList = _mapper.Map<List<AddressDto>>(result);
+                return Ok(addressDtoList);
             }
             catch (Exception ex)
             {
@@ -56,6 +57,54 @@ namespace Delivery.Api.Controllers
             }
         }
 
-        
+        [HttpGet("GetAddressById/{id}")]
+        [ProducesResponseType(typeof(AddressDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAddressById(int id)
+        {
+            try
+            {
+                var result = await _appDbContext.Addresses.FirstOrDefaultAsync(x => x.Id == id);
+                var addressDto = _mapper.Map<AddressDto>(result);
+                return Ok(addressDto);
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = "Fetching address by id";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
+        }
+
+        [HttpPost("Create")]
+        [ProducesResponseType(typeof(AddressDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AddAddress(AddressDto addressDto)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var address = _mapper.Map<Address>(addressDto);
+                await _appDbContext.Addresses.AddAsync(address);
+                await _appDbContext.SaveChangesAsync();
+
+                addressDto.Id = address.Id;
+
+                return CreatedAtAction(nameof(GetAddressById), new { id = address.Id }, addressDto);
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = "Error occurred in creating address";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
+        }
+
+
     }
 }

@@ -13,6 +13,7 @@ namespace Delivery.Api.Extensions
         public AutoMapping()
         {
             CreateMap<Product, ProductDto>().ReverseMap();
+            CreateMap<Address, AddressDto>().ReverseMap();
         }
     }
 }
