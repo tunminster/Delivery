@@ -14,7 +14,8 @@ using Delivery.Api.Helpers;
 using Delivery.Api.Data;
 using Delivery.Api.Entities;
 using static Delivery.Api.Extensions.HttpResults;
-
+using Microsoft.AspNetCore.Authorization;
+using Delivery.Api.Models.Dto;
 
 namespace Delivery.Api.Controllers
 {
@@ -67,13 +68,15 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetUser")]
-        [ProducesResponseType(typeof(ApplicationUser), StatusCodes.Status200OK)]
+        [Authorize]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public IActionResult GetUser()
         {
             try
             {
-                var result = new ApplicationUser { UserName = User.Identity.Name, Email = User.Identity.Name };
+                string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+                var result = new UserDto { UserName = userName };
                 return Ok(result);
             }
             catch(Exception ex)
