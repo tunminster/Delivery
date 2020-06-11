@@ -10,6 +10,7 @@ namespace Delivery.Api.Entities
 {
     public class Customer
     {
+        [Key]
         public int Id { get; set; }
         public string IdentityId { get; set; }
 
