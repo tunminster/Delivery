@@ -79,6 +79,25 @@ namespace Delivery.Api.Controllers
             }
         }
 
+        [HttpGet("GetProductByCategoryId/{id}")]
+        [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetProductByCategoryId(int id)
+        {
+            try
+            {
+                var result = await _appDbContext.Products.Where(x => x.CategoryId == id).ToListAsync();
+                var productDtoList = _mapper.Map<List<ProductDto>>(result);
+                return Ok(productDtoList);
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = "Fetching product by categoryid.";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
+        }
+
         [HttpPost("Create")]
         [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
