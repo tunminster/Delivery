@@ -37,11 +37,29 @@ namespace Delivery.Api.Data
             modelBuilder.Entity<Product>().Property(p => p.Currency).HasMaxLength(50);
             modelBuilder.Entity<Product>().Property(p => p.CurrencySign).HasMaxLength(20);
 
+
+            modelBuilder.Entity<Order>().Property(p => p.Description).HasMaxLength(300);
+            modelBuilder.Entity<Order>().Property(p => p.CurrencyCode).HasMaxLength(15);
+            modelBuilder.Entity<Order>().Property(p => p.PaymentType).HasMaxLength(15);
+            modelBuilder.Entity<Order>().Property(p => p.PaymentCard).HasMaxLength(16);
+            modelBuilder.Entity<Order>().Property(p => p.PaymentStatus).HasMaxLength(15);
+            modelBuilder.Entity<Order>().Property(p => p.OrderStatus).HasMaxLength(15);
+
+            modelBuilder.Entity<PaymentCard>().Property(p => p.Token).HasMaxLength(1000);
+            modelBuilder.Entity<PaymentCard>().Property(p => p.Name).HasMaxLength(150);
+            modelBuilder.Entity<PaymentCard>().Property(p => p.CardType).HasMaxLength(30);
+            modelBuilder.Entity<PaymentCard>().Property(p => p.MaskedCardNumber).HasMaxLength(16);
+            modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryMonth).HasMaxLength(10);
+            modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryYear).HasMaxLength(10);
+
         }
 
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Category> Categories {get; set;}
         public DbSet<Product> Products { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<PaymentCard> PaymentCards { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
     }
 }
