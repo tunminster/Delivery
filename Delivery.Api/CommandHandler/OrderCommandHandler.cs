@@ -96,7 +96,7 @@ namespace Delivery.Api.CommandHandler
                 await SavePaymentReponse(responseModel);
 
                 // save payment card
-                if (command.SaveCard)
+                if (command.SaveCard && !IsCardSaved(responseModel.PaymentResponse.MaskedCardNumber, command.CustomerId))
                 {
                     await AddPaymentCard(responseModel, command);
                 }
@@ -154,6 +154,11 @@ namespace Delivery.Api.CommandHandler
 
             await _appDbContext.AddAsync(paymentCard);
             await _appDbContext.SaveChangesAsync();
+        }
+
+        private bool IsCardSaved(string maskedCardNumber, int customerId)
+        {
+            return _appDbContext.PaymentCards.Any(x => x.MaskedCardNumber == maskedCardNumber && x.CustomerId == customerId);
         }
 
         private async Task UpdateOrder(WorldPayPaymentResponseModel responseModel, int orderId, bool paymentSuccess)
