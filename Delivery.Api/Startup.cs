@@ -6,10 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Delivery.Api.Auth;
+using Delivery.Api.CommandHandler;
 using Delivery.Api.Data;
+using Delivery.Api.Domain.Command;
 using Delivery.Api.Extensions;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
+using Delivery.Api.Utils.Configs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -131,11 +134,7 @@ namespace Delivery.Api
             builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
             builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
-            //services.AddIdentityServer()
-            //   .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
-            //services.AddAuthentication()
-            //    .AddIdentityServerJwt();
+    
 
             services.AddResponseCaching();
 
@@ -149,8 +148,14 @@ namespace Delivery.Api
             services.AddAutoMapper(typeof(Startup));
             services.Configure<AzureStorageConfig>(Configuration.GetSection("AzureStorageConfig"));
             services.Configure<AzureLogConfig>(Configuration.GetSection("AzureLogConfig"));
+            services.Configure<WorldPayConfig>(Configuration.GetSection("WorldPayConfigs"));
 
             services.AddControllers();
+
+            services.AddHttpClient();
+
+            //register handlers
+            services.AddScoped<ICommandHandler<CreateOrderCommand>, OrderCommandHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

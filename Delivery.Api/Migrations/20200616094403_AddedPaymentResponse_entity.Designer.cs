@@ -4,14 +4,16 @@ using Delivery.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delivery.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200616094403_AddedPaymentResponse_entity")]
+    partial class AddedPaymentResponse_entity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -199,9 +201,6 @@ namespace Delivery.Api.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("ExpiryMonth")
                         .HasColumnType("nvarchar(10)")
                         .HasMaxLength(10);
@@ -211,8 +210,8 @@ namespace Delivery.Api.Migrations
                         .HasMaxLength(10);
 
                     b.Property<string>("MaskedCardNumber")
-                        .HasColumnType("nvarchar(30)")
-                        .HasMaxLength(30);
+                        .HasColumnType("nvarchar(16)")
+                        .HasMaxLength(16);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(150)")

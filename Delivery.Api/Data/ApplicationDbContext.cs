@@ -1,5 +1,5 @@
 ﻿using Delivery.Api.Entities;
-using Delivery.Api.Models;
+//using Delivery.Api.Models;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Delivery.Api.Data
 {
     //public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
+    public class ApplicationDbContext : ApiAuthorizationDbContext<Delivery.Api.Models.ApplicationUser>
     {
         public ApplicationDbContext(
             DbContextOptions options,
@@ -41,16 +41,27 @@ namespace Delivery.Api.Data
             modelBuilder.Entity<Order>().Property(p => p.Description).HasMaxLength(300);
             modelBuilder.Entity<Order>().Property(p => p.CurrencyCode).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.PaymentType).HasMaxLength(15);
-            modelBuilder.Entity<Order>().Property(p => p.PaymentCard).HasMaxLength(16);
+            modelBuilder.Entity<Order>().Property(p => p.PaymentCard).HasMaxLength(25);
             modelBuilder.Entity<Order>().Property(p => p.PaymentStatus).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.OrderStatus).HasMaxLength(15);
+            modelBuilder.Entity<Order>().Property(p => p.PaymentOrderCodeRef).HasMaxLength(50);
 
             modelBuilder.Entity<PaymentCard>().Property(p => p.Token).HasMaxLength(1000);
             modelBuilder.Entity<PaymentCard>().Property(p => p.Name).HasMaxLength(150);
             modelBuilder.Entity<PaymentCard>().Property(p => p.CardType).HasMaxLength(30);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.MaskedCardNumber).HasMaxLength(16);
+            modelBuilder.Entity<PaymentCard>().Property(p => p.MaskedCardNumber).HasMaxLength(30);
             modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryMonth).HasMaxLength(10);
             modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryYear).HasMaxLength(10);
+
+            modelBuilder.Entity<PaymentResponse>().Property(p => p.OrderCode).HasMaxLength(250);
+            modelBuilder.Entity<PaymentResponse>().Property(p => p.Token).HasMaxLength(250);
+            modelBuilder.Entity<PaymentResponse>().Property(p => p.OrderDescription).HasMaxLength(250);
+            modelBuilder.Entity<PaymentResponse>().Property(p => p.Amount).HasMaxLength(20);
+            modelBuilder.Entity<PaymentResponse>().Property(p => p.CurrencyCode).HasMaxLength(10);
+            modelBuilder.Entity<PaymentResponse>().Property(p => p.PaymentStatus).HasMaxLength(10);
+            modelBuilder.Entity<PaymentResponse>().Property(p => p.MaskedCardNumber).HasMaxLength(30);
+            modelBuilder.Entity<PaymentResponse>().Property(p => p.CvcResultCode).HasMaxLength(10);
+            modelBuilder.Entity<PaymentResponse>().Property(p => p.Environment).HasMaxLength(10);
 
         }
 
@@ -61,5 +72,6 @@ namespace Delivery.Api.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<PaymentCard> PaymentCards { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<PaymentResponse> PaymentResponses { get; set; }
     }
 }

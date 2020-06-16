@@ -18,7 +18,7 @@ namespace Delivery.Api.Entities
         [MaxLength(30)]
         public string CardType { get; set; }
 
-        [MaxLength(16)]
+        [MaxLength(30)]
         public string MaskedCardNumber { get; set; }
 
         [MaxLength(10)]
@@ -31,5 +31,7 @@ namespace Delivery.Api.Entities
 
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
+
+        public DateTime DateAdded { get; set; }
     }
 }
