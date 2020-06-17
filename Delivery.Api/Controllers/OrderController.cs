@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using static Delivery.Api.Extensions.HttpResults;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -42,9 +41,6 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddOrder(OrderDto orderDto)
         {
-
-            _logger.LogInformation($"Request log: {JsonConvert.SerializeObject(orderDto)}");
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
