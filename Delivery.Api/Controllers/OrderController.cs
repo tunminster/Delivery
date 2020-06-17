@@ -41,6 +41,8 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddOrder(OrderDto orderDto)
         {
+            _logger.LogInformation($"Request log: {orderDto}");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
