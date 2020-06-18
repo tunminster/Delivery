@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Delivery.Api.CommandHandler;
 using Delivery.Api.Domain.Command;
+using Delivery.Api.Domain.Query;
 using Delivery.Api.Models.Dto;
+using Delivery.Api.QueryHandler;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using static Delivery.Api.Extensions.HttpResults;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Delivery.Api.Controllers
 {
@@ -24,15 +24,17 @@ namespace Delivery.Api.Controllers
 
         private readonly ILogger<OrderController> _logger;
         private readonly ICommandHandler<CreateOrderCommand> _createOrderCommand;
-        private readonly IMapper _mapper;
+        private readonly IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]> _queryOrderByCustomerIdQuery;
 
-        public OrderController(ILogger<OrderController> logger,
-        ICommandHandler<CreateOrderCommand> createOrderCommand,
-        IMapper mapper)
+        public OrderController(
+            ILogger<OrderController> logger,
+            ICommandHandler<CreateOrderCommand> createOrderCommand,
+            IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]> queryOrderByCustomerIdQuery
+        )
         {
             _logger = logger;
             _createOrderCommand = createOrderCommand;
-            _mapper = mapper;
+            _queryOrderByCustomerIdQuery = queryOrderByCustomerIdQuery;
         }
 
         // POST api/values
@@ -48,15 +50,12 @@ namespace Delivery.Api.Controllers
 
             try
             {
-                //var command = _mapper.Map<CreateOrderCommand>(orderDto);
-
                 var orderItemCommands = new List<OrderItemCommand>();
 
                 foreach(var item in orderDto.OrderItems)
                 {
                     orderItemCommands.Add(new OrderItemCommand() { Count = item.Count, ProductId = item.ProductId });
                 }
-                //orderItemCommands.Add(new OrderItemCommand { Product})
 
                 var command = new CreateOrderCommand();
                 command.Description = string.Empty;
@@ -84,11 +83,32 @@ namespace Delivery.Api.Controllers
             catch (Exception ex)
             {
                 var errorMessage = "Error occurred in creating order";
-                _logger.LogError(ex, string.Concat(errorMessage," -" , ex.Message));
+                _logger.LogError(ex, string.Concat(errorMessage," - " , ex.Message));
                 return InternalServerErrorResult(errorMessage);
             }
         }
 
-        
+        [HttpGet("GetByUserId/{userId}")]
+        [ProducesResponseType(typeof(List<OrderViewDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetProductByCategoryId(int userId)
+        {
+            try
+            { 
+                var query = new GetOrderByCustomerIdQuery();
+                query.CustomerId = userId;
+                var result = await _queryOrderByCustomerIdQuery.Handle(query);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = "Fetching orders by userId.";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
+        }
+
+
     }
 }

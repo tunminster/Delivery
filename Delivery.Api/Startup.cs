@@ -9,9 +9,12 @@ using Delivery.Api.Auth;
 using Delivery.Api.CommandHandler;
 using Delivery.Api.Data;
 using Delivery.Api.Domain.Command;
+using Delivery.Api.Domain.Query;
 using Delivery.Api.Extensions;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
+using Delivery.Api.Models.Dto;
+using Delivery.Api.QueryHandler;
 using Delivery.Api.Utils.Configs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -156,6 +159,7 @@ namespace Delivery.Api
 
             //register handlers
             services.AddScoped<ICommandHandler<CreateOrderCommand>, OrderCommandHandler>();
+            services.AddScoped<IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]>, OrdersByCustomerIdQueryHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

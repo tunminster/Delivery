@@ -17,6 +17,9 @@ namespace Delivery.Api.Extensions
             CreateMap<Customer, CustomerDto>().ReverseMap();
             CreateMap<Address, AddressDto>().ReverseMap();
 
+            CreateMap<OrderItem, OrderItemDto>().ReverseMap();
+            CreateMap<Order, OrderViewDto>().ReverseMap();
+
             /*CreateMap<Order, CreateOrderCommand>().ReverseMap();
 
             CreateMap<OrderItemDto, OrderItemCommand>().ReverseMap();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Delivery.Api.Domain.Query;
 using Delivery.Api.Entities;
 
@@ -10,7 +11,7 @@ namespace Delivery.Api.QueryHandler
         {
         }
 
-        public Order Handle(GetOrderIdQuery query)
+        public async Task<Order> Handle(GetOrderIdQuery query)
         {
             throw new NotImplementedException();
         }
