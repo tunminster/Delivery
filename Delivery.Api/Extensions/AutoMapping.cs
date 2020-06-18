@@ -18,6 +18,10 @@ namespace Delivery.Api.Extensions
             CreateMap<Address, AddressDto>().ReverseMap();
 
             CreateMap<OrderItem, OrderItemDto>().ReverseMap();
+            CreateMap<OrderItem, OrderViewItemDto>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
+                .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(src => src.Product.UnitPrice));
+
             CreateMap<Order, OrderViewDto>().ReverseMap();
 
             /*CreateMap<Order, CreateOrderCommand>().ReverseMap();

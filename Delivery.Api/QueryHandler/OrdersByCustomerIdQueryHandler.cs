@@ -31,10 +31,7 @@ namespace Delivery.Api.QueryHandler
 
         public async Task<OrderViewDto[]> Handle(GetOrderByCustomerIdQuery query)
         {
-            var result  = _mapper.Map<OrderViewDto[]>(await _appDbContext.Orders.Where(x => x.CustomerId == query.CustomerId).Include(x => x.OrderItems).ToArrayAsync());
-            
-
-            return result;
+            return _mapper.Map<OrderViewDto[]>(await _appDbContext.Orders.Where(x => x.CustomerId == query.CustomerId).Include(x => x.OrderItems).ThenInclude(x => x.Product).ToArrayAsync());
         }
     }
 }
