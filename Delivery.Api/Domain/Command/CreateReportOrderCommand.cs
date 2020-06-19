@@ -6,7 +6,7 @@ namespace Delivery.Api.Domain.Command
         public string Subject { get; set; }
         public string ContactNumber { get; set; }
         public string ReportCategory { get; set; }
-        public string CustomerId { get; set; }
+        public int CustomerId { get; set; }
         public string Message { get; set; }
     }
 }

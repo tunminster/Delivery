@@ -32,6 +32,7 @@ namespace Delivery.Api.Controllers
         {
             _logger = logger;
             _createReportOrderCommand = createReportOrderCommand;
+            _mapper = mapper;
         }
 
         // POST api/values
@@ -47,7 +48,8 @@ namespace Delivery.Api.Controllers
 
             try
             {
-                var createReportOrderCommand = _mapper.Map<CreateReportOrderCommand>(reportDto);
+                var createReportOrderCommand = new CreateReportOrderCommand();
+                createReportOrderCommand = _mapper.Map<CreateReportOrderCommand>(reportDto);
 
                 await _createReportOrderCommand.Handle(createReportOrderCommand);
 
