@@ -55,7 +55,7 @@ namespace Delivery.Api.Controllers
             }
             catch(Exception ex)
             {
-                var errorMessage = "Error occurred in creating order";
+                var errorMessage = "Error occurred in creating report order";
                 _logger.LogError(ex, errorMessage);
                 return InternalServerErrorResult(errorMessage);
             }
