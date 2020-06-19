@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 
 namespace Delivery.Api.CommandHandler
 {
-    public class OrderCommandHandler : ICommandHandler<CreateOrderCommand>
+    public class OrderCommandHandler : ICommandHandler<CreateOrderCommand, bool>
     {
         private readonly ApplicationDbContext _appDbContext;
         private readonly IMapper _mapper;
@@ -44,7 +44,7 @@ namespace Delivery.Api.CommandHandler
             _logger = logger;
         }
 
-        public async Task Handle(CreateOrderCommand command)
+        public async Task<bool> Handle(CreateOrderCommand command)
         {
 
             // save order
@@ -101,11 +101,15 @@ namespace Delivery.Api.CommandHandler
                     await AddPaymentCard(responseModel, command);
                 }
 
+                return true;
+
             }
             else
             {
                 _logger.LogError($"WorldPay payment api return status code : {response.StatusCode} error for Order Id : {order.Id}");
             }
+
+            return false;
         }
 
         private async Task<Order> SaveOrder(CreateOrderCommand command)

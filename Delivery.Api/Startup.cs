@@ -158,7 +158,7 @@ namespace Delivery.Api
             services.AddHttpClient();
 
             //register handlers
-            services.AddScoped<ICommandHandler<CreateOrderCommand>, OrderCommandHandler>();
+            services.AddScoped<ICommandHandler<CreateOrderCommand, bool>, OrderCommandHandler>();
             services.AddScoped<IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]>, OrdersByCustomerIdQueryHandler>();
         }
 

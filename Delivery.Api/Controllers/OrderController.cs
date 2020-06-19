@@ -23,12 +23,12 @@ namespace Delivery.Api.Controllers
     {
 
         private readonly ILogger<OrderController> _logger;
-        private readonly ICommandHandler<CreateOrderCommand> _createOrderCommand;
+        private readonly ICommandHandler<CreateOrderCommand, bool> _createOrderCommand;
         private readonly IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]> _queryOrderByCustomerIdQuery;
 
         public OrderController(
             ILogger<OrderController> logger,
-            ICommandHandler<CreateOrderCommand> createOrderCommand,
+            ICommandHandler<CreateOrderCommand, bool> createOrderCommand,
             IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]> queryOrderByCustomerIdQuery
         )
         {

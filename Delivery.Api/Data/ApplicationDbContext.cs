@@ -63,6 +63,11 @@ namespace Delivery.Api.Data
             modelBuilder.Entity<PaymentResponse>().Property(p => p.CvcResultCode).HasMaxLength(10);
             modelBuilder.Entity<PaymentResponse>().Property(p => p.Environment).HasMaxLength(10);
 
+            modelBuilder.Entity<Report>().Property(p => p.Subject).HasMaxLength(250);
+            modelBuilder.Entity<Report>().Property(p => p.ContactNumber).HasMaxLength(20);
+            modelBuilder.Entity<Report>().Property(p => p.ReportCategory).HasMaxLength(20);
+            modelBuilder.Entity<Report>().Property(p => p.Message).HasMaxLength(500);
+
         }
 
         public DbSet<Customer> Customers { get; set; }
@@ -73,5 +78,6 @@ namespace Delivery.Api.Data
         public DbSet<PaymentCard> PaymentCards { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<PaymentResponse> PaymentResponses { get; set; }
+        public DbSet<Report> Reports { get; set; }
     }
 }
