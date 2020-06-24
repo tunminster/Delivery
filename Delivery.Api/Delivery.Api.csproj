@@ -45,4 +45,13 @@
   </ItemGroup>
 
 
+  <ItemGroup>
+    <Folder Include="CommandHandler\" />
+    <Folder Include="QueryHandler\" />
+    <Folder Include="Domain\" />
+    <Folder Include="Domain\Command\" />
+    <Folder Include="Domain\Query\" />
+    <Folder Include="Utils\" />
+    <Folder Include="Utils\Configs\" />
+  </ItemGroup>
 </Project>
