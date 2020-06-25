@@ -120,6 +120,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPut("update/{id}")]
+        [ProducesResponseType(typeof(Category), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> PutCategory(int id, Category category)
         {
             if (id != category.Id)
@@ -133,10 +135,15 @@ namespace Delivery.Api.Controllers
                 return NotFound();
             }
 
-            _appDbContext.Entry(category).State = EntityState.Modified;
+            result.CategoryName = category.CategoryName;
+            result.Description = category.Description;
+            result.Order = category.Order;
+
+            _appDbContext.Entry(result).State = EntityState.Modified;
             try
             {
                 await _appDbContext.SaveChangesAsync();
+                return Ok();
             }
             catch (Exception ex)
             {
