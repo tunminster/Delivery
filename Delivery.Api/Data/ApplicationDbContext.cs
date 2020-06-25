@@ -30,7 +30,8 @@ namespace Delivery.Api.Data
             
             // Category entity
             modelBuilder.Entity<Category>().Property(p => p.CategoryName).HasMaxLength(300);
-            
+            modelBuilder.Entity<Category>().Property(p => p.Description).HasMaxLength(4000);
+
             // Product entity
             modelBuilder.Entity<Product>().Property(p => p.ProductName).HasMaxLength(300);
             modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(4000);
