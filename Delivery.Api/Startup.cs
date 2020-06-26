@@ -162,6 +162,7 @@ namespace Delivery.Api
             services.AddScoped<ICommandHandler<CreateReportOrderCommand, bool>, ReportOrderCommandHandler>();
 
             services.AddScoped<IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]>, OrdersByCustomerIdQueryHandler>();
+            services.AddScoped<IQueryHandler<CategoryByIdQuery, CategoryDto>, CategoryByIdQueryHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
