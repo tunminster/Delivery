@@ -6,10 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Delivery.Api.Data;
+using Delivery.Api.Domain.Query;
 using Delivery.Api.Entities;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Models.Dto;
+using Delivery.Api.QueryHandler;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,16 +31,19 @@ namespace Delivery.Api.Controllers
         private readonly ApplicationDbContext _appDbContext;
         private readonly IMapper _mapper;
         private readonly AzureStorageConfig storageConfig = null;
+        private readonly IQueryHandler<ProductGetAllQuery, ProductDto[]> _queryProductGetAllQuery;
 
         public ProductController(ILogger<UserController> logger,
         ApplicationDbContext appDbContext,
         IMapper mapper,
-        IOptions<AzureStorageConfig> config)
+        IOptions<AzureStorageConfig> config,
+        IQueryHandler<ProductGetAllQuery, ProductDto[]> queryProductGetAllQuery)
         {
             _logger = logger;
             _appDbContext = appDbContext;
             _mapper = mapper;
             storageConfig = config.Value;
+            _queryProductGetAllQuery = queryProductGetAllQuery;
         }
 
         [HttpGet("getAllProducts")]
@@ -48,9 +53,8 @@ namespace Delivery.Api.Controllers
         {
             try
             {
-                var result = await _appDbContext.Products.ToListAsync(cancellationToken);
-                var productDtoList = _mapper.Map<List<ProductDto>>(result);
-                return Ok(productDtoList);
+                var result = await _queryProductGetAllQuery.Handle(new ProductGetAllQuery()); 
+                return Ok(result);
             }
             catch (Exception ex)
             {

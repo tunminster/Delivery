@@ -163,6 +163,7 @@ namespace Delivery.Api
 
             services.AddScoped<IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]>, OrdersByCustomerIdQueryHandler>();
             services.AddScoped<IQueryHandler<CategoryByIdQuery, CategoryDto>, CategoryByIdQueryHandler>();
+            services.AddScoped<IQueryHandler<ProductGetAllQuery, ProductDto[]>, ProductGetAllQueryHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

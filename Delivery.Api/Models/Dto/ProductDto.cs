@@ -14,5 +14,6 @@ namespace Delivery.Api.Models.Dto
         public string ProductImageUrl { get; set; }
         public string UnitPrice { get; set; }
         public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
     }
 }
