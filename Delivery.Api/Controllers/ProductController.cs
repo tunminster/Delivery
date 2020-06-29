@@ -289,9 +289,14 @@ namespace Delivery.Api.Controllers
                 return NotFound();
             }
 
-            var product = _mapper.Map<Product>(productDto);
-
-            _appDbContext.Entry(product).State = EntityState.Modified;
+            result.ProductName = productDto.ProductName;
+            result.Description = productDto.Description;
+            result.ProductImage = productDto.ProductImage;
+            result.UnitPrice = decimal.Parse(productDto.UnitPrice);
+            result.CategoryId = productDto.CategoryId;
+            result.ProductImageUrl = productDto.ProductImageUrl;
+            
+            _appDbContext.Entry(result).State = EntityState.Modified;
             try
             {
                 await _appDbContext.SaveChangesAsync();
