@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using static Delivery.Api.Extensions.HttpResults;
 
 namespace Delivery.Api.Controllers
@@ -105,7 +106,7 @@ namespace Delivery.Api.Controllers
         [HttpPost("Create")]
         [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddProduct(ProductDto productDto)
+        public async Task<IActionResult> AddProduct(ProductDto productDto, IFormFile file)
         {
 
             if (!ModelState.IsValid)
@@ -120,6 +121,46 @@ namespace Delivery.Api.Controllers
                 await _appDbContext.SaveChangesAsync();
 
                 productDto.Id = product.Id;
+
+                return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, productDto);
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = "Error occurred in creating product";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
+        }
+        
+        /// <summary>
+        /// Create product with image upload
+        /// </summary>
+        /// <param name="jsonString"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        [HttpPost("CreateProduct")]
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AddProductWithString([FromForm] string jsonString, IFormFile file)
+        {
+
+            var productDto = JsonConvert.DeserializeObject<ProductDto>(jsonString);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var product = _mapper.Map<Product>(productDto);
+                await _appDbContext.Products.AddAsync(product);
+                await _appDbContext.SaveChangesAsync();
+
+                productDto.Id = product.Id;
+                
+                // upload image
+                await UploadImages(new List<IFormFile>() {file}, productDto.Id, productDto);
+                
 
                 return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, productDto);
             }
@@ -197,6 +238,63 @@ namespace Delivery.Api.Controllers
                 _logger.LogError(ex, errorMessage);
                 return InternalServerErrorResult(errorMessage);
             }
+        }
+
+        //Todo
+        private async Task<IActionResult> UploadImage(IFormFile file, int productId)
+        {
+            bool isUploaded = false;
+            
+            try
+            {
+
+                if (file != null)
+                    return BadRequest("No files received from the upload");
+
+                if (storageConfig.AccountKey == string.Empty || storageConfig.AccountName == string.Empty)
+                    return BadRequest("sorry, can't retrieve your azure storage details from appsettings.js, make sure that you add azure storage details there");
+
+                if (storageConfig.ImageContainer == string.Empty)
+                    return BadRequest("Please provide a name for your image container in the azure blob storage");
+
+                
+                    if (StorageHelper.IsImage(file))
+                    {
+                        if (file.Length > 0)
+                        {
+                            using (Stream stream = file.OpenReadStream())
+                            {
+                                //isUploaded = await StorageHelper.UploadFileToStorage(stream, formFile.FileName, storageConfig);
+                                isUploaded = await StorageHelper.UploadFileToStorage(stream, file.FileName, storageConfig);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return new UnsupportedMediaTypeResult();
+                    }
+                
+
+                if (isUploaded)
+                {
+                    if (storageConfig.ThumbnailContainer != string.Empty)
+                        return new AcceptedAtActionResult("GetThumbNails", "Images", null, null);
+                    else
+                        return new AcceptedResult();
+
+                }
+                else
+                {
+                    return BadRequest("Look like the image couldnt upload to the storage");
+                }
+            }
+            catch(Exception ex)
+            {
+                var errorMessage = "Error occurred in uploading image";
+                _logger.LogError(ex, errorMessage);
+                return InternalServerErrorResult(errorMessage);
+            }
+            
         }
 
         private async Task<IActionResult> UploadImages(ICollection<IFormFile> files)
