@@ -141,10 +141,10 @@ namespace Delivery.Api.Controllers
         [HttpPost("CreateProduct")]
         [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddProductWithString([FromForm] string jsonString, IFormFile file)
+        public async Task<IActionResult> AddProductWithString([FromForm] ProductDto productDto, IFormFile file)
         {
 
-            var productDto = JsonConvert.DeserializeObject<ProductDto>(jsonString);
+            //var productDto = JsonConvert.DeserializeObject<ProductDto>(jsonString);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
