@@ -21,7 +21,7 @@ namespace Delivery.Api.Domain.Contract
         public string ProductImageUrl { get; set; }
 
         [DataMember]
-        public string UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
 
         [DataMember]
         public int CategoryId { get; set; }

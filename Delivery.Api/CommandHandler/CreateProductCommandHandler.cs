@@ -10,6 +10,8 @@ using Delivery.Api.Domain.Contract;
 using Delivery.Api.Entities;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
+using Delivery.Database.Enums;
+using Delivery.Database.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -38,7 +40,16 @@ namespace Delivery.Api.CommandHandler
 
         public async Task<bool> Handle(CreateProductCommand command)
         {
-            var product = _mapper.Map<Product>(command.ProductContract);
+
+            var product = new Product
+            {
+                ProductName = command.ProductContract.ProductName,
+                Description = command.ProductContract.Description,
+                UnitPrice = command.ProductContract.UnitPrice,
+                CategoryId = command.ProductContract.CategoryId,
+                Currency = Currency.BritishPound.ToString(),
+                CurrencySign = CurrencySign.BritishPound.Code
+            };
             
             await _appDbContext.Products.AddAsync(product);
             await _appDbContext.SaveChangesAsync();
@@ -66,15 +77,13 @@ namespace Delivery.Api.CommandHandler
                     {
                         if (formFile.Length > 0)
                         {
-                            using (Stream stream = formFile.OpenReadStream())
-                            {
-                                //isUploaded = await StorageHelper.UploadFileToStorage(stream, formFile.FileName, storageConfig);
-                                isUploaded = await StorageHelper.UploadFileToStorage(stream, $"{productId}-{formFile.FileName.ToLower().Replace(" ", "-")}", _storageConfig);
+                            using Stream stream = formFile.OpenReadStream();
+                            isUploaded = await StorageHelper.UploadFileToStorage(stream, $"{productId}-{formFile.FileName.ToLower().Replace(" ", "-")}", _storageConfig);
 
-                                var product = _appDbContext.Products.FirstOrDefault(x => x.Id == productId);
-                                product.ProductImage = $"{productId}-{formFile.FileName.ToLower().Replace(" ", "-")}";
-                                product.ProductImageUrl = $"{"ulr"}{product.ProductImage}";
-                            }
+                            var product = _appDbContext.Products.FirstOrDefault(x => x.Id == productId);
+                            product.ProductImage = $"{productId}-{formFile.FileName.ToLower().Replace(" ", "-")}";
+                            product.ProductImageUrl = $"{"ulr"}{product.ProductImage}";
+                            await _appDbContext.SaveChangesAsync();
                         }
                     }
                     else
