@@ -1,25 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Delivery.Api.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.IdentityModel.Tokens.Jwt;
-using Delivery.Api.Helpers;
-using Delivery.Api.Data;
-using Delivery.Api.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using static Delivery.Api.Extensions.HttpResults;
 using System.Threading;
 using Delivery.Api.Models.Dto;
 using Delivery.Api.Domain.Query;
 using Delivery.Api.QueryHandler;
+using Delivery.Database.Context;
+using Delivery.Database.Entities;
 
 namespace Delivery.Api.Controllers
 {

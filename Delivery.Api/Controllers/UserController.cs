@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Delivery.Api.Models;
 using Microsoft.AspNetCore.Http;
@@ -9,13 +7,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.IdentityModel.Tokens.Jwt;
 using Delivery.Api.Helpers;
-using Delivery.Api.Data;
-using Delivery.Api.Entities;
 using static Delivery.Api.Extensions.HttpResults;
 using Microsoft.AspNetCore.Authorization;
 using Delivery.Api.Models.Dto;
+using Delivery.Database.Context;
+using Delivery.Database.Entities;
 
 namespace Delivery.Api.Controllers
 {

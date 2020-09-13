@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Delivery.Api.Domain.Command;
-using Delivery.Api.Entities;
 using Delivery.Api.Models.Dto;
 using System;
 using System.Collections.Generic;
@@ -11,26 +9,26 @@ namespace Delivery.Api.Extensions
 {
     public class AutoMapping : Profile
     {
-        public AutoMapping()
-        {
-            CreateMap<Product, ProductDto>()
-                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName)).ReverseMap();
-            CreateMap<Customer, CustomerDto>().ReverseMap();
-            CreateMap<Address, AddressDto>().ReverseMap();
+        //public AutoMapping()
+        //{
+            //CreateMap<Product, ProductDto>()
+                //.ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName)).ReverseMap();
+            //CreateMap<Customer, CustomerDto>().ReverseMap();
+            //CreateMap<Address, AddressDto>().ReverseMap();
 
-            CreateMap<Category, CategoryDto>().ReverseMap();
+            //CreateMap<Category, CategoryDto>().ReverseMap();
 
-            CreateMap<OrderItem, OrderItemDto>().ReverseMap();
-            CreateMap<OrderItem, OrderViewItemDto>()
-                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
-                .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(src => src.Product.UnitPrice));
+            //CreateMap<OrderItem, OrderItemDto>().ReverseMap();
+            //CreateMap<OrderItem, OrderViewItemDto>()
+                //.ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
+                //.ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(src => src.Product.UnitPrice));
 
-            CreateMap<Order, OrderViewDto>().ReverseMap();
+            //CreateMap<Order, OrderViewDto>().ReverseMap();
 
-            CreateMap<ReportDto, CreateReportOrderCommand>()
-                .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.UserId)).ReverseMap();
+           // CreateMap<ReportDto, CreateReportOrderCommand>()
+                //.ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.UserId)).ReverseMap();
 
-            CreateMap<CreateReportOrderCommand, Report>();
+            //CreateMap<CreateReportOrderCommand, Report>();
 
             /*CreateMap<Order, CreateOrderCommand>().ReverseMap();
 
@@ -43,6 +41,6 @@ namespace Delivery.Api.Extensions
                 .ForMember(dest => dest.PaymentExpiryYear, opt => opt.MapFrom(src => src.ExpiryYear));*/
                 
 
-        }
+       // }
     }
 }

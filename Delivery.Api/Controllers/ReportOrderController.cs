@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Delivery.Api.CommandHandler;
-using Delivery.Api.Domain.Command;
 using Delivery.Api.Models.Dto;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Order.Domain.CommandHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

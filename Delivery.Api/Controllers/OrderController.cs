@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
-using Delivery.Api.CommandHandler;
-using Delivery.Api.Domain.Command;
 using Delivery.Api.Domain.Query;
 using Delivery.Api.Models.Dto;
 using Delivery.Api.QueryHandler;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Order.Domain.CommandHandlers;
+using Delivery.Order.Domain.Contracts.RestContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +24,7 @@ namespace Delivery.Api.Controllers
 
         private readonly ILogger<OrderController> _logger;
         private readonly ICommandHandler<CreateOrderCommand, bool> _createOrderCommand;
-        private readonly IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]> _queryOrderByCustomerIdQuery;
+        private readonly IQueryHandler<OrderByCustomerIdQuery, OrderViewDto[]> _queryOrderByCustomerIdQuery;
 
         public OrderController(
             ILogger<OrderController> logger,
@@ -39,9 +39,9 @@ namespace Delivery.Api.Controllers
 
         // POST api/values
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OrderCreationContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddOrder(OrderDto orderDto)
+        public async Task<IActionResult> AddOrder(OrderCreationContract orderCreationContract)
         {
             if (!ModelState.IsValid)
             {
@@ -52,29 +52,29 @@ namespace Delivery.Api.Controllers
             {
                 var orderItemCommands = new List<OrderItemCommand>();
 
-                foreach(var item in orderDto.OrderItems)
+                foreach(var item in orderCreationContract.OrderItems)
                 {
                     orderItemCommands.Add(new OrderItemCommand() { Count = item.Count, ProductId = item.ProductId });
                 }
 
                 var command = new CreateOrderCommand();
                 command.Description = string.Empty;
-                command.TotalAmount = Convert.ToDecimal(orderDto.TotalAmount);
+                command.TotalAmount = Convert.ToDecimal(orderCreationContract.TotalAmount);
                 command.CurrencyCode = "GBP";
                 command.PaymentType = "Card";
-                command.CardHolderName = orderDto.CardHolderName;
-                command.PaymentCard = orderDto.CardNumber;
+                command.CardHolderName = orderCreationContract.CardHolderName;
+                command.PaymentCard = orderCreationContract.CardNumber;
                 command.PaymentStatus = string.Empty;
-                command.PaymentExpiryMonth = orderDto.ExpiryMonth;
-                command.PaymentExpiryYear = orderDto.ExpiryYear;
-                command.PaymentCVC = orderDto.Cvc;
+                command.PaymentExpiryMonth = orderCreationContract.ExpiryMonth;
+                command.PaymentExpiryYear = orderCreationContract.ExpiryYear;
+                command.PaymentCVC = orderCreationContract.Cvc;
                 command.PaymentIssueNumber = "1";
                 command.OrderStatus = string.Empty;
-                command.CustomerId = orderDto.CustomerId;
+                command.CustomerId = orderCreationContract.CustomerId;
                 command.DateCreated = DateTime.UtcNow;
                 command.OrderItems = orderItemCommands;
-                command.ShippingAddressId = orderDto.ShippingAddressId;
-                command.SaveCard = orderDto.SaveCard;
+                command.ShippingAddressId = orderCreationContract.ShippingAddressId;
+                command.SaveCard = orderCreationContract.SaveCard;
 
                 await _createOrderCommand.Handle(command);
 

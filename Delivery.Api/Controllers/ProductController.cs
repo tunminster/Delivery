@@ -5,16 +5,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Delivery.Api.CommandHandler;
-using Delivery.Api.Data;
-using Delivery.Api.Domain.Command;
-using Delivery.Api.Domain.Contract;
 using Delivery.Api.Domain.Query;
-using Delivery.Api.Entities;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Models.Dto;
 using Delivery.Api.QueryHandler;
+using Delivery.Database.Context;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Product.Domain.CommandHandlers;
+using Delivery.Product.Domain.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -122,7 +121,7 @@ namespace Delivery.Api.Controllers
 
             try
             {
-                var product = _mapper.Map<Product>(productDto);
+                var product = _mapper.Map<Database.Entities.Product>(productDto);
                 await _appDbContext.Products.AddAsync(product);
                 await _appDbContext.SaveChangesAsync();
 
@@ -164,133 +163,7 @@ namespace Delivery.Api.Controllers
 
             return NotFound("Error occurred in creating product");
         }
-
-        //[HttpPost("Upload")]
-        // public async Task<IActionResult> UploadImage(ICollection<IFormFile> files)
-        // {
-        //     var productdto = new ProductDto();
-        //     if (files.Count > 0)
-        //     {
-        //         return await UploadImages(files);
-        //     }
-        //
-        //     return InternalServerErrorResult("error");
-        // }
-
         
-
-        //Todo
-        // private async Task<IActionResult> UploadImage(IFormFile file, int productId)
-        // {
-        //     bool isUploaded = false;
-        //     
-        //     try
-        //     {
-        //
-        //         if (file != null)
-        //             return BadRequest("No files received from the upload");
-        //
-        //         if (storageConfig.AccountKey == string.Empty || storageConfig.AccountName == string.Empty)
-        //             return BadRequest("sorry, can't retrieve your azure storage details from appsettings.js, make sure that you add azure storage details there");
-        //
-        //         if (storageConfig.ImageContainer == string.Empty)
-        //             return BadRequest("Please provide a name for your image container in the azure blob storage");
-        //
-        //         
-        //             if (StorageHelper.IsImage(file))
-        //             {
-        //                 if (file.Length > 0)
-        //                 {
-        //                     using (Stream stream = file.OpenReadStream())
-        //                     {
-        //                         //isUploaded = await StorageHelper.UploadFileToStorage(stream, formFile.FileName, storageConfig);
-        //                         isUploaded = await StorageHelper.UploadFileToStorage(stream, file.FileName, storageConfig);
-        //                     }
-        //                 }
-        //             }
-        //             else
-        //             {
-        //                 return new UnsupportedMediaTypeResult();
-        //             }
-        //         
-        //
-        //         if (isUploaded)
-        //         {
-        //             if (storageConfig.ThumbnailContainer != string.Empty)
-        //                 return new AcceptedAtActionResult("GetThumbNails", "Images", null, null);
-        //             else
-        //                 return new AcceptedResult();
-        //
-        //         }
-        //         else
-        //         {
-        //             return BadRequest("Look like the image couldnt upload to the storage");
-        //         }
-        //     }
-        //     catch(Exception ex)
-        //     {
-        //         var errorMessage = "Error occurred in uploading image";
-        //         _logger.LogError(ex, errorMessage);
-        //         return InternalServerErrorResult(errorMessage);
-        //     }
-        //     
-        // }
-        //
-        // private async Task<IActionResult> UploadImages(ICollection<IFormFile> files)
-        // {
-        //     bool isUploaded = false;
-        //
-        //     try
-        //     {
-        //
-        //         if (files.Count == 0)
-        //             return BadRequest("No files received from the upload");
-        //
-        //         if (storageConfig.AccountKey == string.Empty || storageConfig.AccountName == string.Empty)
-        //             return BadRequest("sorry, can't retrieve your azure storage details from appsettings.js, make sure that you add azure storage details there");
-        //
-        //         if (storageConfig.ImageContainer == string.Empty)
-        //             return BadRequest("Please provide a name for your image container in the azure blob storage");
-        //
-        //         foreach (var formFile in files)
-        //         {
-        //             if (StorageHelper.IsImage(formFile))
-        //             {
-        //                 if (formFile.Length > 0)
-        //                 {
-        //                     using (Stream stream = formFile.OpenReadStream())
-        //                     {
-        //                         isUploaded = await StorageHelper.UploadFileToStorage(stream, formFile.FileName, storageConfig);
-        //                     }
-        //                 }
-        //             }
-        //             else
-        //             {
-        //                 return new UnsupportedMediaTypeResult();
-        //             }
-        //         }
-        //
-        //         if (isUploaded)
-        //         {
-        //             if (storageConfig.ThumbnailContainer != string.Empty)
-        //                 return new AcceptedAtActionResult("GetThumbNails", "Images", null, null);
-        //             else
-        //                 return new AcceptedResult();
-        //
-        //         }
-        //         else
-        //         {
-        //             return BadRequest("Look like the image couldnt upload to the storage");
-        //         }
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         var errorMessage = "Error occurred in uploading image";
-        //         _logger.LogError(ex, errorMessage);
-        //         return InternalServerErrorResult(errorMessage);
-        //     }
-        // }
-
         // GET /api/images/thumbnails
         
         [HttpGet("thumbnails")]

@@ -46,11 +46,6 @@
 
 
   <ItemGroup>
-    <Folder Include="CommandHandler\" />
-    <Folder Include="QueryHandler\" />
-    <Folder Include="Domain\" />
-    <Folder Include="Domain\Command\" />
-    <Folder Include="Domain\Query\" />
     <Folder Include="Utils\" />
     <Folder Include="Utils\Configs\" />
   </ItemGroup>
@@ -61,5 +56,7 @@
     <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\Delivery.Order.Domain\Delivery.Order.Domain.csproj" />
+    <ProjectReference Include="..\Delivery.Product.Domain\Delivery.Product.Domain.csproj" />
   </ItemGroup>
 </Project>
