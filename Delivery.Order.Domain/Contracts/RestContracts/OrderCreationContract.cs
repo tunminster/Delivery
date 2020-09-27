@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -10,22 +9,22 @@ namespace Delivery.Order.Domain.Contracts.RestContracts
     public class OrderCreationContract : IOrderCreationContract
     {
         [DataMember]
-        public string? CardHolderName { get; set; }
+        public string CardHolderName { get; set; }
         
         [DataMember]
-        public string? CardNumber { get; set; }
+        public string CardNumber { get; set; }
         
         [DataMember]
-        public string? Cvc { get; set; }
+        public string Cvc { get; set; }
         
         [DataMember]
-        public string? ExpiryMonth { get; set; }
+        public string ExpiryMonth { get; set; }
         
         [DataMember]
-        public string? ExpiryYear { get; set; }
+        public string ExpiryYear { get; set; }
         
         [DataMember]
-        public string? TotalAmount { get; set; }
+        public string TotalAmount { get; set; }
         
         [DataMember]
         public int CustomerId { get; set; }
@@ -39,12 +38,6 @@ namespace Delivery.Order.Domain.Contracts.RestContracts
         [DataMember]
         public bool SaveCard { get; set; }
 
-        public override string ToString()
-        {
-            return $"{GetType().Name}:" +
-                   $"{nameof(CardHolderName)} :{CardHolderName.Format()}, " +
-                   $"{nameof(CardNumber)} :{CardNumber.Format()}, " +
-                   $"{nameof(SaveCard)} : {SaveCard.Format()}";
-        }
+        
     }
 }

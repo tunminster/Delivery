@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-namespace Delivery.Api.Extensions
+namespace Delivery.Domain.Extensions
 {
-    public static  class HttpResults
+    public static class HttpResults
     {
-        public static ObjectResult InternalServerErrorResult([ActionResultObjectValue] string errorMessage)
+
+        public static ObjectResult InternalServerErrorResult(string errorMessage)
         {
             return new ObjectResult(errorMessage)
             {
@@ -14,7 +15,7 @@ namespace Delivery.Api.Extensions
             };
         }
         
-        public static ObjectResult NotImplementedResult([ActionResultObjectValue] string errorMessage = null)
+        public static ObjectResult NotImplementedResult(string errorMessage = null)
         {
             return new ObjectResult(errorMessage)
             {

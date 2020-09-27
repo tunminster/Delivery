@@ -2,11 +2,16 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj" />
       <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.0-rc.1.20451.17" />
     </ItemGroup>
 
 </Project>

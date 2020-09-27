@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>bbcf86af-813c-42d3-bccc-0beb77a05ee7</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,6 +51,7 @@
     <Folder Include="Utils\Configs\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Delivery.Category.Domain\Delivery.Category.Domain.csproj" />
     <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
