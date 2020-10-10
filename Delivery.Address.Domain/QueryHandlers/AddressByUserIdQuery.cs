@@ -4,12 +4,12 @@ using Delivery.Domain.QueryHandlers;
 
 namespace Delivery.Address.Domain.QueryHandlers
 {
-    public class AddressByIdQuery : IQuery<AddressContract>
+    public class AddressByUserIdQuery : IQuery<List<AddressContract>>
     {
-        public AddressByIdQuery(int addressId)
+        public AddressByUserIdQuery(int userId)
         {
-            AddressId = addressId;
+            UserId = userId;
         }
-        public int AddressId { get; }
+        public int UserId { get; }
     }
 }

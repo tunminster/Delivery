@@ -4,15 +4,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Delivery.Address.Domain.CommandHandlers;
+using Delivery.Address.Domain.Contracts;
+using Delivery.Address.Domain.QueryHandlers;
 using Delivery.Api.Models.Dto;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static Delivery.Api.Extensions.HttpResults;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -25,17 +29,18 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class AddressController : ControllerBase
     {
-        private readonly ILogger<AddressController> _logger;
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IMapper _mapper;
+        private readonly ICommandHandler<AddressCreationCommand, AddressCreationStatusContract> addressCreationCommandHandler;
+        private readonly IQueryHandler<AddressByIdQuery, AddressContract> addressByIdQueryHandler;
+        private readonly IQueryHandler<AddressByUserIdQuery, List<AddressContract>> addressByUserIdQueryHandler;
 
-        public AddressController(ILogger<AddressController> logger,
-            ApplicationDbContext appDbContext,
-            IMapper mapper)
+        public AddressController(
+            ICommandHandler<AddressCreationCommand, AddressCreationStatusContract> addressCreationCommandHandler,
+            IQueryHandler<AddressByIdQuery, AddressContract> addressByIdQueryHandler,
+            IQueryHandler<AddressByUserIdQuery, List<AddressContract>> addressByUserIdQueryHandler)
         {
-            _logger = logger;
-            _appDbContext = appDbContext;
-            _mapper = mapper;
+            this.addressCreationCommandHandler = addressCreationCommandHandler;
+            this.addressByIdQueryHandler = addressByIdQueryHandler;
+            this.addressByUserIdQueryHandler = addressByUserIdQueryHandler;
         }
 
         [HttpGet("GetAddressByUserId/{customerId}")]
@@ -43,18 +48,10 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAddressByUserId(int customerId,CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var result = await _appDbContext.Addresses.Where(x => x.CustomerId == customerId).ToListAsync(cancellationToken);
-                var addressDtoList = _mapper.Map<List<AddressDto>>(result);
-                return Ok(addressDtoList);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Fetching Address list";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var addressByUserIdQuery = new AddressByUserIdQuery(customerId);
+            var addressContactList = await addressByUserIdQueryHandler.Handle(addressByUserIdQuery);
+            
+            return Ok(addressContactList);
         }
 
         [HttpGet("GetAddressById/{id}")]
@@ -62,24 +59,15 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAddressById(int id)
         {
-            try
-            {
-                var result = await _appDbContext.Addresses.FirstOrDefaultAsync(x => x.Id == id);
-                var addressDto = _mapper.Map<AddressDto>(result);
-                return Ok(addressDto);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Fetching address by id";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var addressByIdQuery = new AddressByIdQuery(id);
+            var addressContract = await addressByIdQueryHandler.Handle(addressByIdQuery);
+            return Ok(addressContract);
         }
 
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(AddressDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AddressCreationStatusContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddAddress(AddressDto addressDto)
+        public async Task<IActionResult> AddAddress(AddressContract addressContract)
         {
 
             if (!ModelState.IsValid)
@@ -87,24 +75,10 @@ namespace Delivery.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var address = _mapper.Map<Address>(addressDto);
-                await _appDbContext.Addresses.AddAsync(address);
-                await _appDbContext.SaveChangesAsync();
+            var addressCreationCommand = new AddressCreationCommand(addressContract);
+            var addressCreationStatusContract = await addressCreationCommandHandler.Handle(addressCreationCommand);
 
-                addressDto.Id = address.Id;
-
-                return CreatedAtAction(nameof(GetAddressById), new { id = address.Id }, addressDto);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Error occurred in creating address";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            return Ok(addressCreationStatusContract);
         }
-
-
     }
 }

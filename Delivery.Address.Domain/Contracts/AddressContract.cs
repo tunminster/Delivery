@@ -31,7 +31,8 @@ namespace Delivery.Address.Domain.Contracts
         public override string ToString()
         {
             return $"{GetType().Name}" +
-                   $"{nameof(Id)}: {Id.Format()}";
+                   $"{nameof(Id)}: {Id.Format()}," +
+                   $"{nameof(CustomerId)} : {CustomerId.Format()}";
 
         }
     }

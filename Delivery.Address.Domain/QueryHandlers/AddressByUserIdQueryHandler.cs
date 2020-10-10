@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Delivery.Address.Domain.Contracts;
@@ -8,12 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Address.Domain.QueryHandlers
 {
-    public class AddressByIdQueryHandler : IQueryHandler<AddressByIdQuery, AddressContract>
+    public class AddressByUserIdQueryHandler : IQueryHandler<AddressByUserIdQuery, List<AddressContract>>
     {
         private readonly ApplicationDbContext appDbContext;
         private readonly IMapper mapper;
         
-        public AddressByIdQueryHandler(
+        public AddressByUserIdQueryHandler(
             ApplicationDbContext appDbContext,
             IMapper mapper)
         {
@@ -21,11 +22,12 @@ namespace Delivery.Address.Domain.QueryHandlers
             this.mapper = mapper;
         }
         
-        public async Task<AddressContract> Handle(AddressByIdQuery query)
+        public async Task<List<AddressContract>> Handle(AddressByUserIdQuery query)
         {
-            var result = await appDbContext.Addresses.FirstOrDefaultAsync(x => x.Id == query.AddressId);
-            var addressContract = mapper.Map<AddressContract>(result);
-            return addressContract;
+            var addressList = await appDbContext.Addresses.Where(x => x.CustomerId == query.UserId).ToListAsync();
+            var addressContracts = mapper.Map<List<AddressContract>>(addressList);
+
+            return addressContracts;
         }
     }
 }
