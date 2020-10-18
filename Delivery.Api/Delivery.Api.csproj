@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Delivery.Category.Domain\Delivery.Category.Domain.csproj" />
+    <ProjectReference Include="..\Delivery.Customer.Domain\Delivery.Customer.Domain.csproj" />
     <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>

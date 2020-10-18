@@ -1,27 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
-using Delivery.Api.Domain.Query;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Models.Dto;
-using Delivery.Api.QueryHandler;
-using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.CommandHandlers;
 using Delivery.Product.Domain.Contracts;
+using Delivery.Product.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using static Delivery.Api.Extensions.HttpResults;
 
 namespace Delivery.Api.Controllers
 {
@@ -30,26 +22,30 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class ProductController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IMapper _mapper;
         private readonly AzureStorageConfig storageConfig = null;
-        private readonly IQueryHandler<ProductGetAllQuery, ProductDto[]> _queryProductGetAllQuery;
-        private readonly ICommandHandler<CreateProductCommand, bool> _createProductCommandHandler;
+        private readonly IQueryHandler<ProductGetAllQuery, List<ProductContract>> queryProductGetAllQuery;
+        private readonly ICommandHandler<CreateProductCommand, bool> createProductCommandHandler;
+        private readonly IQueryHandler<ProductByIdQuery, ProductContract> queryProductByIdQuery;
+        private readonly IQueryHandler<ProductByCategoryIdQuery, List<ProductContract>> queryProductByCategoryIdQuery;
+        private readonly ICommandHandler<ProductUpdateCommand, bool> productUpdateCommandHandler;
+        private readonly ICommandHandler<ProductDeleteCommand, bool> productDeleteCommandHandler;
 
-        public ProductController(ILogger<UserController> logger,
-        ApplicationDbContext appDbContext,
-        IMapper mapper,
+        public ProductController(
         IOptions<AzureStorageConfig> config,
-        IQueryHandler<ProductGetAllQuery, ProductDto[]> queryProductGetAllQuery,
-        ICommandHandler<CreateProductCommand, bool> createProductCommandHandler)
+        IQueryHandler<ProductGetAllQuery, List<ProductContract>> queryProductGetAllQuery,
+        ICommandHandler<CreateProductCommand, bool> createProductCommandHandler,
+        IQueryHandler<ProductByIdQuery, ProductContract> queryProductByIdQuery,
+        IQueryHandler<ProductByCategoryIdQuery, List<ProductContract>> queryProductByCategoryIdQuery,
+        ICommandHandler<ProductUpdateCommand, bool> productUpdateCommandHandler,
+        ICommandHandler<ProductDeleteCommand, bool> productDeleteCommandHandler)
         {
-            _logger = logger;
-            _appDbContext = appDbContext;
-            _mapper = mapper;
             storageConfig = config.Value;
-            _queryProductGetAllQuery = queryProductGetAllQuery;
-            _createProductCommandHandler = createProductCommandHandler;
+            this.queryProductGetAllQuery = queryProductGetAllQuery;
+            this.createProductCommandHandler = createProductCommandHandler;
+            this.queryProductByIdQuery = queryProductByIdQuery;
+            this.queryProductByCategoryIdQuery = queryProductByCategoryIdQuery;
+            this.productUpdateCommandHandler = productUpdateCommandHandler;
+            this.productDeleteCommandHandler = productDeleteCommandHandler;
         }
 
         [HttpGet("getAllProducts")]
@@ -57,61 +53,35 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var result = await _queryProductGetAllQuery.Handle(new ProductGetAllQuery()); 
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Fetching Product list";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var productContractList = await queryProductGetAllQuery.Handle(new ProductGetAllQuery()); 
+            return Ok(productContractList);
         }
 
         [HttpGet("GetProductById/{id}")]
-        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetProductById(int id)
         {
-            try
-            {
-                var result = await _appDbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
-                var productDto = _mapper.Map<ProductDto>(result);
-                return Ok(productDto);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Fetching product by id";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var productByIdQuery = new ProductByIdQuery(id);
+            var productContract = await queryProductByIdQuery.Handle(productByIdQuery);
+            
+            return Ok(productContract);
         }
 
         [HttpGet("GetProductByCategoryId/{id}")]
-        [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ProductContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetProductByCategoryId(int id)
         {
-            try
-            {
-                var result = await _appDbContext.Products.Where(x => x.CategoryId == id).ToListAsync();
-                var productDtoList = _mapper.Map<List<ProductDto>>(result);
-                return Ok(productDtoList);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Fetching product by categoryid.";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var productByCategoryIdQuery = new ProductByCategoryIdQuery(id);
+            var productContractList = await queryProductByCategoryIdQuery.Handle(productByCategoryIdQuery);
+            return Ok(productContractList);
         }
 
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddProduct(ProductDto productDto, IFormFile file)
+        public async Task<IActionResult> AddProduct(ProductContract productContract, IFormFile file)
         {
 
             if (!ModelState.IsValid)
@@ -119,28 +89,14 @@ namespace Delivery.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var product = _mapper.Map<Database.Entities.Product>(productDto);
-                await _appDbContext.Products.AddAsync(product);
-                await _appDbContext.SaveChangesAsync();
-
-                productDto.Id = product.Id;
-
-                return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, productDto);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Error occurred in creating product";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var createProductCommand = new CreateProductCommand(productContract, file);
+            var isCreatedProduct = await createProductCommandHandler.Handle(createProductCommand);
+            return Ok(isCreatedProduct);
         }
 
         /// <summary>
         /// Create product with image upload
         /// </summary>
-        /// <param name="jsonString"></param>
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost("CreateProduct")]
@@ -156,7 +112,7 @@ namespace Delivery.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (await _createProductCommandHandler.Handle(new CreateProductCommand(productContract, file)))
+            if (await createProductCommandHandler.Handle(new CreateProductCommand(productContract, file)))
             {
                 return Ok();
             }
@@ -169,73 +125,50 @@ namespace Delivery.Api.Controllers
         [HttpGet("thumbnails")]
         public async Task<IActionResult> GetThumbNails()
         {
-            try
-            {
-                if (storageConfig.AccountKey == string.Empty || storageConfig.AccountName == string.Empty)
-                    return BadRequest("Sorry, can't retrieve your Azure storage details from appsettings.js, make sure that you add Azure storage details there.");
+            if (storageConfig.AccountKey == string.Empty || storageConfig.AccountName == string.Empty)
+                return BadRequest("Sorry, can't retrieve your Azure storage details from appsettings.js, make sure that you add Azure storage details there.");
 
-                if (storageConfig.ImageContainer == string.Empty)
-                    return BadRequest("Please provide a name for your image container in Azure blob storage.");
+            if (storageConfig.ImageContainer == string.Empty)
+                return BadRequest("Please provide a name for your image container in Azure blob storage.");
 
-                List<string> thumbnailUrls = await StorageHelper.GetThumbNailUrls(storageConfig);
-                return new ObjectResult(thumbnailUrls);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            List<string> thumbnailUrls = await StorageHelper.GetThumbNailUrls(storageConfig);
+            return new ObjectResult(thumbnailUrls);
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> PutProduct(int id, ProductDto productDto)
+        public async Task<IActionResult> PutProduct(int id, ProductContract productContract, IFormFile file)
         {
-            if(id != productDto.Id)
+            if(id != productContract.Id)
             {
                 return BadRequest();
             }
-
-            var result = await _appDbContext.Products.FindAsync(id);
-            if(result == null)
-            {
-                return NotFound();
-            }
-
-            result.ProductName = productDto.ProductName;
-            result.Description = productDto.Description;
-            result.ProductImage = productDto.ProductImage;
-            result.UnitPrice = decimal.Parse(productDto.UnitPrice);
-            result.CategoryId = productDto.CategoryId;
-            result.ProductImageUrl = productDto.ProductImageUrl;
-            
-            _appDbContext.Entry(result).State = EntityState.Modified;
-            try
-            {
-                await _appDbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Error occurred in updating product";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
-
-            return NoContent();
-        }
-
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
-        {
-            var product = await _appDbContext.Products.FindAsync(id);
+            var productByIdQuery = new ProductByIdQuery(productContract.Id);
+            var product = await queryProductByIdQuery.Handle(productByIdQuery);
             if(product == null)
             {
                 return NotFound();
             }
 
-            _appDbContext.Products.Remove(product);
-            await _appDbContext.SaveChangesAsync();
+            product.ProductName = productContract.ProductName;
+            product.Description = productContract.Description;
+            product.ProductImage = productContract.ProductImage;
+            product.UnitPrice = productContract.UnitPrice;
+            product.CategoryId = productContract.CategoryId;
+            product.ProductImageUrl = productContract.ProductImageUrl;
+            
+            var productUpdateCommand = new ProductUpdateCommand(product, file);
+            var isProductUpdated = await productUpdateCommandHandler.Handle(productUpdateCommand);
+            
+            return Ok(isProductUpdated);
+        }
 
-            return NoContent();
-
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var productDeleteCommand = new ProductDeleteCommand(id);
+            var isProductDeleted = await productDeleteCommandHandler.Handle(productDeleteCommand);
+            
+            return Ok(isProductDeleted);
         }
 
     }
