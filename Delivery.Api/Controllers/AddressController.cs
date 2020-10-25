@@ -44,7 +44,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetAddressByUserId/{customerId}")]
-        [ProducesResponseType(typeof(List<AddressDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AddressContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAddressByUserId(int customerId,CancellationToken cancellationToken = default)
         {
@@ -55,7 +55,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetAddressById/{id}")]
-        [ProducesResponseType(typeof(AddressDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AddressContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAddressById(int id)
         {

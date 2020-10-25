@@ -5,10 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="CommandHandlers" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Delivery.Address.Domain\Delivery.Address.Domain.csproj" />
     </ItemGroup>
 

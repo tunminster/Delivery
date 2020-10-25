@@ -58,7 +58,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetCategoryById/{id}")]
-        [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CategoryContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult>GetCategoryById(int id)
         {

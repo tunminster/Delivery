@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using Delivery.Azure.Library.Core.Extensions;
 
 namespace Delivery.Order.Domain.Contracts.RestContracts
 {
@@ -10,5 +11,13 @@ namespace Delivery.Order.Domain.Contracts.RestContracts
         
         [DataMember]
         public int Count { get; set; }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name}" +
+                   $"{nameof(ProductId)}: {ProductId.Format()}," +
+                   $"{nameof(Count)} : {Count.Format()}";
+
+        }
     }
 }

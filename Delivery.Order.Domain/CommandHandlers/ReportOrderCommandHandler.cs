@@ -21,7 +21,7 @@ namespace Delivery.Order.Domain.CommandHandlers
 
         public async Task<bool> Handle(CreateReportOrderCommand command)
         {
-            var report = _mapper.Map<Report>(command);
+            var report = _mapper.Map<Report>(command.ReportCreationContract);
             await _appDbContext.AddAsync(report);
             return await _appDbContext.SaveChangesAsync() > 0;
         }

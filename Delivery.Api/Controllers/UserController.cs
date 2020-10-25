@@ -8,11 +8,14 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Delivery.Api.Helpers;
-using static Delivery.Api.Extensions.HttpResults;
 using Microsoft.AspNetCore.Authorization;
 using Delivery.Api.Models.Dto;
+using Delivery.Customer.Domain.CommandHandlers;
+using Delivery.Customer.Domain.Contracts.RestContracts;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
+using Delivery.Domain.CommandHandlers;
+using Delivery.User.Domain.Contracts;
 
 namespace Delivery.Api.Controllers
 {
@@ -28,18 +31,21 @@ namespace Delivery.Api.Controllers
         private readonly IEmailSender _emailSender;
         private readonly JwtIssuerOptions _jwtOptions;
         private readonly ApplicationDbContext _appDbContext;
+        private readonly ICommandHandler<CreateCustomerCommand, bool> customerCreationCommandHandler;
 
         public UserController(ILogger<UserController> logger,
              UserManager<ApplicationUser> userManager,
              SignInManager<ApplicationUser> signInManager,
              IEmailSender emailSender,
-             ApplicationDbContext appDbContext)
+             ApplicationDbContext appDbContext,
+             ICommandHandler<CreateCustomerCommand, bool> customerCreationCommandHandler)
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _appDbContext = appDbContext;
+            this.customerCreationCommandHandler = customerCreationCommandHandler;
         }
 
         // POST: api/User
@@ -56,8 +62,13 @@ namespace Delivery.Api.Controllers
 
             if (result.Succeeded)
             {
-                await _appDbContext.Customers.AddAsync(new Customer { IdentityId = user.Id, Username = user.Email });
-                await _appDbContext.SaveChangesAsync();
+                var customerCreationContract = new CustomerCreationContract();
+                customerCreationContract.IdentityId = user.Id;
+                customerCreationContract.Username = user.Email;
+                
+                var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
+                await customerCreationCommandHandler.Handle(createCustomerCommand);
+                
                 return new OkObjectResult("Account created");
             }
             return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
@@ -66,22 +77,13 @@ namespace Delivery.Api.Controllers
 
         [HttpGet("GetUser")]
         [Authorize]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public IActionResult GetUser()
         {
-            try
-            {
-                string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-                var result = new UserDto { UserName = userName };
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                var errorMessage = "Error occurred in getting User details";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var result = new UserContract { UserName = userName };
+            return Ok(result);
         }
 
         

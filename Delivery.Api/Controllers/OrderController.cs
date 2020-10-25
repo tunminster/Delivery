@@ -76,7 +76,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetByUserId/{userId}")]
-        [ProducesResponseType(typeof(List<OrderViewDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<OrderContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetProductByCategoryId(int userId)
         {

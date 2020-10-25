@@ -1,24 +1,23 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using AutoMapper;
 using Delivery.Api.Auth;
-using Delivery.Api.CommandHandler;
-using Delivery.Api.Domain.Command;
-using Delivery.Api.Domain.Query;
-using Delivery.Api.Extensions;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
-using Delivery.Api.Models.Dto;
-using Delivery.Api.QueryHandler;
 using Delivery.Api.Utils.Configs;
+using Delivery.Category.Domain.Contracts;
 using Delivery.Category.Domain.QueryHandlers;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Extensions;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.CommandHandlers;
+using Delivery.Order.Domain.Contracts;
+using Delivery.Order.Domain.QueryHandlers;
 using Delivery.Product.Domain.CommandHandlers;
+using Delivery.Product.Domain.Contracts;
 using Delivery.Product.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -162,9 +161,9 @@ namespace Delivery.Api
             services.AddScoped<ICommandHandler<CreateReportOrderCommand, bool>, ReportOrderCommandHandler>();
             services.AddScoped<ICommandHandler<CreateProductCommand, bool>, CreateProductCommandHandler>();
 
-            services.AddScoped<IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]>, OrdersByCustomerIdQueryHandler>();
-            services.AddScoped<IQueryHandler<CategoryByIdQuery, CategoryDto>, CategoryByIdQueryHandler>();
-            services.AddScoped<IQueryHandler<ProductGetAllQuery, ProductDto[]>, ProductGetAllQueryHandler>();
+            services.AddScoped<IQueryHandler<OrderByCustomerIdQuery, List<OrderContract>>, OrderByCustomerIdQueryHandler>();
+            services.AddScoped<IQueryHandler<CategoryByIdQuery, CategoryContract>, CategoryByIdQueryHandler>();
+            services.AddScoped<IQueryHandler<ProductGetAllQuery, List<ProductContract>>, ProductGetAllQueryHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

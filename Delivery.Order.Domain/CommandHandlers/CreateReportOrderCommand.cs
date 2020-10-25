@@ -1,19 +1,15 @@
 using System.Runtime.Serialization;
+using Delivery.Order.Domain.Contracts.RestContracts;
 
 namespace Delivery.Order.Domain.CommandHandlers
 {
-    [DataContract]
     public class CreateReportOrderCommand
     {
-        [DataMember]
-        public string Subject { get; set; }
-        [DataMember]
-        public string ContactNumber { get; set; }
-        [DataMember]
-        public string ReportCategory { get; set; }
-        [DataMember]
-        public int CustomerId { get; set; }
-        [DataMember]
-        public string Message { get; set; }
+        public CreateReportOrderCommand(ReportCreationContract reportCreationContract)
+        {
+            ReportCreationContract = reportCreationContract;
+        }
+        
+        public ReportCreationContract ReportCreationContract { get; }
     }
 }

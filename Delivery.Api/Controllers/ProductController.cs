@@ -49,7 +49,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("getAllProducts")]
-        [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ProductContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
         {

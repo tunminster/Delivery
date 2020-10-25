@@ -21,11 +21,11 @@ namespace Delivery.Product.Domain.QueryHandlers
             _mapper = mapper;
         }
         
-        public Task<List<ProductContract>> Handle(ProductGetAllQuery query)
+        public async  Task<List<ProductContract>> Handle(ProductGetAllQuery query)
         {
-            var result =  _appDbContext.Products.Include(x => x.Category).ToArrayAsync();
+            var result =  await _appDbContext.Products.Include(x => x.Category).ToArrayAsync();
 
-            return _mapper.Map<Task<List<ProductContract>>>(result);
+            return _mapper.Map<List<ProductContract>>(result);
         }
     }
 }
