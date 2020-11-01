@@ -16,7 +16,7 @@ namespace Delivery.Address.Domain.CommandHandlers
         public async Task<AddressCreationStatusContract> Handle(AddressCreationCommand command)
         {
 
-            var address = new Database.Entities.Address()
+            var address = new Database.Entities.Address
             {
                 CustomerId = command.AddressContract.CustomerId,
                 AddressLine = command.AddressContract.AddressLine,
