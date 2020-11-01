@@ -17,8 +17,8 @@ namespace Delivery.Customer.Domain.CommandHandlers
         {
             await applicationDbContext.Customers.AddAsync(new Database.Entities.Customer { IdentityId = command.CustomerCreationContract.IdentityId, Username = command.CustomerCreationContract.Username });
             await applicationDbContext.SaveChangesAsync();
-            
-            throw new System.NotImplementedException();
+
+            return true;
         }
     }
 }
