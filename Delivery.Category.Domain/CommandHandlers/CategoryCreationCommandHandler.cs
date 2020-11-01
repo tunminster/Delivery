@@ -24,7 +24,7 @@ namespace Delivery.Category.Domain.CommandHandlers
                 Order = command.CategoryContract.Order
             };
 
-            applicationDbContext.Categories.Add(category);
+            await applicationDbContext.Categories.AddAsync(category);
             await applicationDbContext.SaveChangesAsync();
 
             var categoryCreationStatusContract = new CategoryCreationStatusContract {Published = true};
