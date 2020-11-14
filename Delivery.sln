@@ -49,7 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Users", "Users", "{FA76D400
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.User.Domain", "Delivery.User.Domain\Delivery.User.Domain.csproj", "{E4E6B614-1F81-4647-A777-9A5D64D4923F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Library.Sharding", "Delivery.Azure.Library.Core\Delivery.Azure.Library.Sharding\Delivery.Azure.Library.Sharding.csproj", "{7C219827-DFED-4A19-A7C2-4910FD2E0E5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Libaray.Database", "Delivery.Azure.Libaray.Database\Delivery.Azure.Libaray.Database.csproj", "{5658C597-EA32-4D15-9CDB-126053E16DD5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,10 +97,10 @@ Global
 		{E4E6B614-1F81-4647-A777-9A5D64D4923F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4E6B614-1F81-4647-A777-9A5D64D4923F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4E6B614-1F81-4647-A777-9A5D64D4923F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C219827-DFED-4A19-A7C2-4910FD2E0E5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C219827-DFED-4A19-A7C2-4910FD2E0E5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C219827-DFED-4A19-A7C2-4910FD2E0E5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C219827-DFED-4A19-A7C2-4910FD2E0E5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5658C597-EA32-4D15-9CDB-126053E16DD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5658C597-EA32-4D15-9CDB-126053E16DD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5658C597-EA32-4D15-9CDB-126053E16DD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5658C597-EA32-4D15-9CDB-126053E16DD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,6 +128,6 @@ Global
 		{1B9901D6-8E12-4E8A-A010-54D836232408} = {151E5288-0127-4318-9637-A2A85D0FA5FC}
 		{FA76D400-400D-4480-858E-C7D6FFD735B9} = {138DD804-2DE2-4127-A54C-2D138E40BF22}
 		{E4E6B614-1F81-4647-A777-9A5D64D4923F} = {FA76D400-400D-4480-858E-C7D6FFD735B9}
-		{7C219827-DFED-4A19-A7C2-4910FD2E0E5E} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
+		{5658C597-EA32-4D15-9CDB-126053E16DD5} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
 	EndGlobalSection
 EndGlobal

@@ -91,7 +91,7 @@ namespace Delivery.Product.Domain.CommandHandlers
             catch(Exception ex)
             {
                 var errorMessage = "Error occurred in uploading image";
-                throw new Exception(errorMessage);
+                throw new Exception(errorMessage + ex.Message);
             }
         }
     }

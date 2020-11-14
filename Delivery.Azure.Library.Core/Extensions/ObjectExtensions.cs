@@ -7,7 +7,9 @@ namespace Delivery.Azure.Library.Core.Extensions
 {
     public static class ObjectExtensions
     {
+#pragma warning disable 8632
         public static string Format(this object? target)
+#pragma warning restore 8632
         {
             if (target == null)
             {

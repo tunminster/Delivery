@@ -29,7 +29,6 @@ namespace Delivery.Api.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly IEmailSender _emailSender;
-        private readonly JwtIssuerOptions _jwtOptions;
         private readonly ApplicationDbContext _appDbContext;
         private readonly ICommandHandler<CreateCustomerCommand, bool> customerCreationCommandHandler;
 

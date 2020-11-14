@@ -19,9 +19,6 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class CustomerController : ControllerBase
     {
-        private readonly ILogger<CustomerController> _logger;
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IMapper _mapper;
         private readonly IQueryHandler<CustomerByUsernameQuery, CustomerContract> queryCustomerByUsernameQuery;
 
         public CustomerController(IQueryHandler<CustomerByUsernameQuery, CustomerContract> queryCustomerByUsernameQuery)

@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
-using System.Web.Http.Results;
 using Delivery.Api.Models.Dto;
 using Delivery.Category.Domain.CommandHandlers;
 using Delivery.Category.Domain.Contracts;
 using Delivery.Category.Domain.QueryHandlers;
+using Delivery.Database.Context;
+using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.QueryHandlers;
 
 namespace Delivery.Api.Controllers
@@ -24,17 +25,31 @@ namespace Delivery.Api.Controllers
         private readonly IQueryHandler<CategoryByIdQuery, CategoryContract> _queryCategoryByIdQuery;
         private readonly IQueryHandler<CategoryGetAllQuery, List<CategoryContract>> _categoryGetAllQuery;
         private readonly IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> _categoryByParentIdQuery;
+        
+        private readonly ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract>
+            categoryCreationCommandHandler;
+
+        private readonly ICommandHandler<CategoryUpdateCommand, CategoryUpdateStatusContract>
+            categoryUpdateCommandHandler;
+        private readonly ICommandHandler<CategoryDeleteCommand, CategoryDeleteStatusContract>
+            categoryDeleteCommandHandler;
 
         public CategoryController(
             ILogger<UserController> logger, 
             IQueryHandler<CategoryByIdQuery, CategoryContract> queryCategoryByIdQuery,
             IQueryHandler<CategoryGetAllQuery, List<CategoryContract>> categoryGetAllQuery,
-            IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> categoryByParentIdQuery)
+            IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> categoryByParentIdQuery,
+            ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract> categoryCreationCommandHandler,
+            ICommandHandler<CategoryUpdateCommand, CategoryUpdateStatusContract> categoryUpdateCommandHandler,
+            ICommandHandler<CategoryDeleteCommand, CategoryDeleteStatusContract> categoryDeleteCommandHandler)
         {
             _logger = logger;
             _queryCategoryByIdQuery = queryCategoryByIdQuery;
             _categoryGetAllQuery = categoryGetAllQuery;
             _categoryByParentIdQuery = categoryByParentIdQuery;
+            this.categoryCreationCommandHandler = categoryCreationCommandHandler;
+            this.categoryUpdateCommandHandler = categoryUpdateCommandHandler;
+            this.categoryDeleteCommandHandler = categoryDeleteCommandHandler;
         }
 
         [HttpGet("getAllCategories")]
@@ -82,7 +97,6 @@ namespace Delivery.Api.Controllers
             }
             
             var categoryCreationCommand = new CategoryCreationCommand(categoryContract);
-            var categoryCreationCommandHandler = new CategoryCreationCommandHandler();
             var categoryCreationStatusContract = await categoryCreationCommandHandler.Handle(categoryCreationCommand);
             
             return Ok(categoryCreationStatusContract);
@@ -99,7 +113,6 @@ namespace Delivery.Api.Controllers
             }
             
             var categoryUpdateCommand = new CategoryUpdateCommand(categoryContract);
-            var categoryUpdateCommandHandler = new CategoryUpdateCommandHandler();
             var categoryUpdateStatusContract = await categoryUpdateCommandHandler.Handle(categoryUpdateCommand);
 
             return Ok(categoryUpdateStatusContract);
@@ -115,7 +128,6 @@ namespace Delivery.Api.Controllers
             }
             
             var categoryDeleteCommand = new CategoryDeleteCommand(id);
-            var categoryDeleteCommandHandler = new CategoryDeleteCommandHandler();
             var categoryDeleteStatusContract = await  categoryDeleteCommandHandler.Handle(categoryDeleteCommand);
 
             return Ok(categoryDeleteStatusContract);
