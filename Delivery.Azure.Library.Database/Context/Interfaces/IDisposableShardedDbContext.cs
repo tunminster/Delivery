@@ -1,6 +1,6 @@
 using System;
 
-namespace Delivery.Azure.Libaray.Database.Context.Interfaces
+namespace Delivery.Azure.Library.Database.Context.Interfaces
 {
     /// <summary>
     ///  Enforces disposal for sharded database contexts

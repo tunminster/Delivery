@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Delivery.Azure.Library.Configuration.Interfaces
+namespace Delivery.Azure.Library.Configuration.Configurations.Interfaces
 {
     /// <summary>
     ///     Manages access to secrets stored in key vault

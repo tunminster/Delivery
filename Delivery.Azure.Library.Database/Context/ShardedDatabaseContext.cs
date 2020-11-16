@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Delivery.Azure.Libaray.Database.Context.Interfaces;
+using Delivery.Azure.Library.Database.Context.Interfaces;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Sharding.Interfaces;
 using Delivery.Azure.Library.Telemetry.Constants;
+using Delivery.Azure.Library.Telemetry.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Delivery.Azure.Libaray.Database.Context
+namespace Delivery.Azure.Library.Database.Context
 {
     /// <summary>
     ///  A database context which is aware of which shard to connect to
@@ -172,11 +173,11 @@ namespace Delivery.Azure.Libaray.Database.Context
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
         {
-	        var featureProvider = ServiceProvider.GetRequiredService<IFeatureProvider>();
-	        if (!await featureProvider.IsEnabledAsync(DatabaseFeatures.DatabaseSave.ToString()))
-	        {
-		        throw new FeatureDisabledException("Database save feature flag is disabled");
-	        }
+	        // var featureProvider = ServiceProvider.GetRequiredService<IFeatureProvider>();
+	        // if (!await featureProvider.IsEnabledAsync(DatabaseFeatures.DatabaseSave.ToString()))
+	        // {
+		       //  throw new FeatureDisabledException("Database save feature flag is disabled");
+	        // }
 
 	        var saveChangeResult = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
 

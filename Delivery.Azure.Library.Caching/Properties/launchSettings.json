@@ -3,8 +3,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:20702",
-      "sslPort": 44356
+      "applicationUrl": "http://localhost:8269",
+      "sslPort": 44396
     }
   },
   "profiles": {
@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Delivery.Azure.Libaray.Database": {
+    "Delivery.Azure.Library.Caching": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

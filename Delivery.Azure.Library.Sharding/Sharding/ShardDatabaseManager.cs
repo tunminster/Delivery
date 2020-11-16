@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Configuration.Exceptions;
-using Delivery.Azure.Library.Configuration.Interfaces;
 using Delivery.Azure.Library.Sharding.Exceptions;
 using Delivery.Azure.Library.Sharding.Interfaces;
 using Microsoft.Extensions.Configuration;
