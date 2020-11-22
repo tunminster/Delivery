@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Delivery.Azure.Library.Telemetry.Enums
+namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.Enums
 {
     [DataContract]
     public enum MeasuredDependencyType

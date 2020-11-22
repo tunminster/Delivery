@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Caching.Cache.Extensions;
 using Delivery.Azure.Library.Database.Context.Interfaces;
+using Delivery.Azure.Library.Database.Entities.V1;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Sharding.Interfaces;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Azure.Library.Telemetry.Constants;
-using Delivery.Azure.Library.Telemetry.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
@@ -96,19 +98,19 @@ namespace Delivery.Azure.Library.Database.Context
                 var isDeletedColumn = nameof(SoftDeleteEntity.IsDeleted);
                 var externalIdColumn = nameof(SoftDeleteEntity.ExternalId);
 
-                modelBuilder.Entity(entity.ClrType).HasIndex(isDeletedColumn).HasName("IX_IsDeleted");
-                modelBuilder.Entity(entity.ClrType).HasIndex(externalIdColumn).HasName("IX_ExternalId");
+                modelBuilder.Entity(entity.ClrType).HasIndex(isDeletedColumn).HasDatabaseName("IX_IsDeleted");
+                modelBuilder.Entity(entity.ClrType).HasIndex(externalIdColumn).HasDatabaseName("IX_ExternalId");
             }
 
-            var softDeleteAuditedEntities = entities.Where(entityType => entityType.ClrType.IsSubclassOf(typeof(SoftDeleteAuditedEntity))).ToList();
-            foreach (var entityType in softDeleteAuditedEntities)
-            {
-                var insertedByColumn = nameof(SoftDeleteAuditedEntity.InsertedBy);
-                var insertionDateTimeColumn = nameof(SoftDeleteAuditedEntity.InsertionDateTime);
-
-                modelBuilder.Entity(entityType.ClrType).HasIndex(insertedByColumn).HasName("IX_InsertedBy");
-                modelBuilder.Entity(entityType.ClrType).HasIndex(insertionDateTimeColumn).HasName("IX_InsertionDateTime");
-            }
+            // var softDeleteAuditedEntities = entities.Where(entityType => entityType.ClrType.IsSubclassOf(typeof(SoftDeleteAuditedEntity))).ToList();
+            // foreach (var entityType in softDeleteAuditedEntities)
+            // {
+            //     var insertedByColumn = nameof(SoftDeleteAuditedEntity.InsertedBy);
+            //     var insertionDateTimeColumn = nameof(SoftDeleteAuditedEntity.InsertionDateTime);
+            //
+            //     modelBuilder.Entity(entityType.ClrType).HasIndex(insertedByColumn).HasName("IX_InsertedBy");
+            //     modelBuilder.Entity(entityType.ClrType).HasIndex(insertionDateTimeColumn).HasName("IX_InsertionDateTime");
+            // }
 
             ConfigureExternalIdUniqueConstraint(modelBuilder);
         }
@@ -124,7 +126,7 @@ namespace Delivery.Azure.Library.Database.Context
             foreach (var entity in entities)
             {
                 var externalIdColumn = nameof(Entity.ExternalId);
-                modelBuilder.Entity(entity.ClrType).HasIndex(externalIdColumn).IsUnique().HasName("IX_UniqueExternalId");
+                modelBuilder.Entity(entity.ClrType).HasIndex(externalIdColumn).IsUnique().HasDatabaseName("IX_UniqueExternalId");
             }
         }
 

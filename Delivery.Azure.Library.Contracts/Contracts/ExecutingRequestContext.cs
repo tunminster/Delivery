@@ -1,6 +1,7 @@
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Contracts.Interfaces.V1.Contracts;
 using Delivery.Azure.Library.Core.Extensions;
+using Delivery.Azure.Library.Core.Extensions.Objects;
 
 namespace Delivery.Azure.Library.Contracts.Contracts
 {

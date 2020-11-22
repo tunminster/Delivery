@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Delivery.Address.Domain.Contracts;
 using Delivery.Azure.Library.Core.Extensions;
+using Delivery.Azure.Library.Core.Extensions.Objects;
 
 namespace Delivery.Customer.Domain.Contracts
 {

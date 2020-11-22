@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Delivery.Azure.Library.Telemetry.Enums;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Enums;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 
-namespace Delivery.Azure.Library.Telemetry.Interfaces
+namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces
 {
     /// <summary>
     ///     Composes the <see cref="TelemetryClient" /> to provide simplified usage and access to application insights

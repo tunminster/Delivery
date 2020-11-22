@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions;
+using Delivery.Azure.Library.Core.Extensions.Objects;
 
 namespace Delivery.Address.Domain.Contracts
 {

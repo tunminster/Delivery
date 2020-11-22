@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Delivery.Azure.Library.Core.Extensions
+namespace Delivery.Azure.Library.Core.Extensions.Objects
 {
     public static class ObjectExtensions
     {
@@ -26,7 +26,7 @@ namespace Delivery.Azure.Library.Core.Extensions
                 return target.ToString() ?? string.Empty;
             }
 
-            if (target is DateTime time)
+            if (target is System.DateTime time)
             {
                 return $"{time.Year}-{time.Month:00}-{time.Day:00}T:{time.Hour:00}:{time.Minute:00}:{time.Second}";
             }

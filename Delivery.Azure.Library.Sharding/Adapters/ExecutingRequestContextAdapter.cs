@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Delivery.Azure.Library.Contracts.Contracts;
 using Delivery.Azure.Library.Core.Extensions;
+using Delivery.Azure.Library.Core.Extensions.Objects;
 using Delivery.Azure.Library.Sharding.Interfaces;
 using Delivery.Azure.Library.Sharding.Sharding;
 using Delivery.Azure.Library.Telemetry.Constants;

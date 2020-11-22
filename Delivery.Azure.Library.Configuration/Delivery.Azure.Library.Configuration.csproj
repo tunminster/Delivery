@@ -8,4 +8,8 @@
       <PackageReference Include="Microsoft.FeatureManagement" Version="2.2.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Delivery.Azure.Library.Core\Delivery.Azure.Library.Core.csproj" />
+    </ItemGroup>
+
 </Project>
