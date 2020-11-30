@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Api.Models;
+using Delivery.Azure.Library.Microservices.Hosting.Extensions;
+using Delivery.Azure.Library.Microservices.Hosting.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -30,18 +32,17 @@ namespace Delivery.Api
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                })
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+           var hostBuilder = Host.CreateDefaultBuilder(args)
+                .ConfigurePlatformEnvironment(args)
+                .ConfigurePlatformLogging()
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
                 .ConfigureAppConfiguration((HostingAbstractionsHostExtensions, config) =>
                 {
                     config.AddJsonFile("secrets/appsettings.secret.json", true, true);
                 })
-                
+
                 .ConfigureLogging(logging =>
                 {
                     // clear default logging providers
@@ -52,9 +53,12 @@ namespace Delivery.Api
                     //logging.AddDebug();
                     //logging.AddEventLog();
                     //logging.AddEventSourceLogger();
-                    
+
                     //logging.AddTraceSource(sourceSwitchName);
                 })
                 .UseSerilog();
+
+           return hostBuilder;
+        }
     }
 }
