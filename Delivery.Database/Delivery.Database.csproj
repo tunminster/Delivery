@@ -15,4 +15,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Delivery.Azure.Library.Database\Delivery.Azure.Library.Database.csproj" />
+    <ProjectReference Include="..\Delivery.Azure.Library.Sharding\Delivery.Azure.Library.Sharding.csproj" />
+  </ItemGroup>
 </Project>

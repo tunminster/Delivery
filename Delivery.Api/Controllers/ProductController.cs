@@ -51,7 +51,7 @@ namespace Delivery.Api.Controllers
         [HttpGet("getAllProducts")]
         [ProducesResponseType(typeof(List<ProductContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAsync(CancellationToken cancellationToken = default)
         {
             var productContractList = await queryProductGetAllQuery.Handle(new ProductGetAllQuery()); 
             return Ok(productContractList);
@@ -60,7 +60,7 @@ namespace Delivery.Api.Controllers
         [HttpGet("GetProductById/{id}")]
         [ProducesResponseType(typeof(ProductContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetProductById(int id)
+        public async Task<IActionResult> GetProductByIdAsync(int id)
         {
             var productByIdQuery = new ProductByIdQuery(id);
             var productContract = await queryProductByIdQuery.Handle(productByIdQuery);
@@ -71,7 +71,7 @@ namespace Delivery.Api.Controllers
         [HttpGet("GetProductByCategoryId/{id}")]
         [ProducesResponseType(typeof(List<ProductContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetProductByCategoryId(int id)
+        public async Task<IActionResult> GetProductByCategoryIdAsync(int id)
         {
             var productByCategoryIdQuery = new ProductByCategoryIdQuery(id);
             var productContractList = await queryProductByCategoryIdQuery.Handle(productByCategoryIdQuery);
@@ -81,7 +81,7 @@ namespace Delivery.Api.Controllers
         [HttpPost("Create")]
         [ProducesResponseType(typeof(ProductContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddProduct(ProductContract productContract, IFormFile file)
+        public async Task<IActionResult> AddProductAsync(ProductContract productContract, IFormFile file)
         {
 
             if (!ModelState.IsValid)
@@ -103,7 +103,7 @@ namespace Delivery.Api.Controllers
         //[Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(ProductContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddProductWithString([FromForm]  ProductContract productContract, IFormFile file)
+        public async Task<IActionResult> AddProductWithStringAsync([FromForm]  ProductContract productContract, IFormFile file)
         {
 
             //var productDto = JsonConvert.DeserializeObject<ProductDto>(jsonString);
@@ -123,7 +123,7 @@ namespace Delivery.Api.Controllers
         // GET /api/images/thumbnails
         
         [HttpGet("thumbnails")]
-        public async Task<IActionResult> GetThumbNails()
+        public async Task<IActionResult> GetThumbNailsAsync()
         {
             if (storageConfig.AccountKey == string.Empty || storageConfig.AccountName == string.Empty)
                 return BadRequest("Sorry, can't retrieve your Azure storage details from appsettings.js, make sure that you add Azure storage details there.");
@@ -136,7 +136,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> PutProduct(int id, ProductContract productContract, IFormFile file)
+        public async Task<IActionResult> PutProductAsync(int id, ProductContract productContract, IFormFile file)
         {
             if(id != productContract.Id)
             {
@@ -163,7 +163,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProductAsync(int id)
         {
             var productDeleteCommand = new ProductDeleteCommand(id);
             var isProductDeleted = await productDeleteCommandHandler.Handle(productDeleteCommand);

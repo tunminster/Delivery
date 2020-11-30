@@ -24,6 +24,6 @@ namespace Delivery.Azure.Library.Configuration.Configurations.Interfaces
         ///     Exception thrown configured application is not authorized to retrieve a
         ///     secret
         /// </exception>
-        Task<string> GetSecretAsync(string secretName);
+        Task<string> GetSecretAsync(string secretName, string? shardKey = null);
     }
 }

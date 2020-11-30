@@ -1,3 +1,16 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Core.Extensions.Json;
+using Delivery.Azure.Library.Database.Context;
+using Delivery.Azure.Library.Database.Factories;
+using Delivery.Azure.Library.Exceptions.Extensions;
+using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Sharding.Interfaces;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Enums;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependencies;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependencies.Models;
 using Delivery.Database.Entities;
 using Delivery.Database.Models;
 using IdentityServer4.EntityFramework.Options;
@@ -13,6 +26,12 @@ namespace Delivery.Database.Context
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
+        }
+        
+        public ApplicationDbContext(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter, DbContextOptions dbContextOptions,IOptions<OperationalStoreOptions> operationalStoreOptions) : base(dbContextOptions, operationalStoreOptions)
+        {
+            ExecutingRequestContextAdapter = executingRequestContextAdapter;
+            ServiceProvider = serviceProvider;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -74,5 +93,48 @@ namespace Delivery.Database.Context
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<PaymentResponse> PaymentResponses { get; set; }
         public DbSet<Report> Reports { get; set; }
+        
+        // <summary>
+        ///     Creates a new instance using <see cref="ISecretProvider" /> as connection string store
+        /// </summary>
+        /// <param name="serviceProvider">The kernel</param>
+        /// <param name="executingRequestContextAdapter">Contains details about the current request</param>
+        public static async Task<ApplicationDbContext> CreateAsync(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            return await DatabaseContextFactory.CreateAsync(serviceProvider, executingRequestContextAdapter, (requestContextAdapter, options) => new ApplicationDbContext(serviceProvider, requestContextAdapter, options, null));
+        }
+        
+        public override int SaveChanges()
+        {
+            return SaveChanges(acceptAllChangesOnSuccess: true);
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            throw new NotSupportedException("Use async methods only").WithTelemetry(ExecutingRequestContextAdapter.GetTelemetryProperties());
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            return await SaveChangesAsync(acceptAllChangesOnSuccess: true, cancellationToken);
+        }
+
+        public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var dependencyName = $"Database-{Shard.Key}";
+            var dependencyData = new DependencyData("Live");
+            var dependencyTarget = Shard.Key;
+
+            var result = await new DependencyMeasurement(ServiceProvider)
+                .ForDependency(dependencyName, MeasuredDependencyType.Sql, dependencyData.ConvertToJson(), dependencyTarget)
+                .WithContextualInformation(ExecutingRequestContextAdapter.GetTelemetryProperties())
+                .TrackAsync(async () => await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken));
+
+            return result;
+        }
+        
+        public IExecutingRequestContextAdapter ExecutingRequestContextAdapter { get; }
+        protected IServiceProvider ServiceProvider { get; }
+        public IShard Shard => ExecutingRequestContextAdapter.GetShard();
     }
 }

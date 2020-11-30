@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Delivery.Azure.Library.Authentication\Delivery.Azure.Library.Authentication.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.Configuration\Delivery.Azure.Library.Configuration.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.Resiliency\Delivery.Azure.Library.Resiliency.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.3" />
+    </ItemGroup>
+
+</Project>
