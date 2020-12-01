@@ -175,7 +175,7 @@ namespace Delivery.Api
                 app.UseDeveloperExceptionPage();
             }
             
-
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -187,27 +187,10 @@ namespace Delivery.Api
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-
-            app.UseExceptionHandler(
-             builder =>
-             {
-                 builder.Run(
-                            async context =>
-                         {
-                             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-
-                             var error = context.Features.Get<IExceptionHandlerFeature>();
-                             if (error != null)
-                             {
-                                 context.Response.AddApplicationError(error.Error.Message);
-                                 await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
-                             }
-                         });
-             });
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
+            
 
             app.UseAuthentication();
-            //app.UseIdentityServer();
             app.UseAuthorization();
 
             // use middelware response cache

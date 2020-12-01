@@ -20,13 +20,13 @@ namespace Delivery.Api
             var config = new ConfigurationBuilder()
                 .AddJsonFile("secrets/appsettings.secret.json", optional: true)
                 .Build();
-            AzureLogConfig azureLogConfig = new AzureLogConfig();
-            config.GetSection("AzureLogConfig").Bind(azureLogConfig);
-
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.AzureAnalytics(workspaceId: azureLogConfig.WorkspaceId,
-                                        authenticationId: azureLogConfig.PrimaryKey)
-                .CreateLogger();
+            // AzureLogConfig azureLogConfig = new AzureLogConfig();
+            // config.GetSection("AzureLogConfig").Bind(azureLogConfig);
+            //
+            // Log.Logger = new LoggerConfiguration()
+            //     .WriteTo.AzureAnalytics(workspaceId: azureLogConfig.WorkspaceId,
+            //                             authenticationId: azureLogConfig.PrimaryKey)
+            //     .CreateLogger();
 
 
             CreateHostBuilder(args).Build().Run();
@@ -41,22 +41,9 @@ namespace Delivery.Api
                 .ConfigureAppConfiguration((HostingAbstractionsHostExtensions, config) =>
                 {
                     config.AddJsonFile("secrets/appsettings.secret.json", true, true);
-                })
+                });
 
-                .ConfigureLogging(logging =>
-                {
-                    // clear default logging providers
-                    logging.ClearProviders();
-
-                    // add built-in providers manually, as needed 
-                    //logging.AddConsole();
-                    //logging.AddDebug();
-                    //logging.AddEventLog();
-                    //logging.AddEventSourceLogger();
-
-                    //logging.AddTraceSource(sourceSwitchName);
-                })
-                .UseSerilog();
+               
 
            return hostBuilder;
         }
