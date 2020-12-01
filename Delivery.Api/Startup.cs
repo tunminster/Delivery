@@ -7,6 +7,8 @@ using Delivery.Api.Auth;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Utils.Configs;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Azure.Library.Telemetry.Stdout;
 using Delivery.Category.Domain.Contracts;
 using Delivery.Category.Domain.QueryHandlers;
 using Delivery.Database.Context;
@@ -70,6 +72,14 @@ namespace Delivery.Api
                 options.Password.RequiredLength = 6;
                 options.Password.RequiredUniqueChars = 1;
             });
+            
+            
+#if DEBUG
+            // log the local debug information to the output window for easier testing
+            services.AddSingleton<IApplicationInsightsTelemetry, StdoutApplicationInsightsTelemetry>(provider => new StdoutApplicationInsightsTelemetry(provider, Configuration.GetValue<string>("Service_Name")));
+#else
+			services.AddSingleton<IApplicationInsightsTelemetry, Delivery.Azure.Library.Telemetry.ApplicationInsights.ApplicationInsightsTelemetry>(provider => new Delivery.Azure.Library.Telemetry.ApplicationInsights.ApplicationInsightsTelemetry(provider, Configuration.GetValue<string>("Service_Name"), new Delivery.Azure.Library.Telemetry.ApplicationInsights.Initializers.ApplicationTelemetryInitializers(provider, typeof(Startup).Assembly)));
+#endif
 
             services.AddSingleton<IJwtFactory, JwtFactory>();
 
