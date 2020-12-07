@@ -18,4 +18,9 @@
     <Folder Include="Services" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Delivery.Azure.Library.Authentication\Delivery.Azure.Library.Authentication.csproj" />
+    <ProjectReference Include="..\Delivery.Azure.Library.Sharding\Delivery.Azure.Library.Sharding.csproj" />
+  </ItemGroup>
+
 </Project>

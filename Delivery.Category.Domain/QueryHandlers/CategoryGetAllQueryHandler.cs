@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Category.Domain.Contracts;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
@@ -11,17 +13,21 @@ namespace Delivery.Category.Domain.QueryHandlers
 {
     public class CategoryGetAllQueryHandler : IQueryHandler<CategoryGetAllQuery, List<CategoryContract>>
     {
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IMapper _mapper;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public CategoryGetAllQueryHandler(ApplicationDbContext appDbContext, IMapper mapper)
+        public CategoryGetAllQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            _appDbContext = appDbContext;
-            _mapper = mapper;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
-        public Task<List<CategoryContract>> Handle(CategoryGetAllQuery query)
+        public async Task<List<CategoryContract>> Handle(CategoryGetAllQuery query)
         {
-            var categoryContractList =  _appDbContext.Categories.Select(x => new CategoryContract()
+            await using var databaseContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+            var test = await databaseContext.Products.FirstOrDefaultAsync();
+            
+            var categoryContractList =  await databaseContext.Categories.Select(x => new CategoryContract()
             {
                 Id = x.Id,
                 CategoryName = x.CategoryName,

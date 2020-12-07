@@ -12,7 +12,7 @@ namespace Delivery.Azure.Library.Authentication.OpenIdConnect.Extensions
         /// </summary>
         public static AuthenticatedUserContract GetAuthenticatedUser(this HttpRequest httpRequest, string defaultRole)
         {
-            var userEmail = httpRequest.GetUserEmail();
+            var userEmail = httpRequest.GetUserEmail() ?? "localuser@email.com";
             var shard = httpRequest.GetShard();
 
             var user = httpRequest.HttpContext.User;

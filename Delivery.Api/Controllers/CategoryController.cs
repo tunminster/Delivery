@@ -11,7 +11,9 @@ using Delivery.Category.Domain.CommandHandlers;
 using Delivery.Category.Domain.Contracts;
 using Delivery.Category.Domain.QueryHandlers;
 using Delivery.Database.Context;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
 
 namespace Delivery.Api.Controllers
@@ -21,9 +23,8 @@ namespace Delivery.Api.Controllers
     //[Authorize]
     public class CategoryController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
+        private readonly IServiceProvider serviceProvider;
         private readonly IQueryHandler<CategoryByIdQuery, CategoryContract> _queryCategoryByIdQuery;
-        private readonly IQueryHandler<CategoryGetAllQuery, List<CategoryContract>> _categoryGetAllQuery;
         private readonly IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> _categoryByParentIdQuery;
         
         private readonly ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract>
@@ -35,21 +36,21 @@ namespace Delivery.Api.Controllers
             categoryDeleteCommandHandler;
 
         public CategoryController(
-            ILogger<UserController> logger, 
-            IQueryHandler<CategoryByIdQuery, CategoryContract> queryCategoryByIdQuery,
-            IQueryHandler<CategoryGetAllQuery, List<CategoryContract>> categoryGetAllQuery,
-            IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> categoryByParentIdQuery,
-            ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract> categoryCreationCommandHandler,
-            ICommandHandler<CategoryUpdateCommand, CategoryUpdateStatusContract> categoryUpdateCommandHandler,
-            ICommandHandler<CategoryDeleteCommand, CategoryDeleteStatusContract> categoryDeleteCommandHandler)
+            IServiceProvider serviceProvider
+            // IQueryHandler<CategoryByIdQuery, CategoryContract> queryCategoryByIdQuery,
+            // IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> categoryByParentIdQuery,
+            // ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract> categoryCreationCommandHandler,
+            // ICommandHandler<CategoryUpdateCommand, CategoryUpdateStatusContract> categoryUpdateCommandHandler,
+            // ICommandHandler<CategoryDeleteCommand, CategoryDeleteStatusContract> categoryDeleteCommandHandler
+            
+            )
         {
-            _logger = logger;
-            _queryCategoryByIdQuery = queryCategoryByIdQuery;
-            _categoryGetAllQuery = categoryGetAllQuery;
-            _categoryByParentIdQuery = categoryByParentIdQuery;
-            this.categoryCreationCommandHandler = categoryCreationCommandHandler;
-            this.categoryUpdateCommandHandler = categoryUpdateCommandHandler;
-            this.categoryDeleteCommandHandler = categoryDeleteCommandHandler;
+            this.serviceProvider = serviceProvider;
+            // _queryCategoryByIdQuery = queryCategoryByIdQuery;
+            // _categoryByParentIdQuery = categoryByParentIdQuery;
+            // this.categoryCreationCommandHandler = categoryCreationCommandHandler;
+            // this.categoryUpdateCommandHandler = categoryUpdateCommandHandler;
+            // this.categoryDeleteCommandHandler = categoryDeleteCommandHandler;
         }
 
         [HttpGet("getAllCategories")]
@@ -57,8 +58,11 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
         {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var categoryGetAllQueryHandler =
+                new CategoryGetAllQueryHandler(serviceProvider, executingRequestContextAdapter);
             var categoryGetAllQuery = new CategoryGetAllQuery();
-            var result = await _categoryGetAllQuery.Handle(categoryGetAllQuery);
+            var result = await categoryGetAllQueryHandler.Handle(categoryGetAllQuery);
             return Ok(result);
         }
 

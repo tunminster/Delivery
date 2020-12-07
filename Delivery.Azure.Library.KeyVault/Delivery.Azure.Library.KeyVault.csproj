@@ -7,6 +7,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Delivery.Azure.Library.Authentication\Delivery.Azure.Library.Authentication.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.Caching\Delivery.Azure.Library.Caching.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Configuration\Delivery.Azure.Library.Configuration.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Resiliency\Delivery.Azure.Library.Resiliency.csproj" />
     </ItemGroup>

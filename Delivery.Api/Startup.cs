@@ -7,8 +7,12 @@ using Delivery.Api.Auth;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Utils.Configs;
+using Delivery.Azure.Library.Configuration.Environments;
+using Delivery.Azure.Library.Configuration.Environments.Interfaces;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Azure.Library.Telemetry.Stdout;
+using Delivery.Azure.Library.WebApi.Middleware;
 using Delivery.Category.Domain.Contracts;
 using Delivery.Category.Domain.QueryHandlers;
 using Delivery.Database.Context;
@@ -21,6 +25,11 @@ using Delivery.Order.Domain.QueryHandlers;
 using Delivery.Product.Domain.CommandHandlers;
 using Delivery.Product.Domain.Contracts;
 using Delivery.Product.Domain.QueryHandlers;
+using Delivery.Azure.Library.Configuration;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.KeyVault.Providers;
+using Delivery.Azure.Library.Resiliency.Stability;
+using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -167,6 +176,12 @@ namespace Delivery.Api
             services.AddHttpClient();
 
             //register handlers
+            services.AddSingleton<IEnvironmentProvider, EnvironmentProvider>();
+            services.AddSingleton<Delivery.Azure.Library.Configuration.Configurations.Interfaces.IConfigurationProvider, Delivery.Azure.Library.Configuration.Configurations.ConfigurationProvider>();
+            services.AddSingleton<ISecretProvider, KeyVaultCachedSecretProvider>();
+            services.AddSingleton<ICircuitManager, CircuitManager>();
+
+            
             services.AddScoped<ICommandHandler<CreateOrderCommand, bool>, OrderCommandHandler>();
             services.AddScoped<ICommandHandler<CreateReportOrderCommand, bool>, ReportOrderCommandHandler>();
             services.AddScoped<ICommandHandler<CreateProductCommand, bool>, CreateProductCommandHandler>();
@@ -197,7 +212,7 @@ namespace Delivery.Api
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-            app.UseMiddleware<ExceptionHandlerMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             
 
             app.UseAuthentication();
