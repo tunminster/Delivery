@@ -1,23 +1,27 @@
+using System;
 using System.Threading.Tasks;
 using Delivery.Address.Domain.Contracts;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
+using Microsoft.Graph;
 
 namespace Delivery.Address.Domain.CommandHandlers
 {
     public class AddressDeleteCommandHandler : ICommandHandler<AddressDeleteCommand, AddressDeleteStatusContract>
     {
-        private readonly ApplicationDbContext applicationDbContext;
-        
-        public AddressDeleteCommandHandler (ApplicationDbContext applicationDbContext)
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public AddressDeleteCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            this.applicationDbContext = applicationDbContext;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
         public async Task<AddressDeleteStatusContract> Handle(AddressDeleteCommand command)
         {
-            
-            var address = await applicationDbContext.Addresses.FindAsync(command.AddressId);
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var address = await databaseContext.Addresses.FindAsync(command.AddressId);
             var addressDeleteStatusContract = new AddressDeleteStatusContract();
             
             if (address == null)
@@ -25,8 +29,8 @@ namespace Delivery.Address.Domain.CommandHandlers
                 return addressDeleteStatusContract;
             }
             
-            applicationDbContext.Addresses.Remove(address);
-            await applicationDbContext.SaveChangesAsync();
+            databaseContext.Addresses.Remove(address);
+            await databaseContext.SaveChangesAsync();
             addressDeleteStatusContract.AddressDeleted = true;
 
             return addressDeleteStatusContract;

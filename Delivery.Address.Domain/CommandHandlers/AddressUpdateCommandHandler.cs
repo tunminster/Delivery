@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using Delivery.Address.Domain.Contracts;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Microsoft.EntityFrameworkCore;
@@ -8,16 +10,19 @@ namespace Delivery.Address.Domain.CommandHandlers
 {
     public class AddressUpdateCommandHandler : ICommandHandler<AddressUpdateCommand, AddressUpdateStatusContract>
     {
-        private readonly ApplicationDbContext applicationDbContext;
-        
-        public AddressUpdateCommandHandler (ApplicationDbContext applicationDbContext)
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public AddressUpdateCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            this.applicationDbContext = applicationDbContext;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
         public async Task<AddressUpdateStatusContract> Handle(AddressUpdateCommand command)
         {
-            var address = await applicationDbContext.Addresses.FindAsync(command.AddressContract.Id);
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            var address = await databaseContext.Addresses.FindAsync(command.AddressContract.Id);
 
             var addressUpdateStatusContract = new AddressUpdateStatusContract();
             if (address == null)
@@ -33,8 +38,8 @@ namespace Delivery.Address.Domain.CommandHandlers
             address.AddressLine = command.AddressContract.AddressLine;
             address.PostCode = command.AddressContract.PostCode;
             
-            applicationDbContext.Entry(address).State = EntityState.Modified;
-            await applicationDbContext.SaveChangesAsync();
+            databaseContext.Entry(address).State = EntityState.Modified;
+            await databaseContext.SaveChangesAsync();
             addressUpdateStatusContract.AddressUpdated = true;
 
             return addressUpdateStatusContract;

@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Category.Domain.Contracts;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
@@ -7,16 +9,19 @@ namespace Delivery.Category.Domain.CommandHandlers
 {
     public class CategoryDeleteCommandHandler : ICommandHandler<CategoryDeleteCommand, CategoryUpdateStatusContract>
     {
-        private readonly ApplicationDbContext applicationDbContext;
-        
-        public CategoryDeleteCommandHandler (ApplicationDbContext applicationDbContext)
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public CategoryDeleteCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            this.applicationDbContext = applicationDbContext;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
         public async Task<CategoryUpdateStatusContract> Handle(CategoryDeleteCommand command)
         {
-            var category = await applicationDbContext.Categories.FindAsync(command.CategoryId);
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            var category = await databaseContext.Categories.FindAsync(command.CategoryId);
             var categoryUpdateStatusContract = new CategoryUpdateStatusContract();
             
             if (category == null)
@@ -24,8 +29,8 @@ namespace Delivery.Category.Domain.CommandHandlers
                 return categoryUpdateStatusContract;
             }
             
-            applicationDbContext.Categories.Remove(category);
-            await applicationDbContext.SaveChangesAsync();
+            databaseContext.Categories.Remove(category);
+            await databaseContext.SaveChangesAsync();
             categoryUpdateStatusContract.Updated = true;
 
             return categoryUpdateStatusContract;

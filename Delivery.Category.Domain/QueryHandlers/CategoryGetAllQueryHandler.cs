@@ -23,9 +23,7 @@ namespace Delivery.Category.Domain.QueryHandlers
         }
         public async Task<List<CategoryContract>> Handle(CategoryGetAllQuery query)
         {
-            await using var databaseContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
-
-            var test = await databaseContext.Products.FirstOrDefaultAsync();
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
             var categoryContractList =  await databaseContext.Categories.Select(x => new CategoryContract()
             {

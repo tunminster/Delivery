@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Category.Domain.Contracts;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
@@ -9,22 +11,30 @@ namespace Delivery.Category.Domain.QueryHandlers
 {
     public class CategoryByIdQueryHandler: IQueryHandler<CategoryByIdQuery, CategoryContract>
     {
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IMapper _mapper;
-        
-        public CategoryByIdQueryHandler(
-            ApplicationDbContext appDbContext,
-            IMapper mapper)
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public CategoryByIdQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            _appDbContext = appDbContext;
-            _mapper = mapper;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public Task<CategoryContract> Handle(CategoryByIdQuery query)
+        public async Task<CategoryContract> Handle(CategoryByIdQuery query)
         {
-            var category =  _appDbContext.Categories.FirstOrDefaultAsync(x => x.Id == query.CategoryId);
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            return _mapper.Map<Task<CategoryContract>>(category);
+            var category = await databaseContext.Categories.FirstOrDefaultAsync(x => x.Id == query.CategoryId);
+
+            var categoryContract = new CategoryContract
+            {
+                Id = category.Id,
+                CategoryName = category.CategoryName,
+                Description = category.Description,
+                Order = category.Order,
+                ParentCategoryId = category.ParentCategoryId
+            };
+
+            return categoryContract;
         }
     }
 }

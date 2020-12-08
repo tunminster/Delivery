@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Category.Domain.Contracts;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
@@ -11,18 +13,19 @@ namespace Delivery.Category.Domain.QueryHandlers
 {
     public class CategoryByParentIdQueryHandler :IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>>
     {
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IMapper _mapper;
-
-        public CategoryByParentIdQueryHandler(ApplicationDbContext appDbContext, IMapper mapper)
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public CategoryByParentIdQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            _appDbContext = appDbContext;
-            _mapper = mapper;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public Task<List<CategoryContract>> Handle(CategoryByParentIdQuery query)
+        public async Task<List<CategoryContract>> Handle(CategoryByParentIdQuery query)
         {
-            var result = _appDbContext.Categories
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            var result = await databaseContext.Categories
                 .Where(x => x.ParentCategoryId == query.ParentId)
                 .Select(x => new CategoryContract()
                 {
