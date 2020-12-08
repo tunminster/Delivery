@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
@@ -23,34 +24,33 @@ namespace Delivery.Order.Domain.CommandHandlers
 {
     public class OrderCommandHandler : ICommandHandler<CreateOrderCommand, bool>
     {
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IMapper _mapper;
         private readonly IHttpClientFactory _clientFactory;
         private WorldPayConfig _worldPayConfig;
         private readonly IConfiguration _configuration;
-        private readonly ILogger<OrderCommandHandler> _logger;
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public OrderCommandHandler(ApplicationDbContext appDbContext,
-            IMapper mapper,
+        public OrderCommandHandler(
             IHttpClientFactory clientFactory,
             IConfiguration Configuration,
-            ILogger<OrderCommandHandler> logger
+            IServiceProvider serviceProvider,
+            IExecutingRequestContextAdapter executingRequestContextAdapter
         )
         {
-            _appDbContext = appDbContext;
-            _mapper = mapper;
             _clientFactory = clientFactory;
             _configuration = Configuration;
             _worldPayConfig = new WorldPayConfig();
             _configuration.GetSection("WorldPayConfigs").Bind(_worldPayConfig);
-            _logger = logger;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
         public async Task<bool> Handle(CreateOrderCommand command)
         {
 
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             // save order
-            var order = await SaveOrder(command);
+            var order = await SaveOrder(command, databaseContext);
             
             // request worldpay payment
             var paymentModel = new WorldPayPaymentContract();
@@ -87,33 +87,35 @@ namespace Delivery.Order.Domain.CommandHandlers
                 if(String.Equals(responseModel.PaymentStatus, OrderStatusEnum.Success.ToString(), StringComparison.InvariantCultureIgnoreCase))
                 {
                     // update order
-                    await UpdateOrderAsync(responseModel, order.Id, true);            
+                    await UpdateOrderAsync(responseModel, order.Id, true, databaseContext);            
                 }
                 else
                 {
-                    await UpdateOrderAsync(responseModel, order.Id, false);
+                    await UpdateOrderAsync(responseModel, order.Id, false, databaseContext);
                 }
 
                 // save payment response
-                await SavePaymentResponseAsync(responseModel);
+                await SavePaymentResponseAsync(responseModel, databaseContext);
 
                 // save payment card
-                if (command.SaveCard && !IsCardSaved(responseModel.PaymentResponse.MaskedCardNumber, command.CustomerId))
+                if (command.SaveCard && !IsCardSaved(responseModel.PaymentResponse.MaskedCardNumber, command.CustomerId, databaseContext))
                 {
-                    await AddPaymentCardAsync(responseModel, command);
+                    await AddPaymentCardAsync(responseModel, command, databaseContext);
                 }
 
                 return true;
 
             }
             
-            _logger.LogError($"WorldPay payment api return status code : {response.StatusCode} error for Order Id : {order.Id}");
+            //_logger.LogError($"WorldPay payment api return status code : {response.StatusCode} error for Order Id : {order.Id}");
             
             return false;
         }
         
-        private async Task<Database.Entities.Order> SaveOrder(CreateOrderCommand command)
+        private async Task<Database.Entities.Order> SaveOrder(CreateOrderCommand command, PlatformDbContext databaseContext)
         {
+            
+            
             var maskedCardNumberWithSpaces = GetMaskedCardNumber(command.PaymentCard);
 
             var order = new Database.Entities.Order();
@@ -138,13 +140,13 @@ namespace Delivery.Order.Domain.CommandHandlers
                 });
             }
 
-            await _appDbContext.AddAsync(order);
-            await _appDbContext.SaveChangesAsync();
+            await databaseContext.AddAsync(order);
+            await databaseContext.SaveChangesAsync();
 
             return order;
         }
 
-        private async Task AddPaymentCardAsync(WorldPayPaymentResponseContract responseModel, CreateOrderCommand command)
+        private async Task AddPaymentCardAsync(WorldPayPaymentResponseContract responseModel, CreateOrderCommand command, PlatformDbContext databaseContext)
         {
             var paymentCard = new PaymentCard();
             paymentCard.Token = responseModel.Token;
@@ -156,27 +158,27 @@ namespace Delivery.Order.Domain.CommandHandlers
             paymentCard.CustomerId = command.CustomerId;
             paymentCard.DateAdded = command.DateCreated;
 
-            await _appDbContext.AddAsync(paymentCard);
-            await _appDbContext.SaveChangesAsync();
+            await databaseContext.AddAsync(paymentCard);
+            await databaseContext.SaveChangesAsync();
         }
 
-        private bool IsCardSaved(string maskedCardNumber, int customerId)
+        private bool IsCardSaved(string maskedCardNumber, int customerId, PlatformDbContext databaseContext)
         {
-            return _appDbContext.PaymentCards.Any(x => x.MaskedCardNumber == maskedCardNumber && x.CustomerId == customerId);
+            return databaseContext.PaymentCards.Any(x => x.MaskedCardNumber == maskedCardNumber && x.CustomerId == customerId);
         }
 
-        private async Task UpdateOrderAsync(WorldPayPaymentResponseContract responseModel, int orderId, bool paymentSuccess)
+        private async Task UpdateOrderAsync(WorldPayPaymentResponseContract responseModel, int orderId, bool paymentSuccess, PlatformDbContext databaseContext)
         {
-            var updateOrder = _appDbContext.Orders.FirstOrDefault(x => x.Id == orderId);
+            var updateOrder = databaseContext.Orders.FirstOrDefault(x => x.Id == orderId);
             updateOrder.PaymentStatus = paymentSuccess ? PaymentStatusEnum.Success.ToString() : PaymentStatusEnum.Failed.ToString();
             updateOrder.PaymentOrderCodeRef = responseModel.OrderCode;
 
-             _appDbContext.Update(updateOrder);
+            databaseContext.Update(updateOrder);
 
-            await _appDbContext.SaveChangesAsync();
+            await databaseContext.SaveChangesAsync();
         }
 
-        private async Task SavePaymentResponseAsync(WorldPayPaymentResponseContract responseModel)
+        private async Task SavePaymentResponseAsync(WorldPayPaymentResponseContract responseModel, PlatformDbContext databaseContext)
         {
             var paymentResponse = new PaymentResponse();
             paymentResponse.OrderCode = responseModel.OrderCode;
@@ -190,8 +192,8 @@ namespace Delivery.Order.Domain.CommandHandlers
             paymentResponse.Environment = responseModel.Environment;
             paymentResponse.DateAdded = DateTime.UtcNow;
 
-            await _appDbContext.AddAsync(paymentResponse);
-            await _appDbContext.SaveChangesAsync();
+            await databaseContext.AddAsync(paymentResponse);
+            await databaseContext.SaveChangesAsync();
         }
 
         public static string GetMaskedCardNumber(string cardNumber)

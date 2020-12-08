@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Enums;
 using Delivery.Database.Models;
@@ -20,22 +21,24 @@ namespace Delivery.Product.Domain.CommandHandlers
 {
     public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, bool>
     {
-        private readonly ApplicationDbContext _appDbContext;
         private readonly Delivery.Domain.Configuration.AzureStorageConfig _storageConfig;
-        private readonly ILogger<CreateProductCommandHandler> _logger;
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
         
-        public CreateProductCommandHandler(ApplicationDbContext appDbContext,
+        public CreateProductCommandHandler(
             IOptions<Delivery.Domain.Configuration.AzureStorageConfig> config,
-            ILogger<CreateProductCommandHandler> logger)
+            IServiceProvider serviceProvider,
+            IExecutingRequestContextAdapter executingRequestContextAdapter
+            )
         {
-            _appDbContext = appDbContext;
             _storageConfig = config.Value;
-            _logger = logger;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
 
         public async Task<bool> Handle(CreateProductCommand command)
         {
-
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var product = new Database.Entities.Product
             {
                 ProductName = command.ProductContract.ProductName,
@@ -46,14 +49,14 @@ namespace Delivery.Product.Domain.CommandHandlers
                 CurrencySign = CurrencySign.BritishPound.Code
             };
             
-            await _appDbContext.Products.AddAsync(product);
-            await _appDbContext.SaveChangesAsync();
+            await databaseContext.Products.AddAsync(product);
+            await databaseContext.SaveChangesAsync();
 
             // upload image
-            return await UploadImages(new List<IFormFile>() {command.File}, product.Id, command.ProductContract);
+            return await UploadImages(new List<IFormFile>() {command.File}, product.Id, command.ProductContract, databaseContext);
         }
         
-        private async Task<bool> UploadImages(ICollection<IFormFile> files, int productId, ProductContract productContract)
+        private async Task<bool> UploadImages(ICollection<IFormFile> files, int productId, ProductContract productContract, PlatformDbContext databaseContext)
         {
             bool isUploaded = false;
 
@@ -75,10 +78,10 @@ namespace Delivery.Product.Domain.CommandHandlers
                             await using var stream = formFile.OpenReadStream();
                             isUploaded = await StorageHelper.UploadFileToStorage(stream, $"{productId}-{formFile.FileName.ToLower().Replace(" ", "-")}", _storageConfig);
 
-                            var product = _appDbContext.Products.FirstOrDefault(x => x.Id == productId);
+                            var product = databaseContext.Products.FirstOrDefault(x => x.Id == productId);
                             product!.ProductImage = $"{productId}-{formFile.FileName.ToLower().Replace(" ", "-")}";
                             product.ProductImageUrl = $"{"ulr"}{product.ProductImage}";
-                            await _appDbContext.SaveChangesAsync();
+                            await databaseContext.SaveChangesAsync();
                         }
                     }
                     else

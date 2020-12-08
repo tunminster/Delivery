@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 
@@ -6,23 +8,26 @@ namespace Delivery.Product.Domain.CommandHandlers
 {
     public class ProductDeleteCommandHandler : ICommandHandler<ProductDeleteCommand, bool>
     {
-        private readonly ApplicationDbContext appDbContext;
-
-        public ProductDeleteCommandHandler(ApplicationDbContext appDbContext)
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public ProductDeleteCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            this.appDbContext = appDbContext;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
         public async Task<bool> Handle(ProductDeleteCommand command)
         {
-            var product = await appDbContext.Products.FindAsync(command.ProductId);
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            var product = await databaseContext.Products.FindAsync(command.ProductId);
             if (product == null)
             {
                 return false;
             }
             
-            appDbContext.Products.Remove(product);
-            await appDbContext.SaveChangesAsync();
+            databaseContext.Products.Remove(product);
+            await databaseContext.SaveChangesAsync();
             return true;
         }
     }

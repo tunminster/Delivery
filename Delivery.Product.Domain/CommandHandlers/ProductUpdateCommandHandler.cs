@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Configuration;
@@ -8,18 +10,24 @@ namespace Delivery.Product.Domain.CommandHandlers
 {
     public class ProductUpdateCommandHandler : ICommandHandler<ProductUpdateCommand, bool>
     {
-        private readonly ApplicationDbContext appDbContext;
         private readonly Delivery.Domain.Configuration.AzureStorageConfig storageConfig;
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public ProductUpdateCommandHandler(ApplicationDbContext appDbContext, AzureStorageConfig storageConfig)
+        public ProductUpdateCommandHandler(AzureStorageConfig storageConfig,
+            IServiceProvider serviceProvider,
+            IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            this.appDbContext = appDbContext;
             this.storageConfig = storageConfig;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
         public async Task<bool> Handle(ProductUpdateCommand command)
         {
-            var product = await appDbContext.Products.FindAsync(command.ProductContract.Id);
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            var product = await databaseContext.Products.FindAsync(command.ProductContract.Id);
             if (product == null)
             {
                 return false;
@@ -31,8 +39,8 @@ namespace Delivery.Product.Domain.CommandHandlers
             product.ProductImage = command.ProductContract.ProductImage;
             product.ProductImageUrl = command.ProductContract.ProductImageUrl;
 
-            appDbContext.Entry(product).State = EntityState.Modified;
-            await appDbContext.SaveChangesAsync();
+            databaseContext.Entry(product).State = EntityState.Modified;
+            await databaseContext.SaveChangesAsync();
 
             return true;
         }

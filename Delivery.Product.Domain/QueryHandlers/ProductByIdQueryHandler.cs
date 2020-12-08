@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.Contracts;
@@ -9,19 +11,32 @@ namespace Delivery.Product.Domain.QueryHandlers
 {
     public class ProductByIdQueryHandler : IQueryHandler<ProductByIdQuery, ProductContract>
     {
-        private readonly ApplicationDbContext appDbContext;
-        private readonly IMapper mapper;
-
-        public ProductByIdQueryHandler(ApplicationDbContext appDbContext, IMapper mapper)
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public ProductByIdQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            this.appDbContext = appDbContext;
-            this.mapper = mapper;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
         public async Task<ProductContract> Handle(ProductByIdQuery query)
         {
-            var product = await appDbContext.Products.FirstOrDefaultAsync(x => x.Id == query.ProductId);
-            var productContract = mapper.Map<ProductContract>(product);
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            var product = await databaseContext.Products
+                .Include(x => x.Category)
+                .FirstOrDefaultAsync(x => x.Id == query.ProductId);
+            var productContract = new ProductContract
+            {
+                Id = product.Id,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category.CategoryName,
+                Description = product.Description,
+                ProductImage = product.ProductImage,
+                ProductImageUrl = product.ProductImageUrl,
+                ProductName = product.ProductName,
+                UnitPrice = product.UnitPrice
+            };
             return productContract;
         }
     }

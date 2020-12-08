@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.Contracts;
@@ -11,20 +13,34 @@ namespace Delivery.Product.Domain.QueryHandlers
 {
     public class ProductByCategoryIdQueryHandler : IQueryHandler<ProductByCategoryIdQuery, List<ProductContract>>
     {
-        private readonly ApplicationDbContext appDbContext;
-        private readonly IMapper mapper;
-
-        public ProductByCategoryIdQueryHandler(ApplicationDbContext appDbContext, IMapper mapper)
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public ProductByCategoryIdQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            this.appDbContext = appDbContext;
-            this.mapper = mapper;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
         public async Task<List<ProductContract>> Handle(ProductByCategoryIdQuery query)
         {
-            var productList = await appDbContext.Products.Where(x => x.CategoryId == query.CategoryId).ToListAsync();
-            var productContractList = mapper.Map<List<ProductContract>>(productList);
-            return productContractList;
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            var productList = await databaseContext.Products.Where(x => x.CategoryId == query.CategoryId)
+                .Include(x => x.Category)
+                .Select(x => new ProductContract
+                {
+                    Id = x.Id,
+                    CategoryId = x.CategoryId,
+                    CategoryName = x.Category.CategoryName,
+                    Description = x.Description,
+                    ProductName = x.ProductName,
+                    ProductImage = x.ProductImage,
+                    ProductImageUrl = x.ProductImageUrl,
+                    UnitPrice = x.UnitPrice
+                })
+                .ToListAsync();
+            
+            return productList;
         }
     }
 }
