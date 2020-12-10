@@ -66,7 +66,7 @@ namespace Delivery.Api
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DeliveryDevConnection")));
             
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -182,13 +182,13 @@ namespace Delivery.Api
             services.AddSingleton<ICircuitManager, CircuitManager>();
 
             
-            services.AddScoped<ICommandHandler<CreateOrderCommand, bool>, OrderCommandHandler>();
-            services.AddScoped<ICommandHandler<CreateReportOrderCommand, bool>, ReportOrderCommandHandler>();
-            services.AddScoped<ICommandHandler<CreateProductCommand, bool>, CreateProductCommandHandler>();
-
-            services.AddScoped<IQueryHandler<OrderByCustomerIdQuery, List<OrderContract>>, OrderByCustomerIdQueryHandler>();
-            services.AddScoped<IQueryHandler<CategoryByIdQuery, CategoryContract>, CategoryByIdQueryHandler>();
-            services.AddScoped<IQueryHandler<ProductGetAllQuery, List<ProductContract>>, ProductGetAllQueryHandler>();
+            // services.AddScoped<ICommandHandler<CreateOrderCommand, bool>, OrderCommandHandler>();
+            // services.AddScoped<ICommandHandler<CreateReportOrderCommand, bool>, ReportOrderCommandHandler>();
+            // services.AddScoped<ICommandHandler<CreateProductCommand, bool>, CreateProductCommandHandler>();
+            //
+            // services.AddScoped<IQueryHandler<OrderByCustomerIdQuery, List<OrderContract>>, OrderByCustomerIdQueryHandler>();
+            // services.AddScoped<IQueryHandler<CategoryByIdQuery, CategoryContract>, CategoryByIdQueryHandler>();
+            // services.AddScoped<IQueryHandler<ProductGetAllQuery, List<ProductContract>>, ProductGetAllQueryHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
