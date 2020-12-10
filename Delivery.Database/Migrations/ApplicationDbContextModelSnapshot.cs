@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Delivery.Api.Migrations
+namespace Delivery.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -17,9 +17,9 @@ namespace Delivery.Api.Migrations
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "3.1.3");
+                .HasAnnotation("ProductVersion", "5.0.1");
 
-            modelBuilder.Entity("Delivery.Api.Entities.Address", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Address", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -60,7 +60,7 @@ namespace Delivery.Api.Migrations
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Category", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -72,7 +72,8 @@ namespace Delivery.Api.Migrations
                         .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("VARCHAR(4000)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
@@ -85,7 +86,7 @@ namespace Delivery.Api.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Customer", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +107,7 @@ namespace Delivery.Api.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Order", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,7 +161,7 @@ namespace Delivery.Api.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.OrderItem", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -185,7 +186,7 @@ namespace Delivery.Api.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.PaymentCard", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.PaymentCard", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -229,7 +230,7 @@ namespace Delivery.Api.Migrations
                     b.ToTable("PaymentCards");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.PaymentResponse", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.PaymentResponse", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -280,7 +281,7 @@ namespace Delivery.Api.Migrations
                     b.ToTable("PaymentResponses");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Product", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -322,7 +323,7 @@ namespace Delivery.Api.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Report", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Report", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -353,7 +354,7 @@ namespace Delivery.Api.Migrations
                     b.ToTable("Reports");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Delivery.Database.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -437,6 +438,10 @@ namespace Delivery.Api.Migrations
                         .HasMaxLength(50000)
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("DeviceCode")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -445,6 +450,10 @@ namespace Delivery.Api.Migrations
                     b.Property<DateTime?>("Expiration")
                         .IsRequired()
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("SessionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("SubjectId")
                         .HasMaxLength(200)
@@ -471,6 +480,9 @@ namespace Delivery.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<DateTime?>("ConsumedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -479,8 +491,16 @@ namespace Delivery.Api.Migrations
                         .HasMaxLength(50000)
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<DateTime?>("Expiration")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("SessionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("SubjectId")
                         .HasMaxLength(200)
@@ -496,6 +516,8 @@ namespace Delivery.Api.Migrations
                     b.HasIndex("Expiration");
 
                     b.HasIndex("SubjectId", "ClientId", "Type");
+
+                    b.HasIndex("SubjectId", "SessionId", "Type");
 
                     b.ToTable("PersistedGrants");
                 });
@@ -635,9 +657,9 @@ namespace Delivery.Api.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Address", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Address", b =>
                 {
-                    b.HasOne("Delivery.Api.Entities.Customer", "Customer")
+                    b.HasOne("Delivery.Database.Entities.Customer", "Customer")
                         .WithMany("Addresses")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -646,18 +668,18 @@ namespace Delivery.Api.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Customer", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Customer", b =>
                 {
-                    b.HasOne("Delivery.Api.Models.ApplicationUser", "Identity")
+                    b.HasOne("Delivery.Database.Models.ApplicationUser", "Identity")
                         .WithMany()
                         .HasForeignKey("IdentityId");
 
                     b.Navigation("Identity");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Order", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Order", b =>
                 {
-                    b.HasOne("Delivery.Api.Entities.Customer", "Customer")
+                    b.HasOne("Delivery.Database.Entities.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -666,15 +688,15 @@ namespace Delivery.Api.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.OrderItem", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.OrderItem", b =>
                 {
-                    b.HasOne("Delivery.Api.Entities.Order", "Order")
+                    b.HasOne("Delivery.Database.Entities.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Delivery.Api.Entities.Product", "Product")
+                    b.HasOne("Delivery.Database.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -685,9 +707,9 @@ namespace Delivery.Api.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.PaymentCard", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.PaymentCard", b =>
                 {
-                    b.HasOne("Delivery.Api.Entities.Customer", "Customer")
+                    b.HasOne("Delivery.Database.Entities.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -696,9 +718,9 @@ namespace Delivery.Api.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Product", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Product", b =>
                 {
-                    b.HasOne("Delivery.Api.Entities.Category", "Category")
+                    b.HasOne("Delivery.Database.Entities.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -718,7 +740,7 @@ namespace Delivery.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Delivery.Api.Models.ApplicationUser", null)
+                    b.HasOne("Delivery.Database.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -727,7 +749,7 @@ namespace Delivery.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Delivery.Api.Models.ApplicationUser", null)
+                    b.HasOne("Delivery.Database.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -742,7 +764,7 @@ namespace Delivery.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Delivery.Api.Models.ApplicationUser", null)
+                    b.HasOne("Delivery.Database.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -751,19 +773,19 @@ namespace Delivery.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Delivery.Api.Models.ApplicationUser", null)
+                    b.HasOne("Delivery.Database.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Customer", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Customer", b =>
                 {
                     b.Navigation("Addresses");
                 });
 
-            modelBuilder.Entity("Delivery.Api.Entities.Order", b =>
+            modelBuilder.Entity("Delivery.Database.Entities.Order", b =>
                 {
                     b.Navigation("OrderItems");
                 });
