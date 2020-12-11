@@ -10,12 +10,15 @@ using Microsoft.Extensions.Logging;
 using Delivery.Api.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Delivery.Api.Models.Dto;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Customer.Domain.CommandHandlers;
 using Delivery.Customer.Domain.Contracts.RestContracts;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.FrameWork.Context;
 using Delivery.User.Domain.Contracts;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace Delivery.Api.Controllers
 {
@@ -25,26 +28,24 @@ namespace Delivery.Api.Controllers
     {
         private readonly ILogger<UserController> _logger;
 
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<Database.Models.ApplicationUser> _signInManager;
+        private readonly UserManager<Database.Models.ApplicationUser> _userManager;
 
-        private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _appDbContext;
-        private readonly ICommandHandler<CreateCustomerCommand, bool> customerCreationCommandHandler;
+        private readonly IServiceProvider serviceProvider;
 
         public UserController(ILogger<UserController> logger,
-             UserManager<ApplicationUser> userManager,
-             SignInManager<ApplicationUser> signInManager,
-             IEmailSender emailSender,
+             UserManager<Database.Models.ApplicationUser> userManager,
+             SignInManager<Database.Models.ApplicationUser> signInManager,
              ApplicationDbContext appDbContext,
-             ICommandHandler<CreateCustomerCommand, bool> customerCreationCommandHandler)
+             IServiceProvider serviceProvider
+             )
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
             _appDbContext = appDbContext;
-            this.customerCreationCommandHandler = customerCreationCommandHandler;
+            this.serviceProvider = serviceProvider;
         }
 
         // POST: api/User
@@ -55,8 +56,11 @@ namespace Delivery.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            _appDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
 
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var user = new Database.Models.ApplicationUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -65,8 +69,11 @@ namespace Delivery.Api.Controllers
                 customerCreationContract.IdentityId = user.Id;
                 customerCreationContract.Username = user.Email;
                 
+                
                 var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
-                await customerCreationCommandHandler.Handle(createCustomerCommand);
+                var createCustomerCommandHandler =
+                    new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
+                await createCustomerCommandHandler.Handle(createCustomerCommand);
                 
                 return new OkObjectResult("Account created");
             }

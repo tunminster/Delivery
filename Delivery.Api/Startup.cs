@@ -68,8 +68,9 @@ namespace Delivery.Api
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DeliveryDevConnection")));
             
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<Database.Models.ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -142,7 +143,7 @@ namespace Delivery.Api
             });
 
             // add identity
-            var builder = services.AddIdentityCore<ApplicationUser>(o =>
+            var builder = services.AddIdentityCore<Database.Models.ApplicationUser>(o =>
             {
                 // configure identity options
                 o.Password.RequireDigit = false;
@@ -152,10 +153,13 @@ namespace Delivery.Api
                 o.Password.RequiredLength = 6;
             });
 
+
+
             builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
             builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
-    
+            // services.AddIdentityServer()                
+            //     .AddApiAuthorization<Database.Models.ApplicationUser, ApplicationDbContext>();
 
             services.AddResponseCaching();
 
@@ -181,7 +185,7 @@ namespace Delivery.Api
             services.AddSingleton<ISecretProvider, KeyVaultCachedSecretProvider>();
             services.AddSingleton<ICircuitManager, CircuitManager>();
 
-            
+
             // services.AddScoped<ICommandHandler<CreateOrderCommand, bool>, OrderCommandHandler>();
             // services.AddScoped<ICommandHandler<CreateReportOrderCommand, bool>, ReportOrderCommandHandler>();
             // services.AddScoped<ICommandHandler<CreateProductCommand, bool>, CreateProductCommandHandler>();
@@ -206,6 +210,7 @@ namespace Delivery.Api
             app.UseRouting();
 
             app.UseStaticFiles();
+            //app.UseIdentityServer();
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()

@@ -12,7 +12,6 @@ namespace Delivery.Database.Entities
 
         [MaxLength(256)]
         public string Username { get; set; }
-        public ApplicationUser Identity { get; set; }  // navigation property
 
         public virtual ICollection<Address> Addresses { get; set; }
     }

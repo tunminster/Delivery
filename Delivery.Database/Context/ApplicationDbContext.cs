@@ -123,6 +123,12 @@ namespace Delivery.Database.Context
 
             return result;
         }
+
+        public void SetExecutingRequestContextAdapter(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            ExecutingRequestContextAdapter = executingRequestContextAdapter;
+            ServiceProvider = serviceProvider;
+        }
         
         public IExecutingRequestContextAdapter ExecutingRequestContextAdapter { get; private set; }
         protected IServiceProvider ServiceProvider { get; private set; }
