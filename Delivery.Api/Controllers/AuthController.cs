@@ -8,9 +8,13 @@ using Delivery.Api.Auth;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.ViewModels;
+using Delivery.User.Domain.ApplicationServices;
+using Delivery.User.Domain.CommandHandlers;
+using Delivery.User.Domain.Contracts.Facebook;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -60,6 +64,16 @@ namespace Delivery.Api.Controllers
             
             var jwt = await Tokens.GenerateJwt(identity, jwtFactory, model.UserName, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
             return new OkObjectResult(jwt);
+        }
+        
+        [HttpPost]
+        [Route("account/login/facebook")]
+        public async Task<IActionResult> FacebookLoginAsync([FromBody] FacebookLoginContract facebookLoginContract)
+        {
+            var facebookService = new FacebookService();
+            var jwtCommandHanlder = JwtCommandHandler(Conf)
+            var authorizationTokens = await accountService.FacebookLoginAsync(facebookLoginContract);
+            return Ok(authorizationTokens);
         }
 
         private async Task<ClaimsIdentity> GetClaimsIdentityAsync(string userName, string password)

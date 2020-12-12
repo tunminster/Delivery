@@ -5,13 +5,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="CommandHandlers" />
       <Folder Include="Providers" />
       <Folder Include="QueryHandlers" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Delivery.Azure.Library.Configuration\Delivery.Azure.Library.Configuration.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Core\Delivery.Azure.Library.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\..\..\usr\local\share\dotnet\packs\Microsoft.AspNetCore.App.Ref\5.0.0\ref\net5.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
