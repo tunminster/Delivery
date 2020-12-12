@@ -22,69 +22,64 @@ namespace Delivery.Api.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly ILogger<AuthController> _logger;
 
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<Database.Models.ApplicationUser> signInManager;
+        private readonly UserManager<Database.Models.ApplicationUser> userManager;
 
-        private readonly IEmailSender _emailSender;
-        private readonly IJwtFactory _jwtFactory;
-        private readonly JwtIssuerOptions _jwtOptions;
+        private readonly IJwtFactory jwtFactory;
+        private readonly JwtIssuerOptions jwtOptions;
+        private readonly IServiceProvider serviceProvider;
 
-        public AuthController(ILogger<AuthController> logger,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender,
+        public AuthController(
+            UserManager<Database.Models.ApplicationUser> userManager,
+            SignInManager<Database.Models.ApplicationUser> signInManager,
             IJwtFactory jwtFactory, 
-            IOptions<JwtIssuerOptions> jwtOptions)
+            IOptions<JwtIssuerOptions> jwtOptions,
+            IServiceProvider serviceProvider)
         {
-            _logger = logger;
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _emailSender = emailSender;
-            _jwtFactory = jwtFactory;
-            _jwtOptions = jwtOptions.Value;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            this.jwtFactory = jwtFactory;
+            this.jwtOptions = jwtOptions.Value;
+            this.serviceProvider = serviceProvider;
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Post([FromBody]CredentialsViewModel model)
+        public async Task<IActionResult> PostAsync([FromBody]CredentialsViewModel model)
         {
             if(!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var identity = await GetClaimsIdentity(model.UserName, model.Password);
+            var identity = await GetClaimsIdentityAsync(model.UserName, model.Password);
 
             if (identity == null)
             {
                 return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
             }
-            _logger.LogInformation(string.Concat(@model.UserName, " logged."));
-            var jwt = await Tokens.GenerateJwt(identity, _jwtFactory, model.UserName, _jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
+            
+            var jwt = await Tokens.GenerateJwt(identity, jwtFactory, model.UserName, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
             return new OkObjectResult(jwt);
         }
 
-        private async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
+        private async Task<ClaimsIdentity> GetClaimsIdentityAsync(string userName, string password)
         {
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
                 return await Task.FromResult<ClaimsIdentity>(null);
 
             // get the user to verifty
-            var userToVerify = await _userManager.FindByNameAsync(userName);
+            var userToVerify = await userManager.FindByNameAsync(userName);
 
             if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
 
             // check the credentials
-            if (await _userManager.CheckPasswordAsync(userToVerify, password))
+            if (await userManager.CheckPasswordAsync(userToVerify, password))
             {
-                return await Task.FromResult(_jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
+                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
             }
 
             // Credentials are invalid, or account doesn't exist
             return await Task.FromResult<ClaimsIdentity>(null);
         }
-
-
-        
     }
 }

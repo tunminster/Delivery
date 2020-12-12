@@ -67,15 +67,15 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryMonth).HasMaxLength(10);
             modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryYear).HasMaxLength(10);
 
-            modelBuilder.Entity<PaymentResponse>().Property(p => p.OrderCode).HasMaxLength(250);
-            modelBuilder.Entity<PaymentResponse>().Property(p => p.Token).HasMaxLength(250);
-            modelBuilder.Entity<PaymentResponse>().Property(p => p.OrderDescription).HasMaxLength(250);
-            modelBuilder.Entity<PaymentResponse>().Property(p => p.Amount).HasMaxLength(20);
-            modelBuilder.Entity<PaymentResponse>().Property(p => p.CurrencyCode).HasMaxLength(10);
-            modelBuilder.Entity<PaymentResponse>().Property(p => p.PaymentStatus).HasMaxLength(10);
-            modelBuilder.Entity<PaymentResponse>().Property(p => p.MaskedCardNumber).HasMaxLength(30);
-            modelBuilder.Entity<PaymentResponse>().Property(p => p.CvcResultCode).HasMaxLength(10);
-            modelBuilder.Entity<PaymentResponse>().Property(p => p.Environment).HasMaxLength(10);
+            // modelBuilder.Entity<PaymentResponse>().Property(p => p.OrderCode).HasMaxLength(250);
+            // modelBuilder.Entity<PaymentResponse>().Property(p => p.Token).HasMaxLength(250);
+            // modelBuilder.Entity<PaymentResponse>().Property(p => p.OrderDescription).HasMaxLength(250);
+            // modelBuilder.Entity<PaymentResponse>().Property(p => p.Amount).HasMaxLength(20);
+            // modelBuilder.Entity<PaymentResponse>().Property(p => p.CurrencyCode).HasMaxLength(10);
+            // modelBuilder.Entity<PaymentResponse>().Property(p => p.PaymentStatus).HasMaxLength(10);
+            // modelBuilder.Entity<PaymentResponse>().Property(p => p.MaskedCardNumber).HasMaxLength(30);
+            // modelBuilder.Entity<PaymentResponse>().Property(p => p.CvcResultCode).HasMaxLength(10);
+            // modelBuilder.Entity<PaymentResponse>().Property(p => p.Environment).HasMaxLength(10);
 
             modelBuilder.Entity<Report>().Property(p => p.Subject).HasMaxLength(250);
             modelBuilder.Entity<Report>().Property(p => p.ContactNumber).HasMaxLength(20);

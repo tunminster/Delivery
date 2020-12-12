@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Delivery.Database.Models;
 
 namespace Delivery.Database.Entities
@@ -13,6 +14,8 @@ namespace Delivery.Database.Entities
         [MaxLength(256)]
         public string Username { get; set; }
 
+        [ForeignKey("IdentityId")]
+        public ApplicationUser Identity { get; set; }  
         public virtual ICollection<Address> Addresses { get; set; }
     }
 }
