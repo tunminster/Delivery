@@ -36,7 +36,7 @@ namespace Delivery.User.Domain.CommandHandlers
 
             var configurationProvider =  serviceProvider.GetRequiredService<IConfigurationProvider>();
 
-            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configurationProvider.GetSetting("Tokens:Key"))),
+            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configurationProvider.GetSettingOrDefault("Tokens:Key", "iNivDmHLpUA223sqsfhqGbMRdRj1PVkH"))),
                 SecurityAlgorithms.HmacSha256);
             //var expiry = now.AddMinutes(double.Parse(configuration["Tokens:AccessExpireMinutes"]));
             var expiry = DateTimeOffset.UtcNow.AddMonths(3);
@@ -58,10 +58,10 @@ namespace Delivery.User.Domain.CommandHandlers
             };
             var configurationProvider =  serviceProvider.GetRequiredService<IConfigurationProvider>();
 
-            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configurationProvider.GetSetting("Tokens:Key"))),
+            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configurationProvider.GetSettingOrDefault("Tokens:Key", "iNivDmHLpUA223sqsfhqGbMRdRj1PVkH"))),
                 SecurityAlgorithms.HmacSha256);
             //var expiry = now.AddMinutes(double.Parse(configuration["Tokens:RefreshExpireMinutes"]));
-            var expiry = DateTimeOffset.UtcNow.AddMonths(3);
+            var expiry = DateTimeOffset.UtcNow.AddYears(1);
             var jwt = CreateSecurityToken(claims, now.DateTime, expiry.DateTime, signingCredentials);
             var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 

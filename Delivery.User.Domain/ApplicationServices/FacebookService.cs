@@ -2,6 +2,8 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Database.Context;
+using Delivery.Domain.Factories;
 using Delivery.User.Domain.Contracts.Facebook;
 using Newtonsoft.Json;
 
@@ -24,7 +26,7 @@ namespace Delivery.User.Domain.ApplicationServices
         
         public async Task<FacebookUserContract> GetUserFromFacebookAsync(string facebookToken)
         {
-            var result = await GetAsync<dynamic>(facebookToken, "me", "fields=first_name,last_name,email,picture.width(100).height(100)");
+            var result = await GetAsync<dynamic>(facebookToken, "me", "fields=id,first_name,last_name,email,picture.width(100).height(100)");
             if (result == null)
             {
                 throw new Exception("User from this token not exist");
@@ -32,7 +34,7 @@ namespace Delivery.User.Domain.ApplicationServices
 
             var account = new FacebookUserContract()
             {
-                Email = result.email,
+                Email = result.email ?? result.id,
                 FirstName = result.first_name,
                 LastName = result.last_name,
                 Picture = result.picture.data.url

@@ -8,6 +8,8 @@ using Delivery.Api.Auth;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.ViewModels;
+using Delivery.Database.Context;
+using Delivery.Domain.FrameWork.Context;
 using Delivery.User.Domain.ApplicationServices;
 using Delivery.User.Domain.CommandHandlers;
 using Delivery.User.Domain.Contracts.Facebook;
@@ -15,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -29,6 +32,7 @@ namespace Delivery.Api.Controllers
 
         private readonly SignInManager<Database.Models.ApplicationUser> signInManager;
         private readonly UserManager<Database.Models.ApplicationUser> userManager;
+        private readonly ApplicationDbContext applicationDbContext;
 
         private readonly IJwtFactory jwtFactory;
         private readonly JwtIssuerOptions jwtOptions;
@@ -39,13 +43,17 @@ namespace Delivery.Api.Controllers
             SignInManager<Database.Models.ApplicationUser> signInManager,
             IJwtFactory jwtFactory, 
             IOptions<JwtIssuerOptions> jwtOptions,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            ApplicationDbContext applicationDbContext
+            )
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.jwtFactory = jwtFactory;
             this.jwtOptions = jwtOptions.Value;
             this.serviceProvider = serviceProvider;
+
+            this.applicationDbContext = applicationDbContext;
         }
 
         [HttpPost("login")]
@@ -70,9 +78,13 @@ namespace Delivery.Api.Controllers
         [Route("account/login/facebook")]
         public async Task<IActionResult> FacebookLoginAsync([FromBody] FacebookLoginContract facebookLoginContract)
         {
-            var facebookService = new FacebookService();
-            var jwtCommandHanlder = JwtCommandHandler(Conf)
+            var accountService = new AccountService(serviceProvider, userManager);
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            applicationDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
+            
             var authorizationTokens = await accountService.FacebookLoginAsync(facebookLoginContract);
+            
             return Ok(authorizationTokens);
         }
 

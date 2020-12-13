@@ -27,7 +27,7 @@ namespace Delivery.Api.Auth
                  new Claim(JwtRegisteredClaimNames.Sub, userName),
                  new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                  new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
-                 identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol),
+                 identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Role),
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
              };
 
@@ -50,7 +50,7 @@ namespace Delivery.Api.Auth
             return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
             {
                 new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
-                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol, Helpers.Constants.Strings.JwtClaims.ApiAccess)
+                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Role, Helpers.Constants.Strings.JwtClaims.ApiAccess)
             });
         }
 

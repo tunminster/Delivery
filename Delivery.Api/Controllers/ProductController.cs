@@ -19,7 +19,7 @@ namespace Delivery.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "ApiUser")]
     public class ProductController : ControllerBase
     {
         private readonly AzureStorageConfig storageConfig = null;

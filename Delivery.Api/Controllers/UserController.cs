@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Delivery.Api.Models;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +16,12 @@ using Delivery.Customer.Domain.CommandHandlers;
 using Delivery.Customer.Domain.Contracts.RestContracts;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
+using Delivery.Database.Models;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.User.Domain.Contracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Delivery.Api.Controllers
 {
@@ -30,6 +33,7 @@ namespace Delivery.Api.Controllers
 
         private readonly SignInManager<Database.Models.ApplicationUser> _signInManager;
         private readonly UserManager<Database.Models.ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
         private readonly ApplicationDbContext _appDbContext;
         private readonly IServiceProvider serviceProvider;
@@ -38,19 +42,22 @@ namespace Delivery.Api.Controllers
              UserManager<Database.Models.ApplicationUser> userManager,
              SignInManager<Database.Models.ApplicationUser> signInManager,
              ApplicationDbContext appDbContext,
-             IServiceProvider serviceProvider
+             IServiceProvider serviceProvider,
+             RoleManager<IdentityRole> roleManager
              )
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
             _appDbContext = appDbContext;
+            this.roleManager = roleManager;
+            
             this.serviceProvider = serviceProvider;
         }
 
         // POST: api/User
         [HttpPost("register")]
-        public async Task<IActionResult> Post([FromBody] RegistrationViewModel model)
+        public async Task<IActionResult> PostAsync([FromBody] RegistrationViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -65,11 +72,15 @@ namespace Delivery.Api.Controllers
 
             if (result.Succeeded)
             {
-                var customerCreationContract = new CustomerCreationContract();
-                customerCreationContract.IdentityId = user.Id;
-                customerCreationContract.Username = user.Email;
+                await _userManager.AddToRoleAsync(user, "Customer");
+                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                await _userManager.AddClaimAsync(user, claim);
                 
-                
+                var customerCreationContract = new CustomerCreationContract
+                {
+                    IdentityId = user.Id, Username = user.Email
+                };
+
                 var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
                 var createCustomerCommandHandler =
                     new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 

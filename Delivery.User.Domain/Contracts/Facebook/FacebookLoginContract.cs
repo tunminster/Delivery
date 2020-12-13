@@ -7,5 +7,8 @@ namespace Delivery.User.Domain.Contracts.Facebook
         [Required]
         [StringLength(255)]
         public string FacebookToken { get; set; }
+        
+        [Required]
+        public string Provider { get; set; }
     }
 }

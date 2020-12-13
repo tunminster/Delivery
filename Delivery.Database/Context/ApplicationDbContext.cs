@@ -15,6 +15,7 @@ using Delivery.Database.Entities;
 using Delivery.Database.Models;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -41,7 +42,7 @@ namespace Delivery.Database.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
             // Customer entity
             modelBuilder.Entity<Customer>().Property(p => p.Username).HasMaxLength(256);
             
@@ -91,12 +92,7 @@ namespace Delivery.Database.Context
         {
             return SaveChanges(acceptAllChangesOnSuccess: true);
         }
-
-        public override int SaveChanges(bool acceptAllChangesOnSuccess)
-        {
-            throw new NotSupportedException("Use async methods only").WithTelemetry(ExecutingRequestContextAdapter.GetTelemetryProperties());
-        }
-
+        
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             return await SaveChangesAsync(acceptAllChangesOnSuccess: true, cancellationToken);

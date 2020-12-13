@@ -12,12 +12,14 @@
     <ItemGroup>
       <ProjectReference Include="..\Delivery.Azure.Library.Configuration\Delivery.Azure.Library.Configuration.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Core\Delivery.Azure.Library.Core.csproj" />
+      <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj" />
+      <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.1" />
-      <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
     </ItemGroup>
 
     <ItemGroup>

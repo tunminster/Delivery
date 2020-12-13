@@ -30,6 +30,8 @@ using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.KeyVault.Providers;
 using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
+using Delivery.Database.Models;
+using Delivery.Database.Seeding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -68,8 +70,10 @@ namespace Delivery.Api
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DeliveryDevConnection")));
             
-            services.AddDefaultIdentity<Database.Models.ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            // services.AddDefaultIdentity<Database.Models.ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //     .AddEntityFrameworkStores<ApplicationDbContext>();
+            
+            services.AddIdentity<Database.Models.ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
             
 
             services.Configure<IdentityOptions>(options =>
@@ -143,7 +147,7 @@ namespace Delivery.Api
             // api user claim policy
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy("ApiUser", policy => policy.RequireClaim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue));
             });
 
             // add identity
@@ -157,14 +161,9 @@ namespace Delivery.Api
                 o.Password.RequiredLength = 6;
             });
 
-
-
             builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
             builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-
-            // services.AddIdentityServer()                
-            //     .AddApiAuthorization<Database.Models.ApplicationUser, ApplicationDbContext>();
-
+            
             services.AddResponseCaching();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -182,25 +181,20 @@ namespace Delivery.Api
             services.AddControllers();
 
             services.AddHttpClient();
+            
+            // initial identity data seeding
+            services.AddTransient<IdentityData>();
 
             //register handlers
             services.AddSingleton<IEnvironmentProvider, EnvironmentProvider>();
             services.AddSingleton<Delivery.Azure.Library.Configuration.Configurations.Interfaces.IConfigurationProvider, Delivery.Azure.Library.Configuration.Configurations.ConfigurationProvider>();
             services.AddSingleton<ISecretProvider, KeyVaultCachedSecretProvider>();
             services.AddSingleton<ICircuitManager, CircuitManager>();
-
-
-            // services.AddScoped<ICommandHandler<CreateOrderCommand, bool>, OrderCommandHandler>();
-            // services.AddScoped<ICommandHandler<CreateReportOrderCommand, bool>, ReportOrderCommandHandler>();
-            // services.AddScoped<ICommandHandler<CreateProductCommand, bool>, CreateProductCommandHandler>();
-            //
-            // services.AddScoped<IQueryHandler<OrderByCustomerIdQuery, List<OrderContract>>, OrderByCustomerIdQueryHandler>();
-            // services.AddScoped<IQueryHandler<CategoryByIdQuery, CategoryContract>, CategoryByIdQueryHandler>();
-            // services.AddScoped<IQueryHandler<ProductGetAllQuery, List<ProductContract>>, ProductGetAllQueryHandler>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IdentityData identityData)
         {
 
             if (env.IsDevelopment())
@@ -243,6 +237,9 @@ namespace Delivery.Api
                 await next();
             });
 
+            // Seeding identity roles
+            identityData.Initialize();
+            
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
