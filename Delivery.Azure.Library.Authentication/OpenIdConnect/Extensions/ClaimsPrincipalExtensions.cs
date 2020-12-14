@@ -36,7 +36,8 @@ namespace Delivery.Azure.Library.Authentication.OpenIdConnect.Extensions
 
         public static string GetEmail(this ClaimsPrincipal? claimsPrincipal)
         {
-            var claimName = "preferred_username";
+            //var claimName = "preferred_username";
+            var claimName = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
             return GetRoleValue(claimsPrincipal, claimName);
         }
 

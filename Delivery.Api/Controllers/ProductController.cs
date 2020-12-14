@@ -6,6 +6,7 @@ using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Models.Dto;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.CommandHandlers;
 using Delivery.Product.Domain.Contracts;
@@ -20,32 +21,31 @@ namespace Delivery.Api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = "ApiUser")]
+    //[Authorize]
     public class ProductController : ControllerBase
     {
-        private readonly AzureStorageConfig storageConfig = null;
-        private readonly IQueryHandler<ProductGetAllQuery, List<ProductContract>> queryProductGetAllQuery;
-        private readonly ICommandHandler<CreateProductCommand, bool> createProductCommandHandler;
-        private readonly IQueryHandler<ProductByIdQuery, ProductContract> queryProductByIdQuery;
-        private readonly IQueryHandler<ProductByCategoryIdQuery, List<ProductContract>> queryProductByCategoryIdQuery;
-        private readonly ICommandHandler<ProductUpdateCommand, bool> productUpdateCommandHandler;
-        private readonly ICommandHandler<ProductDeleteCommand, bool> productDeleteCommandHandler;
+        private readonly Delivery.Domain.Configuration.AzureStorageConfig storageConfig = null;
+
+        private readonly IServiceProvider serviceProvider;
+        //private readonly IQueryHandler<ProductGetAllQuery, List<ProductContract>> queryProductGetAllQuery;
+        // private readonly ICommandHandler<CreateProductCommand, bool> createProductCommandHandler;
+        // private readonly IQueryHandler<ProductByIdQuery, ProductContract> queryProductByIdQuery;
+        // private readonly IQueryHandler<ProductByCategoryIdQuery, List<ProductContract>> queryProductByCategoryIdQuery;
+        // private readonly ICommandHandler<ProductUpdateCommand, bool> productUpdateCommandHandler;
+        // private readonly ICommandHandler<ProductDeleteCommand, bool> productDeleteCommandHandler;
 
         public ProductController(
-        IOptions<AzureStorageConfig> config,
-        IQueryHandler<ProductGetAllQuery, List<ProductContract>> queryProductGetAllQuery,
-        ICommandHandler<CreateProductCommand, bool> createProductCommandHandler,
-        IQueryHandler<ProductByIdQuery, ProductContract> queryProductByIdQuery,
-        IQueryHandler<ProductByCategoryIdQuery, List<ProductContract>> queryProductByCategoryIdQuery,
-        ICommandHandler<ProductUpdateCommand, bool> productUpdateCommandHandler,
-        ICommandHandler<ProductDeleteCommand, bool> productDeleteCommandHandler)
+        IOptions<Delivery.Domain.Configuration.AzureStorageConfig> config,
+        IServiceProvider serviceProvider)
         {
             storageConfig = config.Value;
-            this.queryProductGetAllQuery = queryProductGetAllQuery;
-            this.createProductCommandHandler = createProductCommandHandler;
-            this.queryProductByIdQuery = queryProductByIdQuery;
-            this.queryProductByCategoryIdQuery = queryProductByCategoryIdQuery;
-            this.productUpdateCommandHandler = productUpdateCommandHandler;
-            this.productDeleteCommandHandler = productDeleteCommandHandler;
+            this.serviceProvider = serviceProvider;
+            //this.queryProductGetAllQuery = queryProductGetAllQuery;
+            // this.createProductCommandHandler = createProductCommandHandler;
+            // this.queryProductByIdQuery = queryProductByIdQuery;
+            // this.queryProductByCategoryIdQuery = queryProductByCategoryIdQuery;
+            // this.productUpdateCommandHandler = productUpdateCommandHandler;
+            // this.productDeleteCommandHandler = productDeleteCommandHandler;
         }
 
         [HttpGet("getAllProducts")]
@@ -53,7 +53,9 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAsync(CancellationToken cancellationToken = default)
         {
-            var productContractList = await queryProductGetAllQuery.Handle(new ProductGetAllQuery()); 
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var productGetAllQueryHandler = new ProductGetAllQueryHandler(serviceProvider, executingRequestContextAdapter);
+            var productContractList = await productGetAllQueryHandler.Handle(new ProductGetAllQuery()); 
             return Ok(productContractList);
         }
 
@@ -62,7 +64,9 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetProductByIdAsync(int id)
         {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var productByIdQuery = new ProductByIdQuery(id);
+            var queryProductByIdQuery = new ProductByIdQueryHandler(serviceProvider, executingRequestContextAdapter);
             var productContract = await queryProductByIdQuery.Handle(productByIdQuery);
             
             return Ok(productContract);
@@ -73,8 +77,11 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetProductByCategoryIdAsync(int id)
         {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var productByCategoryIdQueryHandler =
+                new ProductByCategoryIdQueryHandler(serviceProvider, executingRequestContextAdapter);
             var productByCategoryIdQuery = new ProductByCategoryIdQuery(id);
-            var productContractList = await queryProductByCategoryIdQuery.Handle(productByCategoryIdQuery);
+            var productContractList = await productByCategoryIdQueryHandler.Handle(productByCategoryIdQuery);
             return Ok(productContractList);
         }
 
@@ -83,11 +90,15 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddProductAsync(ProductContract productContract, IFormFile file)
         {
-
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            var createProductCommandHandler =
+                new CreateProductCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter);
 
             var createProductCommand = new CreateProductCommand(productContract, file);
             var isCreatedProduct = await createProductCommandHandler.Handle(createProductCommand);
@@ -111,6 +122,11 @@ namespace Delivery.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var createProductCommandHandler =
+                new CreateProductCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter); 
 
             if (await createProductCommandHandler.Handle(new CreateProductCommand(productContract, file)))
             {
@@ -142,8 +158,13 @@ namespace Delivery.Api.Controllers
             {
                 return BadRequest();
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var productByIdQueryHandler = new ProductByIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            
             var productByIdQuery = new ProductByIdQuery(productContract.Id);
-            var product = await queryProductByIdQuery.Handle(productByIdQuery);
+            var product = await productByIdQueryHandler.Handle(productByIdQuery);
             if(product == null)
             {
                 return NotFound();
@@ -155,6 +176,9 @@ namespace Delivery.Api.Controllers
             product.UnitPrice = productContract.UnitPrice;
             product.CategoryId = productContract.CategoryId;
             product.ProductImageUrl = productContract.ProductImageUrl;
+
+            var productUpdateCommandHandler =
+                new ProductUpdateCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter);
             
             var productUpdateCommand = new ProductUpdateCommand(product, file);
             var isProductUpdated = await productUpdateCommandHandler.Handle(productUpdateCommand);
@@ -165,6 +189,9 @@ namespace Delivery.Api.Controllers
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteProductAsync(int id)
         {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var productDeleteCommandHandler =
+                new ProductDeleteCommandHandler(serviceProvider, executingRequestContextAdapter);
             var productDeleteCommand = new ProductDeleteCommand(id);
             var isProductDeleted = await productDeleteCommandHandler.Handle(productDeleteCommand);
             

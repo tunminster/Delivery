@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Security;
+using System.Security.Claims;
 using Delivery.Azure.Library.Configuration.Environments.Interfaces;
 using Delivery.Azure.Library.Core;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +39,14 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Telemetry
 			if (httpContextUser.Identity?.IsAuthenticated ?? false)
 			{
 				var identityName = httpContextUser.Identity.Name;
+
+				var nameIdentifier = httpContextUser.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+				if (nameIdentifier != null)
+				{
+					return nameIdentifier.Value;
+				}
+				
 				if (string.IsNullOrEmpty(identityName))
 				{
 					throw new SecurityException($"User is authenticated ({httpContextUser.Identity}), but no name is set");

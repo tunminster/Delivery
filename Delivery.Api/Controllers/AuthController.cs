@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-
-using Delivery.Api.Auth;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.ViewModels;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
+using Delivery.Domain.Factories;
+using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Domain.Models;
 using Delivery.User.Domain.ApplicationServices;
 using Delivery.User.Domain.CommandHandlers;
 using Delivery.User.Domain.Contracts.Facebook;
@@ -63,7 +65,9 @@ namespace Delivery.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var identity = await GetClaimsIdentityAsync(model.UserName, model.Password);
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter(); 
+            var identity = await GetClaimsIdentityAsync(model.UserName, model.Password, executingRequestContextAdapter);
 
             if (identity == null)
             {
@@ -78,17 +82,18 @@ namespace Delivery.Api.Controllers
         [Route("account/login/facebook")]
         public async Task<IActionResult> FacebookLoginAsync([FromBody] FacebookLoginContract facebookLoginContract)
         {
-            var accountService = new AccountService(serviceProvider, userManager);
-            
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var accountService = new AccountService(serviceProvider, userManager, jwtFactory, jwtOptions, executingRequestContextAdapter);
+            
             applicationDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
             
-            var authorizationTokens = await accountService.FacebookLoginAsync(facebookLoginContract);
+            var authorizationTokens = await accountService.FacebookLoginTokenAsync(facebookLoginContract);
             
             return Ok(authorizationTokens);
         }
 
-        private async Task<ClaimsIdentity> GetClaimsIdentityAsync(string userName, string password)
+        private async Task<ClaimsIdentity> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
                 return await Task.FromResult<ClaimsIdentity>(null);
@@ -101,7 +106,7 @@ namespace Delivery.Api.Controllers
             // check the credentials
             if (await userManager.CheckPasswordAsync(userToVerify, password))
             {
-                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
+                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, executingRequestContextAdapter));
             }
 
             // Credentials are invalid, or account doesn't exist

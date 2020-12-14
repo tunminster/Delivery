@@ -26,12 +26,12 @@ namespace Delivery.Product.Domain.CommandHandlers
         private IExecutingRequestContextAdapter executingRequestContextAdapter;
         
         public CreateProductCommandHandler(
-            IOptions<Delivery.Domain.Configuration.AzureStorageConfig> config,
+            Delivery.Domain.Configuration.AzureStorageConfig config,
             IServiceProvider serviceProvider,
             IExecutingRequestContextAdapter executingRequestContextAdapter
             )
         {
-            _storageConfig = config.Value;
+            _storageConfig = config;
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }

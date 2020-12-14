@@ -74,7 +74,11 @@ namespace Delivery.Api.Controllers
             {
                 await _userManager.AddToRoleAsync(user, "Customer");
                 var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
+                    ClaimValueTypes.String);
                 await _userManager.AddClaimAsync(user, claim);
+
+                await _userManager.AddClaimAsync(user, groupClaim);
                 
                 var customerCreationContract = new CustomerCreationContract
                 {

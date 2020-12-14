@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
-using Delivery.Api.Auth;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Utils.Configs;
@@ -32,6 +32,8 @@ using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
 using Delivery.Database.Models;
 using Delivery.Database.Seeding;
+using Delivery.Domain.Factories.Auth;
+using Delivery.Domain.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -143,11 +145,17 @@ namespace Delivery.Api
                 options.AppId = Configuration["Authentication:Facebook:AppId"];
                 options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
             });
+            
+            
 
             // api user claim policy
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ApiUser", policy => policy.RequireClaim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue));
+                options.AddPolicy("ApiUser", policy =>
+                    policy.RequireAuthenticatedUser()
+                        .RequireAssertion(x =>
+                            x.User.HasClaim(ClaimTypes.Role, ClaimData.JwtClaimIdentifyClaim.ClaimValue)));
+                    //policy.RequireClaim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue));
             });
 
             // add identity
@@ -163,6 +171,7 @@ namespace Delivery.Api
 
             builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
             builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+            
             
             services.AddResponseCaching();
 
