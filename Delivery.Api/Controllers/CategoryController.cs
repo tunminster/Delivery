@@ -37,20 +37,10 @@ namespace Delivery.Api.Controllers
 
         public CategoryController(
             IServiceProvider serviceProvider
-            // IQueryHandler<CategoryByIdQuery, CategoryContract> queryCategoryByIdQuery,
-            // IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> categoryByParentIdQuery,
-            // ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract> categoryCreationCommandHandler,
-            // ICommandHandler<CategoryUpdateCommand, CategoryUpdateStatusContract> categoryUpdateCommandHandler,
-            // ICommandHandler<CategoryDeleteCommand, CategoryDeleteStatusContract> categoryDeleteCommandHandler
-            
-            )
+        )
         {
             this.serviceProvider = serviceProvider;
-            // _queryCategoryByIdQuery = queryCategoryByIdQuery;
-            // _categoryByParentIdQuery = categoryByParentIdQuery;
-            // this.categoryCreationCommandHandler = categoryCreationCommandHandler;
-            // this.categoryUpdateCommandHandler = categoryUpdateCommandHandler;
-            // this.categoryDeleteCommandHandler = categoryDeleteCommandHandler;
+            
         }
 
         [HttpGet("getAllCategories")]

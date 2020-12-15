@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using Delivery.Address.Domain.Contracts;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 
@@ -7,15 +9,19 @@ namespace Delivery.Address.Domain.CommandHandlers
 {
     public class AddressCreationCommandHandler : ICommandHandler<AddressCreationCommand, AddressCreationStatusContract>
     {
-        private readonly ApplicationDbContext applicationDbContext;
-        public AddressCreationCommandHandler (ApplicationDbContext applicationDbContext)
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public AddressCreationCommandHandler ( IServiceProvider serviceProvider,
+            IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            this.applicationDbContext = applicationDbContext;
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
 
         public async Task<AddressCreationStatusContract> Handle(AddressCreationCommand command)
         {
-
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
             var address = new Database.Entities.Address
             {
                 CustomerId = command.AddressContract.CustomerId,
@@ -30,8 +36,8 @@ namespace Delivery.Address.Domain.CommandHandlers
 
             };
 
-            applicationDbContext.Add(address);
-            await applicationDbContext.SaveChangesAsync();
+            databaseContext.Add(address);
+            await databaseContext.SaveChangesAsync();
 
             return new AddressCreationStatusContract(true);
 

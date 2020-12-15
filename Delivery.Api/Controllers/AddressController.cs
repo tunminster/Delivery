@@ -11,6 +11,7 @@ using Delivery.Api.Models.Dto;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -29,18 +30,15 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class AddressController : ControllerBase
     {
-        private readonly ICommandHandler<AddressCreationCommand, AddressCreationStatusContract> addressCreationCommandHandler;
-        private readonly IQueryHandler<AddressByIdQuery, AddressContract> addressByIdQueryHandler;
-        private readonly IQueryHandler<AddressByUserIdQuery, List<AddressContract>> addressByUserIdQueryHandler;
+        // private readonly ICommandHandler<AddressCreationCommand, AddressCreationStatusContract> addressCreationCommandHandler;
+        // private readonly IQueryHandler<AddressByIdQuery, AddressContract> addressByIdQueryHandler;
+        // private readonly IQueryHandler<AddressByUserIdQuery, List<AddressContract>> addressByUserIdQueryHandler;
+        private readonly IServiceProvider serviceProvider;
 
         public AddressController(
-            ICommandHandler<AddressCreationCommand, AddressCreationStatusContract> addressCreationCommandHandler,
-            IQueryHandler<AddressByIdQuery, AddressContract> addressByIdQueryHandler,
-            IQueryHandler<AddressByUserIdQuery, List<AddressContract>> addressByUserIdQueryHandler)
+            IServiceProvider serviceProvider)
         {
-            this.addressCreationCommandHandler = addressCreationCommandHandler;
-            this.addressByIdQueryHandler = addressByIdQueryHandler;
-            this.addressByUserIdQueryHandler = addressByUserIdQueryHandler;
+            this.serviceProvider = serviceProvider;
         }
 
         [HttpGet("GetAddressByUserId/{customerId}")]
@@ -48,7 +46,10 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAddressByUserId(int customerId,CancellationToken cancellationToken = default)
         {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var addressByUserIdQuery = new AddressByUserIdQuery(customerId);
+            var addressByUserIdQueryHandler = new AddressByUserIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            
             var addressContactList = await addressByUserIdQueryHandler.Handle(addressByUserIdQuery);
             
             return Ok(addressContactList);
@@ -59,7 +60,10 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAddressById(int id)
         {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var addressByIdQuery = new AddressByIdQuery(id);
+            var addressByIdQueryHandler = new AddressByIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            
             var addressContract = await addressByIdQueryHandler.Handle(addressByIdQuery);
             return Ok(addressContract);
         }
@@ -74,8 +78,13 @@ namespace Delivery.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
             var addressCreationCommand = new AddressCreationCommand(addressContract);
+            var addressCreationCommandHandler =
+                new AddressCreationCommandHandler(serviceProvider, executingRequestContextAdapter);
+            
             var addressCreationStatusContract = await addressCreationCommandHandler.Handle(addressCreationCommand);
 
             return Ok(addressCreationStatusContract);
