@@ -30,6 +30,7 @@ using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.KeyVault.Providers;
 using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
+using Delivery.Azure.Library.WebApi.Filters;
 using Delivery.Database.Models;
 using Delivery.Database.Seeding;
 using Delivery.Domain.Factories.Auth;
@@ -72,9 +73,6 @@ namespace Delivery.Api
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DeliveryDevConnection")));
             
-            // services.AddDefaultIdentity<Database.Models.ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            //     .AddEntityFrameworkStores<ApplicationDbContext>();
-            
             services.AddIdentity<Database.Models.ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
             
 
@@ -89,10 +87,10 @@ namespace Delivery.Api
                 options.Password.RequiredUniqueChars = 1;
             });
             
-            
+            services.AddSingleton<IApplicationInsightsTelemetry, Delivery.Azure.Library.Telemetry.ApplicationInsights.ApplicationInsightsTelemetry>(provider => new Delivery.Azure.Library.Telemetry.ApplicationInsights.ApplicationInsightsTelemetry(provider, Configuration.GetValue<string>("Service_Name"), new Delivery.Azure.Library.Telemetry.ApplicationInsights.Initializers.ApplicationTelemetryInitializers(provider, typeof(Startup).Assembly)));
 #if DEBUG
             // log the local debug information to the output window for easier testing
-            services.AddSingleton<IApplicationInsightsTelemetry, StdoutApplicationInsightsTelemetry>(provider => new StdoutApplicationInsightsTelemetry(provider, Configuration.GetValue<string>("Service_Name")));
+            //services.AddSingleton<IApplicationInsightsTelemetry, StdoutApplicationInsightsTelemetry>(provider => new StdoutApplicationInsightsTelemetry(provider, Configuration.GetValue<string>("Service_Name")));
 #else
 			services.AddSingleton<IApplicationInsightsTelemetry, Delivery.Azure.Library.Telemetry.ApplicationInsights.ApplicationInsightsTelemetry>(provider => new Delivery.Azure.Library.Telemetry.ApplicationInsights.ApplicationInsightsTelemetry(provider, Configuration.GetValue<string>("Service_Name"), new Delivery.Azure.Library.Telemetry.ApplicationInsights.Initializers.ApplicationTelemetryInitializers(provider, typeof(Startup).Assembly)));
 #endif
@@ -187,7 +185,11 @@ namespace Delivery.Api
             services.Configure<AzureLogConfig>(Configuration.GetSection("AzureLogConfig"));
             services.Configure<WorldPayConfig>(Configuration.GetSection("WorldPayConfigs"));
 
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new ApiLoggingFilterAttribute());
+                options.Filters.Add(new JsonPayloadSchemaAttribute());
+            });
 
             services.AddHttpClient();
             
@@ -225,13 +227,15 @@ namespace Delivery.Api
                 .AllowAnyHeader());
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<RequestBufferingMiddleware>();
             
 
             app.UseAuthentication();
             app.UseAuthorization();
 
             // use middelware response cache
-            app.UseResponseCaching();
+            //app.UseResponseCaching();
+            
             app.Use(async (context, next) =>
             {
                 context.Response.GetTypedHeaders().CacheControl = 

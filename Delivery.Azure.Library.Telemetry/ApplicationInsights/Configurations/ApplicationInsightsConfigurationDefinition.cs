@@ -16,7 +16,7 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.Configurations
 		/// </summary>
 		/// <param name="serviceProvider">The kernel</param>
 		/// <param name="source">Source of the telemetry</param>
-		public ApplicationInsightsConfigurationDefinition(IServiceProvider serviceProvider, string source) : this(serviceProvider, source, "ApplicationInsights-Platform-InstrumentationKey")
+		public ApplicationInsightsConfigurationDefinition(IServiceProvider serviceProvider, string source) : this(serviceProvider, source, "ApplicationInsights-InstrumentationKey")
 		{
 		}
 

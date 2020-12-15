@@ -21,10 +21,10 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.Initializers.Cust
 
             if (string.IsNullOrEmpty(telemetry.Context.InstrumentationKey))
             {
-                var instrumentationKey = ServiceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("ApplicationInsights_Platform_InstrumentationKey", isMandatory: false);
+                var instrumentationKey = ServiceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("ApplicationInsights_InstrumentationKey", isMandatory: false);
                 if (string.IsNullOrEmpty(instrumentationKey))
                 {
-                    instrumentationKey = ServiceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("ApplicationInsights-Platform-InstrumentationKey");
+                    instrumentationKey = ServiceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("ApplicationInsights-InstrumentationKey");
                 }
 
                 telemetry.Context.InstrumentationKey = instrumentationKey;
