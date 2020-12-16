@@ -20,14 +20,6 @@ namespace Delivery.Api
             var config = new ConfigurationBuilder()
                 .AddJsonFile("secrets/appsettings.secret.json", optional: true)
                 .Build();
-            // AzureLogConfig azureLogConfig = new AzureLogConfig();
-            // config.GetSection("AzureLogConfig").Bind(azureLogConfig);
-            //
-            // Log.Logger = new LoggerConfiguration()
-            //     .WriteTo.AzureAnalytics(workspaceId: azureLogConfig.WorkspaceId,
-            //                             authenticationId: azureLogConfig.PrimaryKey)
-            //     .CreateLogger();
-
 
             CreateHostBuilder(args).Build().Run();
         }
