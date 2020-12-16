@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Delivery.Customer.Domain.Contracts;
 using Delivery.Customer.Domain.QueryHandlers;
 using Delivery.Database.Context;
+using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,22 +21,28 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class CustomerController : ControllerBase
     {
-        private readonly IQueryHandler<CustomerByUsernameQuery, CustomerContract> queryCustomerByUsernameQuery;
+        //private readonly IQueryHandler<CustomerByUsernameQuery, CustomerContract> queryCustomerByUsernameQuery;
+        private readonly IServiceProvider serviceProvider;
 
-        public CustomerController(IQueryHandler<CustomerByUsernameQuery, CustomerContract> queryCustomerByUsernameQuery)
+        public CustomerController(IServiceProvider serviceProvider)
         {
-            this.queryCustomerByUsernameQuery = queryCustomerByUsernameQuery;
+            this.serviceProvider = serviceProvider;
         }
 
         [HttpGet("GetCustomer")]
         [Authorize]
         [ProducesResponseType(typeof(CustomerContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCustomer()
+        public async Task<IActionResult> GetCustomerAsync()
         {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
             string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             var customerByUsernameQuery = new CustomerByUsernameQuery(userName);
+
+            var queryCustomerByUsernameQuery =
+                new CustomerByUsernameQueryHandler(serviceProvider, executingRequestContextAdapter);
             var customerContract = await queryCustomerByUsernameQuery.Handle(customerByUsernameQuery);
             
             return Ok(customerContract);

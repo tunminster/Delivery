@@ -225,9 +225,9 @@ namespace Delivery.Api
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            
             app.UseMiddleware<RequestBufferingMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             
 
             app.UseAuthentication();

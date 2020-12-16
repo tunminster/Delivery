@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Delivery.Api.Models.Dto;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.Factories;
+using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts;
@@ -11,6 +14,7 @@ using Delivery.Order.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 
@@ -21,28 +25,32 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class OrderController : ControllerBase
     {
-        private readonly ICommandHandler<CreateOrderCommand, bool> _createOrderCommand;
-        private readonly IQueryHandler<OrderByCustomerIdQuery, List<OrderContract>> queryOrderByCustomerIdQuery;
-
-        public OrderController(
-            ICommandHandler<CreateOrderCommand, bool> createOrderCommand,
-            IQueryHandler<OrderByCustomerIdQuery, List<OrderContract>> queryOrderByCustomerIdQuery
-        )
+        //private readonly ICommandHandler<CreateOrderCommand, bool> _createOrderCommand;
+        //private readonly IQueryHandler<OrderByCustomerIdQuery, List<OrderContract>> queryOrderByCustomerIdQuery;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IConfiguration configuration;
+        private readonly IHttpClientFactory httpClientFactory;
+        public OrderController(IHttpClientFactory httpClientFactory, 
+            IConfiguration configuration,
+            IServiceProvider serviceProvider)
         {
-            _createOrderCommand = createOrderCommand;
-            this.queryOrderByCustomerIdQuery = queryOrderByCustomerIdQuery;
+            this.serviceProvider = serviceProvider;
+            this.httpClientFactory = httpClientFactory;
+            this.configuration = configuration;
         }
 
         // POST api/values
         [HttpPost("Create")]
         [ProducesResponseType(typeof(OrderCreationContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddOrder(OrderCreationContract orderCreationContract)
+        public async Task<IActionResult> AddOrderAsync(OrderCreationContract orderCreationContract)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
             var orderItemCommands = new List<OrderItemCommand>();
 
@@ -70,18 +78,31 @@ namespace Delivery.Api.Controllers
             command.ShippingAddressId = orderCreationContract.ShippingAddressId;
             command.SaveCard = orderCreationContract.SaveCard;
 
-            await _createOrderCommand.Handle(command);
+            var createOrderCommandHandler = new OrderCommandHandler(httpClientFactory, configuration, serviceProvider,
+                executingRequestContextAdapter);
 
-            return Ok();
+            await createOrderCommandHandler.Handle(command);
+            var orderCreationStatusContract = new OrderCreationStatusContract
+            {
+                OrderId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key), 
+                Status = "Order has been created successfully."
+            };
+
+            return Ok(orderCreationStatusContract);
         }
 
         [HttpGet("GetByUserId/{userId}")]
         [ProducesResponseType(typeof(List<OrderContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetProductByCategoryId(int userId)
+        public async Task<IActionResult> GetProductByCategoryIdAsync(int userId)
         {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
             var query = new OrderByCustomerIdQuery {CustomerId = userId};
-            var result = await queryOrderByCustomerIdQuery.Handle(query);
+
+            var orderByCustomerIdQueryHandler =
+                new OrderByCustomerIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            var result = await orderByCustomerIdQueryHandler.Handle(query);
 
             return Ok(result);
         }

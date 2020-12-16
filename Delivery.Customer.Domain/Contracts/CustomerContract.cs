@@ -14,8 +14,8 @@ namespace Delivery.Customer.Domain.Contracts
         
         [DataMember]
         public string Username { get; set; }
-        
-        [DataMember]
+
+        [DataMember] 
         public List<AddressContract> Addresses { get; set; }
 
         public override string ToString()

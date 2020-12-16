@@ -35,6 +35,8 @@ namespace Delivery.Customer.Domain.QueryHandlers
                 Username = customer.Username
             };
 
+            customerContract.Addresses = new List<AddressContract>();
+
             foreach (var address in customer.Addresses)
             {
                 customerContract.Addresses.Add(new AddressContract

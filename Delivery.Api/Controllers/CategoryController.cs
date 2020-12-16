@@ -24,16 +24,16 @@ namespace Delivery.Api.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly IServiceProvider serviceProvider;
-        private readonly IQueryHandler<CategoryByIdQuery, CategoryContract> _queryCategoryByIdQuery;
-        private readonly IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> _categoryByParentIdQuery;
-        
-        private readonly ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract>
-            categoryCreationCommandHandler;
-
-        private readonly ICommandHandler<CategoryUpdateCommand, CategoryUpdateStatusContract>
-            categoryUpdateCommandHandler;
-        private readonly ICommandHandler<CategoryDeleteCommand, CategoryDeleteStatusContract>
-            categoryDeleteCommandHandler;
+        // private readonly IQueryHandler<CategoryByIdQuery, CategoryContract> _queryCategoryByIdQuery;
+        // private readonly IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> _categoryByParentIdQuery;
+        //
+        // private readonly ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract>
+        //     categoryCreationCommandHandler;
+        //
+        // private readonly ICommandHandler<CategoryUpdateCommand, CategoryUpdateStatusContract>
+        //     categoryUpdateCommandHandler;
+        // private readonly ICommandHandler<CategoryDeleteCommand, CategoryDeleteStatusContract>
+        //     categoryDeleteCommandHandler;
 
         public CategoryController(
             IServiceProvider serviceProvider
@@ -61,8 +61,12 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCategoriesByParentId(int parentId, CancellationToken cancellationToken = default)
         {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var categoryByParentIdQuery = new CategoryByParentIdQuery();
-            var result = await _categoryByParentIdQuery.Handle(categoryByParentIdQuery);
+            var categoryByParentIdQueryHandler =
+                new CategoryByParentIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            
+            var result = await categoryByParentIdQueryHandler.Handle(categoryByParentIdQuery);
             return Ok(result);
         }
 
@@ -71,10 +75,10 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult>GetCategoryById(int id)
         {
-
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var categoryByIdQuery = new CategoryByIdQuery {CategoryId = id};
-
-            var result = await _queryCategoryByIdQuery.Handle(categoryByIdQuery);
+            var queryCategoryByIdQuery = new CategoryByIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            var result = await queryCategoryByIdQuery.Handle(categoryByIdQuery);
 
             return Ok(result);
         }
@@ -89,6 +93,11 @@ namespace Delivery.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var categoryCreationCommandHandler =
+                new CategoryCreationCommandHandler(serviceProvider, executingRequestContextAdapter);
             
             var categoryCreationCommand = new CategoryCreationCommand(categoryContract);
             var categoryCreationStatusContract = await categoryCreationCommandHandler.Handle(categoryCreationCommand);
@@ -106,7 +115,12 @@ namespace Delivery.Api.Controllers
                 return BadRequest();
             }
             
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
             var categoryUpdateCommand = new CategoryUpdateCommand(categoryContract);
+            var categoryUpdateCommandHandler =
+                new CategoryUpdateCommandHandler(serviceProvider, executingRequestContextAdapter);
+            
             var categoryUpdateStatusContract = await categoryUpdateCommandHandler.Handle(categoryUpdateCommand);
 
             return Ok(categoryUpdateStatusContract);
@@ -115,13 +129,16 @@ namespace Delivery.Api.Controllers
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-
             if (id < 1)
             {
                 return BadRequest();
             }
             
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
             var categoryDeleteCommand = new CategoryDeleteCommand(id);
+            var categoryDeleteCommandHandler =
+                new CategoryDeleteCommandHandler(serviceProvider, executingRequestContextAdapter);
             var categoryDeleteStatusContract = await  categoryDeleteCommandHandler.Handle(categoryDeleteCommand);
 
             return Ok(categoryDeleteStatusContract);
