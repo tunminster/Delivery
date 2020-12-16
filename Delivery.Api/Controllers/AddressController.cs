@@ -4,15 +4,20 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Delivery.Api.Data;
-using Delivery.Api.Entities;
+using Delivery.Address.Domain.CommandHandlers;
+using Delivery.Address.Domain.Contracts;
+using Delivery.Address.Domain.QueryHandlers;
 using Delivery.Api.Models.Dto;
+using Delivery.Database.Context;
+using Delivery.Database.Entities;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.FrameWork.Context;
+using Delivery.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static Delivery.Api.Extensions.HttpResults;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -25,86 +30,64 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class AddressController : ControllerBase
     {
-        private readonly ILogger<AddressController> _logger;
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IMapper _mapper;
+        // private readonly ICommandHandler<AddressCreationCommand, AddressCreationStatusContract> addressCreationCommandHandler;
+        // private readonly IQueryHandler<AddressByIdQuery, AddressContract> addressByIdQueryHandler;
+        // private readonly IQueryHandler<AddressByUserIdQuery, List<AddressContract>> addressByUserIdQueryHandler;
+        private readonly IServiceProvider serviceProvider;
 
-        public AddressController(ILogger<AddressController> logger,
-            ApplicationDbContext appDbContext,
-            IMapper mapper)
+        public AddressController(
+            IServiceProvider serviceProvider)
         {
-            _logger = logger;
-            _appDbContext = appDbContext;
-            _mapper = mapper;
+            this.serviceProvider = serviceProvider;
         }
 
         [HttpGet("GetAddressByUserId/{customerId}")]
-        [ProducesResponseType(typeof(List<AddressDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AddressContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAddressByUserId(int customerId,CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var result = await _appDbContext.Addresses.Where(x => x.CustomerId == customerId).ToListAsync(cancellationToken);
-                var addressDtoList = _mapper.Map<List<AddressDto>>(result);
-                return Ok(addressDtoList);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Fetching Address list";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var addressByUserIdQuery = new AddressByUserIdQuery(customerId);
+            var addressByUserIdQueryHandler = new AddressByUserIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            
+            var addressContactList = await addressByUserIdQueryHandler.Handle(addressByUserIdQuery);
+            
+            return Ok(addressContactList);
         }
 
         [HttpGet("GetAddressById/{id}")]
-        [ProducesResponseType(typeof(AddressDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AddressContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAddressById(int id)
         {
-            try
-            {
-                var result = await _appDbContext.Addresses.FirstOrDefaultAsync(x => x.Id == id);
-                var addressDto = _mapper.Map<AddressDto>(result);
-                return Ok(addressDto);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Fetching address by id";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var addressByIdQuery = new AddressByIdQuery(id);
+            var addressByIdQueryHandler = new AddressByIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            
+            var addressContract = await addressByIdQueryHandler.Handle(addressByIdQuery);
+            return Ok(addressContract);
         }
 
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(AddressDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AddressCreationStatusContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddAddress(AddressDto addressDto)
+        public async Task<IActionResult> AddAddress(AddressContract addressContract)
         {
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
-            try
-            {
-                var address = _mapper.Map<Address>(addressDto);
-                await _appDbContext.Addresses.AddAsync(address);
-                await _appDbContext.SaveChangesAsync();
+            var addressCreationCommand = new AddressCreationCommand(addressContract);
+            var addressCreationCommandHandler =
+                new AddressCreationCommandHandler(serviceProvider, executingRequestContextAdapter);
+            
+            var addressCreationStatusContract = await addressCreationCommandHandler.Handle(addressCreationCommand);
 
-                addressDto.Id = address.Id;
-
-                return CreatedAtAction(nameof(GetAddressById), new { id = address.Id }, addressDto);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Error occurred in creating address";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            return Ok(addressCreationStatusContract);
         }
-
-
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -9,13 +8,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.IdentityModel.Tokens.Jwt;
 using Delivery.Api.Helpers;
-using Delivery.Api.Data;
-using Delivery.Api.Entities;
-using static Delivery.Api.Extensions.HttpResults;
 using Microsoft.AspNetCore.Authorization;
 using Delivery.Api.Models.Dto;
+using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Customer.Domain.CommandHandlers;
+using Delivery.Customer.Domain.Contracts.RestContracts;
+using Delivery.Database.Context;
+using Delivery.Database.Entities;
+using Delivery.Database.Models;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.FrameWork.Context;
+using Delivery.User.Domain.Contracts;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Delivery.Api.Controllers
 {
@@ -25,42 +31,65 @@ namespace Delivery.Api.Controllers
     {
         private readonly ILogger<UserController> _logger;
 
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<Database.Models.ApplicationUser> _signInManager;
+        private readonly UserManager<Database.Models.ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        private readonly IEmailSender _emailSender;
-        private readonly JwtIssuerOptions _jwtOptions;
         private readonly ApplicationDbContext _appDbContext;
+        private readonly IServiceProvider serviceProvider;
 
         public UserController(ILogger<UserController> logger,
-             UserManager<ApplicationUser> userManager,
-             SignInManager<ApplicationUser> signInManager,
-             IEmailSender emailSender,
-             ApplicationDbContext appDbContext)
+             UserManager<Database.Models.ApplicationUser> userManager,
+             SignInManager<Database.Models.ApplicationUser> signInManager,
+             ApplicationDbContext appDbContext,
+             IServiceProvider serviceProvider,
+             RoleManager<IdentityRole> roleManager
+             )
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
             _appDbContext = appDbContext;
+            this.roleManager = roleManager;
+            
+            this.serviceProvider = serviceProvider;
         }
 
         // POST: api/User
         [HttpPost("register")]
-        public async Task<IActionResult> Post([FromBody] RegistrationViewModel model)
+        public async Task<IActionResult> PostAsync([FromBody] RegistrationViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            _appDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
 
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var user = new Database.Models.ApplicationUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
-                await _appDbContext.Customers.AddAsync(new Customer { IdentityId = user.Id, Username = user.Email });
-                await _appDbContext.SaveChangesAsync();
+                await _userManager.AddToRoleAsync(user, "Customer");
+                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
+                    ClaimValueTypes.String);
+                await _userManager.AddClaimAsync(user, claim);
+
+                await _userManager.AddClaimAsync(user, groupClaim);
+                
+                var customerCreationContract = new CustomerCreationContract
+                {
+                    IdentityId = user.Id, Username = user.Email
+                };
+
+                var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
+                var createCustomerCommandHandler =
+                    new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
+                await createCustomerCommandHandler.Handle(createCustomerCommand);
+                
                 return new OkObjectResult("Account created");
             }
             return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
@@ -69,22 +98,13 @@ namespace Delivery.Api.Controllers
 
         [HttpGet("GetUser")]
         [Authorize]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public IActionResult GetUser()
         {
-            try
-            {
-                string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-                var result = new UserDto { UserName = userName };
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                var errorMessage = "Error occurred in getting User details";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var result = new UserContract { UserName = userName };
+            return Ok(result);
         }
 
         

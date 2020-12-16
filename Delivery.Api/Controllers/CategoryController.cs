@@ -1,25 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Delivery.Api.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.IdentityModel.Tokens.Jwt;
-using Delivery.Api.Helpers;
-using Delivery.Api.Data;
-using Delivery.Api.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using static Delivery.Api.Extensions.HttpResults;
 using System.Threading;
 using Delivery.Api.Models.Dto;
-using Delivery.Api.Domain.Query;
-using Delivery.Api.QueryHandler;
+using Delivery.Category.Domain.CommandHandlers;
+using Delivery.Category.Domain.Contracts;
+using Delivery.Category.Domain.QueryHandlers;
+using Delivery.Database.Context;
+using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.FrameWork.Context;
+using Delivery.Domain.QueryHandlers;
 
 namespace Delivery.Api.Controllers
 {
@@ -28,163 +23,125 @@ namespace Delivery.Api.Controllers
     //[Authorize]
     public class CategoryController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IQueryHandler<CategoryByIdQuery, CategoryDto> _queryCategoryByIdQuery;
+        private readonly IServiceProvider serviceProvider;
+        // private readonly IQueryHandler<CategoryByIdQuery, CategoryContract> _queryCategoryByIdQuery;
+        // private readonly IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> _categoryByParentIdQuery;
+        //
+        // private readonly ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract>
+        //     categoryCreationCommandHandler;
+        //
+        // private readonly ICommandHandler<CategoryUpdateCommand, CategoryUpdateStatusContract>
+        //     categoryUpdateCommandHandler;
+        // private readonly ICommandHandler<CategoryDeleteCommand, CategoryDeleteStatusContract>
+        //     categoryDeleteCommandHandler;
 
         public CategoryController(
-            ILogger<UserController> logger, 
-            ApplicationDbContext appDbContext,
-            IQueryHandler<CategoryByIdQuery, CategoryDto> queryCategoryByIdQuery)
+            IServiceProvider serviceProvider
+        )
         {
-            _logger = logger;
-            _appDbContext = appDbContext;
-            _queryCategoryByIdQuery = queryCategoryByIdQuery;
+            this.serviceProvider = serviceProvider;
+            
         }
 
         [HttpGet("getAllCategories")]
-        [ProducesResponseType(typeof(List<Category>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<CategoryContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var result = await _appDbContext.Categories.ToListAsync(cancellationToken);
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                var errorMessage = "Fetching Category list";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var categoryGetAllQueryHandler =
+                new CategoryGetAllQueryHandler(serviceProvider, executingRequestContextAdapter);
+            var categoryGetAllQuery = new CategoryGetAllQuery();
+            var result = await categoryGetAllQueryHandler.Handle(categoryGetAllQuery);
+            return Ok(result);
         }
 
         [HttpGet("getAllCategoriesByParentId/{parentId}")]        
-        [ProducesResponseType(typeof(List<Category>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Database.Entities.Category>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCategoriesByParentId(int parentId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var result = await _appDbContext.Categories.Where(x => x.ParentCategoryId == parentId)
-                            .ToListAsync(cancellationToken);
-                _logger.LogInformation(string.Concat("GetCategoriesByParentId: ",parentId, " called."));
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                var errorMessage = "Fetching Category list by parentId";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
-
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var categoryByParentIdQuery = new CategoryByParentIdQuery();
+            var categoryByParentIdQueryHandler =
+                new CategoryByParentIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            
+            var result = await categoryByParentIdQueryHandler.Handle(categoryByParentIdQuery);
+            return Ok(result);
         }
 
         [HttpGet("GetCategoryById/{id}")]
-        [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CategoryContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult>GetCategoryById(int id)
         {
-            try
-            {
-                var categoryByIdQuery = new CategoryByIdQuery();
-                categoryByIdQuery.CategoryId = id;
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var categoryByIdQuery = new CategoryByIdQuery {CategoryId = id};
+            var queryCategoryByIdQuery = new CategoryByIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            var result = await queryCategoryByIdQuery.Handle(categoryByIdQuery);
 
-                var result = await _queryCategoryByIdQuery.Handle(categoryByIdQuery);
-
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                var errorMessage = "Fetching category by id";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            return Ok(result);
         }
 
 
         [HttpPost("create")]
-        [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CategoryContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddCategory(CategoryDto categoryDto)
+        public async Task<IActionResult> AddCategory(CategoryContract categoryContract)
         {
-            
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
-            try
-            {
-                var category = new Category();
-                category.Id = categoryDto.Id;
-                category.CategoryName = categoryDto.CategoryName;
-                category.Description = categoryDto.Description;
-                category.ParentCategoryId = categoryDto.ParentCategoryId;
-                category.Order = categoryDto.Order;
-
-                var result = await _appDbContext.Categories.AddAsync(category);
-                await _appDbContext.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetCategoryById), new {id = category.Id}, category);
-            }
-            catch(Exception ex)
-            {
-                var errorMessage = "Error occurred in creating category";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var categoryCreationCommandHandler =
+                new CategoryCreationCommandHandler(serviceProvider, executingRequestContextAdapter);
+            
+            var categoryCreationCommand = new CategoryCreationCommand(categoryContract);
+            var categoryCreationStatusContract = await categoryCreationCommandHandler.Handle(categoryCreationCommand);
+            
+            return Ok(categoryCreationStatusContract);
         }
 
         [HttpPut("update/{id}")]
-        [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CategoryContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> PutCategory(int id, CategoryDto categorydto)
+        public async Task<IActionResult> PutCategory(int id, CategoryContract categoryContract)
         {
-            if (id != categorydto.Id)
+            if (id != categoryContract.Id)
             {
                 return BadRequest();
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var categoryUpdateCommand = new CategoryUpdateCommand(categoryContract);
+            var categoryUpdateCommandHandler =
+                new CategoryUpdateCommandHandler(serviceProvider, executingRequestContextAdapter);
+            
+            var categoryUpdateStatusContract = await categoryUpdateCommandHandler.Handle(categoryUpdateCommand);
 
-            var result = await _appDbContext.Categories.FindAsync(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            result.CategoryName = categorydto.CategoryName;
-            result.Description = categorydto.Description;
-            result.Order = categorydto.Order;
-
-            _appDbContext.Entry(result).State = EntityState.Modified;
-            try
-            {
-                await _appDbContext.SaveChangesAsync();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Error occurred in updating category";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
-
-            return NoContent();
+            return Ok(categoryUpdateStatusContract);
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var category = await _appDbContext.Categories.FindAsync(id);
-            if (category == null)
+            if (id < 1)
             {
-                return NotFound();
+                return BadRequest();
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var categoryDeleteCommand = new CategoryDeleteCommand(id);
+            var categoryDeleteCommandHandler =
+                new CategoryDeleteCommandHandler(serviceProvider, executingRequestContextAdapter);
+            var categoryDeleteStatusContract = await  categoryDeleteCommandHandler.Handle(categoryDeleteCommand);
 
-            _appDbContext.Categories.Remove(category);
-            await _appDbContext.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(categoryDeleteStatusContract);
         }
 
     }

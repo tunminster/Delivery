@@ -1,0 +1,44 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Database.Context;
+using Delivery.Domain.QueryHandlers;
+using Delivery.Product.Domain.Contracts;
+using Microsoft.EntityFrameworkCore;
+
+namespace Delivery.Product.Domain.QueryHandlers
+{
+    public class ProductGetAllQueryHandler : IQueryHandler<ProductGetAllQuery, List<ProductContract>>
+    {
+        private IServiceProvider serviceProvider;
+        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        public ProductGetAllQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
+        }
+        
+        public async  Task<List<ProductContract>> Handle(ProductGetAllQuery query)
+        {
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            var productContractList =  await databaseContext.Products.Include(x => x.Category)
+                .Select(x => new ProductContract
+                {
+                    Id = x.Id,
+                    CategoryName = x.Category.CategoryName,
+                    CategoryId = x.CategoryId,
+                    Description = x.Description,
+                    ProductName = x.ProductName,
+                    ProductImage = x.ProductImage,
+                    ProductImageUrl = x.ProductImageUrl,
+                    UnitPrice = x.UnitPrice
+                }).ToListAsync();
+
+            return productContractList;
+        }
+    }
+}

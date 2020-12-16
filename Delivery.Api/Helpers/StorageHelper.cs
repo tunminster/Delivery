@@ -52,7 +52,7 @@ namespace Delivery.Api.Helpers
             return await Task.FromResult(true);
         }
 
-        public static async Task<List<string>> GetThumbNailUrls(AzureStorageConfig _storageConfig)
+        public static async Task<List<string>> GetThumbNailUrls(Delivery.Domain.Configuration.AzureStorageConfig _storageConfig)
         {
             List<string> thumbnailUrls = new List<string>();
 

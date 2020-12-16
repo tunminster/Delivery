@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
-using AutoMapper;
-using Delivery.Api.CommandHandler;
-using Delivery.Api.Domain.Command;
-using Delivery.Api.Domain.Query;
 using Delivery.Api.Models.Dto;
-using Delivery.Api.QueryHandler;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.Factories;
+using Delivery.Domain.FrameWork.Context;
+using Delivery.Domain.QueryHandlers;
+using Delivery.Order.Domain.CommandHandlers;
+using Delivery.Order.Domain.Contracts;
+using Delivery.Order.Domain.Contracts.RestContracts;
+using Delivery.Order.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static Delivery.Api.Extensions.HttpResults;
 
 
 namespace Delivery.Api.Controllers
@@ -21,94 +25,84 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class OrderController : ControllerBase
     {
-
-        private readonly ILogger<OrderController> _logger;
-        private readonly ICommandHandler<CreateOrderCommand, bool> _createOrderCommand;
-        private readonly IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]> _queryOrderByCustomerIdQuery;
-
-        public OrderController(
-            ILogger<OrderController> logger,
-            ICommandHandler<CreateOrderCommand, bool> createOrderCommand,
-            IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]> queryOrderByCustomerIdQuery
-        )
+        private readonly IServiceProvider serviceProvider;
+        private readonly IConfiguration configuration;
+        private readonly IHttpClientFactory httpClientFactory;
+        public OrderController(IHttpClientFactory httpClientFactory, 
+            IConfiguration configuration,
+            IServiceProvider serviceProvider)
         {
-            _logger = logger;
-            _createOrderCommand = createOrderCommand;
-            _queryOrderByCustomerIdQuery = queryOrderByCustomerIdQuery;
+            this.serviceProvider = serviceProvider;
+            this.httpClientFactory = httpClientFactory;
+            this.configuration = configuration;
         }
 
         // POST api/values
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OrderCreationContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddOrder(OrderDto orderDto)
+        public async Task<IActionResult> AddOrderAsync(OrderCreationContract orderCreationContract)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var orderItemCommands = new List<OrderItemCommand>();
 
-            try
+            foreach(var item in orderCreationContract.OrderItems)
             {
-                var orderItemCommands = new List<OrderItemCommand>();
-
-                foreach(var item in orderDto.OrderItems)
-                {
-                    orderItemCommands.Add(new OrderItemCommand() { Count = item.Count, ProductId = item.ProductId });
-                }
-
-                var command = new CreateOrderCommand();
-                command.Description = string.Empty;
-                command.TotalAmount = Convert.ToDecimal(orderDto.TotalAmount);
-                command.CurrencyCode = "GBP";
-                command.PaymentType = "Card";
-                command.CardHolderName = orderDto.CardHolderName;
-                command.PaymentCard = orderDto.CardNumber;
-                command.PaymentStatus = string.Empty;
-                command.PaymentExpiryMonth = orderDto.ExpiryMonth;
-                command.PaymentExpiryYear = orderDto.ExpiryYear;
-                command.PaymentCVC = orderDto.Cvc;
-                command.PaymentIssueNumber = "1";
-                command.OrderStatus = string.Empty;
-                command.CustomerId = orderDto.CustomerId;
-                command.DateCreated = DateTime.UtcNow;
-                command.OrderItems = orderItemCommands;
-                command.ShippingAddressId = orderDto.ShippingAddressId;
-                command.SaveCard = orderDto.SaveCard;
-
-                await _createOrderCommand.Handle(command);
-
-                return Ok();
+                orderItemCommands.Add(new OrderItemCommand() { Count = item.Count, ProductId = item.ProductId });
             }
-            catch (Exception ex)
+
+            var command = new CreateOrderCommand();
+            command.Description = string.Empty;
+            command.TotalAmount = Convert.ToDecimal(orderCreationContract.TotalAmount);
+            command.CurrencyCode = "GBP";
+            command.PaymentType = "Card";
+            command.CardHolderName = orderCreationContract.CardHolderName;
+            command.PaymentCard = orderCreationContract.CardNumber;
+            command.PaymentStatus = string.Empty;
+            command.PaymentExpiryMonth = orderCreationContract.ExpiryMonth;
+            command.PaymentExpiryYear = orderCreationContract.ExpiryYear;
+            command.PaymentCVC = orderCreationContract.Cvc;
+            command.PaymentIssueNumber = "1";
+            command.OrderStatus = string.Empty;
+            command.CustomerId = orderCreationContract.CustomerId;
+            command.DateCreated = DateTime.UtcNow;
+            command.OrderItems = orderItemCommands;
+            command.ShippingAddressId = orderCreationContract.ShippingAddressId;
+            command.SaveCard = orderCreationContract.SaveCard;
+
+            var createOrderCommandHandler = new OrderCommandHandler(httpClientFactory, configuration, serviceProvider,
+                executingRequestContextAdapter);
+
+            await createOrderCommandHandler.Handle(command);
+            var orderCreationStatusContract = new OrderCreationStatusContract
             {
-                var errorMessage = "Error occurred in creating order";
-                _logger.LogError(ex, string.Concat(errorMessage," - " , ex.Message));
-                return InternalServerErrorResult(errorMessage);
-            }
+                OrderId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key), 
+                Status = "Order has been created successfully."
+            };
+
+            return Ok(orderCreationStatusContract);
         }
 
         [HttpGet("GetByUserId/{userId}")]
-        [ProducesResponseType(typeof(List<OrderViewDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<OrderContract>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetProductByCategoryId(int userId)
+        public async Task<IActionResult> GetProductByCategoryIdAsync(int userId)
         {
-            try
-            { 
-                var query = new GetOrderByCustomerIdQuery();
-                query.CustomerId = userId;
-                var result = await _queryOrderByCustomerIdQuery.Handle(query);
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var query = new OrderByCustomerIdQuery {CustomerId = userId};
 
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Fetching orders by userId.";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var orderByCustomerIdQueryHandler =
+                new OrderByCustomerIdQueryHandler(serviceProvider, executingRequestContextAdapter);
+            var result = await orderByCustomerIdQueryHandler.Handle(query);
+
+            return Ok(result);
         }
-
-
     }
 }

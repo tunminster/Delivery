@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <LangVersion>9.0</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+      <LangVersion>9.0</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Delivery.Azure.Library.Core\Delivery.Azure.Library.Core.csproj" />
+      <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj" />
+    </ItemGroup>
+</Project>

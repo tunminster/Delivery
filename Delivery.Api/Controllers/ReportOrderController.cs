@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Delivery.Api.CommandHandler;
-using Delivery.Api.Domain.Command;
 using Delivery.Api.Models.Dto;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.FrameWork.Context;
+using Delivery.Order.Domain.CommandHandlers;
+using Delivery.Order.Domain.Contracts.RestContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using static Delivery.Api.Extensions.HttpResults;
-
 
 namespace Delivery.Api.Controllers
 {
@@ -20,48 +17,34 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class ReportOrderController : ControllerBase
     {
-
-        private readonly ILogger<ReportOrderController> _logger;
-        private readonly ICommandHandler<CreateReportOrderCommand, bool> _createReportOrderCommand;
-        private readonly IMapper _mapper;
+        private readonly IServiceProvider serviceProvider;
 
         public ReportOrderController(
-            ILogger<ReportOrderController> logger,
-            ICommandHandler<CreateReportOrderCommand, bool> createReportOrderCommand,
-            IMapper mapper)
+            IServiceProvider serviceProvider
+            )
         {
-            _logger = logger;
-            _createReportOrderCommand = createReportOrderCommand;
-            _mapper = mapper;
+            this.serviceProvider = serviceProvider;
         }
 
         // POST api/values
         [HttpPost("Create")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddReport(ReportDto reportDto)
+        public async Task<IActionResult> AddReportAsync(ReportCreationContract reportCreationContract)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var createReportOrderCommand = new CreateReportOrderCommand(reportCreationContract);
+            var reportOrderCommandHandler =
+                new ReportOrderCommandHandler(serviceProvider, executingRequestContextAdapter);
 
-            try
-            {
-                var createReportOrderCommand = new CreateReportOrderCommand();
-                createReportOrderCommand = _mapper.Map<CreateReportOrderCommand>(reportDto);
+            await reportOrderCommandHandler.Handle(createReportOrderCommand);
 
-                await _createReportOrderCommand.Handle(createReportOrderCommand);
-
-                return Ok();
-            }
-            catch(Exception ex)
-            {
-                var errorMessage = "Error occurred in creating report order";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
-
+            return Ok();
         }
     }
 }

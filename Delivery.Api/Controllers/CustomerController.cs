@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Delivery.Api.Data;
-using Delivery.Api.Models.Dto;
+using Delivery.Customer.Domain.Contracts;
+using Delivery.Customer.Domain.QueryHandlers;
+using Delivery.Database.Context;
+using Delivery.Domain.FrameWork.Context;
+using Delivery.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static Delivery.Api.Extensions.HttpResults;
-
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,41 +21,31 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class CustomerController : ControllerBase
     {
-        private readonly ILogger<CustomerController> _logger;
-        private readonly ApplicationDbContext _appDbContext;
-        private readonly IMapper _mapper;
+        //private readonly IQueryHandler<CustomerByUsernameQuery, CustomerContract> queryCustomerByUsernameQuery;
+        private readonly IServiceProvider serviceProvider;
 
-        public CustomerController(ILogger<CustomerController> logger,
-        ApplicationDbContext appDbContext,
-        IMapper mapper
-        )
+        public CustomerController(IServiceProvider serviceProvider)
         {
-            _logger = logger;
-            _appDbContext = appDbContext;
-            _mapper = mapper;
+            this.serviceProvider = serviceProvider;
         }
 
         [HttpGet("GetCustomer")]
         [Authorize]
-        [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CustomerContract), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCustomer()
+        public async Task<IActionResult> GetCustomerAsync()
         {
-            try
-            {
-                string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-                var result = await _appDbContext.Customers.Where(x => x.Username.ToLower() == userName.ToLower()).Include(x => x.Addresses).FirstOrDefaultAsync();
-                var customerDto = _mapper.Map<CustomerDto>(result);
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+            var customerByUsernameQuery = new CustomerByUsernameQuery(userName);
 
-                return Ok(customerDto);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "Error occurred in getting customer details";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerErrorResult(errorMessage);
-            }
+            var queryCustomerByUsernameQuery =
+                new CustomerByUsernameQueryHandler(serviceProvider, executingRequestContextAdapter);
+            var customerContract = await queryCustomerByUsernameQuery.Handle(customerByUsernameQuery);
+            
+            return Ok(customerContract);
         }
     }
 }

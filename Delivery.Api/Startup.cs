@@ -1,36 +1,51 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
-using Delivery.Api.Auth;
-using Delivery.Api.CommandHandler;
-using Delivery.Api.Data;
-using Delivery.Api.Domain.Command;
-using Delivery.Api.Domain.Query;
-using Delivery.Api.Extensions;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
-using Delivery.Api.Models.Dto;
-using Delivery.Api.QueryHandler;
 using Delivery.Api.Utils.Configs;
-using Microsoft.AspNetCore.Authentication;
+using Delivery.Azure.Library.Configuration.Environments;
+using Delivery.Azure.Library.Configuration.Environments.Interfaces;
+using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Azure.Library.Telemetry.Stdout;
+using Delivery.Azure.Library.WebApi.Middleware;
+using Delivery.Category.Domain.Contracts;
+using Delivery.Category.Domain.QueryHandlers;
+using Delivery.Database.Context;
+using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.Extensions;
+using Delivery.Domain.QueryHandlers;
+using Delivery.Order.Domain.CommandHandlers;
+using Delivery.Order.Domain.Contracts;
+using Delivery.Order.Domain.QueryHandlers;
+using Delivery.Product.Domain.CommandHandlers;
+using Delivery.Product.Domain.Contracts;
+using Delivery.Product.Domain.QueryHandlers;
+using Delivery.Azure.Library.Configuration;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.KeyVault.Providers;
+using Delivery.Azure.Library.Resiliency.Stability;
+using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
+using Delivery.Azure.Library.WebApi.Filters;
+using Delivery.Database.Models;
+using Delivery.Database.Seeding;
+using Delivery.Domain.Factories.Auth;
+using Delivery.Domain.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -56,10 +71,10 @@ namespace Delivery.Api
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                    Configuration.GetConnectionString("DeliveryDevConnection")));
+            
+            services.AddIdentity<Database.Models.ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+            
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -71,6 +86,13 @@ namespace Delivery.Api
                 options.Password.RequiredLength = 6;
                 options.Password.RequiredUniqueChars = 1;
             });
+            
+#if DEBUG
+            // log the local debug information to the output window for easier testing
+            services.AddSingleton<IApplicationInsightsTelemetry, StdoutApplicationInsightsTelemetry>(provider => new StdoutApplicationInsightsTelemetry(provider, Configuration.GetValue<string>("Service_Name")));
+#else
+			services.AddSingleton<IApplicationInsightsTelemetry, Delivery.Azure.Library.Telemetry.ApplicationInsights.ApplicationInsightsTelemetry>(provider => new Delivery.Azure.Library.Telemetry.ApplicationInsights.ApplicationInsightsTelemetry(provider, Configuration.GetValue<string>("Service_Name"), new Delivery.Azure.Library.Telemetry.ApplicationInsights.Initializers.ApplicationTelemetryInitializers(provider, typeof(Startup).Assembly)));
+#endif
 
             services.AddSingleton<IJwtFactory, JwtFactory>();
 
@@ -115,16 +137,26 @@ namespace Delivery.Api
                 configureOptions.ClaimsIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
                 configureOptions.TokenValidationParameters = tokenValidationParameters;
                 configureOptions.SaveToken = true;
+            }).AddFacebook(options =>
+            {
+                options.AppId = Configuration["Authentication:Facebook:AppId"];
+                options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
             });
+            
+            
 
             // api user claim policy
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy("ApiUser", policy =>
+                    policy.RequireAuthenticatedUser()
+                        .RequireAssertion(x =>
+                            x.User.HasClaim(ClaimTypes.Role, ClaimData.JwtClaimIdentifyClaim.ClaimValue)));
+                    //policy.RequireClaim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue));
             });
 
             // add identity
-            var builder = services.AddIdentityCore<ApplicationUser>(o =>
+            var builder = services.AddIdentityCore<Database.Models.ApplicationUser>(o =>
             {
                 // configure identity options
                 o.Password.RequireDigit = false;
@@ -136,9 +168,8 @@ namespace Delivery.Api
 
             builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
             builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-
-    
-
+            
+            
             services.AddResponseCaching();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -153,22 +184,27 @@ namespace Delivery.Api
             services.Configure<AzureLogConfig>(Configuration.GetSection("AzureLogConfig"));
             services.Configure<WorldPayConfig>(Configuration.GetSection("WorldPayConfigs"));
 
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new ApiLoggingFilterAttribute());
+                options.Filters.Add(new JsonPayloadSchemaAttribute());
+            });
 
             services.AddHttpClient();
+            
+            // initial identity data seeding
+            services.AddTransient<IdentityData>();
 
             //register handlers
-            services.AddScoped<ICommandHandler<CreateOrderCommand, bool>, OrderCommandHandler>();
-            services.AddScoped<ICommandHandler<CreateReportOrderCommand, bool>, ReportOrderCommandHandler>();
-            services.AddScoped<ICommandHandler<CreateProductCommand, bool>, CreateProductCommandHandler>();
-
-            services.AddScoped<IQueryHandler<GetOrderByCustomerIdQuery, OrderViewDto[]>, OrdersByCustomerIdQueryHandler>();
-            services.AddScoped<IQueryHandler<CategoryByIdQuery, CategoryDto>, CategoryByIdQueryHandler>();
-            services.AddScoped<IQueryHandler<ProductGetAllQuery, ProductDto[]>, ProductGetAllQueryHandler>();
+            services.AddSingleton<IEnvironmentProvider, EnvironmentProvider>();
+            services.AddSingleton<Delivery.Azure.Library.Configuration.Configurations.Interfaces.IConfigurationProvider, Delivery.Azure.Library.Configuration.Configurations.ConfigurationProvider>();
+            services.AddSingleton<ISecretProvider, KeyVaultCachedSecretProvider>();
+            services.AddSingleton<ICircuitManager, CircuitManager>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IdentityData identityData)
         {
 
             if (env.IsDevelopment())
@@ -176,43 +212,29 @@ namespace Delivery.Api
                 app.UseDeveloperExceptionPage();
             }
             
-
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseStaticFiles();
+            //app.UseIdentityServer();
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-
-
-            app.UseExceptionHandler(
-             builder =>
-             {
-                 builder.Run(
-                            async context =>
-                         {
-                             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-
-                             var error = context.Features.Get<IExceptionHandlerFeature>();
-                             if (error != null)
-                             {
-                                 context.Response.AddApplicationError(error.Error.Message);
-                                 await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
-                             }
-                         });
-             });
+            
+            app.UseMiddleware<RequestBufferingMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            
 
             app.UseAuthentication();
-            //app.UseIdentityServer();
             app.UseAuthorization();
 
             // use middelware response cache
-            app.UseResponseCaching();
+            //app.UseResponseCaching();
+            
             app.Use(async (context, next) =>
             {
                 context.Response.GetTypedHeaders().CacheControl = 
@@ -227,6 +249,9 @@ namespace Delivery.Api
                 await next();
             });
 
+            // Seeding identity roles
+            identityData.Initialize();
+            
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
