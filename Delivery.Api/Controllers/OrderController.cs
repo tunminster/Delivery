@@ -25,8 +25,6 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class OrderController : ControllerBase
     {
-        //private readonly ICommandHandler<CreateOrderCommand, bool> _createOrderCommand;
-        //private readonly IQueryHandler<OrderByCustomerIdQuery, List<OrderContract>> queryOrderByCustomerIdQuery;
         private readonly IServiceProvider serviceProvider;
         private readonly IConfiguration configuration;
         private readonly IHttpClientFactory httpClientFactory;

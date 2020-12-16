@@ -27,12 +27,6 @@ namespace Delivery.Api.Controllers
         private readonly Delivery.Domain.Configuration.AzureStorageConfig storageConfig = null;
 
         private readonly IServiceProvider serviceProvider;
-        //private readonly IQueryHandler<ProductGetAllQuery, List<ProductContract>> queryProductGetAllQuery;
-        // private readonly ICommandHandler<CreateProductCommand, bool> createProductCommandHandler;
-        // private readonly IQueryHandler<ProductByIdQuery, ProductContract> queryProductByIdQuery;
-        // private readonly IQueryHandler<ProductByCategoryIdQuery, List<ProductContract>> queryProductByCategoryIdQuery;
-        // private readonly ICommandHandler<ProductUpdateCommand, bool> productUpdateCommandHandler;
-        // private readonly ICommandHandler<ProductDeleteCommand, bool> productDeleteCommandHandler;
 
         public ProductController(
         IOptions<Delivery.Domain.Configuration.AzureStorageConfig> config,
@@ -40,12 +34,6 @@ namespace Delivery.Api.Controllers
         {
             storageConfig = config.Value;
             this.serviceProvider = serviceProvider;
-            //this.queryProductGetAllQuery = queryProductGetAllQuery;
-            // this.createProductCommandHandler = createProductCommandHandler;
-            // this.queryProductByIdQuery = queryProductByIdQuery;
-            // this.queryProductByCategoryIdQuery = queryProductByCategoryIdQuery;
-            // this.productUpdateCommandHandler = productUpdateCommandHandler;
-            // this.productDeleteCommandHandler = productDeleteCommandHandler;
         }
 
         [HttpGet("getAllProducts")]
