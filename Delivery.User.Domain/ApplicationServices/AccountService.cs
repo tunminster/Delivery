@@ -9,7 +9,9 @@ using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.Models;
 using Delivery.User.Domain.CommandHandlers;
 using Delivery.User.Domain.Contracts.Facebook;
+using Delivery.User.Domain.Contracts.Google;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -40,7 +42,6 @@ namespace Delivery.User.Domain.ApplicationServices
             this.jwtOptions = jwtOptions;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
-        
         
         
         public async Task<FacebookAuthorizationTokenContract> FacebookLoginAsync(FacebookLoginContract facebookLoginContract)
@@ -76,6 +77,46 @@ namespace Delivery.User.Domain.ApplicationServices
             }
             
             return await CreateAccessTokensAsync(user, "Customer");
+        }
+
+        public async Task<string> GoogleTokenLoginAsync(GoogleLoginRequestContract googleLoginRequestContract)
+        {
+            if (string.IsNullOrEmpty(googleLoginRequestContract.IdToken))
+            {
+                throw new Exception("Token is null or empty");
+            }
+
+            var googleUser = await new GoogleService().GetUserFromGoogleAsync(googleLoginRequestContract.IdToken);
+            var user = new Database.Models.ApplicationUser {UserName = googleUser.Email, Email = googleUser.Email};
+            
+            var domainUser = await userManager.FindByNameAsync(googleUser.Email);
+            
+            if (domainUser == null)
+            {
+                
+                user = new Database.Models.ApplicationUser { UserName = googleUser.Email, Email = googleUser.Email };
+                var result = await userManager.CreateAsync(user);
+
+                if (result.Succeeded)
+                {
+                    var userLoginInfo = new UserLoginInfo
+                        ("Google", "Google", user.UserName);
+                        
+                    result = await userManager.AddLoginAsync(user, userLoginInfo);
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(user, "Customer");
+                        var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                        
+                        var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
+                            ClaimValueTypes.String);
+                        await userManager.AddClaimAsync(user, claim);
+                        await userManager.AddClaimAsync(user, groupClaim);
+                    }
+                }
+            }
+            return await CreateAccessTokenStringAsync(user, "Customer");
+
         }
         
         public async Task<string> FacebookLoginTokenAsync(FacebookLoginContract facebookLoginContract)

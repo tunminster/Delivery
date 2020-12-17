@@ -15,6 +15,7 @@ using Delivery.Domain.Models;
 using Delivery.User.Domain.ApplicationServices;
 using Delivery.User.Domain.CommandHandlers;
 using Delivery.User.Domain.Contracts.Facebook;
+using Delivery.User.Domain.Contracts.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -89,6 +90,21 @@ namespace Delivery.Api.Controllers
             applicationDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
             
             var authorizationTokens = await accountService.FacebookLoginTokenAsync(facebookLoginContract);
+            
+            return Ok(authorizationTokens);
+        }
+
+        [HttpPost]
+        [Route("account/login/facebook")]
+        public async Task<IActionResult> GoogleLoginAsync([FromBody] GoogleLoginRequestContract googleLoginRequestContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var accountService = new AccountService(serviceProvider, userManager, jwtFactory, jwtOptions, executingRequestContextAdapter);
+            
+            applicationDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
+            
+            var authorizationTokens = await accountService.GoogleTokenLoginAsync(googleLoginRequestContract);
             
             return Ok(authorizationTokens);
         }
