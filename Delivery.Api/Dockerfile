@@ -5,6 +5,13 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+RUN \
+    apk --no-cache update \
+    && apk --no-cache upgrade \
+    && apk add --no-cache icu-libs bash
+
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src
 COPY ["Delivery.Api/Delivery.Api.csproj", "Delivery.Api/"]
