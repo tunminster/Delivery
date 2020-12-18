@@ -95,7 +95,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPost]
-        [Route("account/login/facebook")]
+        [Route("account/login/google")]
         public async Task<IActionResult> GoogleLoginAsync([FromBody] GoogleLoginRequestContract googleLoginRequestContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
