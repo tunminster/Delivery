@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -13,6 +14,7 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Exceptions;
 using Delivery.Azure.Library.Telemetry.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Newtonsoft.Json.Linq;
 
 namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Telemetry
 {
@@ -137,6 +139,8 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Telemetry
 			bodyReader.AdvanceTo(requestBodyInBytes.Buffer.Start, requestBodyInBytes.Buffer.End);
 			var body = Encoding.UTF8.GetString(requestBodyInBytes.Buffer.FirstSpan);
 			httpRequest.Body.Position = 0;
+			
+			body = ReplaceSensitiveInfo(body);
 			return new Maybe<string>(body);
 		}
 
@@ -144,6 +148,32 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Telemetry
 		{
 			var contentTypeIsDocumentUpload = !string.IsNullOrEmpty(payloadType) && payloadType.ToLowerInvariant().Contains("form-data");
 			return contentTypeIsDocumentUpload || payload.Length > MemoryBufferLoggingLimitBytes;
+		}
+
+		private static string ReplaceSensitiveInfo(string body)
+		{
+			try
+			{
+				var propsToMask = new HashSet<string>(new[] {"password"});
+
+				var jsonObject = JObject.Parse(body);
+
+				if (!jsonObject.Descendants().OfType<JProperty>().Any(x => propsToMask.Contains(x.Name)))
+				{
+					return body;
+				}
+
+				foreach (var p in jsonObject.Descendants().OfType<JProperty>().Where(x => propsToMask.Contains(x.Name)))
+				{
+					p.Value = "xxxxxx";
+				}
+
+				return jsonObject.ToString();
+			}
+			catch (Exception)
+			{
+				return body;
+			}
 		}
 	}
 }
