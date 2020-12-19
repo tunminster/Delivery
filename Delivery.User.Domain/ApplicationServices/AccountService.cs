@@ -3,6 +3,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Customer.Domain.CommandHandlers;
+using Delivery.Customer.Domain.Contracts.RestContracts;
 using Delivery.Database.Models;
 using Delivery.Domain.Factories;
 using Delivery.Domain.Factories.Auth;
@@ -21,7 +23,6 @@ namespace Delivery.User.Domain.ApplicationServices
 {
     public class AccountService
     {
-        private readonly FacebookService facebookService;
         private readonly JwtCommandHandler jwtCommandHandler;
         private readonly IServiceProvider serviceProvider;
         private readonly UserManager<Database.Models.ApplicationUser> userManager;
@@ -34,7 +35,6 @@ namespace Delivery.User.Domain.ApplicationServices
             JwtIssuerOptions jwtOptions,
             IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            facebookService = new FacebookService();
             jwtCommandHandler = new JwtCommandHandler(serviceProvider);
             this.serviceProvider = serviceProvider;
             this.userManager = userManager;
@@ -50,8 +50,8 @@ namespace Delivery.User.Domain.ApplicationServices
             {
                 throw new Exception("Token is null or empty");
             }
-
-            var facebookUser = await facebookService.GetUserFromFacebookAsync(facebookLoginContract.FacebookToken);
+            
+            var facebookUser = await new FacebookService(executingRequestContextAdapter).GetUserFromFacebookAsync(facebookLoginContract.FacebookToken);
             var facebookEmail = $"{facebookUser.Email}_{UniqueIdFactory.UniqueFacebookId()}@facebooklogin.com";
             var user = new Database.Models.ApplicationUser { UserName = facebookUser.Email, Email = facebookEmail };
             var domainUser = await userManager.FindByNameAsync(facebookUser.Email);
@@ -83,10 +83,10 @@ namespace Delivery.User.Domain.ApplicationServices
         {
             if (string.IsNullOrEmpty(googleLoginRequestContract.IdToken))
             {
-                throw new Exception("Token is null or empty");
+                throw new InvalidOperationException("Token must be provided");
             }
 
-            var googleUser = await new GoogleService().GetUserFromGoogleAsync(googleLoginRequestContract.IdToken);
+            var googleUser = await new GoogleService(executingRequestContextAdapter).GetUserFromGoogleAsync(googleLoginRequestContract.IdToken);
             var user = new Database.Models.ApplicationUser {UserName = googleUser.Email, Email = googleUser.Email};
             
             var domainUser = await userManager.FindByNameAsync(googleUser.Email);
@@ -112,6 +112,16 @@ namespace Delivery.User.Domain.ApplicationServices
                             ClaimValueTypes.String);
                         await userManager.AddClaimAsync(user, claim);
                         await userManager.AddClaimAsync(user, groupClaim);
+                        
+                        var customerCreationContract = new CustomerCreationContract
+                        {
+                            IdentityId = user.Id, Username = user.Email
+                        };
+
+                        var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
+                        var createCustomerCommandHandler =
+                            new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
+                        await createCustomerCommandHandler.Handle(createCustomerCommand);
                     }
                 }
             }
@@ -126,14 +136,13 @@ namespace Delivery.User.Domain.ApplicationServices
                 throw new Exception("Token is null or empty");
             }
 
-            var facebookUser = await facebookService.GetUserFromFacebookAsync(facebookLoginContract.FacebookToken);
-            var facebookEmail = $"{facebookUser.Email}_{UniqueIdFactory.UniqueFacebookId()}@facebooklogin.com";
-            var user = new Database.Models.ApplicationUser { UserName = facebookUser.Email, Email = facebookEmail };
+            var facebookUser = await new FacebookService(executingRequestContextAdapter).GetUserFromFacebookAsync(facebookLoginContract.FacebookToken);
+            var user = new Database.Models.ApplicationUser { UserName = facebookUser.Email, Email = facebookUser.Email };
             var domainUser = await userManager.FindByNameAsync(facebookUser.Email);
             if (domainUser == null)
             {
                 
-                user = new Database.Models.ApplicationUser { UserName = $"{facebookUser.FirstName}_{facebookUser.LastName}", Email = facebookEmail };
+                user = new Database.Models.ApplicationUser { UserName = facebookUser.Email, Email = facebookUser.Email };
                 var result = await userManager.CreateAsync(user);
 
                 if (result.Succeeded)
@@ -151,6 +160,16 @@ namespace Delivery.User.Domain.ApplicationServices
                             ClaimValueTypes.String);
                         await userManager.AddClaimAsync(user, claim);
                         await userManager.AddClaimAsync(user, groupClaim);
+                        
+                        var customerCreationContract = new CustomerCreationContract
+                        {
+                            IdentityId = user.Id, Username = user.Email
+                        };
+
+                        var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
+                        var createCustomerCommandHandler =
+                            new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
+                        await createCustomerCommandHandler.Handle(createCustomerCommand);
                     }
                 }
             }
