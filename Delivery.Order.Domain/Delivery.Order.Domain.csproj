@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
+      <PackageReference Include="Stripe.net" Version="39.31.0" />
     </ItemGroup>
 
 </Project>

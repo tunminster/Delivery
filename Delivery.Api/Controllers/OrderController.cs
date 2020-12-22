@@ -9,8 +9,11 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts;
+using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
 using Delivery.Order.Domain.Contracts.RestContracts;
+using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.QueryHandlers;
+using Delivery.Order.Domain.Services.Applications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +39,27 @@ namespace Delivery.Api.Controllers
             this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
         }
+        
+        [HttpPost("Payment/CreatePaymentIntent")]
+        [ProducesResponseType(typeof(PaymentIntentCreationStatusContract), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreatePaymentIntentAsync(StripeOrderCreationContract stripeOrderCreationContract)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var paymentOrderServiceRequest = new PaymentOrderServiceRequest(stripeOrderCreationContract, "gbp");
+            var paymentIntentCreationStatusContract =
+                await new PaymentOrderService(serviceProvider, executingRequestContextAdapter)
+                    .ExecuteStripePaymentIntentWorkflow(paymentOrderServiceRequest);
+
+            return Ok(paymentIntentCreationStatusContract);
+        }
+        
 
         // POST api/values
         [HttpPost("Create")]
@@ -59,7 +83,7 @@ namespace Delivery.Api.Controllers
 
             var command = new CreateOrderCommand();
             command.Description = string.Empty;
-            command.TotalAmount = Convert.ToDecimal(orderCreationContract.TotalAmount);
+            command.TotalAmount = Convert.ToInt32(orderCreationContract.TotalAmount);
             command.CurrencyCode = "GBP";
             command.PaymentType = "Card";
             command.CardHolderName = orderCreationContract.CardHolderName;

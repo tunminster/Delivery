@@ -13,8 +13,7 @@ namespace Delivery.Database.Entities
         [MaxLength(300)]
         public string Description { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalAmount { get; set; }
+        public int TotalAmount { get; set; }
 
         [MaxLength(15)]
         public string CurrencyCode { get; set; }

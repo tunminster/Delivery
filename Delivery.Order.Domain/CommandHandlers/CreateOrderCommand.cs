@@ -12,7 +12,7 @@ namespace Delivery.Order.Domain.CommandHandlers
 
         public string Description { get; set; }
 
-        public decimal TotalAmount { get; set; }
+        public int TotalAmount { get; set; }
 
         public string CurrencyCode { get; set; }
 
