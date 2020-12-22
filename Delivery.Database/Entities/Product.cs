@@ -15,9 +15,8 @@ namespace Delivery.Database.Entities
         public string Description { get; set; }
         public string ProductImage { get; set; }
         public string ProductImageUrl { get; set; }
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal UnitPrice { get; set; }
+        
+        public int UnitPrice { get; set; }
         
         [MaxLength(50)]
         public string Currency { get; set; }
