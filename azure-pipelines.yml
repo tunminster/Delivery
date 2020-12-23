@@ -92,7 +92,7 @@ stages:
           - task: TerraformCLI@0
             inputs:
               command: 'plan'
-              environmentServiceName: 'Hn-Platform-Azure-Connection'
+              environmentServiceName: 'hn-platform-az-Connection'
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
           # - task: TerraformCLI@0
