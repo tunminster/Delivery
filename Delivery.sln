@@ -75,6 +75,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Library.Mess
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Library.WebApi", "Delivery.Azure.Library.WebApi\Delivery.Azure.Library.WebApi.csproj", "{CC558B36-E28D-4C63-ABDA-27FDC152AEAE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StripePayment", "StripePayment", "{DE577B49-C469-44F7-A24B-B2ECE4A524AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.StripePayment.Domain", "Delivery.StripePayment.Domain\Delivery.StripePayment.Domain.csproj", "{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +177,10 @@ Global
 		{CC558B36-E28D-4C63-ABDA-27FDC152AEAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC558B36-E28D-4C63-ABDA-27FDC152AEAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC558B36-E28D-4C63-ABDA-27FDC152AEAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -213,5 +221,7 @@ Global
 		{63DC9FBB-6917-4F92-B98B-36EF3AA2DB8B} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
 		{974E1AB6-061D-4952-90B4-EEF3EE6E4E7D} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
 		{CC558B36-E28D-4C63-ABDA-27FDC152AEAE} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
+		{DE577B49-C469-44F7-A24B-B2ECE4A524AB} = {138DD804-2DE2-4127-A54C-2D138E40BF22}
+		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF} = {DE577B49-C469-44F7-A24B-B2ECE4A524AB}
 	EndGlobalSection
 EndGlobal
