@@ -91,13 +91,13 @@ stages:
           - task: TerraformCLI@0
             inputs:
               command: 'plan'
-              environmentServiceName: '$(hn-platform-environment-ServiceName)'
+              environmentServiceName: $(hn-platform-environment-ServiceName)
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
           - task: TerraformCLI@0
             inputs:
               command: 'apply'
-              environmentServiceName: '$(hn-platform-environment-ServiceName)'
+              environmentServiceName: $(hn-platform-environment-ServiceName)
               commandOptions: '-var-file=$(tfvarfile) -input=false -auto-'
               allowTelemetryCollection: true
         
