@@ -65,6 +65,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
+          - script: echo $(hn-platform-environment-ServiceName)
           - task: replacetokens@3
             inputs:
               targetFiles: '**/*.tfvars'
@@ -84,22 +85,22 @@ stages:
               command: 'init'
               commandOptions: '-var-file=$(tfvarfile)'
               allowTelemetryCollection: true
-          - task: TerraformCLI@0
-            inputs:
-              command: 'validate'
-              allowTelemetryCollection: true
-          - task: TerraformCLI@0
-            inputs:
-              command: 'plan'
-              environmentServiceName: '$[variables.hn-platform-environment-ServiceName]'
-              commandOptions: '-var-file=$(tfvarfile) -input=false'
-              allowTelemetryCollection: true
-          - task: TerraformCLI@0
-            inputs:
-              command: 'apply'
-              environmentServiceName: '$[variables.hn-platform-environment-ServiceName]'
-              commandOptions: '-var-file=$(tfvarfile) -input=false -auto-'
-              allowTelemetryCollection: true
+          # - task: TerraformCLI@0
+          #   inputs:
+          #     command: 'validate'
+          #     allowTelemetryCollection: true
+          # - task: TerraformCLI@0
+          #   inputs:
+          #     command: 'plan'
+          #     environmentServiceName: '$[variables.hn-platform-environment-ServiceName]'
+          #     commandOptions: '-var-file=$(tfvarfile) -input=false'
+          #     allowTelemetryCollection: true
+          # - task: TerraformCLI@0
+          #   inputs:
+          #     command: 'apply'
+          #     environmentServiceName: '$[variables.hn-platform-environment-ServiceName]'
+          #     commandOptions: '-var-file=$(tfvarfile) -input=false -auto-'
+          #     allowTelemetryCollection: true
         
   - stage: DeployDev
     displayName: Deploy Development Env
