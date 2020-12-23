@@ -52,6 +52,31 @@ stages:
             projects: '**/*[Tt]ests/*.csproj'
             arguments: --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
+  - stage: DeployInfraProvisions
+    displayName: Deploy infrastructure provisions
+    dependsOn:Build
+    condition: and(succeeded())
+    variables:
+        environment-name: 'dev'
+    job
+      - job: DeployProvision
+        displayName: Deploy provision
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+
+        - task: replacetokens@3
+          inputs:
+            targetFiles: '**/*.tfvars'
+            encoding: 'auto'
+            writeBOM: true
+            actionOnMissing: 'warn'
+            keepToken: false
+            tokenPrefix: '#{'
+            tokenSuffix: '}#'
+            useLegacyPattern: false
+            enableTelemetry: true
+        
   - stage: DeployDev
     displayName: Deploy Development Env
     dependsOn: Build
