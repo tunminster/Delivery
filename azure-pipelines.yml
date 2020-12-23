@@ -82,7 +82,7 @@ stages:
           - task: TerraformCLI@0
             inputs:
               command: 'init'
-              commandOptions: '-var-file=$(Variablesfile)'
+              commandOptions: '-var-file=$(tfvarfile)'
               allowTelemetryCollection: true
         
   - stage: DeployDev
