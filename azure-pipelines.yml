@@ -91,7 +91,7 @@ stages:
           - task: TerraformCLI@0
             inputs:
               command: 'plan'
-              environmentServiceName: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
+              environmentServiceName: '$(hn-platform-environment-ServiceName)'
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
         
