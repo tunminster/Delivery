@@ -85,16 +85,16 @@ stages:
               command: 'init'
               commandOptions: '-var-file=$(tfvarfile)'
               allowTelemetryCollection: true
-          # - task: TerraformCLI@0
-          #   inputs:
-          #     command: 'validate'
-          #     allowTelemetryCollection: true
-          # - task: TerraformCLI@0
-          #   inputs:
-          #     command: 'plan'
-          #     environmentServiceName: '$[variables.hn-platform-environment-ServiceName]'
-          #     commandOptions: '-var-file=$(tfvarfile) -input=false'
-          #     allowTelemetryCollection: true
+          - task: TerraformCLI@0
+            inputs:
+              command: 'validate'
+              allowTelemetryCollection: true
+          - task: TerraformCLI@0
+            inputs:
+              command: 'plan'
+              environmentServiceName: '$(hn-platform-environment-ServiceName)'
+              commandOptions: '-var-file=$(tfvarfile) -input=false'
+              allowTelemetryCollection: true
           # - task: TerraformCLI@0
           #   inputs:
           #     command: 'apply'
