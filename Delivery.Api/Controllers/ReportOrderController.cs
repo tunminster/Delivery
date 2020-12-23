@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Delivery.Api.Models.Dto;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Order.Domain.CommandHandlers;
@@ -28,8 +30,8 @@ namespace Delivery.Api.Controllers
 
         // POST api/values
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddReportAsync(ReportCreationContract reportCreationContract)
         {
             if (!ModelState.IsValid)

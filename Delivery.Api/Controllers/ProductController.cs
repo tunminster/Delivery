@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Models.Dto;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
@@ -37,8 +39,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("getAllProducts")]
-        [ProducesResponseType(typeof(List<ProductContract>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(List<ProductContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetAsync(CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -48,8 +50,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetProductById/{id}")]
-        [ProducesResponseType(typeof(ProductContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ProductContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProductByIdAsync(int id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -61,8 +63,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetProductByCategoryId/{id}")]
-        [ProducesResponseType(typeof(List<ProductContract>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(List<ProductContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProductByCategoryIdAsync(int id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -74,8 +76,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(ProductContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ProductContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddProductAsync(ProductContract productContract, IFormFile file)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -100,8 +102,8 @@ namespace Delivery.Api.Controllers
         /// <returns></returns>
         [HttpPost("CreateProduct")]
         //[Consumes("multipart/form-data")]
-        [ProducesResponseType(typeof(ProductContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ProductContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddProductWithStringAsync([FromForm]  ProductContract productContract, IFormFile file)
         {
 

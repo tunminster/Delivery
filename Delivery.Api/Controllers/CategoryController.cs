@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ using Delivery.Category.Domain.Contracts;
 using Delivery.Category.Domain.QueryHandlers;
 using Delivery.Database.Context;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
@@ -44,8 +46,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("getAllCategories")]
-        [ProducesResponseType(typeof(List<CategoryContract>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(List<CategoryContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -57,8 +59,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("getAllCategoriesByParentId/{parentId}")]        
-        [ProducesResponseType(typeof(List<Database.Entities.Category>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(List<Database.Entities.Category>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetCategoriesByParentId(int parentId, CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -71,8 +73,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetCategoryById/{id}")]
-        [ProducesResponseType(typeof(CategoryContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(CategoryContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult>GetCategoryById(int id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -85,8 +87,8 @@ namespace Delivery.Api.Controllers
 
 
         [HttpPost("create")]
-        [ProducesResponseType(typeof(CategoryContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(CategoryContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddCategory(CategoryContract categoryContract)
         {
             if (!ModelState.IsValid)
@@ -106,8 +108,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPut("update/{id}")]
-        [ProducesResponseType(typeof(CategoryContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(CategoryContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PutCategory(int id, CategoryContract categoryContract)
         {
             if (id != categoryContract.Id)

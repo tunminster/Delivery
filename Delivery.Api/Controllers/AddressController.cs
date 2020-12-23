@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -8,6 +9,7 @@ using Delivery.Address.Domain.CommandHandlers;
 using Delivery.Address.Domain.Contracts;
 using Delivery.Address.Domain.QueryHandlers;
 using Delivery.Api.Models.Dto;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
@@ -42,8 +44,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetAddressByUserId/{customerId}")]
-        [ProducesResponseType(typeof(List<AddressContract>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(List<AddressContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetAddressByUserId(int customerId,CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -56,8 +58,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetAddressById/{id}")]
-        [ProducesResponseType(typeof(AddressContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(AddressContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetAddressById(int id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -69,8 +71,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(AddressCreationStatusContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(AddressCreationStatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddAddress(AddressContract addressContract)
         {
 
