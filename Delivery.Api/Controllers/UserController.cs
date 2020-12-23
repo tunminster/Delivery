@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Delivery.Api.Models;
@@ -12,6 +13,7 @@ using Delivery.Api.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Delivery.Api.Models.Dto;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Customer.Domain.CommandHandlers;
 using Delivery.Customer.Domain.Contracts.RestContracts;
 using Delivery.Database.Context;
@@ -98,8 +100,8 @@ namespace Delivery.Api.Controllers
 
         [HttpGet("GetUser")]
         [Authorize]
-        [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(UserContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public IActionResult GetUser()
         {
             string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

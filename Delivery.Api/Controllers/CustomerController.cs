@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Customer.Domain.Contracts;
 using Delivery.Customer.Domain.QueryHandlers;
 using Delivery.Database.Context;
@@ -31,8 +33,8 @@ namespace Delivery.Api.Controllers
 
         [HttpGet("GetCustomer")]
         [Authorize]
-        [ProducesResponseType(typeof(CustomerContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(CustomerContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetCustomerAsync()
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();

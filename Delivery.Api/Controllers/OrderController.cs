@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Delivery.Api.Models.Dto;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Factories;
 using Delivery.Domain.FrameWork.Context;
@@ -41,8 +43,8 @@ namespace Delivery.Api.Controllers
         }
         
         [HttpPost("Payment/CreatePaymentIntent")]
-        [ProducesResponseType(typeof(PaymentIntentCreationStatusContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(PaymentIntentCreationStatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreatePaymentIntentAsync(StripeOrderCreationContract stripeOrderCreationContract)
         {
             if (!ModelState.IsValid)
@@ -63,8 +65,8 @@ namespace Delivery.Api.Controllers
 
         // POST api/values
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(OrderCreationContract), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(OrderCreationContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddOrderAsync(OrderCreationContract orderCreationContract)
         {
             if (!ModelState.IsValid)
@@ -114,8 +116,8 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpGet("GetByUserId/{userId}")]
-        [ProducesResponseType(typeof(List<OrderContract>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(List<OrderContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProductByCategoryIdAsync(int userId)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
