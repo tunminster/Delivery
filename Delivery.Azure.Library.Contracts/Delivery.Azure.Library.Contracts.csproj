@@ -9,4 +9,8 @@
       <ProjectReference Include="..\Delivery.Azure.Library.Core\Delivery.Azure.Library.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="9.3.0" />
+    </ItemGroup>
+
 </Project>

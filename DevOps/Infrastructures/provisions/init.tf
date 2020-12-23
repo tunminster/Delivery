@@ -1,9 +1,9 @@
 terraform {
   backend "azurerm" {
     version = "=2.40.0"
-    storage_account_name = "cadtdpsa"
-    container_name       = "tf-cad-state"
-    key                  = "terraform.tfstate"
-    access_key = "uX3iGf5ahKsS3scpVkVRJ2n1l8N98MGOWvvSKOaVLUctXLwxVJ5XEww/NxZYC7GfetMmb49PDOcM8AtVOu5SQg=="
+    storage_account_name = "${var.state_storage_account_name}"
+    container_name       = "${var.state_storage_account_container_name}"
+    key                  = "${var.state_storage_key_file}"
+    access_key = "${var.state_storage_access_key}"
   }
 }

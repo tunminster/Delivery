@@ -17,6 +17,9 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
         public StripeCountryCode StripeCountryCode { get; set; }
         
         [DataMember]
+        public string Email { get; set; }
+        
+        [DataMember]
         public bool AccountPaymentOption { get; set; }
         
         [DataMember]
@@ -28,6 +31,7 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
                    $"{nameof(StripeAccountType)}: {StripeAccountType.Format()}," +
                    $"{nameof(StripeCountryCode)}: {StripeCountryCode.Format()}," +
                    $"{nameof(AccountPaymentOption)}: {AccountPaymentOption.Format()}," +
+                   $"{nameof(Email)}: {Email.Format()}," +
                    $"{nameof(AccountTransferOption)} : {AccountTransferOption.Format()}";
         }
     }
