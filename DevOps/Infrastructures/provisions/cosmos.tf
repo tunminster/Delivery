@@ -14,7 +14,7 @@ resource "azurerm_cosmosdb_account" "hn-platform-cosmos-db" {
   consistency_policy {
     consistency_level       = "BoundedStaleness"
     max_interval_in_seconds = 10
-    max_staleness_prefix    = 200
+    max_staleness_prefix    = 20
   }
 
   geo_location {
@@ -28,4 +28,13 @@ resource "azurerm_cosmosdb_sql_database" "db" {
   name                = "hn-platform-cosmossql-${var.environment_prefix}"
   resource_group_name = azurerm_cosmosdb_account.hn-platform-cosmos-db.resource_group_name
   account_name        = azurerm_cosmosdb_account.hn-platform-cosmos-db.name
+}
+
+resource "azurerm_cosmosdb_sql_container" "connect-accounts" {
+  name                = "connect-accounts"
+  resource_group_name = azurerm_cosmosdb_account.hn-platform-cosmos-db.resource_group_name
+  account_name        = azurerm_cosmosdb_account.hn-platform-cosmos-db.name
+  database_name       = azurerm_cosmosdb_sql_database.db.name
+  partition_key_path    = "/partition"
+  partition_key_version = 1
 }
