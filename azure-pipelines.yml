@@ -97,7 +97,7 @@ stages:
               backendType: 'azurerm'
               backendServiceArm: 'hn-platform-az-connection'
               backendAzureRmResourceGroupName: 'pngo_vn_rg'
-              backendAzureRmStorageAccountName: 'pngosa'
+              backendAzureRmStorageAccountName: '$(state_storage_account_name)'
               backendAzureRmContainerName: '$(state_storage_account_container_name)'
               backendAzureRmKey: '$(state_storage_key_file)'
               allowTelemetryCollection: true
