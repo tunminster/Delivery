@@ -77,10 +77,20 @@ stages:
               tokenSuffix: '__'
               useLegacyPattern: false
               enableTelemetry: true
+              
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your commands here
+                
+                cat secret.tfvars
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions/variables'
 
           - task: TerraformInstaller@0
             inputs:
               terraformVersion: 'latest'
+
           - task: TerraformCLI@0
             inputs:
               command: 'init'
