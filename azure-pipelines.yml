@@ -114,12 +114,13 @@ stages:
               environmentServiceName: 'hn-platform-az-Connection'
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
-          # - task: TerraformCLI@0
-          #   inputs:
-          #     command: 'apply'
-          #     environmentServiceName: 'hn-platform-az-Connection'
-          #     commandOptions: '-var-file=$(tfvarfile) -input=false -auto-'
-          #     allowTelemetryCollection: true
+          - task: TerraformCLI@0
+            inputs:
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+              environmentServiceName: 'hn-platform-az-Connection'
+              commandOptions: '-var-file=$(tfvarfile) -input=false -auto-'
+              allowTelemetryCollection: true
         
   - stage: DeployDev
     displayName: Deploy Development Env
