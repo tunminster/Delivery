@@ -98,7 +98,7 @@ stages:
               backendServiceArm: 'hn-platform-az-connection'
               backendAzureRmResourceGroupName: 'pngo_vn_rg'
               backendAzureRmStorageAccountName: 'pngosa'
-              backendAzureRmContainerName: 'platform-tf-state-container'
+              backendAzureRmContainerName: '$(state_storage_account_container_name)'
               backendAzureRmKey: 'platform-tf-state.tfstate'
               allowTelemetryCollection: true
 
@@ -114,13 +114,12 @@ stages:
               environmentServiceName: 'hn-platform-az-Connection'
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
-          
-          # - task: TerraformCLI@0
-          #   inputs:
-          #     command: 'apply'
-          #     environmentServiceName: '$[variables.hn-platform-environment-ServiceName]'
-          #     commandOptions: '-var-file=$(tfvarfile) -input=false -auto-'
-          #     allowTelemetryCollection: true
+          - task: TerraformCLI@0
+            inputs:
+              command: 'apply'
+              environmentServiceName: '$[variables.hn-platform-environment-ServiceName]'
+              commandOptions: '-var-file=$(tfvarfile) -input=false -auto-'
+              allowTelemetryCollection: true
         
   - stage: DeployDev
     displayName: Deploy Development Env
