@@ -96,10 +96,10 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
               backendType: 'azurerm'
               backendServiceArm: 'hn-platform-az-connection'
-              backendAzureRmResourceGroupName: 'pngo_vn_rg'
-              backendAzureRmStorageAccountName: 'pngosa'
+              backendAzureRmResourceGroupName: '$(state_storage_account_rg)'
+              backendAzureRmStorageAccountName: '$(state_storage_account_name)'
               backendAzureRmContainerName: '$(state_storage_account_container_name)'
-              backendAzureRmKey: 'platform-tf-state.tfstate'
+              backendAzureRmKey: '$(state_storage_key_file)'
               allowTelemetryCollection: true
 
           - task: TerraformCLI@0
@@ -114,12 +114,13 @@ stages:
               environmentServiceName: 'hn-platform-az-Connection'
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
-          # - task: TerraformCLI@0
-          #   inputs:
-          #     command: 'apply'
-          #     environmentServiceName: 'hn-platform-az-Connection'
-          #     commandOptions: '-var-file=$(tfvarfile) -input=false -auto-'
-          #     allowTelemetryCollection: true
+          - task: TerraformCLI@0
+            inputs:
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+              environmentServiceName: 'hn-platform-az-Connection'
+              commandOptions: '-var-file=$(tfvarfile) -input=false -auto-approve'
+              allowTelemetryCollection: true
         
   - stage: DeployDev
     displayName: Deploy Development Env
