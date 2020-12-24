@@ -6,7 +6,7 @@ resource "azurerm_cosmosdb_account" "hn-platform-cosmos-db" {
   kind                    = "GlobalDocumentDB"
 
   enable_automatic_failover = false
-  capabilities        = [{
+  capabilities {
     name = "EnableServerless"
-  }]
+  }
 }
