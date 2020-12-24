@@ -11,8 +11,5 @@ terraform{
     container_name       = "platform-tf-state-container"
     key                  = "platform-tf-state.tfstate"
 
-    // # rather than defining this inline, the Access Key can also be sourced
-    // # from an Environment Variable - more information is available below.
-    // access_key = "${var.state_storage_access_key}"
   }
 }
