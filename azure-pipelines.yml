@@ -96,10 +96,10 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
               backendType: 'azurerm'
               backendServiceArm: 'hn-platform-az-connection'
-              backendAzureRmResourceGroupName: '$(state_storage_account_rg)'
-              backendAzureRmStorageAccountName: '$(state_storage_account_name)'
-              backendAzureRmContainerName: '$(state_storage_account_container_name)'
-              backendAzureRmKey: '$(state_storage_key_file)'
+              backendAzureRmResourceGroupName: 'pngo_vn_rg'
+              backendAzureRmStorageAccountName: 'pngosa'
+              backendAzureRmContainerName: 'platform-tf-state-container'
+              backendAzureRmKey: 'platform-tf-state.tfstate'
               allowTelemetryCollection: true
 
           - task: TerraformCLI@0
