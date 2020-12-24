@@ -96,7 +96,7 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
               backendType: 'azurerm'
               backendServiceArm: 'hn-platform-az-connection'
-              backendAzureRmResourceGroupName: 'pngo_vn_rg'
+              backendAzureRmResourceGroupName: '$(state_storage_account_rg)'
               backendAzureRmStorageAccountName: '$(state_storage_account_name)'
               backendAzureRmContainerName: '$(state_storage_account_container_name)'
               backendAzureRmKey: '$(state_storage_key_file)'
