@@ -90,13 +90,18 @@ stages:
           - task: TerraformInstaller@0
             inputs:
               terraformVersion: 'latest'
-
           - task: TerraformCLI@0
             inputs:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              commandOptions: '-var-file=$(tfvarfile)'
+              backendType: 'azurerm'
+              backendServiceArm: 'hn-platform-az-connection'
+              backendAzureRmResourceGroupName: 'pngo_vn_rg'
+              backendAzureRmStorageAccountName: 'pngosa'
+              backendAzureRmContainerName: 'platform-tf-state-container'
+              backendAzureRmKey: 'platform-tf-state.tfstate'
               allowTelemetryCollection: true
+
           - task: TerraformCLI@0
             inputs:
               command: 'validate'
