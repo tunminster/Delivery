@@ -52,7 +52,7 @@ stages:
             projects: '**/*[Tt]ests/*.csproj'
             arguments: --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
-  - stage: DeployInfraProvisions
+  - stage: InfraProvisions
     displayName: Deploy infrastructure provisions
     dependsOn: Build
     condition: succeeded()
@@ -60,8 +60,8 @@ stages:
         - group: Hn-Platform-Infra-Variables
         - group: Hn-Platform-Infra
     jobs:
-      - job: DeployProvision
-        displayName: Deploy provision
+      - job: InfraProvisions
+        displayName: Infra provisions
         pool:
           vmImage: 'ubuntu-latest'
         steps:
@@ -124,7 +124,7 @@ stages:
         
   - stage: DeployDev
     displayName: Deploy Development Env
-    dependsOn: Build
+    dependsOn: InfraProvisions
     condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
 
     variables:
