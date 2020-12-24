@@ -1,5 +1,5 @@
-// variable "state_storage_access_key" {
-// }
+variable "state_storage_access_key" {
+}
 
 // variable "state_storage_key_file" {
 // }
