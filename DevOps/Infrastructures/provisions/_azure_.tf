@@ -7,9 +7,9 @@ provider "azurerm" {
 
 terraform{
   backend "azurerm" {
-    // storage_account_name = "${var.state_storage_account_name}"
-    // container_name       = "${var.state_storage_account_container_name}"
-    // key                  = "${var.state_storage_key_file}"
+    storage_account_name = "pngosa"
+    container_name       = "platform-tf-state-container"
+    key                  = "platform-tf-state.tfstate"
 
     // # rather than defining this inline, the Access Key can also be sourced
     // # from an Environment Variable - more information is available below.
