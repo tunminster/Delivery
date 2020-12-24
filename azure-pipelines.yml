@@ -84,7 +84,7 @@ stages:
           - task: TerraformCLI@0
             inputs:
               command: 'init'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructure/provisions'
+              workingDirectory: '$(Build.SourceDirectory)/DevOps/Infrastructure/provisions'
               commandOptions: '-var-file=$(tfvarfile)'
               allowTelemetryCollection: true
           - task: TerraformCLI@0
@@ -94,7 +94,7 @@ stages:
           - task: TerraformCLI@0
             inputs:
               command: 'plan'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructure/provisions'
+              workingDirectory: '$(Build.SourceDirectory)/DevOps/Infrastructure/provisions'
               environmentServiceName: 'hn-platform-az-Connection'
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
