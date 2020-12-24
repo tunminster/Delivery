@@ -73,8 +73,8 @@ stages:
               writeBOM: true
               actionOnMissing: 'warn'
               keepToken: false
-              tokenPrefix: '__'
-              tokenSuffix: '__'
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
               useLegacyPattern: false
               enableTelemetry: true
               
