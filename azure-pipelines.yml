@@ -106,10 +106,11 @@ stages:
             inputs:
               command: 'validate'
               allowTelemetryCollection: true
+
           - task: TerraformCLI@0
             inputs:
               command: 'plan'
-              workingDirectory: '$(Build.SourceDirectory)/DevOps/Infrastructures/provisions'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
               environmentServiceName: 'hn-platform-az-Connection'
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
