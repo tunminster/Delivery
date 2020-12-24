@@ -18,7 +18,7 @@ resource "azurerm_cosmosdb_account" "hn-platform-cosmos-db" {
   }
 
   geo_location {
-    location          = azurerm_resource_group.rg.location
+    location          = azurerm_resource_group.hn-platform-data-persistent.location
     failover_priority = 0
   }
 
@@ -26,6 +26,6 @@ resource "azurerm_cosmosdb_account" "hn-platform-cosmos-db" {
 
 resource "azurerm_cosmosdb_sql_database" "db" {
   name                = "hn-platform-cosmossql-${var.environment_prefix}"
-  resource_group_name = azurerm_cosmosdb_account.db.resource_group_name
-  account_name        = azurerm_cosmosdb_account.db.name
+  resource_group_name = azurerm_cosmosdb_account.hn-platform-cosmos-db.resource_group_name
+  account_name        = azurerm_cosmosdb_account.hn-platform-cosmos-db.name
 }
