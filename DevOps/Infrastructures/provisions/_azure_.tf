@@ -7,10 +7,12 @@ provider "azurerm" {
 
 terraform{
   backend "azurerm" {
-    storage_account_name = "${var.state_storage_account_name}"
-    container_name       = "${var.state_storage_account_container_name}"
-    key                  = "${var.state_storage_key_file}"
+    // storage_account_name = "${var.state_storage_account_name}"
+    // container_name       = "${var.state_storage_account_container_name}"
+    // key                  = "${var.state_storage_key_file}"
 
-    access_key = "${var.state_storage_access_key}"
+    // # rather than defining this inline, the Access Key can also be sourced
+    // # from an Environment Variable - more information is available below.
+    // access_key = "${var.state_storage_access_key}"
   }
 }
