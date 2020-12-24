@@ -77,12 +77,14 @@ stages:
               tokenSuffix: '}#'
               useLegacyPattern: false
               enableTelemetry: true
+
           - task: TerraformInstaller@0
             inputs:
               terraformVersion: 'latest'
           - task: TerraformCLI@0
             inputs:
               command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructure/provisions'
               commandOptions: '-var-file=$(tfvarfile)'
               allowTelemetryCollection: true
           - task: TerraformCLI@0
