@@ -99,7 +99,7 @@ stages:
               backendAzureRmResourceGroupName: 'pngo_vn_rg'
               backendAzureRmStorageAccountName: 'pngosa'
               backendAzureRmContainerName: '$(state_storage_account_container_name)'
-              backendAzureRmKey: 'platform-tf-state.tfstate'
+              backendAzureRmKey: '$(state_storage_key_file)'
               allowTelemetryCollection: true
 
           - task: TerraformCLI@0
