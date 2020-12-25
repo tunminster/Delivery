@@ -25,7 +25,7 @@ resource "azurerm_cosmosdb_account" "hn-platform-cosmos-db" {
 }
 
 resource "azurerm_cosmosdb_sql_database" "db" {
-  name                = "hn-platform-cosmossql-${var.environment_prefix}"
+  name                = "hn-platform"
   resource_group_name = azurerm_cosmosdb_account.hn-platform-cosmos-db.resource_group_name
   account_name        = azurerm_cosmosdb_account.hn-platform-cosmos-db.name
 }

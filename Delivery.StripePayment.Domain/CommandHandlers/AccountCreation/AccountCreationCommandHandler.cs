@@ -2,7 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Storage.Cosmos.Accessors;
+using Delivery.Azure.Library.Storage.Cosmos.Configurations;
+using Delivery.Azure.Library.Storage.Cosmos.Services;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.Constants;
 using Delivery.StripePayment.Domain.Contracts.Enums;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,7 +53,9 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.AccountCreation
             var account = await service.CreateAsync(options);
             
             //Todo: save into cosmosdb
-
+            var cosmosDatabaseAccessor = await CosmosDatabaseAccessor.CreateAsync(serviceProvider, new CosmosDatabaseConnectionConfigurationDefinition(serviceProvider, Constants.CosmosDatabaseHnPlatformConnectionString));
+            var platformCosmosDbService = new PlatformCosmosDbService(serviceProvider, executingRequestContextAdapter, cosmosDatabaseAccessor.CosmosClient, cosmosDatabaseAccessor.GetContainer(Constants.HnPlatform, ContainerConstants.ContainerConstants.ConnectAccountCollectionName));
+                
             var stripeAccountCreationStatusContract = new StripeAccountCreationStatusContract
             {
                 AccountId = account.Id,
