@@ -35,6 +35,6 @@ resource "azurerm_cosmosdb_sql_container" "connect-accounts" {
   resource_group_name = azurerm_cosmosdb_account.hn-platform-cosmos-db.resource_group_name
   account_name        = azurerm_cosmosdb_account.hn-platform-cosmos-db.name
   database_name       = azurerm_cosmosdb_sql_database.db.name
-  partition_key_path    = "/partition"
+  partition_key_path    = "/partitionKey"
   partition_key_version = 1
 }
