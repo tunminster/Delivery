@@ -79,6 +79,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StripePayment", "StripePaym
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.StripePayment.Domain", "Delivery.StripePayment.Domain\Delivery.StripePayment.Domain.csproj", "{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Library.Storage", "Delivery.Azure.Library.Storage\Delivery.Azure.Library.Storage.csproj", "{1EE54E8A-B92D-4D8D-8A23-666E7D6322EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Library.Connection", "Delivery.Azure.Library.Connection\Delivery.Azure.Library.Connection.csproj", "{6737C35E-7F3A-459E-BDD3-96813B30A9AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,6 +185,14 @@ Global
 		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EE54E8A-B92D-4D8D-8A23-666E7D6322EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EE54E8A-B92D-4D8D-8A23-666E7D6322EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EE54E8A-B92D-4D8D-8A23-666E7D6322EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EE54E8A-B92D-4D8D-8A23-666E7D6322EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6737C35E-7F3A-459E-BDD3-96813B30A9AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6737C35E-7F3A-459E-BDD3-96813B30A9AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6737C35E-7F3A-459E-BDD3-96813B30A9AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6737C35E-7F3A-459E-BDD3-96813B30A9AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -223,5 +235,7 @@ Global
 		{CC558B36-E28D-4C63-ABDA-27FDC152AEAE} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
 		{DE577B49-C469-44F7-A24B-B2ECE4A524AB} = {138DD804-2DE2-4127-A54C-2D138E40BF22}
 		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF} = {DE577B49-C469-44F7-A24B-B2ECE4A524AB}
+		{1EE54E8A-B92D-4D8D-8A23-666E7D6322EA} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
+		{6737C35E-7F3A-459E-BDD3-96813B30A9AB} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
 	EndGlobalSection
 EndGlobal
