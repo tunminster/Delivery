@@ -5,6 +5,8 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
+using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation;
+using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.LoginLinkCreation;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Delivery.StripePayment.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -34,11 +36,38 @@ namespace Delivery.Api.Controllers
             {
                 return validationResult.ConvertToBadRequest();
             }
-
+            
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var accountCreationCommand = new AccountCreationCommand(stripeAccountCreationContract);
+            var stripAccountCreationStatusContract =
+                await new AccountCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    accountCreationCommand);
+
+            return Ok(stripAccountCreationStatusContract);
+        }
+
+        [HttpPost("Account/CreatLoginLink")]
+        [ProducesResponseType(typeof(StripeLoginLinkCreationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CreateConnectAccountLoginLinkAsync(
+            StripeLoginLinkCreationContract stripeLoginLinkCreationContract)
+        {
+            var validationResult =
+                await new StripeLoginLinkCreationValidator().ValidateAsync(stripeLoginLinkCreationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
             
-            
-            throw new NotImplementedException();
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var loginLinkCreationCommand = new LoginLinkCreationCommand(stripeLoginLinkCreationContract);
+            var loginLinkCreationStatusContract =
+                new LoginLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    loginLinkCreationCommand);
+
+            return Ok(loginLinkCreationStatusContract);
         }
         
     }

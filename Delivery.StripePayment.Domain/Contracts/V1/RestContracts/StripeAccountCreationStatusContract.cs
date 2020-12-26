@@ -15,11 +15,18 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
         
         [DataMember]
         public StripeAccountStatus AccountStatus { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember]
+        public string OnBoardingAccountUrl { get; set; }
 
         public override string ToString()
         {
             return $"{GetType().Name}" +
                    $"{nameof(AccountId)} : {AccountId.Format()}" +
+                   $"{nameof(OnBoardingAccountUrl)} : {OnBoardingAccountUrl.Format()}" +
                    $"{nameof(AccountStatus)} : {AccountStatus.Format()};";
         }
     }
