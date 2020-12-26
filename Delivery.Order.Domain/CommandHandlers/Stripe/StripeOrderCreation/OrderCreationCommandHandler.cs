@@ -70,7 +70,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
             await databaseContext.SaveChangesAsync();
 
             var orderCreationStatus =
-                new OrderCreationStatus(orderEntity.Id.ToString(), totalAmount, DateTimeOffset.UtcNow);
+                new OrderCreationStatus{OrderId = orderEntity.Id.ToString(), TotalAmount = totalAmount, CreatedDateTime = DateTimeOffset.UtcNow};
 
             return orderCreationStatus;
         }

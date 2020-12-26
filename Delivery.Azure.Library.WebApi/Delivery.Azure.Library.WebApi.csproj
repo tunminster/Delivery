@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Delivery.Azure.Library.Telemetry\Delivery.Azure.Library.Telemetry.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="9.3.0" />
+    </ItemGroup>
+
 </Project>
