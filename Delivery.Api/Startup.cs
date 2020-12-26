@@ -27,9 +27,13 @@ using Delivery.Product.Domain.Contracts;
 using Delivery.Product.Domain.QueryHandlers;
 using Delivery.Azure.Library.Configuration;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Configuration.Features;
+using Delivery.Azure.Library.Configuration.Features.Interfaces;
 using Delivery.Azure.Library.KeyVault.Providers;
 using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
+using Delivery.Azure.Library.Storage.Cosmos.Connections;
+using Delivery.Azure.Library.Storage.Cosmos.Interfaces;
 using Delivery.Azure.Library.WebApi.Filters;
 using Delivery.Database.Models;
 using Delivery.Database.Seeding;
@@ -200,7 +204,9 @@ namespace Delivery.Api
             services.AddSingleton<Delivery.Azure.Library.Configuration.Configurations.Interfaces.IConfigurationProvider, Delivery.Azure.Library.Configuration.Configurations.ConfigurationProvider>();
             services.AddSingleton<ISecretProvider, KeyVaultCachedSecretProvider>();
             services.AddSingleton<ICircuitManager, CircuitManager>();
-            
+            services.AddSingleton<IFeatureProvider, FeatureProvider>();
+            services.AddSingleton<ICosmosDatabaseConnectionManager, CosmosDatabaseConnectionManager>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
