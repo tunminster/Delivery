@@ -65,6 +65,7 @@
     <ProjectReference Include="..\Delivery.Address.Domain\Delivery.Address.Domain.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\Delivery.StripePayment.Domain\Delivery.StripePayment.Domain.csproj" />
     <ProjectReference Include="..\Delivery.User.Domain\Delivery.User.Domain.csproj" />
   </ItemGroup>
 </Project>
