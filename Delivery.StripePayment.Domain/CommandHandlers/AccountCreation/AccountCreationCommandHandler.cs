@@ -13,6 +13,7 @@ using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.Accou
 using Delivery.StripePayment.Domain.Contracts.Enums;
 using Delivery.StripePayment.Domain.Contracts.Models;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
+using Delivery.StripePayment.Domain.DataModels;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
 
@@ -82,8 +83,8 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.AccountCreation
             var stripeAccountLinkCreationContract = new StripeAccountLinkCreationContract
             {
                 AccountId = account.Id,
-                RefreshUrl = "https://www.example.com/reauth",
-                ReturnUrl = "https://www.example.com/return"
+                RefreshUrl = StripeAccountResponseUri.Url.refreshUrl,
+                ReturnUrl = StripeAccountResponseUri.Url.returnUrl
             };
 
             var accountLinkCreationCommand = new AccountLinkCreationCommand(stripeAccountLinkCreationContract);

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
@@ -6,8 +7,13 @@ using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation;
+using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.AccountLinkCreation;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.LoginLinkCreation;
+using Delivery.StripePayment.Domain.Contracts.Enums;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
+using Delivery.StripePayment.Domain.QueryHandlers.Stripe.AccountLinks;
+using Delivery.StripePayment.Domain.QueryHandlers.Stripe.ConnectAccounts;
+using Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccounts;
 using Delivery.StripePayment.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,12 +45,14 @@ namespace Delivery.Api.Controllers
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
-            var accountCreationCommand = new AccountCreationCommand(stripeAccountCreationContract);
-            var stripAccountCreationStatusContract =
-                await new AccountCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
-                    accountCreationCommand);
+            var stripeAccountCreationServiceRequest =
+                new StripeAccountCreationServiceRequest(stripeAccountCreationContract);
 
-            return Ok(stripAccountCreationStatusContract);
+            var stripeAccountCreationServiceResult =
+                await new StripeAccountCreationService(serviceProvider, executingRequestContextAdapter)
+                    .ExecuteStripeAccountCreationWorkflowAsync(stripeAccountCreationServiceRequest);
+
+            return Ok(stripeAccountCreationServiceResult.StripeAccountCreationStatusContract);
         }
 
         [HttpPost("Account/CreatLoginLink")]
@@ -61,7 +69,7 @@ namespace Delivery.Api.Controllers
             }
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-
+            
             var loginLinkCreationCommand = new LoginLinkCreationCommand(stripeLoginLinkCreationContract);
             var loginLinkCreationStatusContract =
                 new LoginLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
@@ -69,6 +77,49 @@ namespace Delivery.Api.Controllers
 
             return Ok(loginLinkCreationStatusContract);
         }
+        
+        [HttpPost("Account/CreatOnBoardingLink")]
+        [ProducesResponseType(typeof(StripeAccountLinkCreationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CreateAccountOnBoardingLinkAsync(
+            StripeAccountLinkCreationContract stripeAccountLinkCreationContract)
+        {
+            var validationResult =
+                await new StripeAccountLinkCreationValidator().ValidateAsync(stripeAccountLinkCreationContract);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var accountLinkCreationCommand =
+                new AccountLinkCreationCommand(stripeAccountLinkCreationContract);
+
+            var stripeAccountLinkCreationStatusContract =
+                await new AccountLinkCreationCommandHandler(serviceProvider).Handle(accountLinkCreationCommand);
+
+            return Ok(stripeAccountLinkCreationStatusContract);
+
+        }
+
+        [HttpGet("Account/GetConnectedAccounts")]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetConnectedAccountsAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var connectAccountGetQuery = new ConnectAccountGetQuery(100, string.Empty, string.Empty);
+            var accounts =
+                await new ConnectAccountGetQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    connectAccountGetQuery);
+
+            return Ok(accounts);
+
+        }
+        
         
     }
 }
