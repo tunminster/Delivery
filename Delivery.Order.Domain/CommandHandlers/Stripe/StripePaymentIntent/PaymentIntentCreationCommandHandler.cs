@@ -35,15 +35,15 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripePaymentIntent
                 {
                     "card",
                 },
-                Amount = 2000,
+                Amount = command.PaymentIntentCreationContract.Amount,
                 Currency = "gbp",
-                ApplicationFeeAmount = 123
+                ApplicationFeeAmount = command.PaymentIntentCreationContract.ApplicationFeeAmount
             };
 
-            var requestOptions = new RequestOptions {StripeAccount = "{{CONNECTED_STRIPE_ACCOUNT_ID}}"};
+            var requestOptions = new RequestOptions {StripeAccount = command.PaymentIntentCreationContract.ConnectedStripeAccountId};
 
             var paymentIntent = await service.CreateAsync(createOptions, requestOptions);
-
+            
             var paymentIntentCreationStatusContract =
                 new PaymentIntentCreationStatusContract(paymentIntent.ClientSecret);
 
