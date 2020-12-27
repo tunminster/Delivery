@@ -7,6 +7,7 @@ namespace Delivery.StripePayment.Domain.Contracts.Enums
     {
         [EnumMember] None = 0,
         [EnumMember] Created = 1,
-        [EnumMember] Updated =2
+        [EnumMember] Updated =2,
+        [EnumMember] AlreadyExisted = 3
     }
 }
