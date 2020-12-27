@@ -12,6 +12,7 @@ using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.Login
 using Delivery.StripePayment.Domain.Contracts.Enums;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Delivery.StripePayment.Domain.QueryHandlers.Stripe.AccountLinks;
+using Delivery.StripePayment.Domain.QueryHandlers.Stripe.ConnectAccounts;
 using Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccounts;
 using Delivery.StripePayment.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -100,6 +101,22 @@ namespace Delivery.Api.Controllers
                 await new AccountLinkCreationCommandHandler(serviceProvider).Handle(accountLinkCreationCommand);
 
             return Ok(stripeAccountLinkCreationStatusContract);
+
+        }
+
+        [HttpGet("Account/GetConnectedAccounts")]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetConnectedAccountsAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var connectAccountGetQuery = new ConnectAccountGetQuery(100, string.Empty, string.Empty);
+            var accounts =
+                await new ConnectAccountGetQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    connectAccountGetQuery);
+
+            return Ok(accounts);
 
         }
         
