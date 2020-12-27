@@ -12,11 +12,13 @@ using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.Login
 using Delivery.StripePayment.Domain.Contracts.Enums;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Delivery.StripePayment.Domain.QueryHandlers.Stripe.AccountLinks;
+using Delivery.StripePayment.Domain.QueryHandlers.Stripe.ApplicationFees;
 using Delivery.StripePayment.Domain.QueryHandlers.Stripe.ConnectAccounts;
 using Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccounts;
 using Delivery.StripePayment.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace Delivery.Api.Controllers
 {
@@ -117,9 +119,23 @@ namespace Delivery.Api.Controllers
                     connectAccountGetQuery);
 
             return Ok(accounts);
-
         }
-        
+
+
+        [HttpGet("ApplicationFees/GetAllApplicationFees")]
+        [ProducesResponseType(typeof(StripeList<ApplicationFee>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetAllApplicationFeesAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var applicationFeeGetQuery = new ApplicationFeeGetQuery(100, string.Empty, string.Empty);
+            var applicationFees =
+                await new ApplicationFeeGetQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    applicationFeeGetQuery);
+
+            return Ok(applicationFees);
+        }
         
     }
 }

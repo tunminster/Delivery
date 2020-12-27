@@ -1,18 +1,17 @@
 using Delivery.Domain.QueryHandlers;
 using Stripe;
 
-namespace Delivery.StripePayment.Domain.QueryHandlers.Stripe.ConnectAccounts
+namespace Delivery.StripePayment.Domain.QueryHandlers.Stripe.ApplicationFees
 {
-    public class ConnectAccountGetQuery : IQuery<StripeList<Account>>
+    public class ApplicationFeeGetQuery : IQuery<StripeList<ApplicationFee>>
     {
-        public ConnectAccountGetQuery(int limit, string endingBefore, string startingAfter)
+        public ApplicationFeeGetQuery(int limit, string startingAfter, string endingBefore)
         {
             Limit = limit;
-            EndingBefore = endingBefore;
             StartingAfter = startingAfter;
+            EndingBefore = endingBefore;
         }
         public int Limit { get; }
-        
         public string EndingBefore { get; }
         
         public string StartingAfter { get; }
