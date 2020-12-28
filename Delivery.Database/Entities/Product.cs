@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Delivery.Azure.Library.Database.Entities.V1;
 
 namespace Delivery.Database.Entities
 {
-    public class Product
+    public class Product : Entity
     {
-        [Key]
-        public int Id { get; set; }
 
         [MaxLength(300)]
         public string ProductName { get; set; }

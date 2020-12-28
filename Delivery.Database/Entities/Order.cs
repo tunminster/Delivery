@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Delivery.Azure.Library.Database.Entities.V1;
 
 namespace Delivery.Database.Entities
 {
-    public class Order
+    public class Order : Entity
     {
-        [Key]
-        public int Id { get; set; }
 
         [MaxLength(300)]
         public string Description { get; set; }
@@ -20,9 +19,7 @@ namespace Delivery.Database.Entities
 
         [MaxLength(15)]
         public string PaymentType { get; set; }
-
-        [MaxLength(25)]
-        public string PaymentCard { get; set; }
+        
 
         [MaxLength(15)]
         public string PaymentStatus { get; set; }
@@ -31,7 +28,7 @@ namespace Delivery.Database.Entities
         public string OrderStatus { get; set; }
 
         [MaxLength(50)]
-        public string PaymentOrderCodeRef { get; set; }
+        public string PaymentIntentId { get; set; }
 
         public int CustomerId { get; set; }
 

@@ -123,7 +123,6 @@ namespace Delivery.Order.Domain.CommandHandlers
             order.TotalAmount = command.TotalAmount;
             order.CurrencyCode = command.CurrencyCode;
             order.PaymentType = command.PaymentType;
-            order.PaymentCard = maskedCardNumberWithSpaces;
             order.PaymentStatus = PaymentStatusEnum.InProgress.ToString();
             order.OrderStatus = OrderStatusEnum.InProgress.ToString();
             order.CustomerId = command.CustomerId;
@@ -171,7 +170,6 @@ namespace Delivery.Order.Domain.CommandHandlers
         {
             var updateOrder = databaseContext.Orders.FirstOrDefault(x => x.Id == orderId);
             updateOrder.PaymentStatus = paymentSuccess ? PaymentStatusEnum.Success.ToString() : PaymentStatusEnum.Failed.ToString();
-            updateOrder.PaymentOrderCodeRef = responseModel.OrderCode;
 
             databaseContext.Update(updateOrder);
 

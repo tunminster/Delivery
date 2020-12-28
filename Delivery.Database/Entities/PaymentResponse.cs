@@ -1,12 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Delivery.Azure.Library.Database.Entities.V1;
 
 namespace Delivery.Database.Entities
 {
-    public class PaymentResponse
+    public class PaymentResponse : Entity
     {
-        [Key]
-        public int Id { get; set; }
 
         [MaxLength(250)]
         public string OrderCode { get; set; }

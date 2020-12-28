@@ -1,9 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Contracts.Interfaces.V1.Entities;
 using Delivery.Azure.Library.Core.Extensions.Json;
+using Delivery.Azure.Library.Database.Entities.V1;
 using Delivery.Azure.Library.Database.Factories;
+using Delivery.Azure.Library.Database.Extensions;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Sharding.Interfaces;
@@ -12,6 +17,8 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependen
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependencies.Models;
 using Delivery.Database.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Delivery.Database.Context
 {
@@ -55,10 +62,8 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<Order>().Property(p => p.Description).HasMaxLength(300);
             modelBuilder.Entity<Order>().Property(p => p.CurrencyCode).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.PaymentType).HasMaxLength(15);
-            modelBuilder.Entity<Order>().Property(p => p.PaymentCard).HasMaxLength(25);
             modelBuilder.Entity<Order>().Property(p => p.PaymentStatus).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.OrderStatus).HasMaxLength(15);
-            modelBuilder.Entity<Order>().Property(p => p.PaymentOrderCodeRef).HasMaxLength(50);
 
             modelBuilder.Entity<PaymentCard>().Property(p => p.Token).HasMaxLength(1000);
             modelBuilder.Entity<PaymentCard>().Property(p => p.Name).HasMaxLength(150);
@@ -66,21 +71,14 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<PaymentCard>().Property(p => p.MaskedCardNumber).HasMaxLength(30);
             modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryMonth).HasMaxLength(10);
             modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryYear).HasMaxLength(10);
-
-            // modelBuilder.Entity<PaymentResponse>().Property(p => p.OrderCode).HasMaxLength(250);
-            // modelBuilder.Entity<PaymentResponse>().Property(p => p.Token).HasMaxLength(250);
-            // modelBuilder.Entity<PaymentResponse>().Property(p => p.OrderDescription).HasMaxLength(250);
-            // modelBuilder.Entity<PaymentResponse>().Property(p => p.Amount).HasMaxLength(20);
-            // modelBuilder.Entity<PaymentResponse>().Property(p => p.CurrencyCode).HasMaxLength(10);
-            // modelBuilder.Entity<PaymentResponse>().Property(p => p.PaymentStatus).HasMaxLength(10);
-            // modelBuilder.Entity<PaymentResponse>().Property(p => p.MaskedCardNumber).HasMaxLength(30);
-            // modelBuilder.Entity<PaymentResponse>().Property(p => p.CvcResultCode).HasMaxLength(10);
-            // modelBuilder.Entity<PaymentResponse>().Property(p => p.Environment).HasMaxLength(10);
+            
 
             modelBuilder.Entity<Report>().Property(p => p.Subject).HasMaxLength(250);
             modelBuilder.Entity<Report>().Property(p => p.ContactNumber).HasMaxLength(20);
             modelBuilder.Entity<Report>().Property(p => p.ReportCategory).HasMaxLength(20);
             modelBuilder.Entity<Report>().Property(p => p.Message).HasMaxLength(500);
+            
+            ConfigureIndexes(modelBuilder);
 
         }
         
@@ -114,7 +112,10 @@ namespace Delivery.Database.Context
             var dependencyName = $"Database-{Shard.Key}";
             var dependencyData = new DependencyData("Live");
             var dependencyTarget = Shard.Key;
-
+            
+            AuditableEntities.AddRange(ChangeTracker.Entries().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified));
+            UpdateExternalIds(AuditableEntities);
+            
             var result = await new DependencyMeasurement(ServiceProvider)
                 .ForDependency(dependencyName, MeasuredDependencyType.Sql, dependencyData.ConvertToJson(), dependencyTarget)
                 .WithContextualInformation(ExecutingRequestContextAdapter.GetTelemetryProperties())
@@ -126,5 +127,41 @@ namespace Delivery.Database.Context
         public IExecutingRequestContextAdapter ExecutingRequestContextAdapter { get; }
         protected IServiceProvider ServiceProvider { get; }
         public IShard Shard => ExecutingRequestContextAdapter.GetShard();
+
+        protected void ConfigureIndexes(ModelBuilder modelBuilder)
+        {
+            ConfigureExternalIdUniqueConstraint(modelBuilder);
+        }
+
+        protected bool IsGenerateExternalIdUniqueConstraint(IMutableEntityType entityType)
+        {
+            return entityType.ClrType.IsSubclassOf(typeof(Entity));
+        }
+
+        private void ConfigureExternalIdUniqueConstraint(ModelBuilder modelBuilder)
+        {
+            var entities = modelBuilder.Model.GetEntityTypes().Where(IsGenerateExternalIdUniqueConstraint).ToList();
+            foreach (var entity in entities)
+            {
+                var externalIdColumn = nameof(Entity.ExternalId);
+                modelBuilder.Entity(entity.ClrType).HasIndex(externalIdColumn).IsUnique()
+                    .HasDatabaseName("IX_UniqueExternalId");
+            }
+        }
+
+        private void UpdateExternalIds(List<EntityEntry> entries)
+        {
+            var entities = entries.Select(entry => entry.Entity).OfType<IEntity>();
+            
+            foreach (var entity in entities)
+            {
+                if (string.IsNullOrEmpty(entity.ExternalId))
+                {
+                    entity.ExternalId = ExecutingRequestContextAdapter.GetShard().GenerateExternalId();
+                }
+            }
+        }
+        
+        internal List<EntityEntry> AuditableEntities { get; } = new();
     }
 }

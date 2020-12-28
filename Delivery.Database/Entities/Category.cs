@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using Delivery.Azure.Library.Database.Entities.V1;
 
 namespace Delivery.Database.Entities
 {
-    public class Category
+    public class Category : Entity
     {
-        [Key]
-        public int Id { get; set; }
 
         [MaxLength(300)]
         public string CategoryName { get; set; }

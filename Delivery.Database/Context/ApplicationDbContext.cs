@@ -60,10 +60,8 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<Order>().Property(p => p.Description).HasMaxLength(300);
             modelBuilder.Entity<Order>().Property(p => p.CurrencyCode).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.PaymentType).HasMaxLength(15);
-            modelBuilder.Entity<Order>().Property(p => p.PaymentCard).HasMaxLength(25);
             modelBuilder.Entity<Order>().Property(p => p.PaymentStatus).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.OrderStatus).HasMaxLength(15);
-            modelBuilder.Entity<Order>().Property(p => p.PaymentOrderCodeRef).HasMaxLength(50);
 
             modelBuilder.Entity<PaymentCard>().Property(p => p.Token).HasMaxLength(1000);
             modelBuilder.Entity<PaymentCard>().Property(p => p.Name).HasMaxLength(150);
