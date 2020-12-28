@@ -8,6 +8,7 @@ namespace Delivery.Api.Controllers
     public class StripeWebhookController : Controller
     {
         // GET
+        [HttpGet("Get/PaymentStatus")]
         public async Task<IActionResult> Index()
         {
             return Ok();

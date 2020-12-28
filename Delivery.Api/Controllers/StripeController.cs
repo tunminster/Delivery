@@ -2,8 +2,10 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
+using Delivery.Domain.Factories;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation;
@@ -135,6 +137,18 @@ namespace Delivery.Api.Controllers
                     applicationFeeGetQuery);
 
             return Ok(applicationFees);
+        }
+
+        [HttpGet("Generate/GetGeneratedId")]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetGeneratedIdAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var id = executingRequestContextAdapter.GetShard().GenerateExternalId();
+
+            return Ok(id);
         }
         
     }
