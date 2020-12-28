@@ -22,7 +22,7 @@ namespace Delivery.Category.Domain.CommandHandlers
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            var category = await databaseContext.Categories.FindAsync(command.CategoryContract.Id);
+            var category = await databaseContext.Categories.FirstAsync(x => x.ExternalId == command.CategoryContract.Id);
 
             var categoryUpdateStatusContract = new CategoryUpdateStatusContract();
             if (category == null)

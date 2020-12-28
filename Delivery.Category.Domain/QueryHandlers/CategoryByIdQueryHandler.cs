@@ -27,7 +27,7 @@ namespace Delivery.Category.Domain.QueryHandlers
 
             var categoryContract = new CategoryContract
             {
-                Id = category.Id,
+                Id = category.ExternalId,
                 CategoryName = category.CategoryName,
                 Description = category.Description,
                 Order = category.Order,

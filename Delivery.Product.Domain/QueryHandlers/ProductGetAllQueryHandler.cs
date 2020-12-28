@@ -28,7 +28,7 @@ namespace Delivery.Product.Domain.QueryHandlers
             var productContractList =  await databaseContext.Products.Include(x => x.Category)
                 .Select(x => new ProductContract
                 {
-                    Id = x.Id,
+                    Id = x.ExternalId,
                     CategoryName = x.Category.CategoryName,
                     CategoryId = x.CategoryId,
                     Description = x.Description,

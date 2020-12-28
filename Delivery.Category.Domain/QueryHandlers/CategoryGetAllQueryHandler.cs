@@ -27,7 +27,7 @@ namespace Delivery.Category.Domain.QueryHandlers
             
             var categoryContractList =  await databaseContext.Categories.Select(x => new CategoryContract()
             {
-                Id = x.Id,
+                Id = x.ExternalId,
                 CategoryName = x.CategoryName,
                 Description = x.Description,
                 Order = x.Order,

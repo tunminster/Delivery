@@ -24,12 +24,16 @@ namespace Delivery.Category.Domain.QueryHandlers
         public async Task<List<CategoryContract>> Handle(CategoryByParentIdQuery query)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+            var parentCategory = await databaseContext.Categories.FirstOrDefaultAsync(x => x.ExternalId == query.ParentId);
+
+            var parentCategoryId = parentCategory.Id;
             
             var result = await databaseContext.Categories
-                .Where(x => x.ParentCategoryId == query.ParentId)
+                .Where(x => x.ParentCategoryId == parentCategoryId)
                 .Select(x => new CategoryContract()
                 {
-                    Id = x.Id,
+                    Id = x.ExternalId,
                     CategoryName = x.CategoryName,
                     Description = x.Description,
                     Order = x.Order,

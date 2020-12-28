@@ -5,10 +5,10 @@ namespace Delivery.Product.Domain.QueryHandlers
 {
     public class ProductByIdQuery : IQuery<ProductContract>
     {
-        public ProductByIdQuery(int productId)
+        public ProductByIdQuery(string productId)
         {
             ProductId = productId;
         }
-        public int ProductId { get; }
+        public string ProductId { get; }
     }
 }

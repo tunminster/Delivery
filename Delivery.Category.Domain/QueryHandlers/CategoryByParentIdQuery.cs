@@ -6,7 +6,11 @@ namespace Delivery.Category.Domain.QueryHandlers
 {
     public class CategoryByParentIdQuery : IQuery<List<CategoryContract>>
     {
-        public int ParentId { get; set; }
+        public CategoryByParentIdQuery(string parentId)
+        {
+            ParentId = parentId;
+        }
+        public string ParentId { get; }
         
     }
 }

@@ -25,10 +25,10 @@ namespace Delivery.Product.Domain.QueryHandlers
             
             var product = await databaseContext.Products
                 .Include(x => x.Category)
-                .FirstOrDefaultAsync(x => x.Id == query.ProductId);
+                .FirstOrDefaultAsync(x => x.ExternalId == query.ProductId);
             var productContract = new ProductContract
             {
-                Id = product.Id,
+                Id = product.ExternalId,
                 CategoryId = product.CategoryId,
                 CategoryName = product.Category.CategoryName,
                 Description = product.Description,

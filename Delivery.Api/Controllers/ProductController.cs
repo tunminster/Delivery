@@ -52,7 +52,7 @@ namespace Delivery.Api.Controllers
         [HttpGet("GetProductById/{id}")]
         [ProducesResponseType(typeof(ProductContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetProductByIdAsync(int id)
+        public async Task<IActionResult> GetProductByIdAsync(string id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var productByIdQuery = new ProductByIdQuery(id);
@@ -65,7 +65,7 @@ namespace Delivery.Api.Controllers
         [HttpGet("GetProductByCategoryId/{id}")]
         [ProducesResponseType(typeof(List<ProductContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetProductByCategoryIdAsync(int id)
+        public async Task<IActionResult> GetProductByCategoryIdAsync(string id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var productByCategoryIdQueryHandler =
@@ -142,7 +142,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> PutProductAsync(int id, ProductContract productContract, IFormFile file)
+        public async Task<IActionResult> PutProductAsync(string id, ProductContract productContract, IFormFile file)
         {
             if(id != productContract.Id)
             {

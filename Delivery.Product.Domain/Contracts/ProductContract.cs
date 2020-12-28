@@ -6,7 +6,7 @@ namespace Delivery.Product.Domain.Contracts
     public class ProductContract
     {
         [DataMember]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [DataMember]
         public string ProductName { get; set; }
