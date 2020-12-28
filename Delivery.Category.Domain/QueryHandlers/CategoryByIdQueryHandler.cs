@@ -23,7 +23,7 @@ namespace Delivery.Category.Domain.QueryHandlers
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            var category = await databaseContext.Categories.FirstOrDefaultAsync(x => x.Id == query.CategoryId);
+            var category = await databaseContext.Categories.FirstOrDefaultAsync(x => x.ExternalId == query.CategoryId);
 
             var categoryContract = new CategoryContract
             {

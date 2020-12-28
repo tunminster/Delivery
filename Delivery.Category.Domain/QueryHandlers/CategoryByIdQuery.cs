@@ -5,6 +5,6 @@ namespace Delivery.Category.Domain.QueryHandlers
 {
     public class CategoryByIdQuery : IQuery<CategoryContract>
     {
-        public int CategoryId { get; set; }
+        public string CategoryId { get; set; }
     }
 }
