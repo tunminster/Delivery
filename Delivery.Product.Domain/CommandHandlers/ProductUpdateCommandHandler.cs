@@ -27,7 +27,7 @@ namespace Delivery.Product.Domain.CommandHandlers
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            var product = await databaseContext.Products.FindAsync(command.ProductContract.Id);
+            var product = await databaseContext.Products.FirstAsync(x => x.ExternalId == command.ProductContract.Id);
             if (product == null)
             {
                 return false;

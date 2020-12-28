@@ -24,12 +24,14 @@ namespace Delivery.Product.Domain.QueryHandlers
         public async Task<List<ProductContract>> Handle(ProductByCategoryIdQuery query)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+            var category = await databaseContext.Categories.FirstOrDefaultAsync(x => x.ExternalId == query.CategoryId);
             
-            var productList = await databaseContext.Products.Where(x => x.CategoryId == query.CategoryId)
+            var productList = await databaseContext.Products.Where(x => x.CategoryId == category.Id)
                 .Include(x => x.Category)
                 .Select(x => new ProductContract
                 {
-                    Id = x.Id,
+                    Id = x.ExternalId,
                     CategoryId = x.CategoryId,
                     CategoryName = x.Category.CategoryName,
                     Description = x.Description,

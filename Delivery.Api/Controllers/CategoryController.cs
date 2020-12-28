@@ -61,10 +61,10 @@ namespace Delivery.Api.Controllers
         [HttpGet("getAllCategoriesByParentId/{parentId}")]        
         [ProducesResponseType(typeof(List<Database.Entities.Category>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetCategoriesByParentId(int parentId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetCategoriesByParentId(string parentId, CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-            var categoryByParentIdQuery = new CategoryByParentIdQuery();
+            var categoryByParentIdQuery = new CategoryByParentIdQuery(parentId);
             var categoryByParentIdQueryHandler =
                 new CategoryByParentIdQueryHandler(serviceProvider, executingRequestContextAdapter);
             
@@ -110,7 +110,7 @@ namespace Delivery.Api.Controllers
         [HttpPut("update/{id}")]
         [ProducesResponseType(typeof(CategoryContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> PutCategory(int id, CategoryContract categoryContract)
+        public async Task<IActionResult> PutCategory(string id, CategoryContract categoryContract)
         {
             if (id != categoryContract.Id)
             {

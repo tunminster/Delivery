@@ -7,7 +7,7 @@ namespace Delivery.Category.Domain.Contracts
     public class CategoryContract
     {
         [DataMember]
-        public int Id { get; set; }
+        public string Id { get; set; }
         
         [DataMember]
         public string CategoryName { get; set; }
