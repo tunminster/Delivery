@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Database.Context;
+using Delivery.Azure.Library.Database.Entities.V1;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
@@ -17,6 +19,7 @@ using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 
 namespace Delivery.Database.Context
@@ -60,10 +63,8 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<Order>().Property(p => p.Description).HasMaxLength(300);
             modelBuilder.Entity<Order>().Property(p => p.CurrencyCode).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.PaymentType).HasMaxLength(15);
-            modelBuilder.Entity<Order>().Property(p => p.PaymentCard).HasMaxLength(25);
             modelBuilder.Entity<Order>().Property(p => p.PaymentStatus).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.OrderStatus).HasMaxLength(15);
-            modelBuilder.Entity<Order>().Property(p => p.PaymentOrderCodeRef).HasMaxLength(50);
 
             modelBuilder.Entity<PaymentCard>().Property(p => p.Token).HasMaxLength(1000);
             modelBuilder.Entity<PaymentCard>().Property(p => p.Name).HasMaxLength(150);
@@ -86,6 +87,8 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<Report>().Property(p => p.ContactNumber).HasMaxLength(20);
             modelBuilder.Entity<Report>().Property(p => p.ReportCategory).HasMaxLength(20);
             modelBuilder.Entity<Report>().Property(p => p.Message).HasMaxLength(500);
+            
+            ConfigureIndexes(modelBuilder);
         }
         
         public override int SaveChanges()
@@ -124,6 +127,27 @@ namespace Delivery.Database.Context
         {
             ExecutingRequestContextAdapter = executingRequestContextAdapter;
             ServiceProvider = serviceProvider;
+        }
+        
+        protected void ConfigureIndexes(ModelBuilder modelBuilder)
+        {
+            ConfigureExternalIdUniqueConstraint(modelBuilder);
+        }
+
+        protected bool IsGenerateExternalIdUniqueConstraint(IMutableEntityType entityType)
+        {
+            return entityType.ClrType.IsSubclassOf(typeof(Entity));
+        }
+
+        private void ConfigureExternalIdUniqueConstraint(ModelBuilder modelBuilder)
+        {
+            var entities = modelBuilder.Model.GetEntityTypes().Where(IsGenerateExternalIdUniqueConstraint).ToList();
+            foreach (var entity in entities)
+            {
+                var externalIdColumn = nameof(Entity.ExternalId);
+                modelBuilder.Entity(entity.ClrType).HasIndex(externalIdColumn).IsUnique()
+                    .HasDatabaseName("IX_UniqueExternalId");
+            }
         }
         
         public IExecutingRequestContextAdapter ExecutingRequestContextAdapter { get; private set; }

@@ -1,13 +1,12 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Delivery.Azure.Library.Database.Entities.V1;
 
 namespace Delivery.Database.Entities
 {
-    public class PaymentCard
+    public class PaymentCard : Entity
     {
-        [Key]
-        public int Id { get; set; }
 
         [MaxLength(1000)]
         public string Token { get; set; }

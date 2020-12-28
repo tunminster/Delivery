@@ -59,8 +59,6 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
                 OrderStatus = OrderStatusEnum.InProgress.ToString(),
                 Description = string.Empty,
-                PaymentCard = string.Empty,
-                PaymentOrderCodeRef = string.Empty,
                 OrderItems = orderItems,
                 DateCreated = DateTime.UtcNow,
                 AddressId = command.StripeOrderCreationContract.ShippingAddressId

@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Delivery.Azure.Library.Database.Entities.V1;
 
 namespace Delivery.Database.Entities
 {
-    public class OrderItem
+    public class OrderItem : Entity
     {
-        [Key]
-        public int Id { get; set; }
         public int ProductId { get; set; }
         public int Count { get; set; }
         public int OrderId { get; set; }

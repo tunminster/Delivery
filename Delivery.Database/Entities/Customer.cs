@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Delivery.Azure.Library.Database.Entities.V1;
 using Delivery.Database.Models;
 
 namespace Delivery.Database.Entities
 {
-    public class Customer
+    public class Customer : Entity
     {
-        [Key]
-        public int Id { get; set; }
         public string IdentityId { get; set; }
 
         [MaxLength(256)]

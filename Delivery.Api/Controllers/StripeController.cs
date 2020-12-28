@@ -2,8 +2,10 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
+using Delivery.Domain.Factories;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation;
@@ -12,11 +14,13 @@ using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.Login
 using Delivery.StripePayment.Domain.Contracts.Enums;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Delivery.StripePayment.Domain.QueryHandlers.Stripe.AccountLinks;
+using Delivery.StripePayment.Domain.QueryHandlers.Stripe.ApplicationFees;
 using Delivery.StripePayment.Domain.QueryHandlers.Stripe.ConnectAccounts;
 using Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccounts;
 using Delivery.StripePayment.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace Delivery.Api.Controllers
 {
@@ -117,9 +121,35 @@ namespace Delivery.Api.Controllers
                     connectAccountGetQuery);
 
             return Ok(accounts);
-
         }
-        
+
+
+        [HttpGet("ApplicationFees/GetAllApplicationFees")]
+        [ProducesResponseType(typeof(StripeList<ApplicationFee>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetAllApplicationFeesAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var applicationFeeGetQuery = new ApplicationFeeGetQuery(100, string.Empty, string.Empty);
+            var applicationFees =
+                await new ApplicationFeeGetQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    applicationFeeGetQuery);
+
+            return Ok(applicationFees);
+        }
+
+        [HttpGet("Generate/GetGeneratedId")]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetGeneratedIdAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var id = executingRequestContextAdapter.GetShard().GenerateExternalId();
+
+            return Ok(id);
+        }
         
     }
 }

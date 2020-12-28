@@ -4,14 +4,16 @@ using Delivery.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delivery.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201228005255_AddExternalId")]
+    partial class AddExternalId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,10 +64,6 @@ namespace Delivery.Database.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
-
                     b.ToTable("Addresses");
                 });
 
@@ -97,10 +95,6 @@ namespace Delivery.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
-
                     b.ToTable("Categories");
                 });
 
@@ -124,10 +118,6 @@ namespace Delivery.Database.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
 
                     b.HasIndex("IdentityId");
 
@@ -186,10 +176,6 @@ namespace Delivery.Database.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
-
                     b.ToTable("Orders");
                 });
 
@@ -215,10 +201,6 @@ namespace Delivery.Database.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
 
                     b.HasIndex("OrderId");
 
@@ -272,10 +254,6 @@ namespace Delivery.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
 
                     b.ToTable("PaymentCards");
                 });
@@ -333,10 +311,6 @@ namespace Delivery.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
-
                     b.ToTable("PaymentResponses");
                 });
 
@@ -384,10 +358,6 @@ namespace Delivery.Database.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
-
                     b.ToTable("Products");
                 });
 
@@ -423,10 +393,6 @@ namespace Delivery.Database.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
 
                     b.ToTable("Reports");
                 });
