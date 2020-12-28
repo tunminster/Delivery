@@ -75,7 +75,7 @@ namespace Delivery.Api.Controllers
         [HttpGet("GetCategoryById/{id}")]
         [ProducesResponseType(typeof(CategoryContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult>GetCategoryById(int id)
+        public async Task<IActionResult>GetCategoryById(string id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var categoryByIdQuery = new CategoryByIdQuery {CategoryId = id};

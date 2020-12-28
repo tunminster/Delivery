@@ -27,7 +27,7 @@ namespace Delivery.Category.Domain.QueryHandlers
 
             var parentCategory = await databaseContext.Categories.FirstOrDefaultAsync(x => x.ExternalId == query.ParentId);
 
-            var parentCategoryId = parentCategory.Id;
+            var parentCategoryId = parentCategory?.Id ?? 0;
             
             var result = await databaseContext.Categories
                 .Where(x => x.ParentCategoryId == parentCategoryId)
