@@ -8,7 +8,7 @@ namespace Delivery.Order.Domain.Contracts.RestContracts
     public class OrderItemCreationContract
     {
         [DataMember]
-        public int ProductId { get; set;}
+        public string ProductId { get; set;}
         
         [DataMember]
         public int Count { get; set; }

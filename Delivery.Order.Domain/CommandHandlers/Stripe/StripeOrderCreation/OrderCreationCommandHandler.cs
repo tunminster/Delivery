@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
@@ -30,7 +31,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
             var productIds = command.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId).ToList();
-            var products = databaseContext.Products.Where(x => productIds.Contains(x.Id)).ToList();
+            var products = databaseContext.Products.Where(x => productIds.Contains(x.ExternalId)).ToList();
 
             var totalAmount = 0;
             
@@ -38,14 +39,15 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
             
             foreach (var item in command.StripeOrderCreationContract.OrderItems)
             {
+                var id = products.FirstOrDefault(x => x.ExternalId == item.ProductId)?.Id ?? throw new InvalidOperationException($"{item.ProductId} does not exist.").WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
                 orderItems.Add(new OrderItem()
                 {
-                    ProductId = item.ProductId,
+                    ProductId = id,
                     Count = item.Count
                 });
 
                 if (products.Count <= 0) continue;
-                var product = products.FirstOrDefault(x => x.Id == item.ProductId);
+                var product = products.FirstOrDefault(x => x.ExternalId == item.ProductId);
 
                 if (product == null) continue;
                 var unitPrice = product.UnitPrice;
