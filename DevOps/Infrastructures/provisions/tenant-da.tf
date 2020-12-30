@@ -1,6 +1,6 @@
 resource "azurerm_mssql_database" "da" {
   name           = "sql-database-da"
-  server_id      = azurerm_sql_server.hn-platform-sql-server.id
+  server_id      = azurerm_mssql_server.hn-platform-sql-server.id
   collation      = "SQL_Latin1_General_CP1_CI_AS"
   server_name                      = azurerm_mssql_server.hn-platform-sql-server.name
   edition                          = "Standard"
