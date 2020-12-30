@@ -1,4 +1,4 @@
-resource "azurerm_key_vault" "hn-platform-key-vault" {
+resource "azurerm_key_vault" "hnplatformkeyvault" {
   name                = "hn-platform-key-vault-${var.environment_prefix}"
   resource_group_name = azurerm_resource_group.hn-platform-data-persistent.name
   location            = azurerm_resource_group.hn-platform-data-persistent.location
@@ -10,7 +10,7 @@ resource "azurerm_key_vault" "hn-platform-key-vault" {
 }
 
 resource "azurerm_key_vault_access_policy" "hn-contributor-access-policy" {
-  key_vault_id = azurerm_key_vault.hn-platform-key-vault.id
+  key_vault_id = azurerm_key_vault.hnplatformkeyvault.id
   tenant_id    = var.tenant_id
   object_id    = var.active_directory_contributor_object_id
 
