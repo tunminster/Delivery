@@ -8,4 +8,8 @@ active_directory_contributor_object_id = "#{active_directory_contributor_object_
 sql_server_admin_name = "#{sql_server_admin_name}#"
 sql_server_admin_password = "#{sql_server_admin_password}#"
 
+sql_database_runtimeuser_name_da = "#{sql_database_runtimeuser_name_da}#"
+tenant_da_password = "#{tenant_da_password}#"
+
+
 
