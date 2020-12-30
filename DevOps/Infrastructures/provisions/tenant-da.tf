@@ -3,7 +3,7 @@ resource "azurerm_mssql_database" "da" {
   server_id      = azurerm_mssql_server.hn-platform-sql-server.id
   collation      = "SQL_Latin1_General_CP1_CI_AS"
   license_type   = "LicenseIncluded"
-  max_size_gb    = 128
+  max_size_gb    = 20
   sku_name       = "S0"
   zone_redundant = true
 
