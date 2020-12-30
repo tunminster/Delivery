@@ -6,7 +6,7 @@ resource "azurerm_key_vault" "hn-platform-key-vault" {
   tenant_id           = var.tenant_id
   soft_delete_enabled = true
   soft_delete_retention_days  = 7
-  tags = locals.common_tags
+  tags = local.common_tags
 }
 
 resource "azurerm_key_vault_access_policy" "hn-contributor-access-policy" {
