@@ -21,6 +21,14 @@ variable "active_directory_contributor_object_id"{
 
 }
 
+variable "sql_server_admin_name"{
+
+}
+
+variable "sql_server_admin_password"{
+    
+}
+
 locals {
     common_tags = {
         environment = var.environment_prefix
