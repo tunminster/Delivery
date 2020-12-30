@@ -3,7 +3,7 @@ resource "azurerm_servicebus_namespace" "hn-platform-service-bus"{
     resource_group_name     = azurerm_resource_group.hn-platform-data-persistent.name
     location                = azurerm_resource_group.hn-platform-data-persistent.location
     sku                     = "Standard"
-    tags                    = var.environment_prefix 
+    tags                    = "${var.environment_prefix}" 
 }
 
 resource "azurerm_servicebus_namespace_authorization_rule" "hn-platform-service-bus-auth-rule"{
@@ -21,7 +21,7 @@ resource "azurerm_key_vault_secret" "service-bus-platform-connection-string" {
   value        = azurerm_servicebus_namespace.hn-platform-service-bus.default_primary_connection_string
   key_vault_id = azurerm_key_vault.hn-platform-key-vault.id
 
-  tags = var.environment_prefix
+  tags = "${var.environment_prefix}"
 }
 
 # Order topic
@@ -47,7 +47,7 @@ resource "azurerm_key_vault_secret" "service-bus-topic-orders-connection-string"
   value        = azurerm_servicebus_topic_authorization_rule.platform-orders.primary_connection_string
   key_vault_id = azurerm_key_vault.hn-platform-key-vault.id
 
-  tags = var.environment_prefix
+  tags = "${var.environment_prefix}"
 }
 
 
