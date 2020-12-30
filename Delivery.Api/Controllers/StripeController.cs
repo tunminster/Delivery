@@ -11,6 +11,7 @@ using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.AccountLinkCreation;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.LoginLinkCreation;
+using Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentIntentConfirmation;
 using Delivery.StripePayment.Domain.Contracts.Enums;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Delivery.StripePayment.Domain.QueryHandlers.Stripe.AccountLinks;
@@ -139,6 +140,33 @@ namespace Delivery.Api.Controllers
             return Ok(applicationFees);
         }
 
+        [HttpPost("Payment/CapturePayment")]
+        [ProducesResponseType(typeof(StripePaymentCaptureCreationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CapturePaymentAsync(
+            StripePaymentCaptureCreationContract stripePaymentCaptureCreationContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var validationResult =
+                await new StripePaymentCaptureCreationValidator().ValidateAsync(stripePaymentCaptureCreationContract);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+
+            var paymentIntentConfirmationCommand =
+                new PaymentIntentConfirmationCommand(stripePaymentCaptureCreationContract);
+
+            var stripePaymentCaptureCreationStatus =
+                await new PaymentIntentConfirmationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(paymentIntentConfirmationCommand);
+
+            return Ok(stripePaymentCaptureCreationStatus);
+        }
+
+        
         [HttpGet("Generate/GetGeneratedId")]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]

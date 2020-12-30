@@ -35,6 +35,7 @@ namespace Delivery.Order.Domain.Services.Applications
                 Amount = orderCreationStatus.TotalAmount,
                 ApplicationFeeAmount = ApplicationFeeGenerator.GeneratorFees(orderCreationStatus.TotalAmount),
                 ConnectedStripeAccountId = "acct_1I1KVwRMcyGaqHir",
+                OrderId = orderCreationStatus.OrderId,
                 Currency = "gbp"
             };
 
