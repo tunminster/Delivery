@@ -129,12 +129,14 @@ namespace Delivery.Order.Domain.CommandHandlers
             order.DateCreated = command.DateCreated;
             order.AddressId = command.ShippingAddressId;
             order.OrderItems = new List<OrderItem>();
-
+            
+            
             foreach (var item in command.OrderItems)
             {
+                var product = databaseContext.Products.First(x => x.ExternalId == item.ProductId);
                 order.OrderItems.Add(new OrderItem()
                 {
-                    ProductId = item.ProductId,
+                    ProductId = product.Id,
                     Count = item.Count
                 });
             }

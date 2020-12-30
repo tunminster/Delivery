@@ -47,7 +47,7 @@ namespace Delivery.Order.Domain.CommandHandlers
 
     public class OrderItemCommand
     {
-        public int ProductId { get; set; }
+        public string ProductId { get; set; }
         public int Count { get; set; }
     }
 }
