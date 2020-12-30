@@ -2,9 +2,10 @@ resource "azurerm_mssql_database" "da" {
   name           = "sql-database-da"
   server_id      = azurerm_mssql_server.hn-platform-sql-server.id
   collation      = "SQL_Latin1_General_CP1_CI_AS"
-  server_name                      = azurerm_mssql_server.hn-platform-sql-server.name
-  edition                          = "Standard"
-  requested_service_objective_name = "S0"
+  license_type   = "LicenseIncluded"
+  max_size_gb    = 256
+  sku_name       = "S0"
+  zone_redundant = true
 
 
   extended_auditing_policy {
