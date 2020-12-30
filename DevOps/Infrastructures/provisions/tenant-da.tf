@@ -3,8 +3,8 @@ resource "azurerm_mssql_database" "da" {
   server_id      = azurerm_mssql_server.hn-platform-sql-server.id
   collation      = "SQL_Latin1_General_CP1_CI_AS"
   license_type   = "LicenseIncluded"
-  max_size_gb    = 256
-  sku_name       = "S1"
+  max_size_gb    = 4
+  sku_name       = "S0"
 
 
   extended_auditing_policy {
