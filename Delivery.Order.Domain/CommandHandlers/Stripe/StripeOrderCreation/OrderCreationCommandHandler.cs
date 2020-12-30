@@ -65,6 +65,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
                 Description = string.Empty,
                 OrderItems = orderItems,
                 DateCreated = DateTime.UtcNow,
+                CustomerId = command.StripeOrderCreationContract.CustomerId,
                 AddressId = command.StripeOrderCreationContract.ShippingAddressId
             };
 
