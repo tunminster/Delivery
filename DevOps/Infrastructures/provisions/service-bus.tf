@@ -19,7 +19,7 @@ resource "azurerm_servicebus_namespace_authorization_rule" "hn-platform-service-
 resource "azurerm_key_vault_secret" "service-bus-platform-connection-string" {
   name         = "Hn-ServiceBus-ConnectionString"
   value        = azurerm_servicebus_namespace.hn-platform-service-bus.default_primary_connection_string
-  key_vault_id = azurerm_key_vault.hnplatformkeyvault.id
+  key_vault_id = azurerm_key_vault.hnkeyvault.id
 
   tags = local.common_tags
 }
@@ -45,7 +45,7 @@ resource "azurerm_servicebus_topic_authorization_rule" "platform-orders" {
 resource "azurerm_key_vault_secret" "service-bus-topic-orders-connection-string" {
   name         = "ServiceBus-Topic-Orders-ConnectionString"
   value        = azurerm_servicebus_topic_authorization_rule.platform-orders.primary_connection_string
-  key_vault_id = azurerm_key_vault.hnplatformkeyvault.id
+  key_vault_id = azurerm_key_vault.hnkeyvault.id
 
   tags = local.common_tags
 }

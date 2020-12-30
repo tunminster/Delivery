@@ -10,7 +10,7 @@ resource "azurerm_key_vault" "hnkeyvault" {
 }
 
 resource "azurerm_key_vault_access_policy" "hn-contributor-access-policy" {
-  key_vault_id = azurerm_key_vault.hnplatformkeyvault.id
+  key_vault_id = azurerm_key_vault.hnkeyvault.id
   tenant_id    = var.tenant_id
   object_id    = var.active_directory_contributor_object_id
 
