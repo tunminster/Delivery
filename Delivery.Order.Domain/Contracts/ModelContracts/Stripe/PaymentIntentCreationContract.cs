@@ -20,6 +20,9 @@ namespace Delivery.Order.Domain.Contracts.ModelContracts.Stripe
         public int ApplicationFeeAmount { get; set; }
         
         [DataMember]
+        public string OrderId { get; set; }
+        
+        [DataMember]
         public string ConnectedStripeAccountId { get; set; }
         
         public override string ToString()

@@ -6,6 +6,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.Factories;
 using Delivery.Order.Domain.Contracts.RestContracts;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Enum;
@@ -53,6 +54,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
 
             var orderEntity = new Database.Entities.Order
             {
+                ExternalId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()),
                 TotalAmount = totalAmount,
                 CurrencyCode = command.CurrencyCode,
                 PaymentType = "Card",
@@ -68,7 +70,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
             await databaseContext.SaveChangesAsync();
 
             var orderCreationStatus =
-                new OrderCreationStatus{OrderId = orderEntity.Id.ToString(), TotalAmount = totalAmount, CreatedDateTime = DateTimeOffset.UtcNow};
+                new OrderCreationStatus{OrderId = orderEntity.ExternalId, TotalAmount = totalAmount, CreatedDateTime = DateTimeOffset.UtcNow};
 
             return orderCreationStatus;
         }
