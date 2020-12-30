@@ -4,7 +4,7 @@ resource "azurerm_mssql_database" "da" {
   collation      = "SQL_Latin1_General_CP1_CI_AS"
   license_type   = "LicenseIncluded"
   max_size_gb    = 256
-  sku_name       = "S0"
+  sku_name       = "S1"
 
 
   extended_auditing_policy {
