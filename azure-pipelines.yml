@@ -3,6 +3,12 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+parameters:
+  - name: RunInfraProvisionStage
+    displayName: Run Infra Provisioning
+    type: boolean
+    default: false
+
 trigger:
 - master
 
@@ -51,7 +57,7 @@ stages:
             command: test
             projects: '**/*[Tt]ests/*.csproj'
             arguments: --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-
+            
   - stage: InfraProvisions
     displayName: Deploy infrastructure provisions
     dependsOn: Build
