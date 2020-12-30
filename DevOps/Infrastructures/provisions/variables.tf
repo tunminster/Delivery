@@ -12,3 +12,11 @@ variable "state_storage_account_container_name" {
 
 variable "environment_prefix" {
 }
+
+variable "tenant_id"{
+
+}
+
+variable "active_directory_contributor_object_id"{
+    
+}
