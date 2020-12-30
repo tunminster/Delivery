@@ -1,5 +1,5 @@
 resource "azurerm_key_vault" "hnkeyvault" {
-  name                = "hn-platform-key-vault-${var.environment_prefix}"
+  name                = "hn-key-vault-${var.environment_prefix}"
   resource_group_name = azurerm_resource_group.hn-platform-data-persistent.name
   location            = azurerm_resource_group.hn-platform-data-persistent.location
   sku_name            = "standard"
