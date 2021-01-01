@@ -8,16 +8,16 @@ resource "azurerm_redis_cache" "hn-redis-cache" {
   enable_non_ssl_port = false
 }
 
-// resource "azurerm_key_vault_secret" "redis-cache-connection-string" {
-//   name         = "RedisCache-ConnectionString"
-//   value        = "${azurerm_redis_cache.hn-redis-cache}:${azurerm_redis_cache.hn-redis-cache.ssl_port},password=${azurerm_redis_cache.hn-redis-cache.primary_access_key},ssl=True,abortConnect=False"
-//   key_vault_id = azurerm_key_vault.hnkeyvault.id
+resource "azurerm_key_vault_secret" "redis-cache-connection-string" {
+  name         = "RedisCache-ConnectionString"
+  value        = "${azurerm_redis_cache.hn-redis-cache.name}.redis.cache.windows.net:6380,password=${azurerm_redis_cache.hn-redis-cache.primary_access_key},ssl=True,abortConnect=False"
+  key_vault_id = azurerm_key_vault.hnkeyvault.id
 
-//   tags = local.common_tags
+  tags = local.common_tags
 
-//   lifecycle {
-//     ignore_changes = [
-//       tags
-//     ]
-//   }
-// }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
+}
