@@ -34,14 +34,14 @@ namespace Delivery.Azure.Library.Database.DataAccess
 	{
 		protected IServiceProvider ServiceProvider { get; }
 
-		protected ShardedDataAccess(IServiceProvider serviceProvider, Func<Task<TDatabaseContext>> createShardedDatabaseContextFunctionWithTask, AsyncRetryPolicy? retryPolicy = null)
+		public ShardedDataAccess(IServiceProvider serviceProvider, Func<Task<TDatabaseContext>> createShardedDatabaseContextFunctionWithTask, AsyncRetryPolicy? retryPolicy = null)
 		{
 			ServiceProvider = serviceProvider;
 			ReusableDatabaseContext = new ReusableShardedDbContext<TDatabaseContext>(createShardedDatabaseContextFunctionWithTask);
 			AsyncRetryPolicy = retryPolicy ?? RetryPolicyBuilder.Build(serviceProvider).WithWaitAndRetry();
 		}
 
-		protected ShardedDataAccess(IServiceProvider serviceProvider, TDatabaseContext usedShardedDatabaseContext, Func<Task<TDatabaseContext>> createShardedDatabaseContextFunctionWithTask, AsyncRetryPolicy? retryPolicy = null)
+		public ShardedDataAccess(IServiceProvider serviceProvider, TDatabaseContext usedShardedDatabaseContext, Func<Task<TDatabaseContext>> createShardedDatabaseContextFunctionWithTask, AsyncRetryPolicy? retryPolicy = null)
 		{
 			ServiceProvider = serviceProvider;
 			ReusableDatabaseContext = new ReusableShardedDbContext<TDatabaseContext>(usedShardedDatabaseContext, createShardedDatabaseContextFunctionWithTask);

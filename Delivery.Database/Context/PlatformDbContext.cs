@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Contracts.Interfaces.V1.Entities;
 using Delivery.Azure.Library.Core.Extensions.Json;
+using Delivery.Azure.Library.Database.Context;
 using Delivery.Azure.Library.Database.Entities.V1;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Database.Extensions;
@@ -22,10 +23,10 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Delivery.Database.Context
 {
-    public class PlatformDbContext : DbContext
+    public class PlatformDbContext : ShardedDatabaseContext
     {
         
-        public PlatformDbContext(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter, DbContextOptions dbContextOptions) : base(dbContextOptions)
+        public PlatformDbContext(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter, DbContextOptions dbContextOptions) : base(serviceProvider, executingRequestContextAdapter, dbContextOptions)
         {
             ExecutingRequestContextAdapter = executingRequestContextAdapter;
             ServiceProvider = serviceProvider;

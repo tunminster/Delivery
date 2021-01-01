@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Delivery.Azure.Library.Contracts.Interfaces.V1.Entities;
 using Delivery.Azure.Library.Database.Entities.V1;
 
 namespace Delivery.Database.Entities
 {
-    public class Order : Entity
+    public class Order : Entity, IAuditableEntity, ISoftDeleteEntity
     {
 
         [MaxLength(300)]
@@ -40,5 +41,10 @@ namespace Delivery.Database.Entities
         public virtual Customer Customer { get; set; }
 
         public virtual ICollection<OrderItem> OrderItems { get; set; }
+        
+        public string InsertedBy { get; set; }
+        
+        public DateTimeOffset InsertionDateTime { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

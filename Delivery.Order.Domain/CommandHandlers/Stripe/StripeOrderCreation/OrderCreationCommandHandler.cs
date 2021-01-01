@@ -33,7 +33,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
             var productIds = command.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId).ToList();
             var products = databaseContext.Products.Where(x => productIds.Contains(x.ExternalId)).ToList();
 
-            var totalAmount = 0;
+            //var totalAmount = 0;
             
             var orderItems = new List<OrderItem>();
             
@@ -46,18 +46,18 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
                     Count = item.Count
                 });
 
-                if (products.Count <= 0) continue;
-                var product = products.FirstOrDefault(x => x.ExternalId == item.ProductId);
-
-                if (product == null) continue;
-                var unitPrice = product.UnitPrice;
-                totalAmount += unitPrice * item.Count;
+                // if (products.Count <= 0) continue;
+                // var product = products.FirstOrDefault(x => x.ExternalId == item.ProductId);
+                //
+                // if (product == null) continue;
+                // var unitPrice = product.UnitPrice;
+                // totalAmount += unitPrice * item.Count;
             }
 
             var orderEntity = new Database.Entities.Order
             {
-                ExternalId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()),
-                TotalAmount = totalAmount,
+                ExternalId = command.OrderCreationStatus.OrderId,
+                TotalAmount = command.OrderCreationStatus.TotalAmount,
                 CurrencyCode = command.OrderCreationStatus.CurrencyCode,
                 PaymentType = "Card",
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
@@ -66,14 +66,17 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
                 OrderItems = orderItems,
                 DateCreated = DateTime.UtcNow,
                 CustomerId = command.StripeOrderCreationContract.CustomerId,
-                AddressId = command.StripeOrderCreationContract.ShippingAddressId
+                AddressId = command.StripeOrderCreationContract.ShippingAddressId,
+                IsDeleted = false,
+                InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+                InsertionDateTime = DateTimeOffset.UtcNow
             };
 
             await databaseContext.AddAsync(orderEntity);
             await databaseContext.SaveChangesAsync();
 
-            var orderCreationStatus =
-                new OrderCreationStatus{OrderId = orderEntity.ExternalId, CurrencyCode = command.OrderCreationStatus.CurrencyCode, TotalAmount = totalAmount, CreatedDateTime = DateTimeOffset.UtcNow};
+            var orderCreationStatus = command.OrderCreationStatus;
+            orderCreationStatus.CreatedDateTime = orderEntity.InsertionDateTime;  
 
             return orderCreationStatus;
         }

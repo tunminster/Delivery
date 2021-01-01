@@ -12,6 +12,8 @@
 
     <ItemGroup>
       <PackageReference Include="FluentValidation" Version="9.3.0" />
+      <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.20" />
+      <PackageReference Include="StringToExpression" Version="1.1.1" />
     </ItemGroup>
 
 </Project>
