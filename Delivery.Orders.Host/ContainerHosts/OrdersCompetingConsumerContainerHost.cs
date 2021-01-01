@@ -54,8 +54,6 @@ namespace Delivery.Orders.Host.ContainerHosts
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");
             }
-            
-            throw new System.NotImplementedException();
         }
     }
 }

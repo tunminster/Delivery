@@ -1,11 +1,19 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Azure.Core;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation;
+using Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderTotalAmountCreation;
 using Delivery.Order.Domain.CommandHandlers.Stripe.StripePaymentIntent;
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
+using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Factories;
+using Delivery.Order.Domain.Handlers.MessageHandlers;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Order.Domain.Services.Applications
 {
@@ -26,13 +34,21 @@ namespace Delivery.Order.Domain.Services.Applications
             {
                 CurrencyCode = paymentOrderServiceRequest.CurrencyCode
             };
-            var orderCreationCommand = new OrderCreationCommand(paymentOrderServiceRequest.StripeOrderCreationContract,
-                orderCreateStatusContract);
+
+            var stripeOrderTotalAmountCreationCommand =
+                new StripeOrderTotalAmountCreationCommand(paymentOrderServiceRequest.StripeOrderCreationContract,
+                    orderCreateStatusContract);
+            var productIds = string.Join(",",
+                paymentOrderServiceRequest.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId));
+            var cacheKey =
+                $"products-{productIds}-default-includes-{executingRequestContextAdapter.GetAuthenticatedUser().UserEmail}";
 
             var orderCreationStatus =
-                await new OrderCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
-                    orderCreationCommand);
-
+                await new StripeOrderTotalAmountCreationCommandHandler(serviceProvider, executingRequestContextAdapter,
+                    cacheKey).Handle(stripeOrderTotalAmountCreationCommand);
+            
+            await PublishOrderCreationMessageAsync(paymentOrderServiceRequest.StripeOrderCreationContract,
+                orderCreationStatus);
             
             var paymentIntentCreationContract = new PaymentIntentCreationContract
             {
@@ -50,6 +66,22 @@ namespace Delivery.Order.Domain.Services.Applications
 
             return paymentIntentCreationStatusContract;
 
+        }
+
+        private async Task PublishOrderCreationMessageAsync(StripeOrderCreationContract stripeOrderCreationContract,
+            OrderCreationStatus orderCreationStatus)
+        {
+            var orderCreationMessage = new OrderCreationMessage
+            {
+                PayloadIn = stripeOrderCreationContract,
+                PayloadOut = orderCreationStatus,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+
+            await new OrderCreationMessagePublisher(serviceProvider).PublishAsync(orderCreationMessage);
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                .TrackTrace($"{nameof(PublishOrderCreationMessageAsync)} published order creation message", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
         }
     }
 }

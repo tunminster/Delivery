@@ -25,7 +25,6 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderTotalAmountCre
         
         public async Task<OrderCreationStatus> Handle(StripeOrderTotalAmountCreationCommand command)
         {
-            //await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
             await using var dataAccess = new ShardedDataAccess<PlatformDbContext, Database.Entities.Order>(
                 serviceProvider, () => PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter));

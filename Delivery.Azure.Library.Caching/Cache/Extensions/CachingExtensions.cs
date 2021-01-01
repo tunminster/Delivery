@@ -38,11 +38,11 @@ namespace Delivery.Azure.Library.Caching.Cache.Extensions
         public static async Task<IManagedCache> GetInvalidationEnabledCacheAsync(this IServiceProvider serviceProvider, bool alwaysUseCache = false)
         {
             var cache = serviceProvider.GetService<IManagedCache?>();
-            var featureProvider = serviceProvider.GetRequiredService<IFeatureProvider>();
-            if (!await featureProvider.IsEnabledAsync(CachingFeatures.MutableCache.ToString()))
-            {
-                return null;
-            }
+            // var featureProvider = serviceProvider.GetRequiredService<IFeatureProvider>();
+            // if (!await featureProvider.IsEnabledAsync(CachingFeatures.MutableCache.ToString()))
+            // {
+            //     return null;
+            // }
 
             if (alwaysUseCache)
             {
