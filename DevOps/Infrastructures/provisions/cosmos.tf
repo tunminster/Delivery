@@ -41,7 +41,7 @@ resource "azurerm_cosmosdb_sql_container" "connect-accounts" {
 
 resource "azurerm_key_vault_secret" "hn-platform-cosmos-db" {
   name         = "CosmosDatabase-Hn-Platform-ConnectionString"
-  value        = "AccountEndpoint=https://${azurerm_cosmosdb_account.hn-platform-cosmos-db.name}.documents.azure.com:443/;AccountKey=${azurerm_cosmosdb_account.hn-platform-cosmos-db.primary_access_key};"
+  value        = "AccountEndpoint=https://${azurerm_cosmosdb_account.hn-platform-cosmos-db.name}.documents.azure.com:443/;AccountKey=${azurerm_cosmosdb_account.hn-platform-cosmos-db.primary_master_key};"
   key_vault_id = azurerm_key_vault.hnkeyvault.id
 
   tags = local.common_tags
