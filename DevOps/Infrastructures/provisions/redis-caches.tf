@@ -8,7 +8,7 @@ resource "azurerm_redis_cache" "hn-redis-cache" {
   enable_non_ssl_port = false
 }
 
-esource "azurerm_key_vault_secret" "redis-cache-connection-string" {
+resource "azurerm_key_vault_secret" "redis-cache-connection-string" {
   name         = "RedisCache-ConnectionString"
   value        = "${azurerm_redis_cache.hn-redis-cache}:${azurerm_redis_cache.hn-redis-cache.ssl_port},password=${azurerm_redis_cache.hn-redis-cache.primary_access_key},ssl=True,abortConnect=False"
   key_vault_id = azurerm_key_vault.hnkeyvault.id
