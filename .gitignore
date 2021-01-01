@@ -36,3 +36,8 @@ secrets/
 
 # Visual Studio 2015
 .vs/
+
+# Settings
+*/appsettings.dev.json
+appsettings.dev.json
+appsettings.development.json
