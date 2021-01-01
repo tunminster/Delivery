@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\..\..\usr\local\share\dotnet\packs\Microsoft.AspNetCore.App.Ref\5.0.0\ref\net5.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\..\..\usr\local\share\dotnet\packs\Microsoft.AspNetCore.App.Ref\5.0.0\ref\net5.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Delivery.Azure.Library.KeyVault\Delivery.Azure.Library.KeyVault.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.Messaging\Delivery.Azure.Library.Messaging.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.Microservices.Hosting\Delivery.Azure.Library.Microservices.Hosting.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.Storage\Delivery.Azure.Library.Storage.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.WebApi\Delivery.Azure.Library.WebApi.csproj" />
+      <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.Order.Domain\Delivery.Order.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="appsettings.json" />
+      <Content Include="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+</Project>

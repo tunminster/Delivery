@@ -11,4 +11,8 @@
       <ProjectReference Include="..\Delivery.Azure.Library.Telemetry\Delivery.Azure.Library.Telemetry.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.8.55" />
+    </ItemGroup>
+
 </Project>

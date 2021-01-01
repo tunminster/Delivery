@@ -58,7 +58,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
             {
                 ExternalId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()),
                 TotalAmount = totalAmount,
-                CurrencyCode = command.CurrencyCode,
+                CurrencyCode = command.OrderCreationStatus.CurrencyCode,
                 PaymentType = "Card",
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
                 OrderStatus = OrderStatusEnum.InProgress.ToString(),
@@ -73,7 +73,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
             await databaseContext.SaveChangesAsync();
 
             var orderCreationStatus =
-                new OrderCreationStatus{OrderId = orderEntity.ExternalId, TotalAmount = totalAmount, CreatedDateTime = DateTimeOffset.UtcNow};
+                new OrderCreationStatus{OrderId = orderEntity.ExternalId, CurrencyCode = command.OrderCreationStatus.CurrencyCode, TotalAmount = totalAmount, CreatedDateTime = DateTimeOffset.UtcNow};
 
             return orderCreationStatus;
         }

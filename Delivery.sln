@@ -83,6 +83,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Library.Stor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Library.Connection", "Delivery.Azure.Library.Connection\Delivery.Azure.Library.Connection.csproj", "{6737C35E-7F3A-459E-BDD3-96813B30A9AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Orders.Host", "Delivery.Orders.Host\Delivery.Orders.Host.csproj", "{6ACD85FA-548F-47CA-AA7D-C94DFBD832B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Library.ConnectionManagement", "Delivery.Azure.Library.ConnectionManagement\Delivery.Azure.Library.ConnectionManagement.csproj", "{2081814F-EAEA-4822-8161-528896AA3553}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -193,6 +197,14 @@ Global
 		{6737C35E-7F3A-459E-BDD3-96813B30A9AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6737C35E-7F3A-459E-BDD3-96813B30A9AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6737C35E-7F3A-459E-BDD3-96813B30A9AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ACD85FA-548F-47CA-AA7D-C94DFBD832B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ACD85FA-548F-47CA-AA7D-C94DFBD832B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ACD85FA-548F-47CA-AA7D-C94DFBD832B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ACD85FA-548F-47CA-AA7D-C94DFBD832B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2081814F-EAEA-4822-8161-528896AA3553}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2081814F-EAEA-4822-8161-528896AA3553}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2081814F-EAEA-4822-8161-528896AA3553}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2081814F-EAEA-4822-8161-528896AA3553}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -237,5 +249,7 @@ Global
 		{F3F0BDD7-2D9D-4C39-B478-D4E1D1107DCF} = {DE577B49-C469-44F7-A24B-B2ECE4A524AB}
 		{1EE54E8A-B92D-4D8D-8A23-666E7D6322EA} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
 		{6737C35E-7F3A-459E-BDD3-96813B30A9AB} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
+		{6ACD85FA-548F-47CA-AA7D-C94DFBD832B7} = {5D3CF12A-0299-4ACC-9655-1628E31BDA4C}
+		{2081814F-EAEA-4822-8161-528896AA3553} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
 	EndGlobalSection
 EndGlobal

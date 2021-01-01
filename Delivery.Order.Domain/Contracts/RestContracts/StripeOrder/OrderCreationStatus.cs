@@ -8,6 +8,8 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrder
     {
         public string OrderId { get; set; }
         public int TotalAmount { get; set; }
+        
+        public string CurrencyCode { get; set; }
         public DateTimeOffset CreatedDateTime { get; set; }
     }
 }

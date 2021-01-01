@@ -4,6 +4,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation;
 using Delivery.Order.Domain.CommandHandlers.Stripe.StripePaymentIntent;
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
+using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Factories;
 
 namespace Delivery.Order.Domain.Services.Applications
@@ -21,8 +22,12 @@ namespace Delivery.Order.Domain.Services.Applications
 
         public async Task<PaymentIntentCreationStatusContract> ExecuteStripePaymentIntentWorkflow(PaymentOrderServiceRequest paymentOrderServiceRequest)
         {
+            var orderCreateStatusContract = new OrderCreationStatus
+            {
+                CurrencyCode = paymentOrderServiceRequest.CurrencyCode
+            };
             var orderCreationCommand = new OrderCreationCommand(paymentOrderServiceRequest.StripeOrderCreationContract,
-                paymentOrderServiceRequest.CurrencyCode);
+                orderCreateStatusContract);
 
             var orderCreationStatus =
                 await new OrderCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
