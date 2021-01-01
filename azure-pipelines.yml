@@ -263,9 +263,33 @@ stages:
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates'
               Contents: '*'  
-              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates'      
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates'
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in deploy file'
+            inputs:
+              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates'
+              targetFiles: 'values.yaml'
+              escapeType: none      
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps'
               Contents: 'orders-service-deploy.yaml'  
               TargetFolder: '$(Build.ArtifactStagingDirectory)/devops'
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in deploy file'
+            inputs:
+              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops'
+              targetFiles: 'orders-service-deploy.yaml'
+              escapeType: none
+          - task: KubectlInstaller@0
+            inputs:
+              kubectlVersion: 'latest'
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              namespace: 'hn-prod'
+              command: 'apply'
+              arguments: '-f $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-orders.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
