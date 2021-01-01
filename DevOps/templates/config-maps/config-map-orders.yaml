@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: config-map-orders
+    namespace: "{{ .Values.kubernetes.namespace | lower }}"
+data: 
+    ASPNETCORE_ENVIRONMENT: " {{ .Values.runtime.environment }}"
+    KeyVault_Uri: " {{ .Values.key_vault.uri }}"
+    KeyVault_ActiveDirectory_ClientId: " {{ .Values.key_vault.client_id }}"
+    KeyVault_ActiveDirectory_AppKey: " {{ .Values.key_vault.app_key }}"
+    ActiveDirectory_Tenant_Id: " {{ .Values.active_directory.tenant_id }}"
+    ApplicationInsights-InstrumentationKey: " {{ .Values.runtime.app_insight_key }}"
+    Service_Name: "Orders"
+    Stripe-Api-Key: " {{ .Values.runtime.stripe_api_key }}"
+    Ring: " {{ .Values.runtime.ring }}"
+    Shards: " {{ .Values.runtime.shards }}" 
