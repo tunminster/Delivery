@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name:  delivery-api-app
-        image: #{repository-image}#
+        image: #{order-service-repository-image}#
         resources:
           requests:
             memory: "128Mi"
