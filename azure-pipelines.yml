@@ -292,6 +292,13 @@ stages:
           - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/values.yaml'
             displayName: 'Cat deploy'
 
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in deploy file'
+            inputs:
+              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates/config-maps'
+              targetFiles: 'config-map-orders.yaml'
+              escapeType: none 
+
           - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-orders.yaml'
             displayName: 'Cat deploy'
           - task: CopyFiles@2
