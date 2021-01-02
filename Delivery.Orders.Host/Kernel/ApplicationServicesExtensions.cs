@@ -4,6 +4,8 @@ using Delivery.Azure.Library.Caching.Cache.Interfaces;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Configuration.Environments;
 using Delivery.Azure.Library.Configuration.Environments.Interfaces;
+using Delivery.Azure.Library.Configuration.Features;
+using Delivery.Azure.Library.Configuration.Features.Interfaces;
 using Delivery.Azure.Library.ConnectionManagement.HostedServices;
 using Delivery.Azure.Library.KeyVault.Providers;
 using Delivery.Azure.Library.Messaging.HostedServices;
@@ -49,6 +51,7 @@ namespace Delivery.Orders.Host.Kernel
 #endif
             serviceCollection.AddSingleton<IShardMetadataManager, ShardMetadataManager>();
             serviceCollection.AddSingleton<IShardDatabaseManager, ShardDatabaseManager>();
+            serviceCollection.AddSingleton<IFeatureProvider, FeatureProvider>();
             serviceCollection.AddSingleton<ICircuitManager, CircuitManager>();
             
             var useInMemory = configuration.GetValue<bool?>("Test_Use_In_Memory");
