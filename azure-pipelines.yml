@@ -135,7 +135,7 @@ stages:
 
     variables:
         - group: Hn-Platform-Infra-Variables
-        - group: 
+        - group: hn-platform-dev
         - name: repository-image
           value: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
         - name: acr-secret-name
