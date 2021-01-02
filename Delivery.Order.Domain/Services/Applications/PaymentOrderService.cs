@@ -41,7 +41,7 @@ namespace Delivery.Order.Domain.Services.Applications
             var productIds = string.Join(",",
                 paymentOrderServiceRequest.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId));
             var cacheKey =
-                $"products-{productIds}-default-includes-{executingRequestContextAdapter.GetAuthenticatedUser().UserEmail}";
+                $"Database-{executingRequestContextAdapter.GetShard().Key}-products-{productIds}-default-includes-{executingRequestContextAdapter.GetAuthenticatedUser().UserEmail}";
 
             var orderCreationStatus =
                 await new StripeOrderTotalAmountCreationCommandHandler(serviceProvider, executingRequestContextAdapter,
