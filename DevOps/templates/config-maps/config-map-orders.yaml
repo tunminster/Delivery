@@ -13,4 +13,4 @@ data:
     Service_Name: "Orders"
     Stripe-Api-Key: "#{Stripe-Api-Key}#"
     Ring: "#{Ring}#"
-    Shards: "#{Shards}#"
+    Shards: '#{Shards}#'
