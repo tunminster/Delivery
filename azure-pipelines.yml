@@ -3,6 +3,12 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+parameters:
+  - name: RunInfraProvisionStage
+    displayName: Run Infra Provisioning
+    type: boolean
+    default: false
+
 trigger:
 - master
 
@@ -12,6 +18,7 @@ variables:
   buildConfiguration: 'Release'
   tag: '$(Build.BuildId)'
   imageRepository: 'delivery-api-$(Build.SourceBranchName)'
+  orderServiceImageRepository: 'order-service-$(Build.SourceBranchName)'
 
 stages:
   - stage: Build
@@ -51,7 +58,7 @@ stages:
             command: test
             projects: '**/*[Tt]ests/*.csproj'
             arguments: --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-
+            
   - stage: InfraProvisions
     displayName: Deploy infrastructure provisions
     dependsOn: Build
@@ -128,17 +135,32 @@ stages:
     condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
 
     variables:
-        repository-image: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
-        acr-secret-name: 'hn-prod-acr-secret'
-        appsettings-secret-name: 'delivery-api-appsettings-secret'
-        host-url: 'delivery-api.harveynetwork.com'
-        file-storage-account-name: 'pngosa'
-        file-path: 'deliver-api/prod.appsettings.secret.json'
-        dest-path: '/devops/appsettings.secret.json'
-        dbContext: 'ApplicationDbContext'
-        scriptName: 'migrationscript'
-        env-name: 'Development'
-        env-namespace: 'hn-prod'
+        - group: Hn-Platform-Infra-Variables
+        - group: hn-platform-dev
+        - name: repository-image
+          value: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
+        - name: order-service-repository-image
+          value: 'pngoacr.azurecr.io/order-service-$(Build.SourceBranchName):$(Build.BuildId)'
+        - name: acr-secret-name
+          value: 'hn-prod-acr-secret'
+        - name: appsettings-secret-name
+          value: 'delivery-api-appsettings-secret'
+        - name: host-url
+          value: 'delivery-api.harveynetwork.com'
+        - name: file-storage-account-name
+          value: 'pngosa'
+        - name: file-path
+          value: 'deliver-api/prod.appsettings.secret.json'
+        - name: dest-path
+          value: '/devops/appsettings.secret.json'
+        - name: dbContext
+          value: 'ApplicationDbContext'
+        - name: scriptName
+          value: 'migrationscript'
+        - name: env-name
+          value: 'dev'
+        - name: env-namespace
+          value: 'hn-prod'
 
     jobs:
       - job: DeployApiApp
@@ -229,3 +251,90 @@ stages:
               containerRegistryType: 'Container Registry'
               dockerRegistryEndpoint: 'hn-acr-connection'
               secretName: 'hn-prod-acr-secret'               
+      - job: DeployOrdersService
+        displayName: Deploy Orders Service
+        pool: 
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: DockerInstaller@0
+            inputs:
+              dockerVersion: '19.03.14'
+          - task: UseDotNet@2
+            displayName: 'Install .Net Core 5'
+            inputs:
+              version: '5.0.x'
+              performMultiLevelLookup: true
+              includePreviewVersions: true
+              installationPath: $(Agent.ToolsDirectory)/dotnet
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'hn-acr-connection'
+              repository: '$(orderServiceImageRepository)'
+              command: 'buildAndPush'
+              Dockerfile: '**/Delivery.Orders.Host/Dockerfile'
+              buildContext: .
+              tags: |
+                $(tag)
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates'
+              Contents: 'values.yaml'  
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates'
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates/config-maps'
+              Contents: '*'  
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates/config-maps'
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in deploy file'
+            inputs:
+              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates'
+              targetFiles: 'values.yaml'
+              escapeType: none      
+          
+          - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/values.yaml'
+            displayName: 'Cat deploy'
+
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in deploy file'
+            inputs:
+              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates/config-maps'
+              targetFiles: 'config-map-orders.yaml'
+              escapeType: none 
+
+          - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-orders.yaml'
+            displayName: 'Cat deploy'
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps'
+              Contents: 'orders-service-deploy.yaml'  
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops'
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in deploy file'
+            inputs:
+              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops'
+              targetFiles: 'orders-service-deploy.yaml'
+              escapeType: none
+          - task: KubectlInstaller@0
+            inputs:
+              kubectlVersion: 'latest'
+          - task: Kubernetes@1
+            displayName: 'Deploy orders service config-map'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              namespace: 'hn-prod'
+              command: 'apply'
+              arguments: '-f $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-orders.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+          - task: Kubernetes@1
+            displayName: 'Deploy orders service'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              namespace: 'hn-prod'
+              command: 'apply'
+              arguments: '-f $(Build.ArtifactStagingDirectory)/devops/orders-service-deploy.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'

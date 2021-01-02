@@ -7,6 +7,9 @@ using AutoMapper;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Utils.Configs;
+using Delivery.Azure.Library.Caching.Cache;
+using Delivery.Azure.Library.Caching.Cache.Extensions;
+using Delivery.Azure.Library.Caching.Cache.Interfaces;
 using Delivery.Azure.Library.Configuration.Environments;
 using Delivery.Azure.Library.Configuration.Environments.Interfaces;
 using Delivery.Azure.Library.Sharding.Adapters;
@@ -29,7 +32,12 @@ using Delivery.Azure.Library.Configuration;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Configuration.Features;
 using Delivery.Azure.Library.Configuration.Features.Interfaces;
+using Delivery.Azure.Library.ConnectionManagement.HostedServices;
 using Delivery.Azure.Library.KeyVault.Providers;
+using Delivery.Azure.Library.Messaging.HostedServices;
+using Delivery.Azure.Library.Messaging.ServiceBus.Connections;
+using Delivery.Azure.Library.Messaging.ServiceBus.Connections.Interfaces;
+using Delivery.Azure.Library.Microservices.Hosting.HostedServices;
 using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
 using Delivery.Azure.Library.Storage.Cosmos.Connections;
@@ -206,6 +214,23 @@ namespace Delivery.Api
             services.AddSingleton<ICircuitManager, CircuitManager>();
             services.AddSingleton<IFeatureProvider, FeatureProvider>();
             services.AddSingleton<ICosmosDatabaseConnectionManager, CosmosDatabaseConnectionManager>();
+            services.AddSingleton<IServiceBusSenderConnectionManager, ServiceBusSenderConnectionManager>();
+            
+            var useInMemory = Configuration.GetValue<bool?>("Test_Use_In_Memory");
+            if (useInMemory.GetValueOrDefault())
+            {
+                services.AddSingleton<IManagedCache, ManagedMemoryCache>();
+            }
+            else
+            {
+                services.AddPlatformRedisCache();
+                services.AddSingleton<IManagedCache, ManagedDistributedMemoryCache>();
+            }
+
+            services.AddHostedService(serviceProvider => new MultipleTasksBackgroundService(
+                new QueueServiceBusWorkBackgroundService(serviceProvider),
+                new LifetimeEventsHostedService(serviceProvider, serviceProvider.GetRequiredService<IHostApplicationLifetime>())
+            ));
 
         }
 

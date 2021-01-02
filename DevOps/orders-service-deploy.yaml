@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service-deployment
+spec:
+  selector:
+    matchLabels:
+      app:  order-service-app
+  replicas: 3    
+  template:
+    metadata:
+      labels:
+        app:  order-service-app
+    spec:
+      containers:
+      - name:  order-service-app
+        image: #{order-service-repository-image}#
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name: config-map-orders
+        env:
+        - name: "ASPNETCORE_ENVIRONMENT"
+          value: #{env-name}#
+      imagePullSecrets:
+        - name: #{acr-secret-name}#  
+      volumes:
+      - name: secrets
+        secret: 
+          secretName: #{appsettings-secret-name}#
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  order-micro-service-service
+spec:
+  selector:
+    app:  order-service-app
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80

@@ -163,6 +163,15 @@ namespace Delivery.Database.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("NVARCHAR(40)");
 
+                    b.Property<string>("InsertedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("OrderStatus")
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");

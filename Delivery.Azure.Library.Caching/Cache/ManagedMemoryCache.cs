@@ -41,7 +41,7 @@ namespace Delivery.Azure.Library.Caching.Cache
             this.configurationDefinition = configurationDefinition;
         }
         
-        public ValueTask DisposeAsync()
+        public virtual ValueTask DisposeAsync()
         {
             return new ValueTask();
         }

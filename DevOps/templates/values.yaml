@@ -1,0 +1,18 @@
+kubernetes: 
+    namespace: "#{Kubernetes-Namespace}#"
+runtime:
+    environment: "#{ASPNETCORE_ENVIRONMENT}#"
+    ring: "#{Ring}#"
+    app_insight_key: "#{ApplicationInsights-InstrumentationKey}#"
+    stripe_api_key: "#{Stripe-Api-Key}#"
+    shards: "#{Shards}#"
+
+key_vault:
+    uri: "#{KeyVault-Uri}#"
+    client_id: "#{KeyVault-ActiveDirectory-ClientId}#"
+    app_key: "#{KeyVault-ActiveDirectory-AppKey}#"
+active_directory:
+    tenant_id: "#{ActiveDirectory-Tenant-Id}#"
+
+
+

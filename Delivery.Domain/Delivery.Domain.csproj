@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Contracts\V1" />
     <Folder Include="Services" />
   </ItemGroup>
 
