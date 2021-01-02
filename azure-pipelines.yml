@@ -288,6 +288,12 @@ stages:
               rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates'
               targetFiles: 'values.yaml'
               escapeType: none      
+          
+          - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/values.yaml'
+            displayName: 'Cat deploy'
+
+          - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-orders.yaml'
+            displayName: 'Cat deploy'
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps'
