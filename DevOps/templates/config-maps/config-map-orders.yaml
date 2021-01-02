@@ -2,15 +2,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
     name: config-map-orders
-    namespace: "{{ .Values.kubernetes.namespace | lower }}"
+    namespace: "#{Kubernetes-Namespace}#"
 data: 
-    ASPNETCORE_ENVIRONMENT: " {{ .Values.runtime.environment }}"
-    KeyVault_Uri: " {{ .Values.key_vault.uri }}"
-    KeyVault_ActiveDirectory_ClientId: " {{ .Values.key_vault.client_id }}"
-    KeyVault_ActiveDirectory_AppKey: " {{ .Values.key_vault.app_key }}"
-    ActiveDirectory_Tenant_Id: " {{ .Values.active_directory.tenant_id }}"
-    ApplicationInsights-InstrumentationKey: " {{ .Values.runtime.app_insight_key }}"
+    ASPNETCORE_ENVIRONMENT: "#{ASPNETCORE_ENVIRONMENT}#"
+    KeyVault_Uri: "#{KeyVault-Uri}#"
+    KeyVault_ActiveDirectory_ClientId: "#{KeyVault-ActiveDirectory-ClientId}#"
+    KeyVault_ActiveDirectory_AppKey: "#{KeyVault-ActiveDirectory-AppKey}#"
+    ActiveDirectory_Tenant_Id: "#{ActiveDirectory-Tenant-Id}#"
+    ApplicationInsights-InstrumentationKey: "#{ApplicationInsights-InstrumentationKey}#"
     Service_Name: "Orders"
-    Stripe-Api-Key: " {{ .Values.runtime.stripe_api_key }}"
-    Ring: " {{ .Values.runtime.ring }}"
-    Shards: " {{ .Values.runtime.shards }}" 
+    Stripe-Api-Key: "#{Stripe-Api-Key}#"
+    Ring: "#{Ring}#"
+    Shards: "#{Shards}#"
