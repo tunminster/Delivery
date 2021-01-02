@@ -249,7 +249,7 @@ stages:
               dockerRegistryEndpoint: 'hn-acr-connection'
               secretName: 'hn-prod-acr-secret'               
       - job: DeployOrdersService
-        displayName: Deploy Api App
+        displayName: Deploy Orders Service
         pool: 
           vmImage: 'ubuntu-latest'
         steps:
@@ -275,8 +275,13 @@ stages:
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates'
-              Contents: '*'  
+              Contents: 'values.yaml'  
               TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates'
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates/config-maps'
+              Contents: '*'  
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates/config-maps'
           - task: qetza.replacetokens.replacetokens-task.replacetokens@3
             displayName: 'Replace tokens in deploy file'
             inputs:
