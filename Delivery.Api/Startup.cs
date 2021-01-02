@@ -224,7 +224,7 @@ namespace Delivery.Api
             else
             {
                 services.AddPlatformRedisCache();
-                services.AddSingleton<IManagedCache, ManagedDistributedMemoryCache>();
+                services.AddSingleton<IManagedCache, ManagedRedisCache>();
             }
 
             services.AddHostedService(serviceProvider => new MultipleTasksBackgroundService(

@@ -59,7 +59,7 @@ namespace Delivery.Orders.Host.Kernel
             else
             {
                 serviceCollection.AddPlatformRedisCache();
-                serviceCollection.AddSingleton<IManagedCache, ManagedDistributedMemoryCache>();
+                serviceCollection.AddSingleton<IManagedCache, ManagedRedisCache>();
             }
             
             serviceCollection.AddSingleton<IServiceBusReceiverConnectionManager, ServiceBusReceiverConnectionManager>();
