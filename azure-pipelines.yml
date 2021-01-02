@@ -18,6 +18,7 @@ variables:
   buildConfiguration: 'Release'
   tag: '$(Build.BuildId)'
   imageRepository: 'delivery-api-$(Build.SourceBranchName)'
+  orderServiceImageRepository: 'order-service-$(Build.SourceBranchName)'
 
 stages:
   - stage: Build
@@ -138,6 +139,8 @@ stages:
         - group: hn-platform-dev
         - name: repository-image
           value: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
+        - name: order-service-repository-image
+          value: 'pngoacr.azurecr.io/order-service-$(Build.SourceBranchName):$(Build.BuildId)'
         - name: acr-secret-name
           value: 'hn-prod-acr-secret'
         - name: appsettings-secret-name
@@ -266,7 +269,7 @@ stages:
           - task: Docker@2
             inputs:
               containerRegistry: 'hn-acr-connection'
-              repository: '$(imageRepository)'
+              repository: '$(orderServiceImageRepository)'
               command: 'buildAndPush'
               Dockerfile: '**/Delivery.Orders.Host/Dockerfile'
               buildContext: .
