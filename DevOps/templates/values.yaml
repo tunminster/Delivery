@@ -8,11 +8,11 @@ runtime:
     shards: "#{Shards}#"
 
 key_vault:
-    uri: "#{KeyVault_Uri}#"
-    client_id: "#{KeyVault_ActiveDirectory_ClientId}#"
-    app_key: "#{KeyVault_ActiveDirectory_AppKey}#"
+    uri: "#{KeyVault-Uri}#"
+    client_id: "#{KeyVault-ActiveDirectory-ClientId}#"
+    app_key: "#{KeyVault-ActiveDirectory-AppKey}#"
 active_directory:
-    tenant_id: "#{ActiveDirectory_Tenant_Id}#"
+    tenant_id: "#{ActiveDirectory-Tenant-Id}#"
 
 
 
