@@ -134,17 +134,30 @@ stages:
     condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
 
     variables:
-        repository-image: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
-        acr-secret-name: 'hn-prod-acr-secret'
-        appsettings-secret-name: 'delivery-api-appsettings-secret'
-        host-url: 'delivery-api.harveynetwork.com'
-        file-storage-account-name: 'pngosa'
-        file-path: 'deliver-api/prod.appsettings.secret.json'
-        dest-path: '/devops/appsettings.secret.json'
-        dbContext: 'ApplicationDbContext'
-        scriptName: 'migrationscript'
-        env-name: 'Development'
-        env-namespace: 'hn-prod'
+        - group: Hn-Platform-Infra-Variables
+        - group: 
+        - name: repository-image
+          value: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
+        - name: acr-secret-name
+          value: 'hn-prod-acr-secret'
+        - name: appsettings-secret-name
+          value: 'delivery-api-appsettings-secret'
+        - name: host-url
+          value: 'delivery-api.harveynetwork.com'
+        - name: file-storage-account-name
+          value: 'pngosa'
+        - name: file-path
+          value: 'deliver-api/prod.appsettings.secret.json'
+        - name: dest-path
+          value: '/devops/appsettings.secret.json'
+        - name: dbContext
+          value: 'ApplicationDbContext'
+        - name: scriptName
+          value: 'migrationscript'
+        - name: env-name
+          value: 'dev'
+        - name: env-namespace
+          value: 'hn-prod'
 
     jobs:
       - job: DeployApiApp
