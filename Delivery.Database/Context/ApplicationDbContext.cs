@@ -37,8 +37,9 @@ namespace Delivery.Database.Context
         public DbSet<Product> Products { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<PaymentCard> PaymentCards { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<StripePayment> StripePayments { get; set; }
+        public DbSet<PaymentCard> PaymentCards { get; set; }
         public DbSet<PaymentResponse> PaymentResponses { get; set; }
         public DbSet<Report> Reports { get; set; }
         

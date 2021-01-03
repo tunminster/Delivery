@@ -32,8 +32,6 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
 
             var productIds = command.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId).ToList();
             var products = databaseContext.Products.Where(x => productIds.Contains(x.ExternalId)).ToList();
-
-            //var totalAmount = 0;
             
             var orderItems = new List<OrderItem>();
             
@@ -45,13 +43,6 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
                     ProductId = id,
                     Count = item.Count
                 });
-
-                // if (products.Count <= 0) continue;
-                // var product = products.FirstOrDefault(x => x.ExternalId == item.ProductId);
-                //
-                // if (product == null) continue;
-                // var unitPrice = product.UnitPrice;
-                // totalAmount += unitPrice * item.Count;
             }
 
             var orderEntity = new Database.Entities.Order

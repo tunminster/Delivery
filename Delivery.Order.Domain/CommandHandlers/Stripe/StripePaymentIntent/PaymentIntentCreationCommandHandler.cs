@@ -49,7 +49,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripePaymentIntent
             var paymentIntent = await service.CreateAsync(createOptions, requestOptions);
             
             var paymentIntentCreationStatusContract =
-                new PaymentIntentCreationStatusContract(paymentIntent.Id, paymentIntent.ClientSecret);
+                new PaymentIntentCreationStatusContract(paymentIntent.Id, paymentIntent.ClientSecret, command.PaymentIntentCreationContract.OrderId);
 
             return paymentIntentCreationStatusContract;
 
