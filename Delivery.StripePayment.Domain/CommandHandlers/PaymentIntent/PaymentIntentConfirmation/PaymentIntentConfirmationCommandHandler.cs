@@ -51,7 +51,7 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
                         SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
                 
                 stripePaymentCaptureCreationStatusContract.PaymentStatus = paymentIntentResponse.Status;
-                stripePaymentCaptureCreationStatusContract.PaymentResponseMessage = paymentIntentResponse.Description;
+                stripePaymentCaptureCreationStatusContract.PaymentResponseMessage = paymentIntentResponse.Description + paymentIntentResponse.ToJson();
                 stripePaymentCaptureCreationStatusContract.Currency = paymentIntentResponse.Currency;
                 stripePaymentCaptureCreationStatusContract.NextAction =
                     paymentIntentResponse.NextAction?.ToJson() ?? string.Empty;
@@ -66,8 +66,8 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
                     paymentIntentResponse.Charges.FirstOrDefault()?.FailureCode ?? string.Empty;
                 stripePaymentCaptureCreationStatusContract.FailureMessage =
                     paymentIntentResponse.Charges.FirstOrDefault()?.FailureMessage ?? string.Empty;
-                stripePaymentCaptureCreationStatusContract.PaymentIntent =
-                    paymentIntentResponse.Charges.FirstOrDefault()?.PaymentIntent.Id ?? string.Empty;
+                // stripePaymentCaptureCreationStatusContract.PaymentIntent =
+                //     paymentIntentResponse.Charges.FirstOrDefault()?.PaymentIntent.Id ?? string.Empty;
                 stripePaymentCaptureCreationStatusContract.PaymentMethod =
                     paymentIntentResponse.Charges.FirstOrDefault()?.PaymentMethod ?? string.Empty;
                 stripePaymentCaptureCreationStatusContract.ReceiptNumber =
