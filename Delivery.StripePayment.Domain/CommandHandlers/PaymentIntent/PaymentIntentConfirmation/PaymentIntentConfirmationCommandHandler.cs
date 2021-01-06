@@ -61,19 +61,19 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
                     paymentIntentResponse.ApplicationFeeAmount;
                 stripePaymentCaptureCreationStatusContract.Captured =
                     paymentIntentResponse.Charges.FirstOrDefault()?.Captured ?? false;
-                // stripePaymentCaptureCreationStatusContract.CaptureMethod = paymentIntentResponse.CaptureMethod;
-                // stripePaymentCaptureCreationStatusContract.FailureCode =
-                //     paymentIntentResponse.Charges.Data.FirstOrDefault()?.FailureCode ?? string.Empty;
-                // stripePaymentCaptureCreationStatusContract.FailureMessage =
-                //     paymentIntentResponse.Charges.Data.FirstOrDefault()?.FailureMessage ?? string.Empty;
-                // stripePaymentCaptureCreationStatusContract.PaymentIntent =
-                //     paymentIntentResponse.Charges.Data.FirstOrDefault()?.PaymentIntent.Id ?? string.Empty;
-                // stripePaymentCaptureCreationStatusContract.PaymentMethod =
-                //     paymentIntentResponse.Charges.Data.FirstOrDefault()?.PaymentMethod ?? string.Empty;
-                // stripePaymentCaptureCreationStatusContract.ReceiptNumber =
-                //     paymentIntentResponse.Charges.Data.FirstOrDefault()?.ReceiptNumber ?? string.Empty;
-                // stripePaymentCaptureCreationStatusContract.ReceiptUrl =
-                //     paymentIntentResponse.Charges.Data.FirstOrDefault()?.ReceiptUrl ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.CaptureMethod = paymentIntentResponse.CaptureMethod;
+                stripePaymentCaptureCreationStatusContract.FailureCode =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.FailureCode ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.FailureMessage =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.FailureMessage ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.PaymentIntent =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.PaymentIntent.Id ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.PaymentMethod =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.PaymentMethod ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.ReceiptNumber =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.ReceiptNumber ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.ReceiptUrl =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.ReceiptUrl ?? string.Empty;
                 stripePaymentCaptureCreationStatusContract.LiveMode = paymentIntentResponse.Livemode;
                 
             }
