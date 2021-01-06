@@ -66,8 +66,8 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
                     paymentIntentResponse.Charges.FirstOrDefault()?.FailureCode ?? string.Empty;
                 stripePaymentCaptureCreationStatusContract.FailureMessage =
                     paymentIntentResponse.Charges.FirstOrDefault()?.FailureMessage ?? string.Empty;
-                // stripePaymentCaptureCreationStatusContract.PaymentIntent =
-                //     paymentIntentResponse.Charges.FirstOrDefault()?.PaymentIntent.Id ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.PaymentIntent =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.PaymentIntentId ?? string.Empty;
                 stripePaymentCaptureCreationStatusContract.PaymentMethod =
                     paymentIntentResponse.Charges.FirstOrDefault()?.PaymentMethod ?? string.Empty;
                 stripePaymentCaptureCreationStatusContract.ReceiptNumber =
