@@ -65,7 +65,7 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
             {
                 PaymentStatus = paymentIntentResponse.Status,
                 Currency = paymentIntentResponse.Currency,
-                NextAction =  paymentIntentResponse.NextAction.ToJson(),
+                NextAction =  paymentIntentResponse.NextAction?.ToJson() ?? string.Empty,
                 AmountCaptured = paymentIntentResponse.Charges.Data.FirstOrDefault()?.AmountCaptured,
                 ApplicationFeeAmount = paymentIntentResponse.ApplicationFeeAmount,
                 Captured = paymentIntentResponse.Charges.Data.FirstOrDefault()?.Captured ?? false,
