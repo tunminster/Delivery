@@ -20,6 +20,9 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
         public string PaymentStatus { get; set; }
         
         [DataMember]
+        public string PaymentResponseMessage { get; set; }
+        
+        [DataMember]
         public bool Captured { get; set; }
         
         /// <summary>

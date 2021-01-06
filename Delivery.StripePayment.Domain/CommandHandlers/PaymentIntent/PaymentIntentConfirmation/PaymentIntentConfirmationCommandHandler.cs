@@ -42,44 +42,63 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
                 
             );
 
+            var stripePaymentCaptureCreationStatusContract = new StripePaymentCaptureCreationStatusContract();
+
             if (paymentIntentResponse.Status == "succeeded")
             {
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                     .TrackTrace($"{nameof(StripePaymentCaptureCreationContract)} payment status is succeeded.", 
                         SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+                
+                stripePaymentCaptureCreationStatusContract.PaymentStatus = paymentIntentResponse.Status;
+                stripePaymentCaptureCreationStatusContract.PaymentResponseMessage = paymentIntentResponse.Description;
+                stripePaymentCaptureCreationStatusContract.Currency = paymentIntentResponse.Currency;
+                stripePaymentCaptureCreationStatusContract.NextAction =
+                    paymentIntentResponse.NextAction?.ToJson() ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.AmountCaptured =
+                    paymentIntentResponse.Charges.Data.FirstOrDefault()?.AmountCaptured;
+                stripePaymentCaptureCreationStatusContract.ApplicationFeeAmount =
+                    paymentIntentResponse.ApplicationFeeAmount;
+                stripePaymentCaptureCreationStatusContract.Captured =
+                    paymentIntentResponse.Charges.Data.FirstOrDefault()?.Captured ?? false;
+                stripePaymentCaptureCreationStatusContract.CaptureMethod = paymentIntentResponse.CaptureMethod;
+                stripePaymentCaptureCreationStatusContract.FailureCode =
+                    paymentIntentResponse.Charges.Data.FirstOrDefault()?.FailureCode ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.FailureMessage =
+                    paymentIntentResponse.Charges.Data.FirstOrDefault()?.FailureMessage ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.PaymentIntent =
+                    paymentIntentResponse.Charges.Data.FirstOrDefault()?.PaymentIntent.Id;
+                stripePaymentCaptureCreationStatusContract.PaymentMethod =
+                    paymentIntentResponse.Charges.Data.FirstOrDefault()?.PaymentMethod;
+                stripePaymentCaptureCreationStatusContract.ReceiptNumber =
+                    paymentIntentResponse.Charges.Data.FirstOrDefault()?.ReceiptNumber;
+                stripePaymentCaptureCreationStatusContract.ReceiptUrl =
+                    paymentIntentResponse.Charges.Data.FirstOrDefault()?.ReceiptUrl;
+                stripePaymentCaptureCreationStatusContract.LiveMode = paymentIntentResponse.Livemode;
+                
             }
             else if (paymentIntentResponse.Status == "requires_action")
             {
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                     .TrackTrace($"{nameof(StripePaymentCaptureCreationContract)} payment status is 'requires_action'", 
                         SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
+
+                stripePaymentCaptureCreationStatusContract.PaymentStatus = paymentIntentResponse.Status;
+                stripePaymentCaptureCreationStatusContract.PaymentResponseMessage = paymentIntentResponse.Description;
+
             }
             else
             {
+                stripePaymentCaptureCreationStatusContract.PaymentStatus = paymentIntentResponse.Status;
+                stripePaymentCaptureCreationStatusContract.PaymentResponseMessage = paymentIntentResponse.Description;
+                
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                     .TrackTrace($"{nameof(StripePaymentCaptureCreationContract)} payment status is unknown.", 
                         SeverityLevel.Error, executingRequestContextAdapter.GetTelemetryProperties());
             }
 
-            var stripePaymentCaptureCreationStatusContract = new StripePaymentCaptureCreationStatusContract
-            {
-                PaymentStatus = paymentIntentResponse.Status,
-                Currency = paymentIntentResponse.Currency,
-                NextAction =  paymentIntentResponse.NextAction?.ToJson() ?? string.Empty,
-                AmountCaptured = paymentIntentResponse.Charges.Data.FirstOrDefault()?.AmountCaptured,
-                ApplicationFeeAmount = paymentIntentResponse.ApplicationFeeAmount,
-                Captured = paymentIntentResponse.Charges.Data.FirstOrDefault()?.Captured ?? false,
-                CaptureMethod = paymentIntentResponse.CaptureMethod,
-                FailureCode = paymentIntentResponse.Charges.Data.FirstOrDefault()?.FailureCode ?? string.Empty,
-                FailureMessage = paymentIntentResponse.Charges.Data.FirstOrDefault()?.FailureMessage ?? string.Empty,
-                PaymentIntent = paymentIntentResponse.Charges.Data.FirstOrDefault()?.PaymentIntent.Id,
-                PaymentMethod = paymentIntentResponse.Charges.Data.FirstOrDefault()?.PaymentMethod,
-                ReceiptNumber = paymentIntentResponse.Charges.Data.FirstOrDefault()?.ReceiptNumber,
-                ReceiptUrl = paymentIntentResponse.Charges.Data.FirstOrDefault()?.ReceiptUrl,
-                LiveMode = paymentIntentResponse.Livemode
-            };
-            
             return stripePaymentCaptureCreationStatusContract;
+
         }
     }
 }
