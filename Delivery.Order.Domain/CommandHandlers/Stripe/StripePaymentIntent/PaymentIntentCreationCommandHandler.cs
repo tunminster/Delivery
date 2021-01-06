@@ -37,7 +37,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripePaymentIntent
                 },
                 Amount = command.PaymentIntentCreationContract.Amount,
                 Currency = "gbp",
-                ApplicationFeeAmount = command.PaymentIntentCreationContract.ApplicationFeeAmount,
+                //ApplicationFeeAmount = command.PaymentIntentCreationContract.ApplicationFeeAmount,
                 Metadata = new Dictionary<string, string>
                 {
                     { "order_id", command.PaymentIntentCreationContract.OrderId },
