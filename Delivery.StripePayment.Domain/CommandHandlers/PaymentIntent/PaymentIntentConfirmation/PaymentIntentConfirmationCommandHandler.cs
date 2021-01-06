@@ -59,8 +59,8 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
                     paymentIntentResponse.Charges.Data.FirstOrDefault()?.AmountCaptured;
                 stripePaymentCaptureCreationStatusContract.ApplicationFeeAmount =
                     paymentIntentResponse.ApplicationFeeAmount;
-                // stripePaymentCaptureCreationStatusContract.Captured =
-                //     paymentIntentResponse.Charges.Data.FirstOrDefault()?.Captured ?? false;
+                stripePaymentCaptureCreationStatusContract.Captured =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.Captured ?? false;
                 // stripePaymentCaptureCreationStatusContract.CaptureMethod = paymentIntentResponse.CaptureMethod;
                 // stripePaymentCaptureCreationStatusContract.FailureCode =
                 //     paymentIntentResponse.Charges.Data.FirstOrDefault()?.FailureCode ?? string.Empty;
