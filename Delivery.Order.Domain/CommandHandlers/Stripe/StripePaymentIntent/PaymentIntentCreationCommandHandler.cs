@@ -44,9 +44,10 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripePaymentIntent
                 }
             };
 
-            var requestOptions = new RequestOptions {StripeAccount = command.PaymentIntentCreationContract.ConnectedStripeAccountId};
+            //var requestOptions = new RequestOptions {StripeAccount = command.PaymentIntentCreationContract.ConnectedStripeAccountId};
 
-            var paymentIntent = await service.CreateAsync(createOptions, requestOptions);
+            //var paymentIntent = await service.CreateAsync(createOptions, requestOptions);
+            var paymentIntent = await service.CreateAsync(createOptions);
             
             var paymentIntentCreationStatusContract =
                 new PaymentIntentCreationStatusContract(paymentIntent.Id, paymentIntent.ClientSecret);
