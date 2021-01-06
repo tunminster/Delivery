@@ -33,10 +33,13 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
             {
                 PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
             };
+            
+            //var requestOptions = new RequestOptions {StripeAccount = "acct_1I6NJJRLkhSmnIqS"};
             var service = new PaymentIntentService();
             var paymentIntentResponse = await service.ConfirmAsync(
                 command.StripePaymentCaptureCreationContract.StripePaymentIntentId,
                 options
+                
             );
 
             if (paymentIntentResponse.Status == "succeeded")
