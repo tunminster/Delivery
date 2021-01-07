@@ -37,16 +37,17 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripePaymentIntent
                 },
                 Amount = command.PaymentIntentCreationContract.Amount,
                 Currency = "gbp",
-                ApplicationFeeAmount = command.PaymentIntentCreationContract.ApplicationFeeAmount,
+                //ApplicationFeeAmount = command.PaymentIntentCreationContract.ApplicationFeeAmount,
                 Metadata = new Dictionary<string, string>
                 {
                     { "order_id", command.PaymentIntentCreationContract.OrderId },
                 }
             };
 
-            var requestOptions = new RequestOptions {StripeAccount = command.PaymentIntentCreationContract.ConnectedStripeAccountId};
+            //var requestOptions = new RequestOptions {StripeAccount = command.PaymentIntentCreationContract.ConnectedStripeAccountId};
 
-            var paymentIntent = await service.CreateAsync(createOptions, requestOptions);
+            //var paymentIntent = await service.CreateAsync(createOptions, requestOptions);
+            var paymentIntent = await service.CreateAsync(createOptions);
             
             var paymentIntentCreationStatusContract =
                 new PaymentIntentCreationStatusContract(paymentIntent.Id, paymentIntent.ClientSecret, command.PaymentIntentCreationContract.OrderId);

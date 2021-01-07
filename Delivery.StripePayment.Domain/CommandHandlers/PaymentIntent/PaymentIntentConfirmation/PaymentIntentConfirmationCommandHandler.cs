@@ -33,50 +33,72 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
             {
                 PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
             };
+            
+            //var requestOptions = new RequestOptions {StripeAccount = "acct_1I6NJJRLkhSmnIqS"};
             var service = new PaymentIntentService();
             var paymentIntentResponse = await service.ConfirmAsync(
                 command.StripePaymentCaptureCreationContract.StripePaymentIntentId,
                 options
+                
             );
+
+            var stripePaymentCaptureCreationStatusContract = new StripePaymentCaptureCreationStatusContract();
 
             if (paymentIntentResponse.Status == "succeeded")
             {
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                     .TrackTrace($"{nameof(StripePaymentCaptureCreationContract)} payment status is succeeded.", 
                         SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+                
+                stripePaymentCaptureCreationStatusContract.PaymentStatus = paymentIntentResponse.Status;
+                stripePaymentCaptureCreationStatusContract.PaymentResponseMessage = paymentIntentResponse.Description + paymentIntentResponse.ToJson();
+                stripePaymentCaptureCreationStatusContract.Currency = paymentIntentResponse.Currency;
+                stripePaymentCaptureCreationStatusContract.NextAction =
+                    paymentIntentResponse.NextAction?.ToJson() ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.AmountCaptured =
+                    paymentIntentResponse.Charges.Data.FirstOrDefault()?.AmountCaptured;
+                stripePaymentCaptureCreationStatusContract.ApplicationFeeAmount =
+                    paymentIntentResponse.ApplicationFeeAmount;
+                stripePaymentCaptureCreationStatusContract.Captured =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.Captured ?? false;
+                stripePaymentCaptureCreationStatusContract.CaptureMethod = paymentIntentResponse.CaptureMethod;
+                stripePaymentCaptureCreationStatusContract.FailureCode =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.FailureCode ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.FailureMessage =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.FailureMessage ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.PaymentIntent =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.PaymentIntentId ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.PaymentMethod =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.PaymentMethod ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.ReceiptNumber =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.ReceiptNumber ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.ReceiptUrl =
+                    paymentIntentResponse.Charges.FirstOrDefault()?.ReceiptUrl ?? string.Empty;
+                stripePaymentCaptureCreationStatusContract.LiveMode = paymentIntentResponse.Livemode;
+                
             }
             else if (paymentIntentResponse.Status == "requires_action")
             {
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                     .TrackTrace($"{nameof(StripePaymentCaptureCreationContract)} payment status is 'requires_action'", 
                         SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
+
+                stripePaymentCaptureCreationStatusContract.PaymentStatus = paymentIntentResponse.Status;
+                stripePaymentCaptureCreationStatusContract.PaymentResponseMessage = paymentIntentResponse.Description;
+
             }
             else
             {
+                stripePaymentCaptureCreationStatusContract.PaymentStatus = paymentIntentResponse.Status;
+                stripePaymentCaptureCreationStatusContract.PaymentResponseMessage = paymentIntentResponse.Description;
+                
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                     .TrackTrace($"{nameof(StripePaymentCaptureCreationContract)} payment status is unknown.", 
                         SeverityLevel.Error, executingRequestContextAdapter.GetTelemetryProperties());
             }
 
-            var stripePaymentCaptureCreationStatusContract = new StripePaymentCaptureCreationStatusContract
-            {
-                PaymentStatus = paymentIntentResponse.Status,
-                Currency = paymentIntentResponse.Currency,
-                NextAction =  paymentIntentResponse.NextAction.ToJson(),
-                AmountCaptured = paymentIntentResponse.Charges.Data.FirstOrDefault()?.AmountCaptured,
-                ApplicationFeeAmount = paymentIntentResponse.ApplicationFeeAmount,
-                Captured = paymentIntentResponse.Charges.Data.FirstOrDefault()?.Captured ?? false,
-                CaptureMethod = paymentIntentResponse.CaptureMethod,
-                FailureCode = paymentIntentResponse.Charges.Data.FirstOrDefault()?.FailureCode ?? string.Empty,
-                FailureMessage = paymentIntentResponse.Charges.Data.FirstOrDefault()?.FailureMessage ?? string.Empty,
-                PaymentIntent = paymentIntentResponse.Charges.Data.FirstOrDefault()?.PaymentIntent.Id,
-                PaymentMethod = paymentIntentResponse.Charges.Data.FirstOrDefault()?.PaymentMethod,
-                ReceiptNumber = paymentIntentResponse.Charges.Data.FirstOrDefault()?.ReceiptNumber,
-                ReceiptUrl = paymentIntentResponse.Charges.Data.FirstOrDefault()?.ReceiptUrl,
-                LiveMode = paymentIntentResponse.Livemode
-            };
-            
             return stripePaymentCaptureCreationStatusContract;
+
         }
     }
 }
