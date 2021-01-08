@@ -15,6 +15,13 @@ namespace Delivery.Database.Entities
 
         [MaxLength(250)]
         public string  StripeClientSecret { get; set; }
+        
+        [MaxLength(250)]
+        public string StripePaymentMethodId { get; set; }
+        
+        public bool Captured { get; set; }
+        
+        public DateTimeOffset CapturedDateTime { get; set; }
 
         [MaxLength(250)]
         public string InsertedBy { get; set; }

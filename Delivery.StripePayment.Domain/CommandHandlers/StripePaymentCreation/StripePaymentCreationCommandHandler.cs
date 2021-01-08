@@ -5,7 +5,7 @@ using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 
-namespace Delivery.StripePayment.Domain.CommandHandlers.StripePayments
+namespace Delivery.StripePayment.Domain.CommandHandlers.StripePaymentCreation
 {
     public class StripePaymentCreationCommandHandler : ICommandHandler<StripePaymentCreationCommand, StripePaymentCaptureCreationStatusContract>
     {
