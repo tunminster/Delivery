@@ -30,7 +30,7 @@ namespace Delivery.Order.Domain.Services.Applications
 
         public async Task<PaymentIntentCreationStatusContract> ExecuteStripePaymentIntentWorkflow(PaymentOrderServiceRequest paymentOrderServiceRequest)
         {
-            var orderCreateStatusContract = new OrderCreationStatus
+            var orderCreateStatusContract = new OrderCreationStatusContract
             {
                 CurrencyCode = paymentOrderServiceRequest.CurrencyCode
             };
@@ -69,12 +69,12 @@ namespace Delivery.Order.Domain.Services.Applications
         }
 
         private async Task PublishOrderCreationMessageAsync(StripeOrderCreationContract stripeOrderCreationContract,
-            OrderCreationStatus orderCreationStatus)
+            OrderCreationStatusContract orderCreationStatusContract)
         {
             var orderCreationMessage = new OrderCreationMessage
             {
                 PayloadIn = stripeOrderCreationContract,
-                PayloadOut = orderCreationStatus,
+                PayloadOut = orderCreationStatusContract,
                 RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
             };
 

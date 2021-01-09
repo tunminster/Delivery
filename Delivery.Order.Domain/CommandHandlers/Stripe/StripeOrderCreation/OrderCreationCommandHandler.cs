@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
 {
-    public class OrderCreationCommandHandler : ICommandHandler<OrderCreationCommand, OrderCreationStatus>
+    public class OrderCreationCommandHandler : ICommandHandler<OrderCreationCommand, OrderCreationStatusContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
@@ -26,14 +26,12 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<OrderCreationStatus> Handle(OrderCreationCommand command)
+        public async Task<OrderCreationStatusContract> Handle(OrderCreationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
             var productIds = command.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId).ToList();
             var products = databaseContext.Products.Where(x => productIds.Contains(x.ExternalId)).ToList();
-
-            //var totalAmount = 0;
             
             var orderItems = new List<OrderItem>();
             
@@ -45,20 +43,13 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
                     ProductId = id,
                     Count = item.Count
                 });
-
-                // if (products.Count <= 0) continue;
-                // var product = products.FirstOrDefault(x => x.ExternalId == item.ProductId);
-                //
-                // if (product == null) continue;
-                // var unitPrice = product.UnitPrice;
-                // totalAmount += unitPrice * item.Count;
             }
 
             var orderEntity = new Database.Entities.Order
             {
-                ExternalId = command.OrderCreationStatus.OrderId,
-                TotalAmount = command.OrderCreationStatus.TotalAmount,
-                CurrencyCode = command.OrderCreationStatus.CurrencyCode,
+                ExternalId = command.OrderCreationStatusContract.OrderId,
+                TotalAmount = command.OrderCreationStatusContract.TotalAmount,
+                CurrencyCode = command.OrderCreationStatusContract.CurrencyCode,
                 PaymentType = "Card",
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
                 OrderStatus = OrderStatusEnum.InProgress.ToString(),
@@ -75,7 +66,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
             await databaseContext.AddAsync(orderEntity);
             await databaseContext.SaveChangesAsync();
 
-            var orderCreationStatus = command.OrderCreationStatus;
+            var orderCreationStatus = command.OrderCreationStatusContract;
             orderCreationStatus.CreatedDateTime = orderEntity.InsertionDateTime;  
 
             return orderCreationStatus;

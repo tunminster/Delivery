@@ -7,7 +7,10 @@
     <ItemGroup>
       <ProjectReference Include="..\Delivery.Azure.Library.Contracts\Delivery.Azure.Library.Contracts.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Core\Delivery.Azure.Library.Core.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.Messaging\Delivery.Azure.Library.Messaging.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.Microservices.Hosting\Delivery.Azure.Library.Microservices.Hosting.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Storage\Delivery.Azure.Library.Storage.csproj" />
+      <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj" />
       <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
     </ItemGroup>
 

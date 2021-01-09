@@ -26,7 +26,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers
             try
             {
                 var messageAdapter =
-                    new AuditableResponseMessageAdapter<StripeOrderCreationContract, OrderCreationStatus>(message);
+                    new AuditableResponseMessageAdapter<StripeOrderCreationContract, OrderCreationStatusContract>(message);
 
                 if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
                 {

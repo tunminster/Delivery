@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderTotalAmountCreation
 {
-    public class StripeOrderTotalAmountCreationCommandHandler : ICommandHandler<StripeOrderTotalAmountCreationCommand, OrderCreationStatus>
+    public class StripeOrderTotalAmountCreationCommandHandler : ICommandHandler<StripeOrderTotalAmountCreationCommand, OrderCreationStatusContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
@@ -23,7 +23,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderTotalAmountCre
             CacheKey = cacheKey;
         }
         
-        public async Task<OrderCreationStatus> Handle(StripeOrderTotalAmountCreationCommand command)
+        public async Task<OrderCreationStatusContract> Handle(StripeOrderTotalAmountCreationCommand command)
         {
 
             await using var dataAccess = new ShardedDataAccess<PlatformDbContext, Database.Entities.Order>(
@@ -52,7 +52,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderTotalAmountCre
             }
             
             var orderCreationStatus =
-                new OrderCreationStatus{OrderId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()), CurrencyCode = command.OrderCreationStatus.CurrencyCode, TotalAmount = totalAmount, CreatedDateTime = DateTimeOffset.UtcNow};
+                new OrderCreationStatusContract{OrderId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()), CurrencyCode = command.OrderCreationStatusContract.CurrencyCode, TotalAmount = totalAmount, CreatedDateTime = DateTimeOffset.UtcNow};
             return orderCreationStatus;
         }
         

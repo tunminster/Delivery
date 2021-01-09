@@ -4,14 +4,14 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
 {
     public class OrderCreationCommand
     {
-        public OrderCreationCommand(StripeOrderCreationContract stripeOrderCreationContract, OrderCreationStatus orderCreationStatus)
+        public OrderCreationCommand(StripeOrderCreationContract stripeOrderCreationContract, OrderCreationStatusContract orderCreationStatusContract)
         {
             StripeOrderCreationContract = stripeOrderCreationContract;
-            OrderCreationStatus = orderCreationStatus;
+            OrderCreationStatusContract = orderCreationStatusContract;
         }
         
         public StripeOrderCreationContract StripeOrderCreationContract { get; }
         
-        public OrderCreationStatus OrderCreationStatus { get;  }
+        public OrderCreationStatusContract OrderCreationStatusContract { get;  }
     }
 }

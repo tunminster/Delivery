@@ -2,10 +2,14 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Domain.CommandHandlers;
+using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
+using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.StripePayments;
+using Delivery.StripePayment.Domain.Handlers.MessageHandlers;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
@@ -76,6 +80,7 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
                     paymentIntentResponse.Charges.FirstOrDefault()?.ReceiptUrl ?? string.Empty;
                 stripePaymentCaptureCreationStatusContract.LiveMode = paymentIntentResponse.Livemode;
                 
+                stripePaymentCaptureCreationStatusContract.OrderId = paymentIntentResponse.Metadata.FirstOrDefault(x => x.Key == "order_id").Value ?? string.Empty;
             }
             else if (paymentIntentResponse.Status == "requires_action")
             {
@@ -100,5 +105,7 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentInt
             return stripePaymentCaptureCreationStatusContract;
 
         }
+        
+        
     }
 }

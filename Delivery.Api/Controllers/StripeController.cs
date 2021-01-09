@@ -18,6 +18,7 @@ using Delivery.StripePayment.Domain.QueryHandlers.Stripe.AccountLinks;
 using Delivery.StripePayment.Domain.QueryHandlers.Stripe.ApplicationFees;
 using Delivery.StripePayment.Domain.QueryHandlers.Stripe.ConnectAccounts;
 using Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccounts;
+using Delivery.StripePayment.Domain.Services.ApplicationServices.StripeCapturePayment;
 using Delivery.StripePayment.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -156,14 +157,13 @@ namespace Delivery.Api.Controllers
                 return validationResult.ConvertToBadRequest();
             }
 
-            var paymentIntentConfirmationCommand =
-                new PaymentIntentConfirmationCommand(stripePaymentCaptureCreationContract);
-
-            var stripePaymentCaptureCreationStatus =
-                await new PaymentIntentConfirmationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(paymentIntentConfirmationCommand);
-
-            return Ok(stripePaymentCaptureCreationStatus);
+            var stripeCapturePaymentServiceRequest =
+                new StripeCapturePaymentServiceRequest(stripePaymentCaptureCreationContract);
+            
+            var stripeCapturePaymentServiceResult = await new StripeCapturePaymentService(serviceProvider, executingRequestContextAdapter)
+                .ExecuteStripeCapturePaymentCreationWorkflowAsync(stripeCapturePaymentServiceRequest);
+            
+            return Ok(stripeCapturePaymentServiceResult.StripePaymentCaptureCreationStatusContract);
         }
 
         
