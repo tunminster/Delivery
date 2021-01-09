@@ -4,11 +4,14 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.StripePaymentCreation
 {
     public class StripePaymentCreationCommand
     {
-        public StripePaymentCreationCommand(StripePaymentCreationContract stripePaymentCreationContract)
+        public StripePaymentCreationCommand(StripePaymentCreationContract stripePaymentCreationContract, StripePaymentCreationStatusContract stripePaymentCreationStatusContract)
         {
             StripePaymentCreationContract = stripePaymentCreationContract;
+            StripePaymentCreationStatusContract = stripePaymentCreationStatusContract;
         }
         
         public StripePaymentCreationContract StripePaymentCreationContract { get; }
+        
+        public StripePaymentCreationStatusContract StripePaymentCreationStatusContract { get; }
     }
 }

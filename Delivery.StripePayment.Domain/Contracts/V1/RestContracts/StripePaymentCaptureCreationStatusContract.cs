@@ -65,6 +65,9 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
         public string ReceiptUrl { get; set; }
         
         [DataMember]
+        public string OrderId { get; set; }
+        
+        [DataMember]
         public DateTimeOffset Created { get; set; }
         
         [DataMember]

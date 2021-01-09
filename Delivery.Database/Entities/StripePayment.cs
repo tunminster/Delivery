@@ -12,16 +12,27 @@ namespace Delivery.Database.Entities
         
         [MaxLength(250)]
         public string StripePaymentIntentId { get; set; }
-
-        [MaxLength(250)]
-        public string  StripeClientSecret { get; set; }
         
         [MaxLength(250)]
         public string StripePaymentMethodId { get; set; }
         
+        [MaxLength(250)]
+        public string PaymentStatus { get; set; }
+        
         public bool Captured { get; set; }
         
+        public long? AmountCaptured { get; set; }
+        
+        [MaxLength(250)]
+        public string FailureCode { get; set; }
+        
+        [MaxLength(500)]
+        public string FailureMessage { get; set; }
+        
         public DateTimeOffset CapturedDateTime { get; set; }
+        
+        [MaxLength(500)]
+        public string ReceiptUrl { get; set; }
 
         [MaxLength(250)]
         public string InsertedBy { get; set; }

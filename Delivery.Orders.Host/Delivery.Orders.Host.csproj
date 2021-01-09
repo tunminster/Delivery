@@ -22,6 +22,7 @@
       <ProjectReference Include="..\Delivery.Azure.Library.WebApi\Delivery.Azure.Library.WebApi.csproj" />
       <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
       <ProjectReference Include="..\Delivery.Order.Domain\Delivery.Order.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.StripePayment.Domain\Delivery.StripePayment.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

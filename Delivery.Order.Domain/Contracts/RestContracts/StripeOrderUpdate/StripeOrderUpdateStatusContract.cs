@@ -1,22 +1,23 @@
+using System;
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
 
-namespace Delivery.Order.Domain.Contracts.RestContracts
+namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate
 {
     [DataContract]
-    public class OrderCreationStatusContract
+    public class StripeOrderUpdateStatusContract
     {
         [DataMember]
         public string OrderId { get; set; }
         
         [DataMember]
-        public string Status { get; set; }
+        public DateTimeOffset UpdatedDateTime { get; set; }
         
         public override string ToString()
         {
             return $"{GetType().Name}" +
                    $"{nameof(OrderId)}: {OrderId.Format()}," +
-                   $"{nameof(Status)} : {Status.Format()}";
+                   $"{nameof(UpdatedDateTime)} : {UpdatedDateTime.Format()}";
 
         }
     }

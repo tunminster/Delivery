@@ -6,7 +6,7 @@ using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 namespace Delivery.Order.Domain.Contracts.V1.MessageContracts
 {
     [DataContract]
-    public class OrderCreationMessage : AuditableResponseMessage<StripeOrderCreationContract, OrderCreationStatus>
+    public class OrderCreationMessage : AuditableResponseMessage<StripeOrderCreationContract, OrderCreationStatusContract>
     {
         
     }
