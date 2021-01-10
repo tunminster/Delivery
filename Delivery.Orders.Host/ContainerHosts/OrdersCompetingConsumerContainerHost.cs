@@ -12,6 +12,7 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Metrics;
 using Delivery.Domain.Contracts.Enums;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
+using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
 using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
 using Delivery.StripePayment.Domain.Handlers.MessageHandlers;
 using Microsoft.Azure.ServiceBus;
@@ -58,6 +59,12 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var paymentCreationMessageHandler = new PaymentCreationMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(paymentCreationMessage.RequestContext));
                     await paymentCreationMessageHandler.HandleMessageAsync(paymentCreationMessage, processingState);
+                    break;
+                case nameof(OrderUpdateMessage):
+                    var orderUpdateMessage = message.Deserialize<OrderUpdateMessage>();
+                    var orderUpdateMessageHandler = new OrderUpdateMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(orderUpdateMessage.RequestContext));
+                    await orderUpdateMessageHandler.HandleMessageAsync(orderUpdateMessage, processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");

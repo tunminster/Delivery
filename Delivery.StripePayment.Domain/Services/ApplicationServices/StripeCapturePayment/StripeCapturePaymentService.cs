@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
+using Delivery.Order.Domain.Contracts.V1.MessageContracts;
+using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
 using Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentIntentConfirmation;
 using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.StripePayments;
@@ -56,6 +59,23 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeCaptu
 
             await PublishStripePaymentCreationMessageAsync(stripePaymentCreationContract,
                 stripePaymentCreationStatusContract);
+            
+            // publish payment update message
+            var stripeOrderUpdateContract = new StripeOrderUpdateContract
+            {
+                OrderId = stripePaymentCreationContract.OrderId,
+                OrderStatus = stripePaymentCaptureCreationStatus.PaymentStatus,
+                PaymentStatus = stripePaymentCaptureCreationStatus.PaymentStatus,
+                PaymentIntentId = request.StripePaymentCaptureCreationContract.StripePaymentIntentId
+            };
+
+            var stripeOrderUpdateStatusContract = new StripeOrderUpdateStatusContract
+            {
+                OrderId = stripeOrderUpdateContract.OrderId,
+                UpdatedDateTime = DateTimeOffset.UtcNow
+            };
+
+            await PublishStripePaymentUpdateMessageAsync(stripeOrderUpdateContract, stripeOrderUpdateStatusContract);
 
             var stripeCapturePaymentServiceResult =
                 new StripeCapturePaymentServiceResult(stripePaymentCaptureCreationStatus);
@@ -78,6 +98,22 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeCaptu
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace($"{nameof(PublishStripePaymentCreationMessageAsync)} published payment creation message", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+        }
+
+        private async Task PublishStripePaymentUpdateMessageAsync(StripeOrderUpdateContract stripeOrderUpdateContract,
+            StripeOrderUpdateStatusContract stripeOrderUpdateStatusContract)
+        {
+            var orderUpdateMessage = new OrderUpdateMessage
+            {
+                PayloadIn = stripeOrderUpdateContract,
+                PayloadOut = stripeOrderUpdateStatusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+
+            await new OrderUpdateMessagePublisher(serviceProvider).PublishAsync(orderUpdateMessage);
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                .TrackTrace($"{nameof(PublishStripePaymentUpdateMessageAsync)} published payment update message", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
         }
     }
 }
