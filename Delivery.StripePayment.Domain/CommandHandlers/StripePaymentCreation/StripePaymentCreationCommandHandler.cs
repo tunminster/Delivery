@@ -38,6 +38,8 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.StripePaymentCreation
             }
             
             var stripePayment = StripePaymentConverter.Convert(command.StripePaymentCreationContract, order.Id);
+            stripePayment.InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail;
+            stripePayment.InsertionDateTime = DateTimeOffset.UtcNow;
             stripePayment.ExternalId = executingRequestContextAdapter.GetShard().GenerateExternalId();
 
             await databaseContext.StripePayments.AddAsync(stripePayment);
