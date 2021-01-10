@@ -22,9 +22,14 @@ namespace Delivery.Database.Entities
         [MaxLength(20)]
         public string CurrencySign { get; set; }
         public int CategoryId { get; set; }
+        
+        public int StoreId { get; set; }
 
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }
+        
+        [ForeignKey("StoreId")]
+        public virtual Store Store { get; set; }
         
     }
 }
