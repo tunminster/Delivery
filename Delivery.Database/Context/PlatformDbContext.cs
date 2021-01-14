@@ -37,13 +37,10 @@ namespace Delivery.Database.Context
         public DbSet<Product> Products { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<PaymentCard> PaymentCards { get; set; }
         
         public DbSet<OrderItem> OrderItems { get; set; }
         
         public DbSet<StripePayment> StripePayments { get; set; }
-        
-        public DbSet<PaymentResponse> PaymentResponses { get; set; }
         
         public DbSet<Report> Reports { get; set; }
         
@@ -70,15 +67,7 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<Order>().Property(p => p.PaymentType).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.PaymentStatus).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.OrderStatus).HasMaxLength(15);
-
-            modelBuilder.Entity<PaymentCard>().Property(p => p.Token).HasMaxLength(1000);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.Name).HasMaxLength(150);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.CardType).HasMaxLength(30);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.MaskedCardNumber).HasMaxLength(30);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryMonth).HasMaxLength(10);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryYear).HasMaxLength(10);
             
-
             modelBuilder.Entity<Report>().Property(p => p.Subject).HasMaxLength(250);
             modelBuilder.Entity<Report>().Property(p => p.ContactNumber).HasMaxLength(20);
             modelBuilder.Entity<Report>().Property(p => p.ReportCategory).HasMaxLength(20);

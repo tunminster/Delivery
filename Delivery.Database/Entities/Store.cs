@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Delivery.Azure.Library.Contracts.Interfaces.V1.Entities;
 using Delivery.Azure.Library.Database.Entities.V1;
 
@@ -30,6 +31,11 @@ namespace Delivery.Database.Entities
         
         [MaxLength(250)]
         public string Longitude { get; set; }
+        
+        public int StoreTypeId { get; set; }
+        
+        [ForeignKey("StoreTypeId")]
+        public virtual StoreType StoreType { get; set; }
         
         [MaxLength(250)]
         public string InsertedBy { get; set; }
