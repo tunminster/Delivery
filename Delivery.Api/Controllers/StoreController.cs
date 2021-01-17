@@ -6,7 +6,9 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
+using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
+using Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreCreations;
 using Delivery.Store.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -54,5 +56,6 @@ namespace Delivery.Api.Controllers
             
             return Ok(storeCreationStatusContract);
         }
+        
     }
 }
