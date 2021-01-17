@@ -12,6 +12,9 @@ namespace Delivery.Database.Entities
         public string StoreName { get; set; }
         
         [MaxLength(500)]
+        public string ImageUri { get; set; }
+        
+        [MaxLength(500)]
         public string AddressLine1 { get; set; }
         
         [MaxLength(500)]
@@ -26,11 +29,15 @@ namespace Delivery.Database.Entities
         [MaxLength(250)]
         public string Country { get; set; }
         
-        [MaxLength(250)]
-        public string Latitude { get; set; }
+        [MaxLength(50)]
+        public string PostalCode { get; set; }
         
-        [MaxLength(250)]
-        public string Longitude { get; set; }
+        public double? Latitude { get; set; }
+        
+        public double? Longitude { get; set; }
+        
+        [MaxLength(500)]
+        public string? FormattedAddress { get; set; }
         
         public int StoreTypeId { get; set; }
         

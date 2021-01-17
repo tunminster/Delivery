@@ -2,16 +2,16 @@ using System;
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
 
-namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
+namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreTypeCreations
 {
     /// <summary>
-    ///  A contract to return status of a store creation
+    ///  A contract to return status of a store type creation
     /// </summary>
     [DataContract]
-    public class StoreCreationStatusContract
+    public class StoreTypeCreationStatusContract
     {
         [DataMember]
-        public string StoreId { get; set; }
+        public string StoreTypeId { get; set; }
         
         [DataMember]
         public DateTimeOffset InsertionDateTime { get; set; }
@@ -19,7 +19,7 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
         public override string ToString()
         {
             return $"{GetType().Name}" +
-                   $"{nameof(StoreId)}: {StoreId.Format()}," +
+                   $"{nameof(InsertionDateTime)} : {InsertionDateTime.Format()}," +
                    $"{nameof(InsertionDateTime)} : {InsertionDateTime.Format()}";
 
         }

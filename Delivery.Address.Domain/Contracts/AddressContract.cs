@@ -21,9 +21,9 @@ namespace Delivery.Address.Domain.Contracts
         [DataMember]
         public string PostCode { get; set; }
         [DataMember]
-        public string Lat { get; set; }
+        public double? Lat { get; set; }
         [DataMember]
-        public string Lng { get; set; }
+        public double? Lng { get; set; }
         [DataMember]
         public string Country { get; set; }
         [DataMember]

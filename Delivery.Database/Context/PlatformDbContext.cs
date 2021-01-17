@@ -40,6 +40,9 @@ namespace Delivery.Database.Context
         
         public DbSet<OrderItem> OrderItems { get; set; }
         
+        public DbSet<StoreType> StoreTypes { get; set; }
+        
+        public DbSet<Store> Stores { get; set; }
         public DbSet<StripePayment> StripePayments { get; set; }
         
         public DbSet<Report> Reports { get; set; }

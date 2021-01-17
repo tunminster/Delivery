@@ -10,6 +10,9 @@ namespace Delivery.Database.Entities
         [MaxLength(255)]
         public string StoreTypeName { get; set; }
         
+        [MaxLength(500)]
+        public string ImageUri { get; set; }
+        
         [MaxLength(255)]
         public string InsertedBy { get; set; }
         

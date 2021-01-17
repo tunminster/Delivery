@@ -11,8 +11,8 @@ namespace Delivery.Database.Entities
         public string Description { get; set; }
         public string City { get; set; }
         public string PostCode { get; set; }
-        public string Lat { get; set; }
-        public string Lng { get; set; }
+        public double? Lat { get; set; }
+        public double? Lng { get; set; }
         public string Country { get; set; }
         public bool Disabled { get; set; }
 
