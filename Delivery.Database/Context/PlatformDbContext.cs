@@ -37,13 +37,13 @@ namespace Delivery.Database.Context
         public DbSet<Product> Products { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<PaymentCard> PaymentCards { get; set; }
         
         public DbSet<OrderItem> OrderItems { get; set; }
         
-        public DbSet<StripePayment> StripePayments { get; set; }
+        public DbSet<StoreType> StoreTypes { get; set; }
         
-        public DbSet<PaymentResponse> PaymentResponses { get; set; }
+        public DbSet<Store> Stores { get; set; }
+        public DbSet<StripePayment> StripePayments { get; set; }
         
         public DbSet<Report> Reports { get; set; }
         
@@ -70,15 +70,7 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<Order>().Property(p => p.PaymentType).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.PaymentStatus).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.OrderStatus).HasMaxLength(15);
-
-            modelBuilder.Entity<PaymentCard>().Property(p => p.Token).HasMaxLength(1000);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.Name).HasMaxLength(150);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.CardType).HasMaxLength(30);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.MaskedCardNumber).HasMaxLength(30);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryMonth).HasMaxLength(10);
-            modelBuilder.Entity<PaymentCard>().Property(p => p.ExpiryYear).HasMaxLength(10);
             
-
             modelBuilder.Entity<Report>().Property(p => p.Subject).HasMaxLength(250);
             modelBuilder.Entity<Report>().Property(p => p.ContactNumber).HasMaxLength(20);
             modelBuilder.Entity<Report>().Property(p => p.ReportCategory).HasMaxLength(20);
@@ -121,6 +113,7 @@ namespace Delivery.Database.Context
             
             AuditableEntities.AddRange(ChangeTracker.Entries().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified));
             UpdateExternalIds(AuditableEntities);
+            UpdateAuditableDetails(AuditableEntities);
             
             var result = await new DependencyMeasurement(ServiceProvider)
                 .ForDependency(dependencyName, MeasuredDependencyType.Sql, dependencyData.ConvertToJson(), dependencyTarget)
@@ -165,6 +158,24 @@ namespace Delivery.Database.Context
                 {
                     entity.ExternalId = ExecutingRequestContextAdapter.GetShard().GenerateExternalId();
                 }
+            }
+        }
+        
+        private void UpdateAuditableDetails(List<EntityEntry> entries)
+        {
+            var entityInsertionDateTime = DateTimeOffset.UtcNow;
+            var auditableEntities = entries.Select(entry => entry.Entity).OfType<IAuditableEntity>();
+            foreach (var entity in auditableEntities)
+            {
+                entity.InsertionDateTime = entityInsertionDateTime;
+
+                var entityInsertedBy = ExecutingRequestContextAdapter.GetAuthenticatedUser().UserEmail;
+                if (string.IsNullOrEmpty(entityInsertedBy))
+                {
+                    throw new InvalidOperationException("Entities require to know the authenticated user").WithTelemetry(ExecutingRequestContextAdapter.GetTelemetryProperties());
+                }
+
+                entity.InsertedBy = entityInsertedBy;
             }
         }
         

@@ -13,6 +13,10 @@ using Delivery.Domain.Contracts.Enums;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
+using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreCreations;
+using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreTypeCreations;
+using Delivery.Store.Domain.Handlers.MessageHandlers.StoreCreation;
+using Delivery.Store.Domain.Handlers.MessageHandlers.StoreTypeCreations;
 using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
 using Delivery.StripePayment.Domain.Handlers.MessageHandlers;
 using Microsoft.Azure.ServiceBus;
@@ -65,6 +69,18 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var orderUpdateMessageHandler = new OrderUpdateMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(orderUpdateMessage.RequestContext));
                     await orderUpdateMessageHandler.HandleMessageAsync(orderUpdateMessage, processingState);
+                    break;
+                case nameof(StoreCreationMessageContract):
+                    var storeCreationMessage = message.Deserialize<StoreCreationMessageContract>();
+                    var storeCreationMessageHandler = new StoreCreationMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(storeCreationMessage.RequestContext));
+                    await storeCreationMessageHandler.HandleMessageAsync(storeCreationMessage, processingState);
+                    break;
+                case nameof(StoreTypeCreationMessageContract):
+                    var storeTypeCreationMessage = message.Deserialize<StoreTypeCreationMessageContract>();
+                    var storeTypeCreationMessageHandler = new StoreTypeCreationMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(storeTypeCreationMessage.RequestContext));
+                    await storeTypeCreationMessageHandler.HandleMessageAsync(storeTypeCreationMessage, processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");

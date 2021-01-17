@@ -29,6 +29,7 @@ namespace Delivery.Product.Domain.QueryHandlers
             
             var productList = await databaseContext.Products.Where(x => x.CategoryId == category.Id)
                 .Include(x => x.Category)
+                .Include(x => x.Store)
                 .Select(x => new ProductContract
                 {
                     Id = x.ExternalId,
@@ -38,7 +39,8 @@ namespace Delivery.Product.Domain.QueryHandlers
                     ProductName = x.ProductName,
                     ProductImage = x.ProductImage,
                     ProductImageUrl = x.ProductImageUrl,
-                    UnitPrice = x.UnitPrice
+                    UnitPrice = x.UnitPrice,
+                    StoreId = x.Store.ExternalId
                 })
                 .ToListAsync();
             

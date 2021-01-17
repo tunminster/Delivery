@@ -49,11 +49,11 @@ namespace Delivery.Database.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("NVARCHAR(40)");
 
-                    b.Property<string>("Lat")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double?>("Lat")
+                        .HasColumnType("float");
 
-                    b.Property<string>("Lng")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double?>("Lng")
+                        .HasColumnType("float");
 
                     b.Property<string>("PostCode")
                         .HasColumnType("nvarchar(max)");
@@ -89,10 +89,23 @@ namespace Delivery.Database.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("NVARCHAR(40)");
 
+                    b.Property<string>("InsertedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
                     b.Property<int>("ParentCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StoreId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -100,6 +113,8 @@ namespace Delivery.Database.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique()
                         .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Categories");
                 });
@@ -188,6 +203,9 @@ namespace Delivery.Database.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<int?>("StoreId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TotalAmount")
                         .HasColumnType("int");
 
@@ -198,6 +216,8 @@ namespace Delivery.Database.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique()
                         .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Orders");
                 });
@@ -236,119 +256,6 @@ namespace Delivery.Database.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("Delivery.Database.Entities.PaymentCard", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("CardType")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ExpiryMonth")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("ExpiryYear")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("ExternalId")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("NVARCHAR(40)");
-
-                    b.Property<string>("MaskedCardNumber")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Token")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
-
-                    b.ToTable("PaymentCards");
-                });
-
-            modelBuilder.Entity("Delivery.Database.Entities.PaymentResponse", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<decimal>("Amount")
-                        .HasMaxLength(20)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CurrencyCode")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("CvcResultCode")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Environment")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("ExternalId")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("NVARCHAR(40)");
-
-                    b.Property<string>("MaskedCardNumber")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("OrderCode")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("OrderDescription")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("PaymentStatus")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Token")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
-
-                    b.ToTable("PaymentResponses");
-                });
-
             modelBuilder.Entity("Delivery.Database.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -376,6 +283,16 @@ namespace Delivery.Database.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("NVARCHAR(40)");
 
+                    b.Property<string>("InsertedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ProductImage")
                         .HasColumnType("nvarchar(max)");
 
@@ -385,6 +302,9 @@ namespace Delivery.Database.Migrations
                     b.Property<string>("ProductName")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
+                    b.Property<int?>("StoreId")
+                        .HasColumnType("int");
 
                     b.Property<int>("UnitPrice")
                         .HasColumnType("int");
@@ -396,6 +316,8 @@ namespace Delivery.Database.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique()
                         .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Products");
                 });
@@ -438,6 +360,123 @@ namespace Delivery.Database.Migrations
                         .HasDatabaseName("IX_UniqueExternalId");
 
                     b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.Store", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("AddressLine1")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("AddressLine2")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("County")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR(40)");
+
+                    b.Property<string>("FormattedAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ImageUri")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("InsertedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("StoreName")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("StoreTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("StoreTypeId");
+
+                    b.ToTable("Stores");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.StoreType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR(40)");
+
+                    b.Property<string>("ImageUri")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("InsertedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("StoreTypeName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.ToTable("StoreTypes");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.StripePayment", b =>
@@ -819,6 +858,15 @@ namespace Delivery.Database.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("Delivery.Database.Entities.Category", b =>
+                {
+                    b.HasOne("Delivery.Database.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId");
+
+                    b.Navigation("Store");
+                });
+
             modelBuilder.Entity("Delivery.Database.Entities.Customer", b =>
                 {
                     b.HasOne("Delivery.Database.Models.ApplicationUser", "Identity")
@@ -836,7 +884,13 @@ namespace Delivery.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Delivery.Database.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId");
+
                     b.Navigation("Customer");
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.OrderItem", b =>
@@ -858,17 +912,6 @@ namespace Delivery.Database.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Delivery.Database.Entities.PaymentCard", b =>
-                {
-                    b.HasOne("Delivery.Database.Entities.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("Delivery.Database.Entities.Product", b =>
                 {
                     b.HasOne("Delivery.Database.Entities.Category", "Category")
@@ -877,7 +920,24 @@ namespace Delivery.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Delivery.Database.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.Store", b =>
+                {
+                    b.HasOne("Delivery.Database.Entities.StoreType", "StoreType")
+                        .WithMany()
+                        .HasForeignKey("StoreTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StoreType");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.StripePayment", b =>
