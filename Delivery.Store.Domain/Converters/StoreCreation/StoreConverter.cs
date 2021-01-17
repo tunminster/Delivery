@@ -15,7 +15,6 @@ namespace Delivery.Store.Domain.Converters.StoreCreation
                 City = storeCreationContract.City,
                 County = storeCreationContract.County,
                 Country = storeCreationContract.Country,
-                StoreTypeId = storeCreationContract.StoreTypeId,
                 PostalCode = storeCreationContract.PostalCode
             };
             return store;

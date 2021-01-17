@@ -34,7 +34,7 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
         public string PostalCode { get; set; }
         
         [DataMember]
-        public int StoreTypeId { get; set; }
+        public string StoreTypeId { get; set; }
         
         public override string ToString()
         {

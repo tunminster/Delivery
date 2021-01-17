@@ -46,7 +46,9 @@ namespace Delivery.Product.Domain.CommandHandlers
                 UnitPrice = command.ProductContract.UnitPrice,
                 CategoryId = command.ProductContract.CategoryId,
                 Currency = Currency.BritishPound.ToString(),
-                CurrencySign = CurrencySign.BritishPound.Code
+                CurrencySign = CurrencySign.BritishPound.Code,
+                InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+                InsertionDateTime = DateTimeOffset.UtcNow
             };
             
             await databaseContext.Products.AddAsync(product);

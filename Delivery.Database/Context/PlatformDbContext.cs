@@ -113,6 +113,7 @@ namespace Delivery.Database.Context
             
             AuditableEntities.AddRange(ChangeTracker.Entries().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified));
             UpdateExternalIds(AuditableEntities);
+            UpdateAuditableDetails(AuditableEntities);
             
             var result = await new DependencyMeasurement(ServiceProvider)
                 .ForDependency(dependencyName, MeasuredDependencyType.Sql, dependencyData.ConvertToJson(), dependencyTarget)
@@ -157,6 +158,24 @@ namespace Delivery.Database.Context
                 {
                     entity.ExternalId = ExecutingRequestContextAdapter.GetShard().GenerateExternalId();
                 }
+            }
+        }
+        
+        private void UpdateAuditableDetails(List<EntityEntry> entries)
+        {
+            var entityInsertionDateTime = DateTimeOffset.UtcNow;
+            var auditableEntities = entries.Select(entry => entry.Entity).OfType<IAuditableEntity>();
+            foreach (var entity in auditableEntities)
+            {
+                entity.InsertionDateTime = entityInsertionDateTime;
+
+                var entityInsertedBy = ExecutingRequestContextAdapter.GetAuthenticatedUser().UserEmail;
+                if (string.IsNullOrEmpty(entityInsertedBy))
+                {
+                    throw new InvalidOperationException("Entities require to know the authenticated user").WithTelemetry(ExecutingRequestContextAdapter.GetTelemetryProperties());
+                }
+
+                entity.InsertedBy = entityInsertedBy;
             }
         }
         

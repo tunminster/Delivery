@@ -37,7 +37,7 @@ namespace Delivery.Database.Entities
 
         public int AddressId { get; set; }
         
-        public int StoreId { get; set; }
+        public int? StoreId { get; set; }
         
         [ForeignKey("StoreId")]
         public virtual Store Store { get; set; }

@@ -11,6 +11,7 @@ using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
 using Delivery.Store.Domain.Converters.StoreCreation;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
@@ -33,10 +34,15 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
 
             var store = StoreConverter.Convert(command.StoreCreationContract);
 
+            var storeType =
+                await databaseContext.StoreTypes.FirstOrDefaultAsync(x =>
+                    x.ExternalId == command.StoreCreationContract.StoreTypeId);
+
             store.ExternalId = command.StoreCreationStatusContract.StoreId;
             store.InsertionDateTime = DateTimeOffset.UtcNow;
             store.InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail;
             store.IsDeleted = false;
+            store.StoreTypeId = storeType.Id;
 
             await databaseContext.Stores.AddAsync(store);
             await databaseContext.SaveChangesAsync();

@@ -25,6 +25,7 @@ namespace Delivery.Product.Domain.QueryHandlers
             
             var product = await databaseContext.Products
                 .Include(x => x.Category)
+                .Include(x => x.Store)
                 .FirstOrDefaultAsync(x => x.ExternalId == query.ProductId);
             var productContract = new ProductContract
             {
@@ -35,7 +36,8 @@ namespace Delivery.Product.Domain.QueryHandlers
                 ProductImage = product.ProductImage,
                 ProductImageUrl = product.ProductImageUrl,
                 ProductName = product.ProductName,
-                UnitPrice = product.UnitPrice
+                UnitPrice = product.UnitPrice,
+                StoreId = product.Store.ExternalId
             };
             return productContract;
         }

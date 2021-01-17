@@ -28,5 +28,8 @@ namespace Delivery.Product.Domain.Contracts
 
         [DataMember]
         public string CategoryName { get; set; }
+        
+        [DataMember]
+        public string StoreId { get; set; }
     }
 }
