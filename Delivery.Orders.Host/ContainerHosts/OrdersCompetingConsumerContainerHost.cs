@@ -14,8 +14,10 @@ using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreCreations;
+using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreGeoUpdates;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreTypeCreations;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreCreation;
+using Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreTypeCreations;
 using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
 using Delivery.StripePayment.Domain.Handlers.MessageHandlers;
@@ -81,6 +83,12 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var storeTypeCreationMessageHandler = new StoreTypeCreationMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(storeTypeCreationMessage.RequestContext));
                     await storeTypeCreationMessageHandler.HandleMessageAsync(storeTypeCreationMessage, processingState);
+                    break;
+                case nameof(StoreGeoUpdateMessageContract):
+                    var storeGeoUpdateMessage = message.Deserialize<StoreGeoUpdateMessageContract>();
+                    var storeGeoUpdateMessageHandler = new StoreGeoUpdateMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(storeGeoUpdateMessage.RequestContext));
+                    await storeGeoUpdateMessageHandler.HandleMessageAsync(storeGeoUpdateMessage, processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");
