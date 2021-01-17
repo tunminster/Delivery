@@ -41,7 +41,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate
             
             var searchGeoLocationContract = new SearchGeoLocationContract
             {
-                Address = string.Join(",", storeProperties.Where(x => !string.IsNullOrEmpty(x)))
+                Address = string.Join("+", storeProperties.Where(x => !string.IsNullOrEmpty(x)))
             };
 
             var searchGeoLocationQuery = new SearchGeoLocationQuery(searchGeoLocationContract);

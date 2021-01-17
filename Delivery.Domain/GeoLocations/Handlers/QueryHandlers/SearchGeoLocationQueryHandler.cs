@@ -66,7 +66,7 @@ namespace Delivery.Domain.GeoLocations.Handlers.QueryHandlers
                 searchGeoLocationStatusContract.Latitude = item.geometry.location.lat;
                 searchGeoLocationStatusContract.Longitude = item.geometry.location.lng;
                 searchGeoLocationStatusContract.AddressType = string.Join(",", item.types);
-                searchGeoLocationStatusContract.CompoundCode = item.plus_code.compound_code;
+                searchGeoLocationStatusContract.CompoundCode = item.plus_code?.compound_code ?? string.Empty;
                 searchGeoLocationStatusContract.FormattedAddress = item.formatted_address;
             }
 
