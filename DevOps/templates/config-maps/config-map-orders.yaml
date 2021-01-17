@@ -12,5 +12,6 @@ data:
     ApplicationInsights-InstrumentationKey: "#{ApplicationInsights-InstrumentationKey}#"
     Service_Name: "Orders"
     Stripe-Api-Key: "#{Stripe-Api-Key}#"
+    Geo-Api-Uri: "#{Geo-Api-Uri}#"
     Ring: "#{Ring}#"
     Shards: '#{Shards}#'
