@@ -1,12 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Product.Domain.QueryHandlers;
+using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreTypeCreations;
+using Delivery.Store.Domain.Handlers.QueryHandlers.StoreTypeGetQueries;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreCreations;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreTypeCreations;
 using Delivery.Store.Domain.Validators;
@@ -56,5 +61,23 @@ namespace Delivery.Api.Controllers
             
             return Ok(storeTypeCreationStatusContract);
         }
+        
+        [HttpGet("GetAllStoreTypes")]
+        [ProducesResponseType(typeof(List<StoreTypeContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetStoreTypesAsync(CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var storeTypeGetAllQuery =
+                new StoreTypeGetAllQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-default-store-types");
+            var storeTypeContractList =
+                await new StoreTypeGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(storeTypeGetAllQuery);
+          
+            return Ok(storeTypeContractList);
+        }
+        
+        
     }
 }

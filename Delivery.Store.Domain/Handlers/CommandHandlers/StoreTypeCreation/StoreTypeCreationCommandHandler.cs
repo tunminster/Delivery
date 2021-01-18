@@ -5,7 +5,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreTypeCreations;
-using Delivery.Store.Domain.Converters.StoreTypeCreation;
+using Delivery.Store.Domain.Converters.StoreTypeConverters;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
 
 namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreTypeCreation

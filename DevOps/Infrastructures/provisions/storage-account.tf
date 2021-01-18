@@ -7,6 +7,7 @@ resource "azurerm_storage_account" "hn-platform-storage" {
   account_kind             = "StorageV2"
   min_tls_version          = "TLS1_2"
   large_file_share_enabled = true
+  allow_blob_public_access = true
 
   identity {
     type = "SystemAssigned"
