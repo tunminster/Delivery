@@ -1,6 +1,6 @@
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 
-namespace Delivery.Store.Domain.Converters.StoreCreation
+namespace Delivery.Store.Domain.Converters.StoreConverters
 {
     public static class StoreConverter
     {
