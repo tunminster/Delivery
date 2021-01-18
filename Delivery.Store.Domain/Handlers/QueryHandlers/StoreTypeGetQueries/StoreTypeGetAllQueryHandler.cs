@@ -15,8 +15,8 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreTypeGetQueries
 {
     public class StoreTypeGetAllQueryHandler : IQueryHandler<StoreTypeGetAllQuery, List<StoreTypeContract>>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         public StoreTypeGetAllQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;

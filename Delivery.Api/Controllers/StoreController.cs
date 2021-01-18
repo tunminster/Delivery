@@ -1,14 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate;
+using Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreCreations;
 using Delivery.Store.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -55,6 +59,25 @@ namespace Delivery.Api.Controllers
                 .ExecuteStoreCreationWorkflowAsync(storeCreationServiceRequest);
             
             return Ok(storeCreationStatusContract);
+        }
+        
+        [HttpGet("GetAllStores")]
+        [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetStoresAsync(string numberOfObjectPerPage, string pageNumber, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            int.TryParse(numberOfObjectPerPage, out var iNumberOfObjectPerPage);
+            int.TryParse(pageNumber, out var iPageNumber);
+
+            var storeGetAllQuery =
+                new StoreGetAllQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-store-{iNumberOfObjectPerPage}-{iPageNumber}", iNumberOfObjectPerPage, iPageNumber);
+            var storeTypeContractList =
+                await new StoreGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(storeGetAllQuery);
+          
+            return Ok(storeTypeContractList);
         }
         
     }

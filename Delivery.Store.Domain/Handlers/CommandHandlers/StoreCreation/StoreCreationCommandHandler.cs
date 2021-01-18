@@ -8,7 +8,7 @@ using Delivery.Domain.CommandHandlers;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreGeoUpdates;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
-using Delivery.Store.Domain.Converters.StoreCreation;
+using Delivery.Store.Domain.Converters.StoreConverters;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;

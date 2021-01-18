@@ -12,5 +12,6 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreTypeGetQueries
         }
         
         public string CacheKey { get; }
+        
     }
 }
