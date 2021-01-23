@@ -39,6 +39,9 @@ namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
         [DataMember]
         public string StoreType { get; set; }
         
+        [DataMember]
+        public double Distance { get; set; }
+        
         public override string ToString()
         {
             return $"{GetType().Name}" +
