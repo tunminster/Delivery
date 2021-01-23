@@ -80,5 +80,27 @@ namespace Delivery.Api.Controllers
             return Ok(storeTypeContractList);
         }
         
+        [HttpGet("Get-Nearest-Stores")]
+        [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetNearestStoresAsync(string numberOfObjectPerPage, string pageNumber, string latitude, string longitude, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            int.TryParse(numberOfObjectPerPage, out var iNumberOfObjectPerPage);
+            int.TryParse(pageNumber, out var iPageNumber);
+            double.TryParse(latitude, out var dLatitude);
+            double.TryParse(longitude, out var dLongitude);
+            
+            var storeGetByNearestLocationQuery =
+                new StoreGetByNearestLocationQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-store-{iNumberOfObjectPerPage}-{iPageNumber}-{latitude}-{longitude}", iNumberOfObjectPerPage, iPageNumber, dLatitude, dLongitude, 7);
+            
+            var storeContractList =
+                await new StoreGetByStoreTypeIdAndGeoLocationQuery(serviceProvider, executingRequestContextAdapter)
+                    .Handle(storeGetByNearestLocationQuery);
+          
+            return Ok(storeContractList);
+        }
+        
     }
 }

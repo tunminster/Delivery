@@ -36,7 +36,8 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate
                 store.AddressLine2,
                 store.City,
                 store.County,
-                store.Country
+                store.Country,
+                store.PostalCode.Replace(" ", "")
             };
             
             var searchGeoLocationContract = new SearchGeoLocationContract
