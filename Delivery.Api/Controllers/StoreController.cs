@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ using Delivery.Store.Domain.Services.ApplicationServices.StoreCreations;
 using Delivery.Store.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Nest;
 
 namespace Delivery.Api.Controllers
 {
@@ -73,11 +76,15 @@ namespace Delivery.Api.Controllers
 
             var storeGetAllQuery =
                 new StoreGetAllQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-store-{iNumberOfObjectPerPage}-{iPageNumber}", iNumberOfObjectPerPage, iPageNumber);
-            var storeTypeContractList =
+            var storeContractList =
                 await new StoreGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
                     .Handle(storeGetAllQuery);
+
+            await IndexStoreAsync(storeContractList.FirstOrDefault());
+
+            var result = GetStoreAsync("thai", 1, 5);
           
-            return Ok(storeTypeContractList);
+            return Ok(storeContractList);
         }
         
         [HttpGet("Get-Nearest-Stores")]
@@ -100,6 +107,60 @@ namespace Delivery.Api.Controllers
                     .Handle(storeGetByNearestLocationQuery);
           
             return Ok(storeContractList);
+        }
+
+        private async Task IndexStoreAsync(StoreContract storeContract)
+        {
+            var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
+            
+            var createIndexResponse = await elasticClient.Indices.CreateAsync("stores", c => c
+                .Map<StoreContract>(m => m.AutoMap()
+                    .Properties(p => p
+                        .GeoPoint(d => d
+                            .Name(n =>n.Location)
+                        )
+                    )
+                )
+            );
+            
+            var createResponse = await elasticClient.CreateAsync(storeContract,
+                i => i
+                    .Index("stores")
+                    .Id(storeContract.StoreId)
+            );
+            
+            
+            
+            
+            // var deleteResponse = await elasticClient.DeleteAsync<StoreContract>(storeContract.StoreId, d => d
+            //     .Index("stores")
+            // );
+
+            //var deleteIndexResponse = await elasticClient.Index("sto
+            
+            
+            
+        }
+
+        private async Task<List<StoreContract>> GetStoreAsync(string query, int page = 1, int pageSize = 5)
+        {
+            var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
+            
+            var searchResponse = elasticClient.Search<StoreContract>(s => s
+                .AllIndices()
+                .QueryOnQueryString("storename:thai")
+                
+            );
+            // var response = await elasticClient.SearchAsync<StoreContract>(
+            //     x => x.Query(q =>
+            //             q.QueryString(d => d.Query(query)))
+            //         .From((page - 1) * pageSize)
+            //         .Size(pageSize)
+            // );
+
+            var storeContracts = searchResponse.Documents.ToList();
+
+            return storeContracts;
         }
         
     }
