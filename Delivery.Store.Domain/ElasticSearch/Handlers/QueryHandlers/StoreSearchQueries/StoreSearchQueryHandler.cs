@@ -53,56 +53,9 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
                     .ScriptField("distance", descriptor => descriptor
                         .Source(script:$"doc[\u0027location\u0027].arcDistance({query.Latitude}, {query.Longitude}) * 0.001")
                         ))
-                // .Sort(sort => sort
-                //     .GeoDistance(g => g
-                //         .Field(f => f.Location)
-                //         .Order(SortOrder.Ascending)
-                //         .DistanceType(GeoDistanceType.Arc)))
-                // .Aggregations(a => 
-                //     a.ScriptedMetric("distances", st => 
-                //         st.Script(sr => 
-                //             sr.Source($"doc['location'].arcDistance({query.Latitude}, {query.Longitude}) * 0.001"))
-                //      
-                //         ))
-                // .ScriptFields(x => x.ScriptField("distance", d => d.Source($"doc['location'].arcDistance({query.Latitude}, {query.Longitude}) * 0.001")
-                //     .Params(p => new FluentDictionary<string, object>()
-                //     {
-                //         {"latitude",query.Latitude},
-                //         {"longitude",query.Longitude}
-                //     })))
                 .From((query.Page - 1) * query.PageSize)
                 .Size(query.PageSize));
             
-            
-            // var searchResponse = await elasticClient.SearchAsync<StoreContract>(s => s
-            //     .AllIndices()
-            //     .Query(q => 
-            //         q.QueryString(qs => 
-            //             qs.Fields(f => 
-            //                 f.Field("storename.*")
-            //                     ).Query(query.QueryString))
-            //         && q.Bool(b => 
-            //             b.Filter(f => 
-            //                 f.GeoDistance(g => 
-            //                     g.Boost(1.1)
-            //                         .Name("location")
-            //                         .Field(p => p.Location)
-            //                         .DistanceType(GeoDistanceType.Arc)
-            //                         .Location(currentLocation)
-            //                         .Distance(query.Distance) // Eg: "3km"
-            //                         .ValidationMethod(GeoValidationMethod.IgnoreMalformed)
-            //                     )))
-            //     )
-            //     .From((query.Page - 1) * query.PageSize)
-            //     .Size(query.PageSize));
-
-            foreach (var field in searchResponse.Fields)
-            {
-                var test = field.Value<double>("distance");
-            }
-                
-            var storeContracts = searchResponse.Documents.ToList();
-
             var storeContractAndDistance = searchResponse.Documents
                 .Zip(searchResponse.Fields, (s, d) => new StoreContract
                 {
