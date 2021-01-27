@@ -6,12 +6,11 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
 {
     public class StoreSearchQuery : IQuery<List<StoreContract>>
     {
-        public StoreSearchQuery(string queryString, int page, int pageSize, string nearestDistance, string storeType, double latitude, double longitude, string distance)
+        public StoreSearchQuery(string queryString, int page, int pageSize,string storeType, double latitude, double longitude, string distance)
         {
             QueryString = queryString;
             Page = page;
             PageSize = pageSize;
-            NearestDistance = nearestDistance;
             StoreType = storeType;
             Latitude = latitude;
             Longitude = longitude;
@@ -20,7 +19,6 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
         
         public string QueryString { get; }
         
-        public string NearestDistance { get; }
         
         public string StoreType { get; }
         

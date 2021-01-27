@@ -11,6 +11,7 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
+using Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearchQueries;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate;
 using Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries;
@@ -85,6 +86,29 @@ namespace Delivery.Api.Controllers
             var result = GetStoreAsync("thai", 1, 5);
           
             return Ok(storeContractList);
+        }
+
+        [HttpGet("Stores-Search")]
+        [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetStoreSearchAsync(string searchQuery, string filters, string storeTypes,
+            string latitude, string longitude, string page, string pageSize, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            int.TryParse(pageSize, out var iPageSize);
+            int.TryParse(page, out var iPage);
+            double.TryParse(latitude, out var dLatitude);
+            double.TryParse(longitude, out var dLongitude);
+
+            var storeSearchQuery = new StoreSearchQuery(searchQuery, iPage, iPageSize, storeTypes, dLatitude,
+                dLongitude, "5km");
+
+            var storeContractList =
+                await new StoreSearchQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(storeSearchQuery);
+
+            return Ok(storeContractList);
+
         }
         
         [HttpGet("Get-Nearest-Stores")]
