@@ -47,6 +47,7 @@ using Delivery.Database.Models;
 using Delivery.Database.Seeding;
 using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.Models;
+using Delivery.Store.Domain.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -231,6 +232,8 @@ namespace Delivery.Api
                 new QueueServiceBusWorkBackgroundService(serviceProvider),
                 new LifetimeEventsHostedService(serviceProvider, serviceProvider.GetRequiredService<IHostApplicationLifetime>())
             ));
+            
+            services.AddElasticSearch(Configuration);
 
         }
 

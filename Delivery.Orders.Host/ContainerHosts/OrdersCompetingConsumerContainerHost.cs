@@ -16,6 +16,8 @@ using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreGeoUpdates;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreTypeCreations;
+using Delivery.Store.Domain.ElasticSearch.Contracts.V1.MessageContracts.StoreIndexing;
+using Delivery.Store.Domain.ElasticSearch.Handlers.MessageHandlers.StoreIndexing;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreCreation;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreTypeCreations;
@@ -89,6 +91,12 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var storeGeoUpdateMessageHandler = new StoreGeoUpdateMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(storeGeoUpdateMessage.RequestContext));
                     await storeGeoUpdateMessageHandler.HandleMessageAsync(storeGeoUpdateMessage, processingState);
+                    break;
+                case nameof(StoreIndexingMessageContract):
+                    var storeIndexingMessageContract = message.Deserialize<StoreIndexingMessageContract>();
+                    var storeIndexMessageHandler = new StoreIndexingMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(storeIndexingMessageContract.RequestContext));
+                    await storeIndexMessageHandler.HandleMessageAsync(storeIndexingMessageContract, processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");

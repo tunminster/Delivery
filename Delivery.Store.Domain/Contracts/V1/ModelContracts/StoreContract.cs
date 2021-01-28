@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
+using Nest;
 
 namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
 {
@@ -40,6 +41,10 @@ namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
         public string StoreType { get; set; }
         
         [DataMember]
+        [GeoPoint(Name = "location")]
+        public GeoLocation Location { get; set; }
+        
+        [DataMember]
         public double Distance { get; set; }
         
         public override string ToString()
@@ -54,6 +59,7 @@ namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
                    $"{nameof(County)}: {County.Format()}," +
                    $"{nameof(Country)}: {Country.Format()}," +
                    $"{nameof(PostalCode)}: {PostalCode.Format()}," +
+                   $"{nameof(Location)}: {Location.Format()}," +
                    $"{nameof(StoreType)} : {StoreType.Format()}";
 
         }

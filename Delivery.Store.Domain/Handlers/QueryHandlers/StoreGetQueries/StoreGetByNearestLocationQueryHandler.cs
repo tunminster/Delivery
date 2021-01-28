@@ -30,15 +30,16 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries
             
             var databaseContext = await dataAccess.ReusableDatabaseContext.GetOrCreateContextAsync();
             
-            var storeContractList = await dataAccess.GetCachedItemsAsync(query.CacheKey, databaseContext.GlobalDatabaseCacheRegion,
+            var storeContractList = await dataAccess.GetCachedItemsAsync(query.CacheKey,
+                databaseContext.GlobalDatabaseCacheRegion,
                 async () =>
                     await (from st in databaseContext.Stores
                             .Include(x => x.StoreType)
-                        let distance = Math.Sqrt(Math.Pow(69.1 * (st.Latitude ?? 0 - query.Latitude), 2) +
+                        let distance = Math.Sqrt(Math.Pow((double) (69.1 * (st.Latitude - query.Latitude)), 2) +
                                                  Math.Pow(
-                                                     69.1 * (query.Longitude - st.Longitude ?? 0) *
-                                                     Math.Cos(st.Latitude ?? 0 / 57.3), 2))
-                        where distance < query.Distance && !st.IsDeleted
+                                                     69.1 * (query.Longitude - (double)st.Longitude) *
+                                                     Math.Cos((double) (st.Latitude / 57.3)), 2))
+                        //where distance < query.Distance && !st.IsDeleted
                         select new StoreContract()
                         {
                             StoreId = st.ExternalId,
@@ -52,8 +53,8 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries
                             StoreType = st.StoreType.StoreTypeName,
                             Distance = distance
                         })
-                    .Skip(query.NumberOfObjectPerPage * (query.PageNumber - 1))
-                    .Take(query.NumberOfObjectPerPage).ToListAsync());
+                       .Skip(query.NumberOfObjectPerPage * (query.PageNumber - 1))
+                       .Take(query.NumberOfObjectPerPage).ToListAsync());
 
             if (storeContractList == null)
             {

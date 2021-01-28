@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
+using Nest;
 
 namespace Delivery.Store.Domain.Converters.StoreConverters
 {
@@ -19,7 +20,8 @@ namespace Delivery.Store.Domain.Converters.StoreConverters
                 County = x.County,
                 Country = x.Country,
                 PostalCode = x.PostalCode,
-                StoreType = x.StoreType.StoreTypeName
+                StoreType = x.StoreType.StoreTypeName,
+                Location =  new GeoLocation(x.Latitude ?? 0, x.Longitude ?? 0)
             }).ToList();
             
             return storeTypeContractList;
