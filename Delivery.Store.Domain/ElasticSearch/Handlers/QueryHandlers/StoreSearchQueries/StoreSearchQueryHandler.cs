@@ -33,7 +33,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
                 .Query(q => 
                     q.QueryString(qs => 
                         qs.Fields(f => 
-                            f.Field(x => x.StoreName)
+                            f.Field(x => x.StoreName).Field(x => x.StoreType)
                         ).Query(query.QueryString))
                     && q.Bool(b => 
                         b.Filter(f => 
