@@ -102,7 +102,7 @@ namespace Delivery.Api.Controllers
             double.TryParse(longitude, out var dLongitude);
 
             var storeSearchQuery = new StoreSearchQuery(searchQuery, iPage, iPageSize, storeTypes, dLatitude,
-                dLongitude, "5km");
+                dLongitude, "10km");
 
             var storeContractList =
                 await new StoreSearchQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(storeSearchQuery);
