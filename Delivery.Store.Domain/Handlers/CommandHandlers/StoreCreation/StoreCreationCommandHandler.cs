@@ -9,6 +9,9 @@ using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreGeoUpdates;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
 using Delivery.Store.Domain.Converters.StoreConverters;
+using Delivery.Store.Domain.ElasticSearch.Contracts.V1.MessageContracts.StoreIndexing;
+using Delivery.Store.Domain.ElasticSearch.Contracts.V1.RestContracts.StoreIndexing;
+using Delivery.Store.Domain.ElasticSearch.Handlers.MessageHandlers.StoreIndexing;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
@@ -69,11 +72,38 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
                 RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
             };
             
+            // Publish store geo location update
             await new StoreGeoUpdateMessagePublisher(serviceProvider).PublishAsync(storeGeoUpdateMessageContract);
+            
+            // Publish store indexing
+            await PublishStoreIndexingAsync(storeGeoUpdateContract.StoreId);
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace($"{nameof(PublishStoreGeoUpdateMessageAsync)} published store update geo message", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
 
+        }
+
+        private async Task PublishStoreIndexingAsync(string storeId)
+        {
+            var storeIndexCreationContract = new StoreIndexCreationContract
+            {
+                StoreId = storeId
+            };
+
+            var storeIndexStatusContract = new StoreIndexStatusContract
+            {
+                Status = false,
+                InsertionDateTime = DateTimeOffset.UtcNow
+            };
+
+            var storeIndexingMessageContract = new StoreIndexingMessageContract
+            {
+                PayloadIn = storeIndexCreationContract,
+                PayloadOut = storeIndexStatusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+            
+            await new StoreIndexingMessagePublisher(serviceProvider).PublishAsync(storeIndexingMessageContract);
         }
     }
 }
