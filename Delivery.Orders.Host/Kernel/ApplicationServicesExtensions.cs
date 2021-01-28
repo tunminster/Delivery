@@ -1,3 +1,4 @@
+using System.Configuration;
 using Delivery.Azure.Library.Caching.Cache;
 using Delivery.Azure.Library.Caching.Cache.Extensions;
 using Delivery.Azure.Library.Caching.Cache.Interfaces;
@@ -22,6 +23,7 @@ using Delivery.Azure.Library.Storage.Cosmos.Interfaces;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Azure.Library.Telemetry.Stdout;
 using Delivery.Azure.Library.WebApi;
+using Delivery.Store.Domain.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -67,6 +69,8 @@ namespace Delivery.Orders.Host.Kernel
             
             serviceCollection.AddSingleton<IServiceBusReceiverConnectionManager, ServiceBusReceiverConnectionManager>();
             serviceCollection.AddSingleton<ICosmosDatabaseConnectionManager, CosmosDatabaseConnectionManager>();
+            
+            serviceCollection.AddElasticSearch(configuration);
             
             serviceCollection.AddHostedService(serviceProvider => new MultipleTasksBackgroundService(
                 new QueueServiceBusWorkBackgroundService(serviceProvider),
