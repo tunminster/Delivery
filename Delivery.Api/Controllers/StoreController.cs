@@ -65,28 +65,28 @@ namespace Delivery.Api.Controllers
             return Ok(storeCreationStatusContract);
         }
         
-        [HttpGet("GetAllStores")]
-        [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetStoresAsync(string numberOfObjectPerPage, string pageNumber, CancellationToken cancellationToken = default)
-        {
-            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-
-            int.TryParse(numberOfObjectPerPage, out var iNumberOfObjectPerPage);
-            int.TryParse(pageNumber, out var iPageNumber);
-
-            var storeGetAllQuery =
-                new StoreGetAllQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-store-{iNumberOfObjectPerPage}-{iPageNumber}", iNumberOfObjectPerPage, iPageNumber);
-            var storeContractList =
-                await new StoreGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(storeGetAllQuery);
-
-            await IndexStoreAsync(storeContractList.FirstOrDefault());
-
-            var result = GetStoreAsync("thai", 1, 5);
-          
-            return Ok(storeContractList);
-        }
+        // [HttpGet("GetAllStores")]
+        // [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
+        // [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        // public async Task<IActionResult> GetStoresAsync(string numberOfObjectPerPage, string pageNumber, CancellationToken cancellationToken = default)
+        // {
+        //     var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+        //
+        //     int.TryParse(numberOfObjectPerPage, out var iNumberOfObjectPerPage);
+        //     int.TryParse(pageNumber, out var iPageNumber);
+        //
+        //     var storeGetAllQuery =
+        //         new StoreGetAllQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-store-{iNumberOfObjectPerPage}-{iPageNumber}", iNumberOfObjectPerPage, iPageNumber);
+        //     var storeContractList =
+        //         await new StoreGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
+        //             .Handle(storeGetAllQuery);
+        //
+        //     await IndexStoreAsync(storeContractList.FirstOrDefault());
+        //
+        //     var result = GetStoreAsync("thai", 1, 5);
+        //   
+        //     return Ok(storeContractList);
+        // }
 
         [HttpGet("Stores-Search")]
         [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
@@ -111,27 +111,27 @@ namespace Delivery.Api.Controllers
 
         }
         
-        [HttpGet("Get-Nearest-Stores")]
-        [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetNearestStoresAsync(string numberOfObjectPerPage, string pageNumber, string latitude, string longitude, CancellationToken cancellationToken = default)
-        {
-            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-
-            int.TryParse(numberOfObjectPerPage, out var iNumberOfObjectPerPage);
-            int.TryParse(pageNumber, out var iPageNumber);
-            double.TryParse(latitude, out var dLatitude);
-            double.TryParse(longitude, out var dLongitude);
-            
-            var storeGetByNearestLocationQuery =
-                new StoreGetByNearestLocationQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-store-{iNumberOfObjectPerPage}-{iPageNumber}-{latitude}-{longitude}", iNumberOfObjectPerPage, iPageNumber, dLatitude, dLongitude, 7);
-            
-            var storeContractList =
-                await new StoreGetByStoreTypeIdAndGeoLocationQuery(serviceProvider, executingRequestContextAdapter)
-                    .Handle(storeGetByNearestLocationQuery);
-          
-            return Ok(storeContractList);
-        }
+        // [HttpGet("Get-Nearest-Stores")]
+        // [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
+        // [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        // public async Task<IActionResult> GetNearestStoresAsync(string numberOfObjectPerPage, string pageNumber, string latitude, string longitude, CancellationToken cancellationToken = default)
+        // {
+        //     var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+        //
+        //     int.TryParse(numberOfObjectPerPage, out var iNumberOfObjectPerPage);
+        //     int.TryParse(pageNumber, out var iPageNumber);
+        //     double.TryParse(latitude, out var dLatitude);
+        //     double.TryParse(longitude, out var dLongitude);
+        //     
+        //     var storeGetByNearestLocationQuery =
+        //         new StoreGetByNearestLocationQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-store-{iNumberOfObjectPerPage}-{iPageNumber}-{latitude}-{longitude}", iNumberOfObjectPerPage, iPageNumber, dLatitude, dLongitude, 7);
+        //     
+        //     var storeContractList =
+        //         await new StoreGetByStoreTypeIdAndGeoLocationQuery(serviceProvider, executingRequestContextAdapter)
+        //             .Handle(storeGetByNearestLocationQuery);
+        //   
+        //     return Ok(storeContractList);
+        // }
 
         private async Task IndexStoreAsync(StoreContract storeContract)
         {
