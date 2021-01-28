@@ -11,8 +11,8 @@ namespace Delivery.Store.Domain.Extensions
     {
         public static void AddElasticSearch(this IServiceCollection services, IConfiguration configuration)
         {
-            var url = configuration["elasticsearch:url"];
-            var defaultIndex = configuration["elasticsearch:index"];
+            var url = configuration["Elastic-Search-Url"];
+            var defaultIndex = configuration["Elastic-Search-Index"];
             
             var settings = new ConnectionSettings(new Uri(url))
                 .DefaultIndex(defaultIndex)
