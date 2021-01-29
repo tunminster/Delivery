@@ -68,6 +68,8 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
                     Country = s.Country,
                     ImageUri = s.ImageUri,
                     Location = s.Location,
+                    PostalCode = s.PostalCode,
+                    StoreType = s.StoreType,
                     Distance = d.Value<double>("distance")
                 }).ToList();
 
