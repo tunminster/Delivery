@@ -27,7 +27,8 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
 
             var currentLocation = new GeoLocation(query.Latitude, query.Longitude);
-
+            var storeTypeArr = query.StoreType != null ? query.StoreType.Split(new string[] {",", " & ", " "}, StringSplitOptions.None).ToArray() : new []{""};
+            
             var searchResponse = await elasticClient.SearchAsync<StoreContract>(s => s
                 .AllIndices()
                 .Query(q => 
@@ -35,6 +36,10 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
                         qs.Fields(f => 
                             f.Field(x => x.StoreName).Field(x => x.StoreType)
                         ).Query(query.QueryString))
+                    && q.Bool(b => 
+                            b.Filter(f => 
+                                f.Terms(tm => 
+                                    tm.Field(fd => fd.StoreType).Terms(storeTypeArr))))
                     && q.Bool(b => 
                         b.Filter(f => 
                             f.GeoDistance(g => 
