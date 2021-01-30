@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
@@ -25,6 +26,8 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
         public async Task<List<StoreContract>> Handle(StoreSearchQuery query)
         {
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
+            
+            
 
             var currentLocation = new GeoLocation(query.Latitude, query.Longitude);
             var storeTypeArr = query.StoreType != null ? query.StoreType.Split(new string[] {",", " & ", " "}, StringSplitOptions.None).ToArray() : new []{""};
