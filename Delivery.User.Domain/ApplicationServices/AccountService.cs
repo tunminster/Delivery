@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Customer.Domain.CommandHandlers;
 using Delivery.Customer.Domain.Contracts.RestContracts;
@@ -93,35 +94,50 @@ namespace Delivery.User.Domain.ApplicationServices
             
             if (domainUser == null)
             {
-                
                 user = new Database.Models.ApplicationUser { UserName = googleUser.Email, Email = googleUser.Email };
-                var result = await userManager.CreateAsync(user);
+                var createUserResult = await userManager.CreateAsync(user);
 
-                if (result.Succeeded)
+                switch (createUserResult.Succeeded)
                 {
-                    var userLoginInfo = new UserLoginInfo
-                        ("Google", "Google", user.UserName);
-                        
-                    result = await userManager.AddLoginAsync(user, userLoginInfo);
-                    if (result.Succeeded)
+                    case false:
+                        throw new InvalidOperationException($"Google creating user has failed with {googleUser.Email}")
+                            .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+                    case true:
                     {
-                        await userManager.AddToRoleAsync(user, "Customer");
-                        var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                        var userLoginInfo = new UserLoginInfo
+                            ("Google", user.UserName, user.UserName);
                         
-                        var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
-                            ClaimValueTypes.String);
-                        await userManager.AddClaimAsync(user, claim);
-                        await userManager.AddClaimAsync(user, groupClaim);
-                        
-                        var customerCreationContract = new CustomerCreationContract
-                        {
-                            IdentityId = user.Id, Username = user.Email
-                        };
+                        var createUserLoginResult = await userManager.AddLoginAsync(user, userLoginInfo);
 
-                        var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
-                        var createCustomerCommandHandler =
-                            new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
-                        await createCustomerCommandHandler.Handle(createCustomerCommand);
+                        switch (createUserLoginResult.Succeeded)
+                        {
+                            case false:
+                                throw new InvalidOperationException($"Google creating user login info has failed with {googleUser.Email}")
+                                    .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+                            case true:
+                            {
+                                await userManager.AddToRoleAsync(user, "Customer");
+                                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                        
+                                var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
+                                    ClaimValueTypes.String);
+                                await userManager.AddClaimAsync(user, claim);
+                                await userManager.AddClaimAsync(user, groupClaim);
+                        
+                                var customerCreationContract = new CustomerCreationContract
+                                {
+                                    IdentityId = user.Id, Username = user.Email
+                                };
+
+                                var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
+                                var createCustomerCommandHandler =
+                                    new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
+                                await createCustomerCommandHandler.Handle(createCustomerCommand);
+                                break;
+                            }
+                        }
+
+                        break;
                     }
                 }
             }
@@ -143,33 +159,50 @@ namespace Delivery.User.Domain.ApplicationServices
             {
                 
                 user = new Database.Models.ApplicationUser { UserName = facebookUser.Email, Email = facebookUser.Email };
-                var result = await userManager.CreateAsync(user);
+                var createUserResult = await userManager.CreateAsync(user);
 
-                if (result.Succeeded)
+                switch (createUserResult.Succeeded)
                 {
-                    var userLoginInfo = new UserLoginInfo
-                        ("Facebook", "Facebook", user.UserName);
-                        
-                    result = await userManager.AddLoginAsync(user, userLoginInfo);
-                    if (result.Succeeded)
+                    case false:
+                        throw new InvalidOperationException($"Facebook creating user has failed with {facebookUser.Email}")
+                            .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+                    case true:
                     {
-                        await userManager.AddToRoleAsync(user, "Customer");
-                        var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                        var userLoginInfo = new UserLoginInfo
+                            ("Facebook", user.UserName, user.UserName);
                         
-                        var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
-                            ClaimValueTypes.String);
-                        await userManager.AddClaimAsync(user, claim);
-                        await userManager.AddClaimAsync(user, groupClaim);
-                        
-                        var customerCreationContract = new CustomerCreationContract
-                        {
-                            IdentityId = user.Id, Username = user.Email
-                        };
+                        var createUserLoginResult = await userManager.AddLoginAsync(user, userLoginInfo);
 
-                        var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
-                        var createCustomerCommandHandler =
-                            new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
-                        await createCustomerCommandHandler.Handle(createCustomerCommand);
+                        switch (createUserLoginResult.Succeeded)
+                        {
+                            case false:
+                                throw new InvalidOperationException(
+                                        $"Facebook creating user login info has failed with {facebookUser.Email}")
+                                    .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+                            case true:
+                            {
+                                await userManager.AddToRoleAsync(user, "Customer");
+                                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                        
+                                var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
+                                    ClaimValueTypes.String);
+                                await userManager.AddClaimAsync(user, claim);
+                                await userManager.AddClaimAsync(user, groupClaim);
+                        
+                                var customerCreationContract = new CustomerCreationContract
+                                {
+                                    IdentityId = user.Id, Username = user.Email
+                                };
+
+                                var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
+                                var createCustomerCommandHandler =
+                                    new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
+                                await createCustomerCommandHandler.Handle(createCustomerCommand);
+                                break;
+                            }
+                        }
+
+                        break;
                     }
                 }
             }
