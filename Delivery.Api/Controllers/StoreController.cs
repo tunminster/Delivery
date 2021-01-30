@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
@@ -100,9 +101,11 @@ namespace Delivery.Api.Controllers
             int.TryParse(page, out var iPage);
             double.TryParse(latitude, out var dLatitude);
             double.TryParse(longitude, out var dLongitude);
+            
+            var defaultDistance = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("DefaultDistance");
 
             var storeSearchQuery = new StoreSearchQuery(searchQuery, iPage, iPageSize, storeTypes, dLatitude,
-                dLongitude, "10km");
+                dLongitude, defaultDistance);
 
             var storeContractList =
                 await new StoreSearchQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(storeSearchQuery);
