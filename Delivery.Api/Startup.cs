@@ -165,6 +165,11 @@ namespace Delivery.Api
                     policy.RequireAuthenticatedUser()
                         .RequireAssertion(x =>
                             x.User.HasClaim(ClaimTypes.Role, ClaimData.JwtClaimIdentifyClaim.ClaimValue)));
+                
+                options.AddPolicy("BackOfficeUser", policy =>
+                    policy.RequireAuthenticatedUser()
+                        .RequireAssertion(x => 
+                            x.User.HasClaim(ClaimData.OrderPageAccess.ClaimType, ClaimData.OrderPageAccess.ClaimValue)));
                     //policy.RequireClaim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue));
             });
 

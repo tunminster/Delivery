@@ -118,11 +118,13 @@ namespace Delivery.Api.Controllers
             var userToVerify = await userManager.FindByNameAsync(userName);
 
             if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
+            
+            var claimList = await userManager.GetClaimsAsync(userToVerify);
 
             // check the credentials
             if (await userManager.CheckPasswordAsync(userToVerify, password))
             {
-                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, executingRequestContextAdapter));
+                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, claimList, executingRequestContextAdapter));
             }
 
             // Credentials are invalid, or account doesn't exist

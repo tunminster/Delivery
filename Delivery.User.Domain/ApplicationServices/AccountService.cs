@@ -239,8 +239,10 @@ namespace Delivery.User.Domain.ApplicationServices
 
             if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
 
+            var claimList = await userManager.GetClaimsAsync(userToVerify);
+
             // check the credentials
-            return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, executingRequestContextAdapter));
+            return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, claimList, executingRequestContextAdapter));
 
         }
     }
