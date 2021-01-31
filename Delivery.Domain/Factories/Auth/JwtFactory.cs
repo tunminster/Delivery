@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -45,14 +47,10 @@ namespace Delivery.Domain.Factories.Auth
             return encodedJwt;
         }
 
-        public ClaimsIdentity GenerateClaimsIdentity(string userName, string id, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        public ClaimsIdentity GenerateClaimsIdentity(string userName, string id, IList<Claim> claimList, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
-            {
-                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
-                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Role, Helpers.Constants.Strings.JwtClaims.ApiAccess),
-                new Claim("groups", executingRequestContextAdapter.GetShard().Key)
-            });
+            claimList.Add(new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id));
+            return new ClaimsIdentity(new GenericIdentity(userName, "Token"), claimList.ToArray());
         }
 
         /// <returns>Date converted to seconds since Unix epoch (Jan 1, 1970, midnight UTC).</returns>
