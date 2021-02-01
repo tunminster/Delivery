@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Database.Models;
 using Delivery.Domain.Models;
 using Microsoft.Extensions.Options;
 
@@ -28,6 +29,7 @@ namespace Delivery.Domain.Factories.Auth
                  new Claim(JwtRegisteredClaimNames.Sub, userName),
                  new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                  new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
+                 new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue),
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Role),
                  identity.FindFirst("groups"),
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
@@ -49,8 +51,15 @@ namespace Delivery.Domain.Factories.Auth
 
         public ClaimsIdentity GenerateClaimsIdentity(string userName, string id, IList<Claim> claimList, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            claimList.Add(new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id));
-            return new ClaimsIdentity(new GenericIdentity(userName, "Token"), claimList.ToArray());
+            // claimList.Add(new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id));
+            // return new ClaimsIdentity(new GenericIdentity(userName, "Token"), claimList.ToArray());
+            
+            return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
+            {
+                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
+                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Role, Helpers.Constants.Strings.JwtClaims.ApiAccess),
+                new Claim("groups", executingRequestContextAdapter.GetShard().Key)
+            });
         }
 
         /// <returns>Date converted to seconds since Unix epoch (Jan 1, 1970, midnight UTC).</returns>
