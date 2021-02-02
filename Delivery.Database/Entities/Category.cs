@@ -17,7 +17,7 @@ namespace Delivery.Database.Entities
         public int ParentCategoryId { get; set; }
         public int Order { get; set;  }
         
-        public int? StoreId { get; set; }
+        public int StoreId { get; set; }
         
         [MaxLength(250)]
         public string InsertedBy { get; set; }

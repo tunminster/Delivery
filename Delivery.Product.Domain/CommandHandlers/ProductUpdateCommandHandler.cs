@@ -33,7 +33,11 @@ namespace Delivery.Product.Domain.CommandHandlers
                 return false;
             }
 
-            product.CategoryId = command.ProductContract.CategoryId;
+            var category =
+                await databaseContext.Categories.FirstOrDefaultAsync(x =>
+                    x.ExternalId == command.ProductContract.CategoryId);
+
+            product.CategoryId = category.Id;
             product.Description = command.ProductContract.Description;
             product.UnitPrice = command.ProductContract.UnitPrice;
             product.ProductImage = command.ProductContract.ProductImage;

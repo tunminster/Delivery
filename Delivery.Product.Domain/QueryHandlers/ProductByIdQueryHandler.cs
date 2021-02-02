@@ -30,7 +30,7 @@ namespace Delivery.Product.Domain.QueryHandlers
             var productContract = new ProductContract
             {
                 Id = product.ExternalId,
-                CategoryId = product.CategoryId,
+                CategoryId = product.Category.ExternalId,
                 CategoryName = product.Category.CategoryName,
                 Description = product.Description,
                 ProductImage = product.ProductImage,

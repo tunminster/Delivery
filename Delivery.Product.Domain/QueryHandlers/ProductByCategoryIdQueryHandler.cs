@@ -33,7 +33,7 @@ namespace Delivery.Product.Domain.QueryHandlers
                 .Select(x => new ProductContract
                 {
                     Id = x.ExternalId,
-                    CategoryId = x.CategoryId,
+                    CategoryId = x.Category.ExternalId,
                     CategoryName = x.Category.CategoryName,
                     Description = x.Description,
                     ProductName = x.ProductName,

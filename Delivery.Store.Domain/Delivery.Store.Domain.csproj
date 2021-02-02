@@ -8,8 +8,10 @@
       <ProjectReference Include="..\Delivery.Azure.Library.Core\Delivery.Azure.Library.Core.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Messaging\Delivery.Azure.Library.Messaging.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Microservices.Hosting\Delivery.Azure.Library.Microservices.Hosting.csproj" />
+      <ProjectReference Include="..\Delivery.Category.Domain\Delivery.Category.Domain.csproj" />
       <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj" />
       <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.Product.Domain\Delivery.Product.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
