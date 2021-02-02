@@ -24,7 +24,7 @@ namespace Delivery.Product.Domain.Contracts
         public int UnitPrice { get; set; }
 
         [DataMember]
-        public int CategoryId { get; set; }
+        public string CategoryId { get; set; }
 
         [DataMember]
         public string CategoryName { get; set; }

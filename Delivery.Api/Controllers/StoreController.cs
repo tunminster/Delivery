@@ -15,6 +15,7 @@ using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
 using Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearchQueries;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate;
+using Delivery.Store.Domain.Handlers.QueryHandlers.StoreDetailsQueries;
 using Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreCreations;
 using Delivery.Store.Domain.Validators;
@@ -112,6 +113,23 @@ namespace Delivery.Api.Controllers
 
             return Ok(storeContractList);
 
+        }
+
+        [HttpGet("Store-Details")]
+        [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetStoreDetailsByIdAsync(string storeId)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var storeDetailsGetByIdQuery =
+                new StoreDetailsGetByIdQuery(storeId, $"Database-{executingRequestContextAdapter.GetShard().Key}-default-store-details-{storeId}");
+
+            var storeDetailsList =
+                await new StoreDetailsGetByIdQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    storeDetailsGetByIdQuery);
+
+            return Ok(storeDetailsList);
         }
         
         // [HttpGet("Get-Nearest-Stores")]

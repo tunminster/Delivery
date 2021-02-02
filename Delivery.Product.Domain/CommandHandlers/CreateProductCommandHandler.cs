@@ -14,6 +14,7 @@ using Delivery.Product.Domain.Configurations;
 using Delivery.Product.Domain.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -39,12 +40,18 @@ namespace Delivery.Product.Domain.CommandHandlers
         public async Task<bool> Handle(CreateProductCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            var category =
+                await databaseContext.Categories.FirstOrDefaultAsync(x =>
+                    x.ExternalId == command.ProductContract.CategoryId);
+            
+            
             var product = new Database.Entities.Product
             {
                 ProductName = command.ProductContract.ProductName,
                 Description = command.ProductContract.Description,
                 UnitPrice = command.ProductContract.UnitPrice,
-                CategoryId = command.ProductContract.CategoryId,
+                CategoryId = category.Id,
                 Currency = Currency.BritishPound.ToString(),
                 CurrencySign = CurrencySign.BritishPound.Code,
                 InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,

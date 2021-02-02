@@ -32,7 +32,7 @@ namespace Delivery.Product.Domain.QueryHandlers
                 {
                     Id = x.ExternalId,
                     CategoryName = x.Category.CategoryName,
-                    CategoryId = x.CategoryId,
+                    CategoryId = x.Category.ExternalId,
                     Description = x.Description,
                     ProductName = x.ProductName,
                     ProductImage = x.ProductImage,
