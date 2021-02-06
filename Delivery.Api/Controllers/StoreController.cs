@@ -12,15 +12,18 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
+using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate;
 using Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearchQueries;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate;
 using Delivery.Store.Domain.Handlers.QueryHandlers.StoreDetailsQueries;
 using Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreCreations;
+using Delivery.Store.Domain.Services.ApplicationServices.StoreUpdates;
 using Delivery.Store.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
 
@@ -38,6 +41,11 @@ namespace Delivery.Api.Controllers
             this.serviceProvider = serviceProvider;
         }
         
+        /// <summary>
+        ///  Store: Create store endpoint allows to create store
+        /// </summary>
+        /// <param name="storeCreationContract"></param>
+        /// <returns></returns>
         [HttpPost("CreateStore")]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -67,6 +75,40 @@ namespace Delivery.Api.Controllers
             return Ok(storeCreationStatusContract);
         }
         
+        /// <summary>
+        ///  Store: Update store endpoint allows to update store
+        /// </summary>
+        /// <param name="storeUpdateContract"></param>
+        /// <returns></returns>
+        [HttpPost("UpdateStore")]
+        [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateStoreAsync(StoreUpdateContract storeUpdateContract)
+        {
+            var validationResult =
+                await new StoreUpdateValidator().ValidateAsync(storeUpdateContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var storeUpdateStatusContract = new StoreUpdateStatusContract
+            {
+                StoreId = executingRequestContextAdapter.GetShard().GenerateExternalId(),
+                InsertionDateTime = DateTimeOffset.UtcNow
+            };
+
+            var storeUpdateServiceRequest =
+                new StoreUpdateServiceRequest(storeUpdateContract, storeUpdateStatusContract);
+            
+            await new StoreUpdateService(serviceProvider, executingRequestContextAdapter)
+                .ExecuteStoreUpdateWorkflowAsync(storeUpdateServiceRequest);
+            
+            return Ok(storeUpdateStatusContract);
+        }
+        
         // [HttpGet("GetAllStores")]
         // [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
         // [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -90,6 +132,18 @@ namespace Delivery.Api.Controllers
         //     return Ok(storeContractList);
         // }
 
+        /// <summary>
+        ///  Store: Search store endpoint allows to search stores 
+        /// </summary>
+        /// <param name="searchQuery"></param>
+        /// <param name="filters"></param>
+        /// <param name="storeTypes"></param>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpGet("Stores-Search")]
         [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -115,6 +169,11 @@ namespace Delivery.Api.Controllers
 
         }
 
+        /// <summary>
+        ///  Store: Get store details by store id.
+        /// </summary>
+        /// <param name="storeId"></param>
+        /// <returns></returns>
         [HttpGet("Store-Details")]
         [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
