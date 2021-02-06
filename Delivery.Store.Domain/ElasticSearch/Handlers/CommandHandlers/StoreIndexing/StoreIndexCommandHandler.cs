@@ -71,21 +71,38 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
                         SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
             }
             
-            
-            var createResponse = await elasticClient.CreateAsync(storeContract,
-                i => i
-                    .Index("stores")
-                    .Id(storeContract.StoreId)
-            );
+           var getResponse = await elasticClient.GetAsync<StoreContract>(storeContract.StoreId, d => d.Index("stores"));
 
-            if (createResponse.IsValid)
-            {
-                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-                    .TrackTrace($"{nameof(StoreContract)} elastic doc created for {storeContract.StoreId}", 
-                        SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
-            }
+           if (getResponse.Found)
+           {
+               var updateResponse = await elasticClient.UpdateAsync<StoreContract>(storeContract.StoreId,
+                   descriptor => descriptor.Index("stores").Doc(storeContract));
 
-            var storeIndexStatusContract = new StoreIndexStatusContract
+               if (updateResponse.IsValid)
+               {
+                   serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                       .TrackTrace($"{nameof(StoreContract)} elastic doc updated for {storeContract.StoreId}", 
+                           SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
+               }
+               
+           }
+           else
+           {
+               var createResponse = await elasticClient.CreateAsync(storeContract,
+                   i => i
+                       .Index("stores")
+                       .Id(storeContract.StoreId)
+               );
+
+               if (createResponse.IsValid)
+               {
+                   serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                       .TrackTrace($"{nameof(StoreContract)} elastic doc created for {storeContract.StoreId}",
+                           SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
+               }
+           }
+
+           var storeIndexStatusContract = new StoreIndexStatusContract
             {
                 Status = true,
                 InsertionDateTime = DateTimeOffset.UtcNow
