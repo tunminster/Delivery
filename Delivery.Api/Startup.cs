@@ -164,7 +164,7 @@ namespace Delivery.Api
                 options.AddPolicy("ApiUser", policy =>
                     policy.RequireAuthenticatedUser()
                         .RequireAssertion(x =>
-                            x.User.HasClaim(ClaimTypes.Role, ClaimData.JwtClaimIdentifyClaim.ClaimValue)));
+                            x.User.HasClaim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue)));
                 
                 options.AddPolicy("BackOfficeUser", policy =>
                     policy.RequireAuthenticatedUser()
