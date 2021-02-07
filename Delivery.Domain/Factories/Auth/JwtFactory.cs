@@ -51,15 +51,22 @@ namespace Delivery.Domain.Factories.Auth
 
         public ClaimsIdentity GenerateClaimsIdentity(string userName, string id, IList<Claim> claimList, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
-            // claimList.Add(new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id));
-            // return new ClaimsIdentity(new GenericIdentity(userName, "Token"), claimList.ToArray());
-            
-            return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
+            claimList.Add(new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id));
+
+            var hasApiAccess = claimList.FirstOrDefault(x =>
+                x.Type.ToLower() == Helpers.Constants.Strings.JwtClaimIdentifiers.Role);
+
+            if (hasApiAccess?.Value == "api_access")
             {
-                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
-                new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Role, Helpers.Constants.Strings.JwtClaims.ApiAccess),
-                new Claim("groups", executingRequestContextAdapter.GetShard().Key)
-            });
+                return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
+                {
+                    new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
+                    new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Role, Helpers.Constants.Strings.JwtClaims.ApiAccess),
+                    new Claim("groups", executingRequestContextAdapter.GetShard().Key)
+                });
+            }
+            // Todo: needs to return claim list 
+            return new ClaimsIdentity(new GenericIdentity(userName, "Token"), claimList);
         }
 
         /// <returns>Date converted to seconds since Unix epoch (Jan 1, 1970, midnight UTC).</returns>
