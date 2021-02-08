@@ -2,21 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 using System.Threading;
-using Delivery.Api.Models.Dto;
 using Delivery.Category.Domain.CommandHandlers;
-using Delivery.Category.Domain.Contracts;
 using Delivery.Category.Domain.QueryHandlers;
-using Delivery.Database.Context;
-using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
-using Delivery.Domain.CommandHandlers;
+using Delivery.Category.Domain.Contracts.V1.ModelContracts;
+using Delivery.Category.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
-using Delivery.Domain.QueryHandlers;
 
 namespace Delivery.Api.Controllers
 {
@@ -26,16 +19,6 @@ namespace Delivery.Api.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly IServiceProvider serviceProvider;
-        // private readonly IQueryHandler<CategoryByIdQuery, CategoryContract> _queryCategoryByIdQuery;
-        // private readonly IQueryHandler<CategoryByParentIdQuery, List<CategoryContract>> _categoryByParentIdQuery;
-        //
-        // private readonly ICommandHandler<CategoryCreationCommand, CategoryCreationStatusContract>
-        //     categoryCreationCommandHandler;
-        //
-        // private readonly ICommandHandler<CategoryUpdateCommand, CategoryUpdateStatusContract>
-        //     categoryUpdateCommandHandler;
-        // private readonly ICommandHandler<CategoryDeleteCommand, CategoryDeleteStatusContract>
-        //     categoryDeleteCommandHandler;
 
         public CategoryController(
             IServiceProvider serviceProvider
@@ -45,10 +28,15 @@ namespace Delivery.Api.Controllers
             
         }
 
+        /// <summary>
+        ///  Get all categories
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpGet("getAllCategories")]
         [ProducesResponseType(typeof(List<CategoryContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAsync(CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var categoryGetAllQueryHandler =
@@ -58,10 +46,16 @@ namespace Delivery.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        ///  Get categories by parent id
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpGet("getAllCategoriesByParentId/{parentId}")]        
         [ProducesResponseType(typeof(List<Database.Entities.Category>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetCategoriesByParentId(string parentId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetCategoriesByParentIdAsync(string parentId, CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var categoryByParentIdQuery = new CategoryByParentIdQuery(parentId);
@@ -72,10 +66,15 @@ namespace Delivery.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        ///  Get category by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("GetCategoryById/{id}")]
         [ProducesResponseType(typeof(CategoryContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult>GetCategoryById(string id)
+        public async Task<IActionResult>GetCategoryByIdAsync(string id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var categoryByIdQuery = new CategoryByIdQuery {CategoryId = id};
@@ -86,10 +85,15 @@ namespace Delivery.Api.Controllers
         }
 
 
+        /// <summary>
+        ///  Create a category
+        /// </summary>
+        /// <param name="categoryCreationContract"></param>
+        /// <returns></returns>
         [HttpPost("create")]
-        [ProducesResponseType(typeof(CategoryContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(CategoryCreationContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddCategory(CategoryContract categoryContract)
+        public async Task<IActionResult> AddCategoryAsync(CategoryCreationContract categoryCreationContract)
         {
             if (!ModelState.IsValid)
             {
@@ -101,25 +105,31 @@ namespace Delivery.Api.Controllers
             var categoryCreationCommandHandler =
                 new CategoryCreationCommandHandler(serviceProvider, executingRequestContextAdapter);
             
-            var categoryCreationCommand = new CategoryCreationCommand(categoryContract);
+            var categoryCreationCommand = new CategoryCreationCommand(categoryCreationContract);
             var categoryCreationStatusContract = await categoryCreationCommandHandler.Handle(categoryCreationCommand);
             
             return Ok(categoryCreationStatusContract);
         }
 
+        /// <summary>
+        ///  Update a category
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="categoryCreationContract"></param>
+        /// <returns></returns>
         [HttpPut("update/{id}")]
-        [ProducesResponseType(typeof(CategoryContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(CategoryCreationContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> PutCategory(string id, CategoryContract categoryContract)
+        public async Task<IActionResult> PutCategoryAsync(string id, CategoryCreationContract categoryCreationContract)
         {
-            if (id != categoryContract.Id)
+            if (id != categoryCreationContract.Id)
             {
                 return BadRequest();
             }
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var categoryUpdateCommand = new CategoryUpdateCommand(categoryContract);
+            var categoryUpdateCommand = new CategoryUpdateCommand(categoryCreationContract);
             var categoryUpdateCommandHandler =
                 new CategoryUpdateCommandHandler(serviceProvider, executingRequestContextAdapter);
             
@@ -128,8 +138,13 @@ namespace Delivery.Api.Controllers
             return Ok(categoryUpdateStatusContract);
         }
 
+        /// <summary>
+        ///  Delete a category
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
+        public async Task<IActionResult> DeleteCategoryAsync(int id)
         {
             if (id < 1)
             {

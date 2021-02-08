@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Category.Domain.Contracts;
+using Delivery.Category.Domain.Contracts.V1.RestContracts;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ namespace Delivery.Category.Domain.CommandHandlers
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            var category = await databaseContext.Categories.FirstAsync(x => x.ExternalId == command.CategoryContract.Id);
+            var category = await databaseContext.Categories.FirstAsync(x => x.ExternalId == command.CategoryCreationContract.Id);
 
             var categoryUpdateStatusContract = new CategoryUpdateStatusContract();
             if (category == null)
@@ -30,10 +31,10 @@ namespace Delivery.Category.Domain.CommandHandlers
                 return categoryUpdateStatusContract;
             }
 
-            category.Description = command.CategoryContract.Description;
-            category.Order = command.CategoryContract.Order;
-            category.CategoryName = command.CategoryContract.CategoryName;
-            category.ParentCategoryId = command.CategoryContract.ParentCategoryId;
+            category.Description = command.CategoryCreationContract.Description;
+            category.Order = command.CategoryCreationContract.Order;
+            category.CategoryName = command.CategoryCreationContract.CategoryName;
+            category.ParentCategoryId = command.CategoryCreationContract.ParentCategoryId;
             
             databaseContext.Entry(category).State = EntityState.Modified;
             await databaseContext.SaveChangesAsync();

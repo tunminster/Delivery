@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Category.Domain.Contracts;
+using Delivery.Category.Domain.Contracts.V1.RestContracts;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 
