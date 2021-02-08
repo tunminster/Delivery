@@ -12,6 +12,8 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.CommandHandlers;
 using Delivery.Product.Domain.Contracts;
+using Delivery.Product.Domain.Contracts.V1.ModelContracts;
+using Delivery.Product.Domain.Contracts.V1.RestContracts;
 using Delivery.Product.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -76,9 +78,9 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(ProductContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProductCreationContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddProductAsync(ProductContract productContract, IFormFile file)
+        public async Task<IActionResult> AddProductAsync(ProductCreationContract productCreationContract, IFormFile file)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
@@ -90,7 +92,7 @@ namespace Delivery.Api.Controllers
             var createProductCommandHandler =
                 new CreateProductCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter);
 
-            var createProductCommand = new CreateProductCommand(productContract, file);
+            var createProductCommand = new CreateProductCommand(productCreationContract, file);
             var isCreatedProduct = await createProductCommandHandler.Handle(createProductCommand);
             return Ok(isCreatedProduct);
         }
@@ -142,9 +144,9 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> PutProductAsync(string id, ProductContract productContract, IFormFile file)
+        public async Task<IActionResult> PutProductAsync(string id, ProductCreationContract productCreationContract, IFormFile file)
         {
-            if(id != productContract.Id)
+            if(id != productCreationContract.Id)
             {
                 return BadRequest();
             }
@@ -153,24 +155,24 @@ namespace Delivery.Api.Controllers
 
             var productByIdQueryHandler = new ProductByIdQueryHandler(serviceProvider, executingRequestContextAdapter);
             
-            var productByIdQuery = new ProductByIdQuery(productContract.Id);
-            var product = await productByIdQueryHandler.Handle(productByIdQuery);
-            if(product == null)
+            var productByIdQuery = new ProductByIdQuery(productCreationContract.Id);
+            var productContract = await productByIdQueryHandler.Handle(productByIdQuery);
+            if(productContract == null)
             {
                 return NotFound();
             }
 
-            product.ProductName = productContract.ProductName;
-            product.Description = productContract.Description;
-            product.ProductImage = productContract.ProductImage;
-            product.UnitPrice = productContract.UnitPrice;
-            product.CategoryId = productContract.CategoryId;
-            product.ProductImageUrl = productContract.ProductImageUrl;
+            productContract.ProductName = productCreationContract.ProductName;
+            productContract.Description = productCreationContract.Description;
+            productContract.ProductImage = productCreationContract.ProductImage;
+            productContract.UnitPrice = productCreationContract.UnitPrice;
+            productContract.CategoryId = productCreationContract.CategoryId;
+            productContract.ProductImageUrl = productCreationContract.ProductImageUrl;
 
             var productUpdateCommandHandler =
                 new ProductUpdateCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter);
             
-            var productUpdateCommand = new ProductUpdateCommand(product, file);
+            var productUpdateCommand = new ProductUpdateCommand(productContract, file);
             var isProductUpdated = await productUpdateCommandHandler.Handle(productUpdateCommand);
             
             return Ok(isProductUpdated);

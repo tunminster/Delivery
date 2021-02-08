@@ -12,6 +12,7 @@ using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Helpers;
 using Delivery.Product.Domain.Configurations;
 using Delivery.Product.Domain.Contracts;
+using Delivery.Product.Domain.Contracts.V1.RestContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -43,17 +44,20 @@ namespace Delivery.Product.Domain.CommandHandlers
             
             var category =
                 await databaseContext.Categories.FirstOrDefaultAsync(x =>
-                    x.ExternalId == command.ProductContract.CategoryId);
-            
+                    x.ExternalId == command.ProductCreationContract.CategoryId);
+
+            var store = await databaseContext.Stores.FirstOrDefaultAsync(x =>
+                x.ExternalId == command.ProductCreationContract.StoreId);
             
             var product = new Database.Entities.Product
             {
-                ProductName = command.ProductContract.ProductName,
-                Description = command.ProductContract.Description,
-                UnitPrice = command.ProductContract.UnitPrice,
+                ProductName = command.ProductCreationContract.ProductName,
+                Description = command.ProductCreationContract.Description,
+                UnitPrice = command.ProductCreationContract.UnitPrice,
                 CategoryId = category.Id,
                 Currency = Currency.BritishPound.ToString(),
                 CurrencySign = CurrencySign.BritishPound.Code,
+                StoreId =  store.Id,
                 InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
                 InsertionDateTime = DateTimeOffset.UtcNow
             };
@@ -62,10 +66,10 @@ namespace Delivery.Product.Domain.CommandHandlers
             await databaseContext.SaveChangesAsync();
 
             // upload image
-            return await UploadImages(new List<IFormFile>() {command.File}, product.Id, command.ProductContract, databaseContext);
+            return await UploadImagesAsync(new List<IFormFile>() {command.File}, product.Id, databaseContext);
         }
         
-        private async Task<bool> UploadImages(ICollection<IFormFile> files, int productId, ProductContract productContract, PlatformDbContext databaseContext)
+        private async Task<bool> UploadImagesAsync(ICollection<IFormFile> files, int productId, PlatformDbContext databaseContext)
         {
             bool isUploaded = false;
 

@@ -37,11 +37,15 @@ namespace Delivery.Product.Domain.CommandHandlers
                 await databaseContext.Categories.FirstOrDefaultAsync(x =>
                     x.ExternalId == command.ProductContract.CategoryId);
 
+            var store = await databaseContext.Stores.FirstOrDefaultAsync(x =>
+                x.ExternalId == command.ProductContract.StoreId);
+
             product.CategoryId = category.Id;
             product.Description = command.ProductContract.Description;
             product.UnitPrice = command.ProductContract.UnitPrice;
             product.ProductImage = command.ProductContract.ProductImage;
             product.ProductImageUrl = command.ProductContract.ProductImageUrl;
+            product.StoreId = store.Id;
 
             databaseContext.Entry(product).State = EntityState.Modified;
             await databaseContext.SaveChangesAsync();

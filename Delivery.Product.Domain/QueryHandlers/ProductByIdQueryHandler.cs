@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using AutoMapper;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
-using Delivery.Product.Domain.Contracts;
+using Delivery.Product.Domain.Contracts.V1.ModelContracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Product.Domain.QueryHandlers
