@@ -9,6 +9,7 @@ using Delivery.Azure.Library.Telemetry.Constants;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.Contracts;
+using Delivery.Product.Domain.Contracts.V1.ModelContracts;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

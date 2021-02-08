@@ -1,16 +1,17 @@
 using Delivery.Product.Domain.Contracts;
+using Delivery.Product.Domain.Contracts.V1.RestContracts;
 using Microsoft.AspNetCore.Http;
 
 namespace Delivery.Product.Domain.CommandHandlers
 {
     public class CreateProductCommand
     {
-        public CreateProductCommand(ProductContract productContract, IFormFile file)
+        public CreateProductCommand(ProductCreationContract productCreationContract, IFormFile file)
         {
-            ProductContract = productContract;
+            ProductCreationContract = productCreationContract;
             File = file;
         }
-        public ProductContract ProductContract { get; }
+        public ProductCreationContract ProductCreationContract { get; }
         
         public IFormFile File { get; }
     }
