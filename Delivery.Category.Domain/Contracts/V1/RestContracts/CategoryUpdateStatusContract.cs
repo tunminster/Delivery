@@ -1,4 +1,4 @@
-namespace Delivery.Category.Domain.Contracts
+namespace Delivery.Category.Domain.Contracts.V1.RestContracts
 {
     public class CategoryUpdateStatusContract
     {
