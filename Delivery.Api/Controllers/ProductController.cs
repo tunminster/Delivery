@@ -100,16 +100,15 @@ namespace Delivery.Api.Controllers
         /// <summary>
         /// Create product with image upload
         /// </summary>
+        /// <param name="productCreationContract"></param>
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost("CreateProduct")]
         //[Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(ProductContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddProductWithStringAsync([FromForm]  ProductContract productContract, IFormFile file)
+        public async Task<IActionResult> AddProductWithStringAsync([FromForm]  ProductCreationContract productCreationContract, IFormFile file)
         {
-
-            //var productDto = JsonConvert.DeserializeObject<ProductDto>(jsonString);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -120,7 +119,7 @@ namespace Delivery.Api.Controllers
             var createProductCommandHandler =
                 new CreateProductCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter); 
 
-            if (await createProductCommandHandler.Handle(new CreateProductCommand(productContract, file)))
+            if (await createProductCommandHandler.Handle(new CreateProductCommand(productCreationContract, file)))
             {
                 return Ok();
             }
