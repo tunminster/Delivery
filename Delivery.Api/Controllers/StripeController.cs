@@ -170,7 +170,7 @@ namespace Delivery.Api.Controllers
         [HttpGet("Generate/GetGeneratedId")]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetGeneratedIdAsync()
+        public  IActionResult GetGeneratedId()
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 

@@ -1,29 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Delivery.Api.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Delivery.Api.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Delivery.Api.Models.Dto;
-using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Customer.Domain.CommandHandlers;
 using Delivery.Customer.Domain.Contracts.RestContracts;
 using Delivery.Database.Context;
-using Delivery.Database.Entities;
 using Delivery.Database.Models;
-using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.User.Domain.Contracts;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Stripe;
+using ApplicationUser = Delivery.Api.Models.ApplicationUser;
 
 namespace Delivery.Api.Controllers
 {
@@ -31,30 +28,34 @@ namespace Delivery.Api.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
-
-        private readonly SignInManager<Database.Models.ApplicationUser> _signInManager;
-        private readonly UserManager<Database.Models.ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
-
-        private readonly ApplicationDbContext _appDbContext;
+        private readonly IPasswordHasher<Database.Models.ApplicationUser> passwordHasher;
+        private readonly IEnumerable<IUserValidator<Database.Models.ApplicationUser>> userValidators;
+        private readonly IEnumerable<IPasswordValidator<Database.Models.ApplicationUser>> passwordValidators;
+        private readonly ILookupNormalizer keyNormalizer;
+        private readonly IdentityErrorDescriber errors;
+        private readonly ILogger<UserManager<Database.Models.ApplicationUser>> logger;
+        private IOptions<IdentityOptions> optionsAccessor;
         private readonly IServiceProvider serviceProvider;
 
-        public UserController(ILogger<UserController> logger,
-             UserManager<Database.Models.ApplicationUser> userManager,
-             SignInManager<Database.Models.ApplicationUser> signInManager,
-             ApplicationDbContext appDbContext,
+        public UserController(
              IServiceProvider serviceProvider,
-             RoleManager<IdentityRole> roleManager
+             IOptions<IdentityOptions> optionsAccessor,
+             IPasswordHasher<Database.Models.ApplicationUser> passwordHasher,
+             IEnumerable<IUserValidator<Database.Models.ApplicationUser>> userValidators,
+             IEnumerable<IPasswordValidator<Database.Models.ApplicationUser>> passwordValidators,
+             ILookupNormalizer keyNormalizer,
+             IdentityErrorDescriber errors,
+             ILogger<UserManager<Database.Models.ApplicationUser>> logger
              )
         {
-            _logger = logger;
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _appDbContext = appDbContext;
-            this.roleManager = roleManager;
-            
             this.serviceProvider = serviceProvider;
+            this.optionsAccessor = optionsAccessor;
+            this.passwordHasher = passwordHasher;
+            this.userValidators = userValidators;
+            this.passwordValidators = passwordValidators;
+            this.keyNormalizer = keyNormalizer;
+            this.errors = errors;
+            this.logger = logger;
         }
 
         // POST: api/User
@@ -67,21 +68,25 @@ namespace Delivery.Api.Controllers
             }
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-            _appDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
+            await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
 
+            using var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
+            
             var user = new Database.Models.ApplicationUser { UserName = model.Email, Email = model.Email };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, "Customer");
+                await userManager.AddToRoleAsync(user, "Customer");
                 var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
                 var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
                     ClaimValueTypes.String);
-                await _userManager.AddClaimAsync(user, claim);
+                await userManager.AddClaimAsync(user, claim);
 
-                await _userManager.AddClaimAsync(user, groupClaim);
-                
+
+                await userManager.AddClaimAsync(user, groupClaim);
                 var customerCreationContract = new CustomerCreationContract
                 {
                     IdentityId = user.Id, Username = user.Email
@@ -95,7 +100,6 @@ namespace Delivery.Api.Controllers
                 return new OkObjectResult("Account created");
             }
             return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
-
         }
 
         [HttpGet("GetUser")]

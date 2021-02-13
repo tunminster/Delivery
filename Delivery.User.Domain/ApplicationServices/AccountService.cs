@@ -222,7 +222,7 @@ namespace Delivery.User.Domain.ApplicationServices
         {
             var identity = await GetClaimsIdentityAsync(user.UserName);
             
-            var jwtToken = await Tokens.GenerateJwt(identity, jwtFactory, user.UserName, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
+            var jwtToken = await Tokens.GenerateJwtAsync(identity, jwtFactory, user.UserName, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
             return jwtToken;
         }
         

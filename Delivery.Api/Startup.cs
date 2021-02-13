@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Security.Claims;
 using System.Text;
 using AutoMapper;
-using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Utils.Configs;
 using Delivery.Azure.Library.Caching.Cache;
@@ -12,23 +8,10 @@ using Delivery.Azure.Library.Caching.Cache.Extensions;
 using Delivery.Azure.Library.Caching.Cache.Interfaces;
 using Delivery.Azure.Library.Configuration.Environments;
 using Delivery.Azure.Library.Configuration.Environments.Interfaces;
-using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Azure.Library.Telemetry.Stdout;
 using Delivery.Azure.Library.WebApi.Middleware;
-using Delivery.Category.Domain.Contracts;
-using Delivery.Category.Domain.QueryHandlers;
 using Delivery.Database.Context;
-using Delivery.Domain.CommandHandlers;
-using Delivery.Domain.Extensions;
-using Delivery.Domain.QueryHandlers;
-using Delivery.Order.Domain.CommandHandlers;
-using Delivery.Order.Domain.Contracts;
-using Delivery.Order.Domain.QueryHandlers;
-using Delivery.Product.Domain.CommandHandlers;
-using Delivery.Product.Domain.Contracts;
-using Delivery.Product.Domain.QueryHandlers;
-using Delivery.Azure.Library.Configuration;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Configuration.Features;
 using Delivery.Azure.Library.Configuration.Features.Interfaces;
@@ -50,7 +33,6 @@ using Delivery.Domain.Models;
 using Delivery.Store.Domain.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -78,7 +60,6 @@ namespace Delivery.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddCors();
             services.AddHealthChecks();
 
