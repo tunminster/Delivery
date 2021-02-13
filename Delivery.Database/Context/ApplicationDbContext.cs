@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
@@ -10,9 +11,11 @@ using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Sharding.Interfaces;
+using Delivery.Azure.Library.Sharding.Sharding;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependencies;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependencies.Models;
+using Delivery.Database.ContextOptions;
 using Delivery.Database.Entities;
 using Delivery.Database.Models;
 using IdentityServer4.EntityFramework.Options;
@@ -30,6 +33,18 @@ namespace Delivery.Database.Context
             DbContextOptions<ApplicationDbContext> options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
+        }
+        
+        public ApplicationDbContext(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter, DbContextOptions dbContextOptions, IOptions<OperationalStoreOptions> operationalStoreOptions) : base(dbContextOptions,operationalStoreOptions)
+        {
+            ExecutingRequestContextAdapter = executingRequestContextAdapter;
+            ServiceProvider = serviceProvider;
+        }
+        
+        
+        public static async Task<ApplicationDbContext> CreateAsync(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            return await DatabaseContextFactory.CreateAsync(serviceProvider, executingRequestContextAdapter, (requestContextAdapter, options) => new ApplicationDbContext(serviceProvider, requestContextAdapter, options, new OperationalStoreOptionsDbContext()));
         }
         
         public DbSet<Customer> Customers { get; set; }

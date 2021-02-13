@@ -17,6 +17,7 @@ using Delivery.User.Domain.CommandHandlers;
 using Delivery.User.Domain.Contracts.Facebook;
 using Delivery.User.Domain.Contracts.Google;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -32,31 +33,40 @@ namespace Delivery.Api.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-
-        private readonly SignInManager<Database.Models.ApplicationUser> signInManager;
-        private readonly UserManager<Database.Models.ApplicationUser> userManager;
-        private readonly ApplicationDbContext applicationDbContext;
-
         private readonly IJwtFactory jwtFactory;
         private readonly JwtIssuerOptions jwtOptions;
         private readonly IServiceProvider serviceProvider;
+        private readonly IPasswordHasher<Database.Models.ApplicationUser> passwordHasher;
+        private readonly IEnumerable<IUserValidator<Database.Models.ApplicationUser>> userValidators;
+        private readonly IEnumerable<IPasswordValidator<Database.Models.ApplicationUser>> passwordValidators;
+        private readonly ILookupNormalizer keyNormalizer;
+        private readonly IdentityErrorDescriber errors;
+        private readonly ILogger<UserManager<Database.Models.ApplicationUser>> logger;
+        private IOptions<IdentityOptions> optionsAccessor;
 
         public AuthController(
-            UserManager<Database.Models.ApplicationUser> userManager,
-            SignInManager<Database.Models.ApplicationUser> signInManager,
             IJwtFactory jwtFactory, 
             IOptions<JwtIssuerOptions> jwtOptions,
             IServiceProvider serviceProvider,
-            ApplicationDbContext applicationDbContext
+            IOptions<IdentityOptions> optionsAccessor,
+            IPasswordHasher<Database.Models.ApplicationUser> passwordHasher,
+            IEnumerable<IUserValidator<Database.Models.ApplicationUser>> userValidators,
+            IEnumerable<IPasswordValidator<Database.Models.ApplicationUser>> passwordValidators,
+            ILookupNormalizer keyNormalizer,
+            IdentityErrorDescriber errors,
+            ILogger<UserManager<Database.Models.ApplicationUser>> logger
             )
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
             this.jwtFactory = jwtFactory;
             this.jwtOptions = jwtOptions.Value;
             this.serviceProvider = serviceProvider;
-
-            this.applicationDbContext = applicationDbContext;
+            this.optionsAccessor = optionsAccessor;
+            this.passwordHasher = passwordHasher;
+            this.userValidators = userValidators;
+            this.passwordValidators = passwordValidators;
+            this.keyNormalizer = keyNormalizer;
+            this.errors = errors;
+            this.logger = logger;
         }
 
         [HttpPost("login")]
@@ -75,7 +85,7 @@ namespace Delivery.Api.Controllers
                 return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
             }
             
-            var jwt = await Tokens.GenerateJwt(identity, jwtFactory, model.UserName, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
+            var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, model.UserName, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
             return new OkObjectResult(jwt);
         }
         
@@ -84,6 +94,12 @@ namespace Delivery.Api.Controllers
         public async Task<IActionResult> FacebookLoginAsync([FromBody] FacebookLoginContract facebookLoginContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
             
             var accountService = new AccountService(serviceProvider, userManager, jwtFactory, jwtOptions, executingRequestContextAdapter);
             
@@ -100,6 +116,12 @@ namespace Delivery.Api.Controllers
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
+            await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
+            
             var accountService = new AccountService(serviceProvider, userManager, jwtFactory, jwtOptions, executingRequestContextAdapter);
             
             applicationDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
@@ -113,6 +135,12 @@ namespace Delivery.Api.Controllers
         {
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
                 return await Task.FromResult<ClaimsIdentity>(null);
+            
+            await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
 
             // get the user to verifty
             var userToVerify = await userManager.FindByNameAsync(userName);
