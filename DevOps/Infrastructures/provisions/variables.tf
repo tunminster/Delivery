@@ -29,6 +29,22 @@ variable "sql_server_admin_password"{
     
 }
 
+variable "aks_node_vm_size"{
+
+}
+
+variable "aks_node_os_disk_size"{
+
+}
+
+variable "aks_sp_app_id" {
+
+}
+
+variable "aks_sp_app_secret"{
+    
+}
+
 locals {
     common_tags = {
         environment = var.environment_prefix
