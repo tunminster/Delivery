@@ -14,13 +14,6 @@ resource "azurerm_kubernetes_cluster" "hn-platform-aks" {
     os_disk_size_gb       = var.aks_node_os_disk_size
   }
 
-  storage_profile_os_disk {
-    name              = ""
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
-  }
-
   service_principal {
     client_id     = var.aks_sp_app_id
     client_secret = var.aks_sp_app_secret
