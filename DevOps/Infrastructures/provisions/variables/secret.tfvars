@@ -12,4 +12,10 @@ sql_database_runtimeuser_name_da = "#{sql_database_runtimeuser_name_da}#"
 tenant_da_password = "#{tenant_da_password}#"
 
 
+aks_node_vm_size = "#{aks_node_vm_size}#"
+aks_node_os_disk_size = "#{aks_node_os_disk_size}#"
+aks_sp_app_id = "#{app-dev-client-id}#"
+aks_sp_app_secret = "#{apphn}#"
+
+
 

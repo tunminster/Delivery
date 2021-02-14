@@ -8,6 +8,11 @@ parameters:
     displayName: Run Infra Provisioning
     type: boolean
     default: false
+  
+  - name: BuildAndRunTest
+    displayName: Build and Run Tests
+    type: boolean
+    default: false
 
 trigger:
 - master
@@ -23,7 +28,7 @@ variables:
 stages:
   - stage: Build
     displayName: Build project and Test
-
+    condition: eq('${{ parameters.BuildAndRunTest }}' , true)
     jobs:
       - job: Build
         displayName: 'Build Project'
@@ -58,11 +63,11 @@ stages:
             command: test
             projects: '**/*[Tt]ests/*.csproj'
             arguments: --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-            
+  
   - stage: InfraProvisions
     displayName: Deploy infrastructure provisions
     dependsOn: Build
-    condition: succeeded()
+    condition: and(succeeded(), eq('${{ parameters.RunInfraProvisionStage }}' , true))
     variables:
         - group: Hn-Platform-Infra-Variables
         - group: Hn-Platform-Infra
@@ -128,11 +133,12 @@ stages:
               environmentServiceName: 'hn-platform-az-Connection'
               commandOptions: '-var-file=$(tfvarfile) -input=false -auto-approve'
               allowTelemetryCollection: true
-        
+
   - stage: DeployDev
     displayName: Deploy Development Env
     dependsOn: InfraProvisions
-    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    condition: succeeded()
+    #condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
 
     variables:
         - group: Hn-Platform-Infra-Variables
@@ -233,7 +239,7 @@ stages:
           - task: Kubernetes@1
             inputs:
               connectionType: 'Kubernetes Service Connection'
-              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              kubernetesServiceEndpoint: 'hn-platform-aks-prod'
               namespace: 'hn-prod'
               command: 
               secretType: 'generic'
@@ -243,7 +249,7 @@ stages:
           - task: Kubernetes@1
             inputs:
               connectionType: 'Kubernetes Service Connection'
-              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              kubernetesServiceEndpoint: 'hn-platform-aks-prod'
               namespace: 'hn-prod'
               command: 'apply'
               arguments: '-f $(Build.ArtifactStagingDirectory)/devops/delivery-api-deploy.yaml'
@@ -322,7 +328,7 @@ stages:
             displayName: 'Deploy orders service config-map'
             inputs:
               connectionType: 'Kubernetes Service Connection'
-              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              kubernetesServiceEndpoint: 'hn-platform-aks-prod'
               namespace: 'hn-prod'
               command: 'apply'
               arguments: '-f $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-orders.yaml'
@@ -332,7 +338,7 @@ stages:
             displayName: 'Deploy orders service'
             inputs:
               connectionType: 'Kubernetes Service Connection'
-              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              kubernetesServiceEndpoint: 'hn-platform-aks-prod'
               namespace: 'hn-prod'
               command: 'apply'
               arguments: '-f $(Build.ArtifactStagingDirectory)/devops/orders-service-deploy.yaml'
