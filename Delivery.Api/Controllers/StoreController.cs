@@ -13,7 +13,10 @@ using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate;
+using Delivery.Store.Domain.ElasticSearch.Contracts.V1.RestContracts.StoreIndexing;
+using Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreIndexing;
 using Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearchQueries;
+using Delivery.Store.Domain.ElasticSearch.Validators;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate;
 using Delivery.Store.Domain.Handlers.QueryHandlers.StoreDetailsQueries;
@@ -107,6 +110,31 @@ namespace Delivery.Api.Controllers
                 .ExecuteStoreUpdateWorkflowAsync(storeUpdateServiceRequest);
             
             return Ok(storeUpdateStatusContract);
+        }
+
+        /// <summary>
+        ///  Store: indexing 
+        /// </summary>
+        /// <param name="storeIndexCreationContract"></param>
+        /// <returns></returns>
+        [HttpPost("Index-Store")]
+        [ProducesResponseType(typeof(StoreIndexCreationContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> StoreIndexAsync(StoreIndexCreationContract storeIndexCreationContract)
+        {
+            var validationResult =
+                await new StoreIndexCreationValidator().ValidateAsync(storeIndexCreationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var storeIndexCommand = new StoreIndexCommand(storeIndexCreationContract, new StoreIndexStatusContract());
+            var storeIndexStatusContract =
+                await new StoreIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(storeIndexCommand);
+
+            return Ok(storeIndexStatusContract);
         }
         
         // [HttpGet("GetAllStores")]
