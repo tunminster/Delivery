@@ -58,76 +58,77 @@ stages:
             command: test
             projects: '**/*[Tt]ests/*.csproj'
             arguments: --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-            
-  - stage: InfraProvisions
-    displayName: Deploy infrastructure provisions
-    dependsOn: Build
-    condition: succeeded()
-    variables:
-        - group: Hn-Platform-Infra-Variables
-        - group: Hn-Platform-Infra
-    jobs:
-      - job: InfraProvisions
-        displayName: Infra provisions
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - script: echo '$(hn-platform-environment-ServiceName)'
-          - task: replacetokens@3
-            inputs:
-              targetFiles: '**/*.tfvars'
-              encoding: 'auto'
-              writeBOM: true
-              actionOnMissing: 'warn'
-              keepToken: false
-              tokenPrefix: '#{'
-              tokenSuffix: '}#'
-              useLegacyPattern: false
-              enableTelemetry: true
-              
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: |
-                # Write your commands here
+
+- ${{ if eq(parameters.RunInfraProvisionStage, true) }}:            
+    - stage: InfraProvisions
+      displayName: Deploy infrastructure provisions
+      dependsOn: Build
+      condition: succeeded()
+      variables:
+          - group: Hn-Platform-Infra-Variables
+          - group: Hn-Platform-Infra
+      jobs:
+        - job: InfraProvisions
+          displayName: Infra provisions
+          pool:
+            vmImage: 'ubuntu-latest'
+          steps:
+            - script: echo '$(hn-platform-environment-ServiceName)'
+            - task: replacetokens@3
+              inputs:
+                targetFiles: '**/*.tfvars'
+                encoding: 'auto'
+                writeBOM: true
+                actionOnMissing: 'warn'
+                keepToken: false
+                tokenPrefix: '#{'
+                tokenSuffix: '}#'
+                useLegacyPattern: false
+                enableTelemetry: true
                 
-                cat secret.tfvars
-              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions/variables'
+            - task: Bash@3
+              inputs:
+                targetType: 'inline'
+                script: |
+                  # Write your commands here
+                  
+                  cat secret.tfvars
+                workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions/variables'
 
-          - task: TerraformInstaller@0
-            inputs:
-              terraformVersion: 'latest'
-          - task: TerraformCLI@0
-            inputs:
-              command: 'init'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              backendType: 'azurerm'
-              backendServiceArm: 'hn-platform-az-connection'
-              backendAzureRmResourceGroupName: 'pngo_vn_rg'
-              backendAzureRmStorageAccountName: 'pngosa'
-              backendAzureRmContainerName: 'platform-tf-state-container'
-              backendAzureRmKey: 'platform-tf-state.tfstate'
-              allowTelemetryCollection: true
+            - task: TerraformInstaller@0
+              inputs:
+                terraformVersion: 'latest'
+            - task: TerraformCLI@0
+              inputs:
+                command: 'init'
+                workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+                backendType: 'azurerm'
+                backendServiceArm: 'hn-platform-az-connection'
+                backendAzureRmResourceGroupName: 'pngo_vn_rg'
+                backendAzureRmStorageAccountName: 'pngosa'
+                backendAzureRmContainerName: 'platform-tf-state-container'
+                backendAzureRmKey: 'platform-tf-state.tfstate'
+                allowTelemetryCollection: true
 
-          - task: TerraformCLI@0
-            inputs:
-              command: 'validate'
-              allowTelemetryCollection: true
+            - task: TerraformCLI@0
+              inputs:
+                command: 'validate'
+                allowTelemetryCollection: true
 
-          - task: TerraformCLI@0
-            inputs:
-              command: 'plan'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              environmentServiceName: 'hn-platform-az-Connection'
-              commandOptions: '-var-file=$(tfvarfile) -input=false'
-              allowTelemetryCollection: true
-          - task: TerraformCLI@0
-            inputs:
-              command: 'apply'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              environmentServiceName: 'hn-platform-az-Connection'
-              commandOptions: '-var-file=$(tfvarfile) -input=false -auto-approve'
-              allowTelemetryCollection: true
+            - task: TerraformCLI@0
+              inputs:
+                command: 'plan'
+                workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+                environmentServiceName: 'hn-platform-az-Connection'
+                commandOptions: '-var-file=$(tfvarfile) -input=false'
+                allowTelemetryCollection: true
+            - task: TerraformCLI@0
+              inputs:
+                command: 'apply'
+                workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+                environmentServiceName: 'hn-platform-az-Connection'
+                commandOptions: '-var-file=$(tfvarfile) -input=false -auto-approve'
+                allowTelemetryCollection: true
         
   - stage: DeployDev
     displayName: Deploy Development Env
