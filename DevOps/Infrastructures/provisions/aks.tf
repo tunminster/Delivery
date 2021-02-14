@@ -6,7 +6,7 @@ resource "azurerm_kubernetes_cluster" "hn-platform-aks" {
 
   default_node_pool {
     name                  = "default"
-    type                  = "virtualMachineScaleSets"
+    type                  = "VirtualMachineScaleSets"
     enable_auto_scaling   = true
     min_count             = 3
     max_count             = 3
