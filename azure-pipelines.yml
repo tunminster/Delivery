@@ -328,7 +328,7 @@ stages:
             displayName: 'Deploy orders service config-map'
             inputs:
               connectionType: 'Kubernetes Service Connection'
-              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              kubernetesServiceEndpoint: 'hn-platform-aks-prod'
               namespace: 'hn-prod'
               command: 'apply'
               arguments: '-f $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-orders.yaml'
@@ -338,7 +338,7 @@ stages:
             displayName: 'Deploy orders service'
             inputs:
               connectionType: 'Kubernetes Service Connection'
-              kubernetesServiceEndpoint: 'hn-aks-ns-prod'
+              kubernetesServiceEndpoint: 'hn-platform-aks-prod'
               namespace: 'hn-prod'
               command: 'apply'
               arguments: '-f $(Build.ArtifactStagingDirectory)/devops/orders-service-deploy.yaml'
