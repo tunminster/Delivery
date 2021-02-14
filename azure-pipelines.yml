@@ -137,7 +137,7 @@ stages:
   - stage: DeployDev
     displayName: Deploy Development Env
     dependsOn: InfraProvisions
-    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
 
     variables:
         - group: Hn-Platform-Infra-Variables
