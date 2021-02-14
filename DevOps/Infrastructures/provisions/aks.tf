@@ -12,7 +12,10 @@ resource "azurerm_kubernetes_cluster" "hn-platform-aks" {
     max_count             = 3
     vm_size               = var.aks_node_vm_size
     os_disk_size_gb       = var.aks_node_os_disk_size
-    os_disk_type          = "managed"
+    os_disk {
+      storage_account_type = "Standard_LRS"
+      caching              = "ReadWrite"
+    } 
   }
 
   service_principal {
