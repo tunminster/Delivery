@@ -62,7 +62,6 @@ namespace Delivery.User.Domain.ApplicationServices
             
         }
         
-
         private async Task<T> GetAsync<T>(string accessToken, string endpoint)
         {
             var response = await httpClient.GetAsync($"{endpoint}?id_token={accessToken}");

@@ -196,6 +196,41 @@ namespace Delivery.Api.Controllers
             return Ok(storeContractList);
 
         }
+        
+        /// <summary>
+        ///  Search stores by store type
+        /// </summary>
+        /// <param name="storeType"></param>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("Stores-Search-By-Store-Type")]
+        [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetStoreSearchByStoreTypeAsync(string storeType,
+            string latitude, string longitude, string page, string pageSize, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            int.TryParse(pageSize, out var iPageSize);
+            int.TryParse(page, out var iPage);
+            double.TryParse(latitude, out var dLatitude);
+            double.TryParse(longitude, out var dLongitude);
+            
+            var defaultDistance = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("DefaultDistance");
+
+            var storeSearchQueryByStoreTypeQuery = new StoreSearchQueryByStoreTypeQuery(storeType, iPage, iPageSize, dLatitude,
+                dLongitude, defaultDistance);
+
+            var storeContractList =
+                await new StoreSearchQueryByStoreTypeQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(storeSearchQueryByStoreTypeQuery);
+
+            return Ok(storeContractList);
+
+        }
 
         /// <summary>
         ///  Store: Get store details by store id.
@@ -219,28 +254,6 @@ namespace Delivery.Api.Controllers
             return Ok(storeDetailsList);
         }
         
-        // [HttpGet("Get-Nearest-Stores")]
-        // [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
-        // [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        // public async Task<IActionResult> GetNearestStoresAsync(string numberOfObjectPerPage, string pageNumber, string latitude, string longitude, CancellationToken cancellationToken = default)
-        // {
-        //     var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-        //
-        //     int.TryParse(numberOfObjectPerPage, out var iNumberOfObjectPerPage);
-        //     int.TryParse(pageNumber, out var iPageNumber);
-        //     double.TryParse(latitude, out var dLatitude);
-        //     double.TryParse(longitude, out var dLongitude);
-        //     
-        //     var storeGetByNearestLocationQuery =
-        //         new StoreGetByNearestLocationQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-store-{iNumberOfObjectPerPage}-{iPageNumber}-{latitude}-{longitude}", iNumberOfObjectPerPage, iPageNumber, dLatitude, dLongitude, 7);
-        //     
-        //     var storeContractList =
-        //         await new StoreGetByStoreTypeIdAndGeoLocationQuery(serviceProvider, executingRequestContextAdapter)
-        //             .Handle(storeGetByNearestLocationQuery);
-        //   
-        //     return Ok(storeContractList);
-        // }
-
         private async Task IndexStoreAsync(StoreContract storeContract)
         {
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
