@@ -66,9 +66,10 @@ namespace Delivery.User.Domain.ApplicationServices
         private async Task<T> GetAsync<T>(string accessToken, string endpoint)
         {
             var response = await httpClient.GetAsync($"{endpoint}?id_token={accessToken}");
+            
             if (!response.IsSuccessStatusCode)
             {
-                throw new InvalidOperationException("Google token api response is not succeeded.")
+                throw new InvalidOperationException($"Google token api response is not succeeded for the accessToken:{accessToken} and endpoint: {endpoint}. Actual response:{response.Content.ReadAsStringAsync()}")
                     .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
             }
             
