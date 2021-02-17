@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Delivery.Database.Enums;
 
 namespace Delivery.Order.Domain.Contracts
 {
@@ -18,6 +19,9 @@ namespace Delivery.Order.Domain.Contracts
         
         [DataMember]
         public decimal TotalAmount { get; set; }
+        
+        [DataMember]
+        public OrderType OrderType { get; set; }
         
         [DataMember]
         public DateTime DateCreated { get; set; }

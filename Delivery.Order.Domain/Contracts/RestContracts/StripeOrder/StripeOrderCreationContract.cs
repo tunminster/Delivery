@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
+using Delivery.Database.Enums;
 using Microsoft.Graph;
 
 namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrder
@@ -19,6 +20,9 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrder
         
         [DataMember]
         public int ShippingAddressId { get; set; }
+        
+        [DataMember]
+        public OrderType OrderType { get; set; }
         
         [DataMember]
         public decimal Discount { get; set; }
