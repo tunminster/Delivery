@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Delivery.Azure.Library.Contracts.Interfaces.V1.Entities;
 using Delivery.Azure.Library.Database.Entities.V1;
+using Delivery.Database.Enums;
 
 namespace Delivery.Database.Entities
 {
@@ -50,6 +51,8 @@ namespace Delivery.Database.Entities
         public string InsertedBy { get; set; }
         
         public DateTimeOffset InsertionDateTime { get; set; }
+        
+        public OrderType OrderType { get; set; }
         public bool IsDeleted { get; set; }
     }
 }

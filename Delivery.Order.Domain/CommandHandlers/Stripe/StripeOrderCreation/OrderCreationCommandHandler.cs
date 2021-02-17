@@ -58,6 +58,7 @@ namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
                 DateCreated = DateTime.UtcNow,
                 CustomerId = command.StripeOrderCreationContract.CustomerId,
                 AddressId = command.StripeOrderCreationContract.ShippingAddressId,
+                OrderType = command.StripeOrderCreationContract.OrderType,
                 IsDeleted = false,
                 InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
                 InsertionDateTime = DateTimeOffset.UtcNow
