@@ -13,6 +13,8 @@ namespace Delivery.Database.Entities
         
         public string Close { get; set; }
         
+        public string TimeZone { get; set; }
+        
         public int StoreId { get; set; }
         
         public string InsertedBy { get; set; }

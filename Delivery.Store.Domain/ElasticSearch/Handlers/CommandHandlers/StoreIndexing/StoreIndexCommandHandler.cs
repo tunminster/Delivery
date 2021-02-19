@@ -34,6 +34,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
             var store =
                 await databaseContext.Stores
                     .Include(x => x.StoreType)
+                    .Include(x => x.OpeningHours)
                     .FirstOrDefaultAsync(x =>
                     x.ExternalId == command.StoreIndexCreationContract.StoreId);
 
@@ -54,7 +55,8 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
                     {
                         DayOfWeek = x.DayOfWeek,
                         Open = x.Open,
-                        Close = x.Close
+                        Close = x.Close,
+                        TimeZone = x.TimeZone
                     }).ToList(),
                 StoreType = store.StoreType.StoreTypeName
             };

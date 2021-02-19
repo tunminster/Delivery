@@ -88,6 +88,11 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<Report>().Property(p => p.ReportCategory).HasMaxLength(20);
             modelBuilder.Entity<Report>().Property(p => p.Message).HasMaxLength(500);
             
+            modelBuilder.Entity<OpeningHour>().Property(p => p.DayOfWeek).HasMaxLength(10);
+            modelBuilder.Entity<OpeningHour>().Property(p => p.Open).HasMaxLength(10);
+            modelBuilder.Entity<OpeningHour>().Property(p => p.Close).HasMaxLength(10);
+            modelBuilder.Entity<OpeningHour>().Property(p => p.TimeZone).HasMaxLength(10);
+
             ConfigureIndexes(modelBuilder);
         }
         

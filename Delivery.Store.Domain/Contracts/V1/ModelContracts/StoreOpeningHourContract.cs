@@ -15,12 +15,16 @@ namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
         [DataMember]
         public string Close { get; set; }
         
+        [DataMember]
+        public string TimeZone { get; set; }
+        
         public override string ToString()
         {
             return $"{GetType().Name}" +
                    $"{nameof(DayOfWeek)}: {DayOfWeek.Format()}," +
                    $"{nameof(Open)}: {Open.Format()}," +
-                   $"{nameof(Close)}: {Close.Format()}";
+                   $"{nameof(Close)}: {Close.Format()}" +
+                    $"{nameof(TimeZone)}: {TimeZone.Format()}";
 
         }
     }
