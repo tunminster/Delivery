@@ -41,6 +41,17 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
             store.Country = command.StoreUpdateContract.Country;
             store.PostalCode = command.StoreUpdateContract.PostalCode;
             store.StoreTypeId = storeType.Id;
+
+            foreach (var storeOpeningHour in command.StoreUpdateContract.StoreOpeningHours)
+            {
+                var openingHour = await databaseContext.OpeningHours.FirstOrDefaultAsync(x =>
+                    x.StoreId == store.Id && x.DayOfWeek == storeOpeningHour.DayOfWeek);
+
+                openingHour.Open = storeOpeningHour.Open;
+                openingHour.Close = storeOpeningHour.Close;
+
+                databaseContext.OpeningHours.Update(openingHour);
+            }
             
             databaseContext.Stores.Update(store);
             await databaseContext.SaveChangesAsync();

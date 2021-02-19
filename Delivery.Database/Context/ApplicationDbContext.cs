@@ -57,6 +57,7 @@ namespace Delivery.Database.Context
         public DbSet<Store> Stores { get; set; }
         public DbSet<StripePayment> StripePayments { get; set; }
         public DbSet<Report> Reports { get; set; }
+        public DbSet<OpeningHour> OpeningHours { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

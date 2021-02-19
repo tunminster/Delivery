@@ -17,9 +17,11 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependencies;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependencies.Models;
 using Delivery.Database.Entities;
+using Microsoft.Azure.Amqp.Framing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Address = Delivery.Database.Entities.Address;
 
 namespace Delivery.Database.Context
 {
@@ -46,6 +48,8 @@ namespace Delivery.Database.Context
         public DbSet<StripePayment> StripePayments { get; set; }
         
         public DbSet<Report> Reports { get; set; }
+        
+        public DbSet<OpeningHour> OpeningHours { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
