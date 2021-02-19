@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
 
@@ -36,6 +37,9 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
         [DataMember]
         public string StoreTypeId { get; set; }
         
+        [DataMember]
+        public List<StoreOpeningHourCreationContract> StoreOpeningHours { get; set; }
+        
         public override string ToString()
         {
             return $"{GetType().Name}" +
@@ -47,6 +51,7 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
                    $"{nameof(County)}: {County.Format()}," +
                    $"{nameof(Country)}: {Country.Format()}," +
                    $"{nameof(PostalCode)}: {PostalCode.Format()}," +
+                   $"{nameof(StoreOpeningHours)}: {StoreOpeningHours.Format()}," +
                    $"{nameof(StoreTypeId)} : {StoreTypeId.Format()}";
 
         }

@@ -253,6 +253,15 @@ namespace Delivery.Api.Controllers
 
             return Ok(storeDetailsList);
         }
+
+        [HttpGet("Store-Generate-Id")]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public IActionResult GetExternalId()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            return Ok(executingRequestContextAdapter.GetShard().GenerateExternalId());
+        }
         
         private async Task IndexStoreAsync(StoreContract storeContract)
         {

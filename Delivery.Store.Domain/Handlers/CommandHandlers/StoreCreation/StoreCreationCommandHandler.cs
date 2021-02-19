@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
+using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreGeoUpdates;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
@@ -47,6 +49,20 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
             store.InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail;
             store.IsDeleted = false;
             store.StoreTypeId = storeType.Id;
+            store.OpeningHours = new List<OpeningHour>();
+            
+            foreach (var storeOpeningHour in command.StoreCreationContract.StoreOpeningHours)
+            {
+                store.OpeningHours.Add(new OpeningHour
+                {
+                    DayOfWeek = storeOpeningHour.DayOfWeek,
+                    Open = storeOpeningHour.Open,
+                    Close = storeOpeningHour.Close,
+                    IsDeleted = false,
+                    InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+                    InsertionDateTime = DateTimeOffset.UtcNow
+                });
+            }
 
             await databaseContext.Stores.AddAsync(store);
             await databaseContext.SaveChangesAsync();

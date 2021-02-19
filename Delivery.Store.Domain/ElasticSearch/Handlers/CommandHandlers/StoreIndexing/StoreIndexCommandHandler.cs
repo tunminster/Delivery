@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
@@ -33,6 +34,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
             var store =
                 await databaseContext.Stores
                     .Include(x => x.StoreType)
+                    .Include(x => x.OpeningHours)
                     .FirstOrDefaultAsync(x =>
                     x.ExternalId == command.StoreIndexCreationContract.StoreId);
 
@@ -48,6 +50,14 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
                 ImageUri = store.ImageUri,
                 Location = $"{store.Latitude}, {store.Longitude}",
                 PostalCode = store.PostalCode,
+                StoreOpeningHours = store.OpeningHours.Select(x =>
+                    new StoreOpeningHourContract
+                    {
+                        DayOfWeek = x.DayOfWeek,
+                        Open = x.Open,
+                        Close = x.Close,
+                        TimeZone = x.TimeZone
+                    }).ToList(),
                 StoreType = store.StoreType.StoreTypeName
             };
             

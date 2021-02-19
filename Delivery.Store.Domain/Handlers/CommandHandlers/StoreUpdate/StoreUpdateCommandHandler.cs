@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
+using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate;
 using Delivery.Store.Domain.Factories.GeoLocationFactory;
@@ -41,7 +42,36 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
             store.Country = command.StoreUpdateContract.Country;
             store.PostalCode = command.StoreUpdateContract.PostalCode;
             store.StoreTypeId = storeType.Id;
-            
+
+            if (store.OpeningHours == null || store.OpeningHours.Count < 1)
+            {
+                foreach (var storeOpeningHour in command.StoreUpdateContract.StoreOpeningHours)
+                {
+                    var openingHour = await databaseContext.OpeningHours.FirstOrDefaultAsync(x =>
+                        x.StoreId == store.Id && x.DayOfWeek == storeOpeningHour.DayOfWeek);
+
+                    openingHour.Open = storeOpeningHour.Open;
+                    openingHour.Close = storeOpeningHour.Close;
+
+                    databaseContext.OpeningHours.Update(openingHour);
+                }
+            }
+            else
+            {
+                foreach (var storeOpeningHour in command.StoreUpdateContract.StoreOpeningHours)
+                {
+                    store.OpeningHours.Add(new OpeningHour
+                    {
+                        DayOfWeek = storeOpeningHour.DayOfWeek,
+                        Open = storeOpeningHour.Open,
+                        Close = storeOpeningHour.Close,
+                        IsDeleted = false,
+                        InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+                        InsertionDateTime = DateTimeOffset.UtcNow
+                    });
+                }
+            }
+
             databaseContext.Stores.Update(store);
             await databaseContext.SaveChangesAsync();
             

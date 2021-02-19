@@ -21,6 +21,12 @@ namespace Delivery.Store.Domain.Converters.StoreConverters
                 Country = x.Country,
                 PostalCode = x.PostalCode,
                 StoreType = x.StoreType.StoreTypeName,
+                StoreOpeningHours = x.OpeningHours.Select(op => new StoreOpeningHourContract
+                {
+                    DayOfWeek = op.DayOfWeek,
+                    Open =  op.Open,
+                    Close = op.Close
+                }).ToList(),
                 Location =  new GeoLocation(x.Latitude ?? 0, x.Longitude ?? 0)
             }).ToList();
             
