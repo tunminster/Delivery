@@ -1,7 +1,6 @@
-using System.Runtime.Serialization;
 using Delivery.Order.Domain.Contracts.RestContracts;
 
-namespace Delivery.Order.Domain.CommandHandlers
+namespace Delivery.Order.Domain.Handlers.CommandHandlers
 {
     public class CreateReportOrderCommand
     {

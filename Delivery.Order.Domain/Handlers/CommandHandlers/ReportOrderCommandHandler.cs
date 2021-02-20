@@ -1,12 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using AutoMapper;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
 
-namespace Delivery.Order.Domain.CommandHandlers
+namespace Delivery.Order.Domain.Handlers.CommandHandlers
 {
     public class ReportOrderCommandHandler : ICommandHandler<CreateReportOrderCommand, bool>
     {

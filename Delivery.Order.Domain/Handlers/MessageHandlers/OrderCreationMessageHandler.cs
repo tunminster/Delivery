@@ -6,10 +6,10 @@ using Delivery.Azure.Library.Microservices.Hosting.MessageHandlers;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Domain.Contracts.Enums;
-using Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation;
 using Delivery.Order.Domain.Contracts.RestContracts;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
+using Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Order.Domain.Handlers.MessageHandlers

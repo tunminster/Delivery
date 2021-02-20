@@ -9,7 +9,7 @@ using Delivery.Domain.Factories;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderTotalAmountCreation
+namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotalAmountCreation
 {
     public class StripeOrderTotalAmountCreationCommandHandler : ICommandHandler<StripeOrderTotalAmountCreationCommand, OrderCreationStatusContract>
     {

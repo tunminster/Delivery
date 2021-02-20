@@ -1,6 +1,6 @@
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
 
-namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripePaymentIntent
+namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentIntent
 {
     public class PaymentIntentCreationCommand
     {

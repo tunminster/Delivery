@@ -1,6 +1,6 @@
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
 
-namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderUpdate
+namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdate
 {
     public class OrderUpdateCommand
     {
