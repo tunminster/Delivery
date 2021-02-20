@@ -2,15 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.Contracts;
-using Delivery.Order.Domain.Contracts.RestContracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.Order.Domain.QueryHandlers
+namespace Delivery.Order.Domain.Handlers.QueryHandlers
 {
     public class OrderByCustomerIdQueryHandler : IQueryHandler<OrderByCustomerIdQuery, List<OrderContract>>
     {
@@ -27,8 +25,12 @@ namespace Delivery.Order.Domain.QueryHandlers
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
             var orderList = await databaseContext.Orders.Where(x => x.CustomerId == query.CustomerId)
+                .Include(x => x.Store)
                 .Include(x => x.OrderItems)
                 .ThenInclude(x => x.Product)
+                .OrderByDescending(x => x.DateCreated)
+                .Skip(query.PageSize * (query.Page - 1))
+                .Take(query.PageSize)
                 .ToListAsync();
 
             return ConvertOrderList(orderList);
@@ -43,6 +45,8 @@ namespace Delivery.Order.Domain.QueryHandlers
                 OrderStatus = x.OrderStatus,
                 TotalAmount = x.TotalAmount,
                 DateCreated = x.DateCreated,
+                StoreName = x.Store?.StoreName,
+                ImageUri = x.OrderItems.FirstOrDefault()?.Product.ProductImageUrl,
                 OrderItems = x.OrderItems.Select(oi => new OrderItemContract
                 {
                     Count = oi.Count,

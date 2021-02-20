@@ -9,12 +9,11 @@ using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Factories;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
-using Delivery.Order.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts;
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
 using Delivery.Order.Domain.Contracts.RestContracts;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
-using Delivery.Order.Domain.QueryHandlers;
+using Delivery.Order.Domain.Handlers.QueryHandlers;
 using Delivery.Order.Domain.Services.Applications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -61,68 +60,22 @@ namespace Delivery.Api.Controllers
 
             return Ok(paymentIntentCreationStatusContract);
         }
-        
 
-        // POST api/values
-        // [HttpPost("Create")]
-        // [ProducesResponseType(typeof(OrderCreationContract), (int)HttpStatusCode.OK)]
-        // [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        // public async Task<IActionResult> AddOrderAsync(OrderCreationContract orderCreationContract)
-        // {
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return BadRequest(ModelState);
-        //     }
-        //     
-        //     var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-        //     
-        //     var orderItemCommands = new List<OrderItemCommand>();
-        //
-        //     foreach(var item in orderCreationContract.OrderItems)
-        //     {
-        //         orderItemCommands.Add(new OrderItemCommand() { Count = item.Count, ProductId = item.ProductId });
-        //     }
-        //
-        //     var command = new CreateOrderCommand();
-        //     command.Description = string.Empty;
-        //     command.TotalAmount = Convert.ToInt32(orderCreationContract.TotalAmount);
-        //     command.CurrencyCode = "GBP";
-        //     command.PaymentType = "Card";
-        //     command.CardHolderName = orderCreationContract.CardHolderName;
-        //     command.PaymentCard = orderCreationContract.CardNumber;
-        //     command.PaymentStatus = string.Empty;
-        //     command.PaymentExpiryMonth = orderCreationContract.ExpiryMonth;
-        //     command.PaymentExpiryYear = orderCreationContract.ExpiryYear;
-        //     command.PaymentCVC = orderCreationContract.Cvc;
-        //     command.PaymentIssueNumber = "1";
-        //     command.OrderStatus = string.Empty;
-        //     command.CustomerId = orderCreationContract.CustomerId;
-        //     command.DateCreated = DateTime.UtcNow;
-        //     command.OrderItems = orderItemCommands;
-        //     command.ShippingAddressId = orderCreationContract.ShippingAddressId;
-        //     command.SaveCard = orderCreationContract.SaveCard;
-        //
-        //     var createOrderCommandHandler = new OrderCommandHandler(httpClientFactory, configuration, serviceProvider,
-        //         executingRequestContextAdapter);
-        //
-        //     await createOrderCommandHandler.Handle(command);
-        //     var orderCreationStatusContract = new OrderCreationStatusContract
-        //     {
-        //         OrderId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key), 
-        //         Status = "Order has been created successfully."
-        //     };
-        //
-        //     return Ok(orderCreationStatusContract);
-        // }
-
+        /// <summary>
+        ///  Get orders by User id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
         [HttpGet("GetByUserId/{userId}")]
         [ProducesResponseType(typeof(List<OrderContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetProductByCategoryIdAsync(int userId)
+        public async Task<IActionResult> GetProductByCategoryIdAsync(int userId, int page = 1, int pageSize = 20)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var query = new OrderByCustomerIdQuery {CustomerId = userId};
+            var query = new OrderByCustomerIdQuery(userId, page, pageSize);
 
             var orderByCustomerIdQueryHandler =
                 new OrderByCustomerIdQueryHandler(serviceProvider, executingRequestContextAdapter);

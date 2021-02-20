@@ -5,10 +5,9 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.Contracts;
-using Delivery.Order.Domain.Contracts.RestContracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.Order.Domain.QueryHandlers
+namespace Delivery.Order.Domain.Handlers.QueryHandlers
 {
     public class OrderByIdQueryHandler : IQueryHandler<OrderByIdQuery, OrderContract>
     {

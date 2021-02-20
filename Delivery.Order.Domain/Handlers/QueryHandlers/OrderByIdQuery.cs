@@ -1,8 +1,7 @@
 using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.Contracts;
-using Delivery.Order.Domain.Contracts.RestContracts;
 
-namespace Delivery.Order.Domain.QueryHandlers
+namespace Delivery.Order.Domain.Handlers.QueryHandlers
 {
     public class OrderByIdQuery : IQuery<OrderContract>
     {

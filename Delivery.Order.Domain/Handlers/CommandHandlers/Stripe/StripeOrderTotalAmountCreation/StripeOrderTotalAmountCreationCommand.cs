@@ -1,10 +1,10 @@
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 
-namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
+namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotalAmountCreation
 {
-    public class OrderCreationCommand
+    public class StripeOrderTotalAmountCreationCommand
     {
-        public OrderCreationCommand(StripeOrderCreationContract stripeOrderCreationContract, OrderCreationStatusContract orderCreationStatusContract)
+        public StripeOrderTotalAmountCreationCommand(StripeOrderCreationContract stripeOrderCreationContract, OrderCreationStatusContract orderCreationStatusContract)
         {
             StripeOrderCreationContract = stripeOrderCreationContract;
             OrderCreationStatusContract = orderCreationStatusContract;

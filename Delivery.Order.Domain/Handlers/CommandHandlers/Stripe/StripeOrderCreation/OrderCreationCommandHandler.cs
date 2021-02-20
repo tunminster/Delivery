@@ -7,13 +7,10 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
-using Delivery.Domain.Factories;
-using Delivery.Order.Domain.Contracts.RestContracts;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Enum;
-using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderCreation
+namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreation
 {
     public class OrderCreationCommandHandler : ICommandHandler<OrderCreationCommand, OrderCreationStatusContract>
     {

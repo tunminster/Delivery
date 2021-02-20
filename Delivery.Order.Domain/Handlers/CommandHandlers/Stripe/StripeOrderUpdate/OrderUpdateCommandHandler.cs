@@ -6,7 +6,7 @@ using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.Order.Domain.CommandHandlers.Stripe.StripeOrderUpdate
+namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdate
 {
     public class OrderUpdateCommandHandler : ICommandHandler<OrderUpdateCommand, StripeOrderUpdateStatusContract>
     {
