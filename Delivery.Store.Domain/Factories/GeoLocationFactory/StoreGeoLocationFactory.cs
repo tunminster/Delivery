@@ -42,10 +42,7 @@ namespace Delivery.Store.Domain.Factories.GeoLocationFactory
             
             // Publish store geo location update
             await new StoreGeoUpdateMessagePublisher(serviceProvider).PublishAsync(storeGeoUpdateMessageContract);
-            
-            // Publish store indexing
-            await PublishStoreIndexingAsync(storeGeoUpdateContract.StoreId);
-            
+
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace($"{nameof(PublishStoreGeoUpdateMessageAsync)} published store update geo message", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
         }

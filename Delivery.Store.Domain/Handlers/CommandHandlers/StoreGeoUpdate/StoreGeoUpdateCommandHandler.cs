@@ -7,6 +7,8 @@ using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.GeoLocations.Contracts.V1.RestContracts;
 using Delivery.Domain.GeoLocations.Handlers.QueryHandlers;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
+using Delivery.Store.Domain.ElasticSearch.Contracts.V1.RestContracts.StoreIndexing;
+using Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreIndexing;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate
@@ -63,7 +65,30 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate
                 Longitude = store.Longitude
             };
 
+            // Indexing store
+            await IndexStoreAsync(command.StoreGeoUpdateContract.StoreId);
+
             return storeGeoUpdateStatusContract;
+        }
+
+        private async Task IndexStoreAsync(string storeId)
+        {
+            var storeIndexCreationContract = new StoreIndexCreationContract
+            {
+                StoreId = storeId
+            };
+            
+            var storeIndexStatusContract = new StoreIndexStatusContract
+            {
+                Status = false,
+                InsertionDateTime = DateTimeOffset.UtcNow
+            };
+
+
+            var storeIndexCommand = new StoreIndexCommand(storeIndexCreationContract, storeIndexStatusContract);
+
+            var storeIndexStatus = await new StoreIndexCommandHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(storeIndexCommand);
         }
     }
 }
