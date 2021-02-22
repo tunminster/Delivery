@@ -15,3 +15,11 @@ resource "azurerm_storage_account" "hn-platform-storage" {
 
   tags = local.common_tags
 }
+
+resource "azurerm_key_vault_secret" "storage-account-da-connectionstring-blu" {
+  name         = "Storage-Account-Da-Connection-String"
+  value        = azurerm_storage_account.hn-platform-storage.primary_connection_string
+  key_vault_id = azurerm_key_vault.hnkeyvault.id
+
+  tags = local.common_tags
+}

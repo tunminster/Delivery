@@ -6,25 +6,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Database.Factories;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
-using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreGeoUpdate;
+using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreImageCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate;
 using Delivery.Store.Domain.ElasticSearch.Contracts.V1.RestContracts.StoreIndexing;
 using Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreIndexing;
 using Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearchQueries;
 using Delivery.Store.Domain.ElasticSearch.Validators;
-using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
-using Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate;
+using Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation;
 using Delivery.Store.Domain.Handlers.QueryHandlers.StoreDetailsQueries;
-using Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreCreations;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreUpdates;
 using Delivery.Store.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,16 +43,17 @@ namespace Delivery.Api.Controllers
         {
             this.serviceProvider = serviceProvider;
         }
-        
+
         /// <summary>
         ///  Store: Create store endpoint allows to create store
         /// </summary>
         /// <param name="storeCreationContract"></param>
+        /// <param name="storeImage"></param>
         /// <returns></returns>
         [HttpPost("CreateStore")]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CreateStoreAsync(StoreCreationContract storeCreationContract)
+        public async Task<IActionResult> CreateStoreAsync([FromForm] StoreCreationContract storeCreationContract, IFormFile storeImage)
         {
             var validationResult =
                 await new StoreCreationValidator().ValidateAsync(storeCreationContract);
@@ -62,13 +63,23 @@ namespace Delivery.Api.Controllers
             }
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-
+            
             var storeCreationStatusContract = new StoreCreationStatusContract
             {
                 StoreId = executingRequestContextAdapter.GetShard().GenerateExternalId(),
                 InsertionDateTime = DateTimeOffset.UtcNow
             };
 
+            // upload image
+            if (storeImage != null)
+            {
+                var storeImageCreationStatusContract = await
+                    UploadStoreImageAsync(storeCreationStatusContract.StoreId, storeCreationContract.StoreName, storeImage,
+                        executingRequestContextAdapter);
+
+                storeCreationContract.ImageUri = storeImageCreationStatusContract.ImageUri;
+            }
+            
             var storeCreationServiceRequest =
                 new StoreCreationServiceRequest(storeCreationContract, storeCreationStatusContract);
 
@@ -294,6 +305,24 @@ namespace Delivery.Api.Controllers
             
             
             
+        }
+
+        private async Task<StoreImageCreationStatusContract> UploadStoreImageAsync(string storeId, string storeName, IFormFile storeImage, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            var storeImageCreationContract = new StoreImageCreationContract
+            {
+                StoreId = storeId,
+                StoreImage = storeImage,
+                StoreName = storeName
+            };
+
+            var storeImageCreationCommand = new StoreImageCreationCommand(storeImageCreationContract);
+
+            var storeImageCreationStatusContract =
+                await new StoreImageCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(storeImageCreationCommand);
+
+            return storeImageCreationStatusContract;
         }
 
         private async Task<List<StoreContract>> GetStoreAsync(string query, int page = 1, int pageSize = 5)
