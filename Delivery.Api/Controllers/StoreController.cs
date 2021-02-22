@@ -9,6 +9,7 @@ using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
+using Delivery.Azure.Library.WebApi.ModelBinders;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
@@ -53,7 +54,7 @@ namespace Delivery.Api.Controllers
         [HttpPost("CreateStore")]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CreateStoreAsync([FromForm] StoreCreationContract storeCreationContract, IFormFile storeImage)
+        public async Task<IActionResult> CreateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreCreationContract storeCreationContract, IFormFile storeImage)
         {
             var validationResult =
                 await new StoreCreationValidator().ValidateAsync(storeCreationContract);
