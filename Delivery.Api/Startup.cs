@@ -27,6 +27,7 @@ using Delivery.Azure.Library.Storage.Blob.Connections;
 using Delivery.Azure.Library.Storage.Blob.Interfaces;
 using Delivery.Azure.Library.Storage.Cosmos.Connections;
 using Delivery.Azure.Library.Storage.Cosmos.Interfaces;
+using Delivery.Azure.Library.Storage.HostedServices;
 using Delivery.Azure.Library.WebApi.Filters;
 using Delivery.Database.Models;
 using Delivery.Database.Seeding;
@@ -219,6 +220,7 @@ namespace Delivery.Api
 
             services.AddHostedService(serviceProvider => new MultipleTasksBackgroundService(
                 new QueueServiceBusWorkBackgroundService(serviceProvider),
+                new QueueBlobUploadWorkBackgroundService(serviceProvider),
                 new LifetimeEventsHostedService(serviceProvider, serviceProvider.GetRequiredService<IHostApplicationLifetime>())
             ));
             
