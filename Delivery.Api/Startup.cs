@@ -23,6 +23,8 @@ using Delivery.Azure.Library.Messaging.ServiceBus.Connections.Interfaces;
 using Delivery.Azure.Library.Microservices.Hosting.HostedServices;
 using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
+using Delivery.Azure.Library.Storage.Blob.Connections;
+using Delivery.Azure.Library.Storage.Blob.Interfaces;
 using Delivery.Azure.Library.Storage.Cosmos.Connections;
 using Delivery.Azure.Library.Storage.Cosmos.Interfaces;
 using Delivery.Azure.Library.WebApi.Filters;
@@ -202,6 +204,7 @@ namespace Delivery.Api
             services.AddSingleton<IFeatureProvider, FeatureProvider>();
             services.AddSingleton<ICosmosDatabaseConnectionManager, CosmosDatabaseConnectionManager>();
             services.AddSingleton<IServiceBusSenderConnectionManager, ServiceBusSenderConnectionManager>();
+            services.AddSingleton<IBlobStorageConnectionManager, BlobStorageConnectionManager>();
             
             var useInMemory = Configuration.GetValue<bool?>("Test_Use_In_Memory");
             if (useInMemory.GetValueOrDefault())
