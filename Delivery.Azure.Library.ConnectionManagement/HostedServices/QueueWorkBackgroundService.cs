@@ -38,11 +38,12 @@ namespace Delivery.Azure.Library.ConnectionManagement.HostedServices
                 }
             }
         }
-
-        public void EnqueueBackgroundWork(Func<CancellationToken, Task> workItem)
+        
+        public bool EnqueueBackgroundWork(Func<CancellationToken, Task> workItem)
         {
             TasksWaiting++;
-            channel.Writer.WriteAsync(workItem);
+            var channelWriterResult = channel.Writer.WriteAsync(workItem);
+            return channelWriterResult.IsCompletedSuccessfully;
         }
 
     }

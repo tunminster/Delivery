@@ -9,7 +9,7 @@ namespace Delivery.Azure.Library.ConnectionManagement.HostedServices.Interfaces
         /// <summary>
         ///     Adds work to be completed asynchronously
         /// </summary>
-        void EnqueueBackgroundWork(Func<CancellationToken, Task> workItem);
+        bool EnqueueBackgroundWork(Func<CancellationToken, Task> workItem);
 
         int TasksWaiting { get; }
     }
