@@ -29,6 +29,9 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
 
             var productIds = command.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId).ToList();
             var products = databaseContext.Products.Where(x => productIds.Contains(x.ExternalId)).ToList();
+
+            var store = databaseContext.Stores.FirstOrDefault(x =>
+                x.ExternalId == command.StripeOrderCreationContract.StoreId);
             
             var orderItems = new List<OrderItem>();
             
@@ -57,6 +60,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 AddressId = command.StripeOrderCreationContract.ShippingAddressId,
                 OrderType = command.StripeOrderCreationContract.OrderType,
                 IsDeleted = false,
+                StoreId = store?.Id,
                 InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
                 InsertionDateTime = DateTimeOffset.UtcNow
             };
