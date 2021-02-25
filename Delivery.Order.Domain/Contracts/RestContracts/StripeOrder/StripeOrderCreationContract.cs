@@ -27,12 +27,16 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrder
         [DataMember]
         public decimal Discount { get; set; }
         
+        [DataMember]
+        public string StoreId { get; set; }
+        
         public override string ToString()
         {
             return $"{GetType().Name}" +
                    $"{nameof(CustomerId)}: {CustomerId.Format()}," +
                    $"{nameof(OrderItems)}: {OrderItems.Format()}," +
                    $"{nameof(ShippingAddressId)}: {ShippingAddressId.Format()}," +
+                   $"{nameof(StoreId)}: {StoreId.Format()}," +
                    $"{nameof(Discount)} : {Discount.Format()}";
 
         }
