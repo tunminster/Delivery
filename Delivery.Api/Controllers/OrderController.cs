@@ -12,6 +12,7 @@ using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.Contracts;
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
 using Delivery.Order.Domain.Contracts.RestContracts;
+using Delivery.Order.Domain.Contracts.RestContracts.OrderDetails;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Handlers.QueryHandlers;
 using Delivery.Order.Domain.Services.Applications;
@@ -82,6 +83,27 @@ namespace Delivery.Api.Controllers
             var result = await orderByCustomerIdQueryHandler.Handle(query);
 
             return Ok(result);
+        }
+        
+        /// <summary>
+        ///  Get Order details
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="timeZone"></param>
+        /// <returns></returns>
+        [HttpGet("GetOrderDetails")]
+        [ProducesResponseType(typeof(List<OrderDetailsContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetProductByCategoryIdAsync(string orderId, string timeZone)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var query = new OrderDetailsQuery(orderId, int.Parse(timeZone));
+
+            var orderDetailsContract =
+                await new OrderDetailsQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(query);
+
+            return Ok(orderDetailsContract);
         }
     }
 }
