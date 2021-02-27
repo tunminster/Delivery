@@ -19,7 +19,7 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrder
         public List<OrderItemCreationContract> OrderItems { get; set; } = new();
         
         [DataMember]
-        public int ShippingAddressId { get; set; }
+        public int? ShippingAddressId { get; set; }
         
         [DataMember]
         public OrderType OrderType { get; set; }

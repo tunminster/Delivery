@@ -36,7 +36,7 @@ namespace Delivery.Database.Entities
 
         public DateTime DateCreated { get; set; }
 
-        public int AddressId { get; set; }
+        public int? AddressId { get; set; }
         
         public int? StoreId { get; set; }
         
@@ -45,6 +45,9 @@ namespace Delivery.Database.Entities
 
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
+        
+        [ForeignKey("AddressId")]
+        public virtual Address Address { get; set; }
 
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Core.Extensions.Objects;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
@@ -26,6 +27,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
             
             var orderList = await databaseContext.Orders.Where(x => x.CustomerId == query.CustomerId)
                 .Include(x => x.Store)
+                .Include(x => x.Address)
                 .Include(x => x.OrderItems)
                 .ThenInclude(x => x.Product)
                 .OrderByDescending(x => x.DateCreated)
@@ -46,6 +48,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 TotalAmount = x.TotalAmount,
                 DateCreated = x.DateCreated,
                 StoreName = x.Store?.StoreName,
+                DeliveryAddress = x.Address != null ? x.Address.AddressLine + ", " + x.Address.City + ", " + x.Address.PostCode : "",
                 ImageUri = x.OrderItems.FirstOrDefault()?.Product.ProductImageUrl,
                 OrderItems = x.OrderItems.Select(oi => new OrderItemContract
                 {

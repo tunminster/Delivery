@@ -30,6 +30,11 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
             var productIds = command.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId).ToList();
             var products = databaseContext.Products.Where(x => productIds.Contains(x.ExternalId)).ToList();
 
+            if (command.StripeOrderCreationContract.ShippingAddressId == 0)
+            {
+                command.StripeOrderCreationContract.ShippingAddressId = null;
+            }
+
             var store = databaseContext.Stores.FirstOrDefault(x =>
                 x.ExternalId == command.StripeOrderCreationContract.StoreId);
             

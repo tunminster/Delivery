@@ -35,6 +35,9 @@ namespace Delivery.Order.Domain.Contracts
         public DateTime DateCreated { get; set; }
         
         [DataMember]
+        public string DeliveryAddress { get; set; }
+        
+        [DataMember]
         public List<OrderItemContract> OrderItems { get; set; }
         
         public override string ToString()
@@ -47,6 +50,7 @@ namespace Delivery.Order.Domain.Contracts
                    $"{nameof(OrderType)}: {OrderType.Format()}," +
                    $"{nameof(ImageUri)}: {ImageUri.Format()}," +
                    $"{nameof(StoreName)}: {StoreName.Format()}," +
+                   $"{nameof(DeliveryAddress)}: {DeliveryAddress.Format()}," +
                    $"{nameof(DateCreated)}: {DateCreated.Format()}," +
                    $"{nameof(OrderItems)} : {OrderItems.Format()}";
 
