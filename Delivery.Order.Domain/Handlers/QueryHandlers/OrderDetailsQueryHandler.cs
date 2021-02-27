@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
@@ -11,6 +9,7 @@ using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.Contracts;
 using Delivery.Order.Domain.Contracts.RestContracts.OrderDetails;
 using Microsoft.EntityFrameworkCore;
+using TimeZoneConverter;
 
 namespace Delivery.Order.Domain.Handlers.QueryHandlers
 {
@@ -37,7 +36,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
             var address = databaseContext.Addresses.FirstOrDefault(x => x.Id == order.AddressId);
 
             var currentDateTime = TimeZoneInfo.ConvertTime (DateTimeOffset.Now,
-                TimeZoneInfo.FindSystemTimeZoneById("Greenwich Mean Time"));
+                TZConvert.GetTimeZoneInfo("Europe/London"));
             
             currentDateTime = GetCurrentDateTime(query, currentDateTime);
 
@@ -53,32 +52,32 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
             if (query.DeliveryTimeZone == DeliveryTimeZone.Est)
             {
                 currentDateTime = TimeZoneInfo.ConvertTime(DateTimeOffset.Now,
-                    TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"));
+                    TZConvert.GetTimeZoneInfo("America/New_York"));
             }
             else if (query.DeliveryTimeZone == DeliveryTimeZone.Cst)
             {
                 currentDateTime = TimeZoneInfo.ConvertTime(DateTimeOffset.Now,
-                    TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
+                    TZConvert.GetTimeZoneInfo("America/Chicago"));
             }
             else if (query.DeliveryTimeZone == DeliveryTimeZone.Mst)
             {
                 currentDateTime = TimeZoneInfo.ConvertTime(DateTimeOffset.Now,
-                    TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time"));
+                    TZConvert.GetTimeZoneInfo("America/Denver"));
             }
             else if (query.DeliveryTimeZone == DeliveryTimeZone.Pst)
             {
                 currentDateTime = TimeZoneInfo.ConvertTime(DateTimeOffset.Now,
-                    TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time"));
+                    TZConvert.GetTimeZoneInfo("America/Los_Angeles"));
             }
             else if (query.DeliveryTimeZone == DeliveryTimeZone.Ast)
             {
                 currentDateTime = TimeZoneInfo.ConvertTime(DateTimeOffset.Now,
-                    TimeZoneInfo.FindSystemTimeZoneById("Alaska Standard Time"));
+                    TZConvert.GetTimeZoneInfo("America/Anchorage"));
             }
             else if (query.DeliveryTimeZone == DeliveryTimeZone.Hst)
             {
                 currentDateTime = TimeZoneInfo.ConvertTime(DateTimeOffset.Now,
-                    TimeZoneInfo.FindSystemTimeZoneById("Hawaii-Aleutian Standard Time"));
+                    TZConvert.GetTimeZoneInfo("Pacific/Honolulu"));
             }
 
             return currentDateTime;
@@ -89,7 +88,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
             var orderDetailsContract = new OrderDetailsContract
             {
                 OrderId = order.ExternalId,
-                EstimatedCookingTime = $"{currentDateTime:HH:mm} {currentDateTime.AddMinutes(25):HH:mm}",
+                EstimatedCookingTime = $"{currentDateTime:HH:mm} - {currentDateTime.AddMinutes(25):HH:mm}",
                 StoreName = order.Store.StoreName,
                 StoreAddress = $"{order.Store.FormattedAddress}",
                 DeliveryAddress = $"{address.AddressLine},{address.City}, {address.PostCode}",
