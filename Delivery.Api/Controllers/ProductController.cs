@@ -6,14 +6,19 @@ using System.Threading.Tasks;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.Models.Dto;
+using Delivery.Azure.Library.Database.Factories;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
+using Delivery.Azure.Library.WebApi.ModelBinders;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.CommandHandlers;
+using Delivery.Product.Domain.CommandHandlers.ProductImageCreation;
 using Delivery.Product.Domain.Contracts;
 using Delivery.Product.Domain.Contracts.V1.ModelContracts;
 using Delivery.Product.Domain.Contracts.V1.RestContracts;
+using Delivery.Product.Domain.Contracts.V1.RestContracts.ProductImageCreations;
 using Delivery.Product.Domain.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -77,25 +82,25 @@ namespace Delivery.Api.Controllers
             return Ok(productContractList);
         }
 
-        [HttpPost("Create")]
-        [ProducesResponseType(typeof(ProductCreationContract), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddProductAsync(ProductCreationContract productCreationContract, IFormFile file)
-        {
-            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-            
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var createProductCommandHandler =
-                new CreateProductCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter);
-
-            var createProductCommand = new CreateProductCommand(productCreationContract, file);
-            var isCreatedProduct = await createProductCommandHandler.Handle(createProductCommand);
-            return Ok(isCreatedProduct);
-        }
+        // [HttpPost("Create")]
+        // [ProducesResponseType(typeof(ProductCreationContract), (int)HttpStatusCode.OK)]
+        // [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        // public async Task<IActionResult> AddProductAsync(ProductCreationContract productCreationContract, IFormFile file)
+        // {
+        //     var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+        //     
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest(ModelState);
+        //     }
+        //
+        //     var createProductCommandHandler =
+        //         new CreateProductCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter);
+        //
+        //     var createProductCommand = new CreateProductCommand(productCreationContract, file);
+        //     var isCreatedProduct = await createProductCommandHandler.Handle(createProductCommand);
+        //     return Ok(isCreatedProduct);
+        // }
 
         /// <summary>
         /// Create product with image upload
@@ -104,10 +109,9 @@ namespace Delivery.Api.Controllers
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost("CreateProduct")]
-        //[Consumes("multipart/form-data")]
-        [ProducesResponseType(typeof(ProductContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProductCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddProductWithStringAsync([FromForm]  ProductCreationContract productCreationContract, IFormFile file)
+        public async Task<IActionResult> AddProductAsync([ModelBinder(BinderType = typeof(JsonModelBinder))]  ProductCreationContract productCreationContract, IFormFile productImage)
         {
             if (!ModelState.IsValid)
             {
@@ -116,15 +120,26 @@ namespace Delivery.Api.Controllers
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var createProductCommandHandler =
-                new CreateProductCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter); 
-
-            if (await createProductCommandHandler.Handle(new CreateProductCommand(productCreationContract, file)))
+            var productCreationStatusContract = new ProductCreationStatusContract
             {
-                return Ok();
+                ProductId = executingRequestContextAdapter.GetShard().GenerateExternalId(),
+                InsertionDateTime = DateTimeOffset.UtcNow
+            };
+            
+            if (productImage != null)
+            {
+                var productImageCreationStatusContract = await
+                    UploadProductImageAsync(productCreationStatusContract.ProductId, productCreationContract.ProductName, productImage,
+                        executingRequestContextAdapter);
             }
 
-            return NotFound("Error occurred in creating product");
+            var createProductCommand = new CreateProductCommand(productCreationContract, productCreationStatusContract.ProductId);
+
+            var result =
+                await new CreateProductCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(createProductCommand);
+            
+            return Ok(result);
         }
         
         // GET /api/images/thumbnails
@@ -187,6 +202,24 @@ namespace Delivery.Api.Controllers
             var isProductDeleted = await productDeleteCommandHandler.Handle(productDeleteCommand);
             
             return Ok(isProductDeleted);
+        }
+        
+        private async Task<ProductImageCreationStatusContract> UploadProductImageAsync(string productId, string productName, IFormFile productImage, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            var productImageCreationContract = new ProductImageCreationContract
+            {
+                ProductId = productId,
+                ProductImage = productImage,
+                ProductName = productName
+            };
+
+            var productImageCreationCommand = new ProductImageCreationCommand(productImageCreationContract);
+
+            var productImageCreationStatusContract =
+                await new ProductImageCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(productImageCreationCommand);
+
+            return productImageCreationStatusContract;
         }
 
     }

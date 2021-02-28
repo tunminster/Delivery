@@ -6,13 +6,13 @@ namespace Delivery.Product.Domain.CommandHandlers
 {
     public class CreateProductCommand
     {
-        public CreateProductCommand(ProductCreationContract productCreationContract, IFormFile file)
+        public CreateProductCommand(ProductCreationContract productCreationContract, string productId)
         {
             ProductCreationContract = productCreationContract;
-            File = file;
+            ProductId = productId;
         }
         public ProductCreationContract ProductCreationContract { get; }
         
-        public IFormFile File { get; }
+        public string ProductId { get; }
     }
 }
