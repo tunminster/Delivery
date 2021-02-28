@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
 
@@ -10,13 +11,13 @@ namespace Delivery.Product.Domain.Contracts
         public string ProductId { get; set; }
         
         [DataMember]
-        public string Message { get; set; }
+        public DateTimeOffset InsertionDateTime { get; set; }
         
         public override string ToString()
         {
             return $"{GetType().Name}" +
                    $"{nameof(ProductId)}: {ProductId.Format()}" +
-                   $"{nameof(Message)}: {Message.Format()}";
+                   $"{nameof(InsertionDateTime)}: {InsertionDateTime.Format()}";
         }
     }
 }
