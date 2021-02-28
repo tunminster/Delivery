@@ -6,6 +6,7 @@ EXPOSE 443
 RUN \
     apk --no-cache update \
     && apk --no-cache upgrade \
+    && apk add --no-cache tzdata \
     && apk add --no-cache icu-libs bash
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
