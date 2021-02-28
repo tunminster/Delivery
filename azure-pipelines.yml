@@ -102,9 +102,12 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions/variables'
 
           - task: TerraformInstaller@0
+            displayName: 'Install latest terraform'
             inputs:
               terraformVersion: 'latest'
+
           - task: TerraformCLI@0
+            displayName: 'Init terraform'
             inputs:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
@@ -117,18 +120,22 @@ stages:
               allowTelemetryCollection: true
 
           - task: TerraformCLI@0
+            displayName: 'Validate terraform'
             inputs:
               command: 'validate'
               allowTelemetryCollection: true
 
           - task: TerraformCLI@0
+            displayName: 'Plan terraform'
             inputs:
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
               environmentServiceName: 'hn-platform-az-Connection'
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
+
           - task: TerraformCLI@0
+            displayName: 'Apply terraform'
             inputs:
               command: 'apply'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
@@ -221,6 +228,14 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: 'az storage file download --account-name $(file-storage-account-name) --account-key $(file-storage-account-key) --share-name hn-prod --path $(file-path) --dest $(Build.ArtifactStagingDirectory)$(dest-path) --output none'
 
+          - task: AzureCLI@2
+            displayName: 'Acr maintenance'    
+            inputs:
+              azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az acr run --cmd "acr purge --filter ''delivery-api-master:.*'' --ago 14d --untagged" --registry PnGOAcr /dev/null' 
+
           # - script: 'dotnet ef migrations script --output $(Build.ArtifactStagingDirectory)/$(scriptName)  --context $(dbContext)  --idempotent'
           #   workingDirectory: Delivery.Api
           #   displayName: 'EF Migration'  
@@ -257,7 +272,8 @@ stages:
               secretType: 'dockerRegistry'
               containerRegistryType: 'Container Registry'
               dockerRegistryEndpoint: 'hn-acr-connection'
-              secretName: 'hn-prod-acr-secret'               
+              secretName: 'hn-prod-acr-secret'
+
       - job: DeployOrdersService
         displayName: Deploy Orders Service
         pool: 
@@ -322,6 +338,15 @@ stages:
               rootDirectory: '$(Build.ArtifactStagingDirectory)/devops'
               targetFiles: 'orders-service-deploy.yaml'
               escapeType: none
+          
+          - task: AzureCLI@2
+            displayName: 'Acr maintenance'    
+            inputs:
+              azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az acr run --cmd "acr purge --filter ''order-service-master:.*'' --ago 14d --untagged" --registry PnGOAcr /dev/null'     
+
           - task: KubectlInstaller@0
             inputs:
               kubectlVersion: 'latest'
