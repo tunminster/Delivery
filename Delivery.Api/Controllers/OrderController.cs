@@ -14,6 +14,9 @@ using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
 using Delivery.Order.Domain.Contracts.RestContracts;
 using Delivery.Order.Domain.Contracts.RestContracts.OrderDetails;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
+using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
+using Delivery.Order.Domain.Contracts.V1.MessageContracts;
+using Delivery.Order.Domain.Handlers.MessageHandlers.OrderStatusUpdates;
 using Delivery.Order.Domain.Handlers.QueryHandlers;
 using Delivery.Order.Domain.Services.Applications;
 using Microsoft.AspNetCore.Authorization;
@@ -60,6 +63,36 @@ namespace Delivery.Api.Controllers
                     .ExecuteStripePaymentIntentWorkflow(paymentOrderServiceRequest);
 
             return Ok(paymentIntentCreationStatusContract);
+        }
+        
+        [HttpPost("Update-Order-Status")]
+        [ProducesResponseType(typeof(StripeUpdateOrderStatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateOrderAsync(StripeUpdateOrderContract stripeUpdateOrderContract)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var stripeUpdateOrderStatusContract = new StripeUpdateOrderStatusContract
+            {
+                OrderId = stripeUpdateOrderContract.OrderId,
+                UpdatedDate = DateTimeOffset.UtcNow
+            };
+            
+            var orderStatusUpdateMessage = new OrderStatusUpdateMessage
+            {
+                PayloadIn = stripeUpdateOrderContract,
+                PayloadOut = stripeUpdateOrderStatusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+            
+            await new OrderStatusUpdateMessagePublisher(serviceProvider).PublishAsync(orderStatusUpdateMessage);
+            
+            return Ok(stripeUpdateOrderStatusContract);
         }
 
         /// <summary>

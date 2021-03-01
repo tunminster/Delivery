@@ -1,10 +1,13 @@
+using System.Runtime.Serialization;
+
 namespace Delivery.Order.Domain.Enum
 {
+    [DataContract]
     public enum PaymentStatusEnum
     {
-        Default = 0,
-        InProgress = 1,
-        Success = 2,
-        Failed = 3
+        [DataMember]None = 0,
+        [DataMember]InProgress = 1,
+        [DataMember]Success = 2,
+        [DataMember]Failed = 3
     }
 }

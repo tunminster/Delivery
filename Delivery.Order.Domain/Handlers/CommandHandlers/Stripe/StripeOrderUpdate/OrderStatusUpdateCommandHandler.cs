@@ -8,38 +8,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdate
 {
-    public class OrderUpdateCommandHandler : ICommandHandler<OrderUpdateCommand, StripeOrderUpdateStatusContract>
+    public class OrderStatusUpdateCommandHandler : ICommandHandler<OrderStatusUpdateCommand, StripeUpdateOrderStatusContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public OrderUpdateCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        public OrderStatusUpdateCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StripeOrderUpdateStatusContract> Handle(OrderUpdateCommand command)
+        public async Task<StripeUpdateOrderStatusContract> Handle(OrderStatusUpdateCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
-
+            
             var order = await databaseContext.Orders.FirstOrDefaultAsync(x =>
-                x.ExternalId == command.StripeOrderUpdateContract.OrderId);
+                x.ExternalId == command.StripeUpdateOrderContract.OrderId);
 
-            order.PaymentIntentId = command.StripeOrderUpdateContract.PaymentIntentId;
-            order.PaymentStatus = command.StripeOrderUpdateContract.PaymentStatus;
-            order.OrderStatus = command.StripeOrderUpdateContract.OrderStatus.ToString();
-
+            order.OrderStatus = command.StripeUpdateOrderContract.OrderStatus.ToString();
+            
             await databaseContext.SaveChangesAsync();
 
-            var stripeOrderUpdateStatusContract = new StripeOrderUpdateStatusContract
+            var stripeUpdateOrderStatusContract = new StripeUpdateOrderStatusContract
             {
-                OrderId = order.ExternalId,
-                UpdatedDateTime = DateTimeOffset.UtcNow
+                OrderId = command.StripeUpdateOrderContract.OrderId,
+                UpdatedDate = DateTimeOffset.UtcNow
             };
-
-            return stripeOrderUpdateStatusContract;
-
+            return stripeUpdateOrderStatusContract;
         }
     }
 }
