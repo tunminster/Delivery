@@ -91,7 +91,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 EstimatedCookingTime = $"{currentDateTime:HH:mm} - {currentDateTime.AddMinutes(25):HH:mm}",
                 StoreName = order.Store.StoreName,
                 StoreAddress = $"{order.Store.FormattedAddress}",
-                DeliveryAddress = $"{address.AddressLine},{address.City}, {address.PostCode}",
+                DeliveryAddress = address != null ? $"{address.AddressLine}{address.City}, {address.PostCode}" : "",
                 OrderStatus = order.OrderStatus,
                 TotalAmount = order.TotalAmount,
                 ImageUri = order.OrderItems.FirstOrDefault()?.Product.ProductImageUrl,
