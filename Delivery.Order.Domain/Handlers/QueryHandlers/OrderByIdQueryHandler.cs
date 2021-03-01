@@ -23,11 +23,11 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
-            var order = await databaseContext.Orders.FirstOrDefaultAsync(x => x.Id == query.OrderId);
+            var order = await databaseContext.Orders.FirstOrDefaultAsync(x => x.ExternalId == query.OrderId);
 
             var orderContract = new OrderContract
             {
-                Id = order.Id,
+                Id = order.ExternalId,
                 CustomerId = order.CustomerId,
                 OrderStatus = order.OrderStatus,
                 TotalAmount = order.TotalAmount,

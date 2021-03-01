@@ -5,6 +5,6 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
 {
     public class OrderByIdQuery : IQuery<OrderContract>
     {
-        public int OrderId { get; set; }
+        public string OrderId { get; set; }
     }
 }
