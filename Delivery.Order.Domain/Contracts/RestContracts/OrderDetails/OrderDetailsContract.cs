@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
+using Delivery.Database.Enums;
 
 namespace Delivery.Order.Domain.Contracts.RestContracts.OrderDetails
 {
@@ -30,6 +31,9 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.OrderDetails
         
         [DataMember]
         public string ImageUri { get; set; }
+        
+        [DataMember]
+        public OrderType OrderType { get; set; }
         
         [DataMember]
         public List<OrderItemContract> OrderItems { get; set; }
