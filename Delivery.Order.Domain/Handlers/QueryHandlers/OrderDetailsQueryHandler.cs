@@ -94,6 +94,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 DeliveryAddress = address != null ? $"{address.AddressLine}{address.City}, {address.PostCode}" : "",
                 OrderStatus = order.OrderStatus,
                 TotalAmount = order.TotalAmount,
+                OrderType = order.OrderType,
                 ImageUri = order.OrderItems.FirstOrDefault()?.Product.ProductImageUrl,
                 OrderItems = order.OrderItems.Select(oi => new OrderItemContract
                 {

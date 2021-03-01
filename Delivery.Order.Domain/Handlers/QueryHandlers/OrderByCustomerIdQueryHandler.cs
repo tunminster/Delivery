@@ -50,6 +50,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 StoreName = x.Store?.StoreName,
                 DeliveryAddress = x.Address != null ? x.Address.AddressLine + ", " + x.Address.City + ", " + x.Address.PostCode : "",
                 ImageUri = x.OrderItems.FirstOrDefault()?.Product.ProductImageUrl,
+                OrderType =  x.OrderType,
                 OrderItems = x.OrderItems.Select(oi => new OrderItemContract
                 {
                     Count = oi.Count,

@@ -32,6 +32,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 OrderStatus = order.OrderStatus,
                 TotalAmount = order.TotalAmount,
                 DateCreated = order.DateCreated,
+                OrderType = order.OrderType,
                 OrderItems = order.OrderItems.Select(oi => new OrderItemContract
                 {
                     Count = oi.Count,
