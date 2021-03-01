@@ -11,7 +11,7 @@ namespace Delivery.Order.Domain.Contracts
     public class OrderContract
     {
         [DataMember]
-        public int Id { get; set; }
+        public string Id { get; set; }
         
         [DataMember]
         public int CustomerId { get; set; }

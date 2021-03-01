@@ -42,7 +42,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
         {
             var orderContractList = orders.Select(x => new OrderContract
             {
-                Id = x.Id,
+                Id = x.ExternalId,
                 CustomerId = x.CustomerId,
                 OrderStatus = x.OrderStatus,
                 TotalAmount = x.TotalAmount,
