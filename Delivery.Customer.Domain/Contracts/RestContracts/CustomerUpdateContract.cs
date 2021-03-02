@@ -1,17 +1,13 @@
 using System.Runtime.Serialization;
-using Delivery.Azure.Library.Core.Extensions;
 using Delivery.Azure.Library.Core.Extensions.Objects;
 
 namespace Delivery.Customer.Domain.Contracts.RestContracts
 {
     [DataContract]
-    public class CustomerCreationContract
+    public class CustomerUpdateContract
     {
         [DataMember]
-        public string IdentityId { get; set; }
-
-        [DataMember]
-        public string Username { get; set; }
+        public int CustomerId { get; set; }
         
         [DataMember]
         public string FirstName { get; set; }
@@ -25,11 +21,10 @@ namespace Delivery.Customer.Domain.Contracts.RestContracts
         public override string ToString()
         {
             return $"{GetType().Name}" +
-                   $"{nameof(IdentityId)}: {IdentityId.Format()}," +
+                   $"{nameof(CustomerId)}: {CustomerId.Format()}," +
                    $"{nameof(FirstName)}: {FirstName.Format()}," +
                    $"{nameof(LastName)}: {LastName.Format()}," +
-                   $"{nameof(ContactNumber)}: {ContactNumber.Format()}," +
-                   $"{nameof(Username)} : {Username.Format()}";
+                   $"{nameof(ContactNumber)}: {ContactNumber.Format()};";
 
         }
     }

@@ -12,6 +12,15 @@ namespace Delivery.Database.Entities
 
         [MaxLength(256)]
         public string Username { get; set; }
+        
+        [MaxLength(256)]
+        public string FirstName { get; set; }
+        
+        [MaxLength(256)]
+        public string LastName { get; set; }
+        
+        [MaxLength(50)]
+        public string ContactNumber { get; set; }
 
         [ForeignKey("IdentityId")]
         public ApplicationUser Identity { get; set; }  

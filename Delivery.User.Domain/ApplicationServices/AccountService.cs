@@ -126,7 +126,11 @@ namespace Delivery.User.Domain.ApplicationServices
                         
                                 var customerCreationContract = new CustomerCreationContract
                                 {
-                                    IdentityId = user.Id, Username = user.Email
+                                    IdentityId = user.Id, 
+                                    Username = user.Email,
+                                    FirstName = string.Empty,
+                                    LastName = string.Empty,
+                                    ContactNumber = string.Empty
                                 };
 
                                 var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
@@ -191,7 +195,11 @@ namespace Delivery.User.Domain.ApplicationServices
                         
                                 var customerCreationContract = new CustomerCreationContract
                                 {
-                                    IdentityId = user.Id, Username = user.Email
+                                    IdentityId = user.Id, 
+                                    Username = user.Email,
+                                    FirstName = string.Empty,
+                                    LastName = string.Empty,
+                                    ContactNumber = string.Empty
                                 };
 
                                 var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);

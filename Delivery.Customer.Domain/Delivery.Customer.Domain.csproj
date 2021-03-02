@@ -8,4 +8,8 @@
       <ProjectReference Include="..\Delivery.Address.Domain\Delivery.Address.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Contracts\V1" />
+    </ItemGroup>
+
 </Project>

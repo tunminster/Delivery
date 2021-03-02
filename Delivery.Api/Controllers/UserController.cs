@@ -89,7 +89,11 @@ namespace Delivery.Api.Controllers
                 await userManager.AddClaimAsync(user, groupClaim);
                 var customerCreationContract = new CustomerCreationContract
                 {
-                    IdentityId = user.Id, Username = user.Email
+                    IdentityId = user.Id, 
+                    Username = user.Email,
+                    FirstName = string.Empty,
+                    LastName = string.Empty,
+                    ContactNumber = string.Empty
                 };
 
                 var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);

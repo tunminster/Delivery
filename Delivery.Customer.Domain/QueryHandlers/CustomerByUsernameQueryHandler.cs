@@ -32,7 +32,10 @@ namespace Delivery.Customer.Domain.QueryHandlers
             var customerContract = new CustomerContract
             {
                 Id = customer.Id,
-                Username = customer.Username
+                Username = customer.Username,
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                ContactNumber = customer.ContactNumber
             };
 
             customerContract.Addresses = new List<AddressContract>();

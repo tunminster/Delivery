@@ -20,7 +20,7 @@ namespace Delivery.Customer.Domain.CommandHandlers
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            await databaseContext.Customers.AddAsync(new Database.Entities.Customer { IdentityId = command.CustomerCreationContract.IdentityId, Username = command.CustomerCreationContract.Username });
+            await databaseContext.Customers.AddAsync(new Database.Entities.Customer { IdentityId = command.CustomerCreationContract.IdentityId, Username = command.CustomerCreationContract.Username, FirstName = command.CustomerCreationContract.FirstName, LastName = command.CustomerCreationContract.LastName, ContactNumber =  command.CustomerCreationContract.ContactNumber});
             await databaseContext.SaveChangesAsync();
 
             return true;
