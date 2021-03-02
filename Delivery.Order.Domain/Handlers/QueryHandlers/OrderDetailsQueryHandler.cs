@@ -33,7 +33,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 .ThenInclude(x => x.Product)
                 .FirstOrDefault(x => x.ExternalId == query.OrderId);
 
-            var address = databaseContext.Addresses.FirstOrDefault(x => x.Id == order.AddressId);
+            var address = databaseContext.Addresses.FirstOrDefault(x => x.Id == (order.AddressId ?? 0));
 
             var currentDateTime = TimeZoneInfo.ConvertTime (DateTimeOffset.Now,
                 TZConvert.GetTimeZoneInfo("Europe/London"));
