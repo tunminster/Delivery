@@ -14,6 +14,15 @@ namespace Delivery.Customer.Domain.Contracts
         
         [DataMember]
         public string Username { get; set; }
+        
+        [DataMember]
+        public string FirstName { get; set; }
+        
+        [DataMember]
+        public string LastName { get; set; }
+        
+        [DataMember]
+        public string ContactNumber { get; set; }
 
         [DataMember] 
         public List<AddressContract> Addresses { get; set; }
@@ -23,6 +32,9 @@ namespace Delivery.Customer.Domain.Contracts
             return $"{GetType().Name}" +
                    $"{nameof(Id)}: {Id.Format()}" +
                    $"{nameof(Username)}: {Username.Format()}" +
+                   $"{nameof(FirstName)}: {FirstName.Format()}" +
+                   $"{nameof(LastName)}: {LastName.Format()}" +
+                   $"{nameof(ContactNumber)}: {ContactNumber.Format()}" +
                    $"{nameof(Addresses)}: {Addresses.Format()}";
         }
     }

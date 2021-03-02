@@ -4,7 +4,9 @@ using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
+using Delivery.Customer.Domain.CommandHandlers;
 using Delivery.Customer.Domain.Contracts;
+using Delivery.Customer.Domain.Contracts.RestContracts;
 using Delivery.Customer.Domain.QueryHandlers;
 using Delivery.Database.Context;
 using Delivery.Domain.FrameWork.Context;
@@ -48,6 +50,22 @@ namespace Delivery.Api.Controllers
             var customerContract = await queryCustomerByUsernameQuery.Handle(customerByUsernameQuery);
             
             return Ok(customerContract);
+        }
+        
+        [HttpPut("Update-Customer")]
+        [Authorize]
+        [ProducesResponseType(typeof(CustomerUpdateStatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateCustomerAsync(CustomerUpdateContract customerUpdateContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var updateCustomerCommand = new UpdateCustomerCommand(customerUpdateContract);
+            var customerUpdateStatusContract =
+                await new UpdateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(updateCustomerCommand);
+            
+            return Ok(customerUpdateStatusContract);
         }
     }
 }
