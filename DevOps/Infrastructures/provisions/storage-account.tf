@@ -23,3 +23,19 @@ resource "azurerm_key_vault_secret" "storage-account-da-connectionstring-blu" {
 
   tags = local.common_tags
 }
+
+resource "azurerm_key_vault_secret" "storage-account-raus-connectionstring-blu" {
+  name         = "Storage-Account-Raus-Connection-String"
+  value        = azurerm_storage_account.hn-platform-storage.primary_connection_string
+  key_vault_id = azurerm_key_vault.hnkeyvault.id
+
+  tags = local.common_tags
+}
+
+resource "azurerm_key_vault_secret" "storage-account-rauk-connectionstring-blu" {
+  name         = "Storage-Account-Rauk-Connection-String"
+  value        = azurerm_storage_account.hn-platform-storage.primary_connection_string
+  key_vault_id = azurerm_key_vault.hnkeyvault.id
+
+  tags = local.common_tags
+}
