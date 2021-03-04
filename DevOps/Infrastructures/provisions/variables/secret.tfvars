@@ -11,6 +11,12 @@ sql_server_admin_password = "#{sql_server_admin_password}#"
 sql_database_runtimeuser_name_da = "#{sql_database_runtimeuser_name_da}#"
 tenant_da_password = "#{tenant_da_password}#"
 
+sql_database_runtimeuser_name_raus = "#{sql_database_runtimeuser_name_raus}#"
+tenant_raus_password = "#{tenant_raus_password}#"
+
+sql_database_runtimeuser_name_rauk = "#{sql_database_runtimeuser_name_rauk}#"
+tenant_rauk_password = "#{tenant_rauk_password}#"
+
 
 aks_node_vm_size = "#{aks_node_vm_size}#"
 aks_node_os_disk_size = "#{aks_node_os_disk_size}#"
