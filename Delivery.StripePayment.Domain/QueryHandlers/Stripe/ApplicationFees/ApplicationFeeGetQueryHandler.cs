@@ -26,7 +26,7 @@ namespace Delivery.StripePayment.Domain.QueryHandlers.Stripe.ApplicationFees
         
         public async Task<StripeList<ApplicationFee>> Handle(ApplicationFeeGetQuery query)
         {
-            var stripeApiKey = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("Stripe-Api-Key");
+            var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;
             
             var service = new ApplicationFeeService();

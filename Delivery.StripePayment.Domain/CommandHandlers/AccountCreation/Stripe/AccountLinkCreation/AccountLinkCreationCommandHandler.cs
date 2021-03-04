@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Domain.CommandHandlers;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,15 +12,17 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.A
     public class AccountLinkCreationCommandHandler :  ICommandHandler<AccountLinkCreationCommand, StripeAccountLinkCreationStatusContract>
     {
         private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public AccountLinkCreationCommandHandler(IServiceProvider serviceProvider)
+        public AccountLinkCreationCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
         public async Task<StripeAccountLinkCreationStatusContract> Handle(AccountLinkCreationCommand command)
         {
-            var stripeApiKey = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("Stripe-Api-Key");
+            var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;
             
             var options = new AccountLinkCreateOptions
