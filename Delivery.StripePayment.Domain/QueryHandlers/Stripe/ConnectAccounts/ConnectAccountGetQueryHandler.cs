@@ -26,7 +26,7 @@ namespace Delivery.StripePayment.Domain.QueryHandlers.Stripe.ConnectAccounts
         
         public async Task<StripeList<Account>> Handle(ConnectAccountGetQuery query)
         {
-            var stripeApiKey = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("Stripe-Api-Key");
+            var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;
             
             var service = new AccountService();

@@ -42,7 +42,7 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccou
 
                 var accountLinkCreationCommand = new AccountLinkCreationCommand(stripeAccountLinkCreationContract);
                 var accountLinkCreationResult =
-                    await new AccountLinkCreationCommandHandler(serviceProvider).Handle(accountLinkCreationCommand);
+                    await new AccountLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(accountLinkCreationCommand);
 
                 var stripAccountCreationStatusResult = new StripeAccountCreationStatusContract
                 {

@@ -104,7 +104,7 @@ namespace Delivery.Api.Controllers
                 new AccountLinkCreationCommand(stripeAccountLinkCreationContract);
 
             var stripeAccountLinkCreationStatusContract =
-                await new AccountLinkCreationCommandHandler(serviceProvider).Handle(accountLinkCreationCommand);
+                await new AccountLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(accountLinkCreationCommand);
 
             return Ok(stripeAccountLinkCreationStatusContract);
 

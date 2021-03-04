@@ -29,7 +29,7 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.L
         
         public async Task<StripeLoginLinkCreationStatusContract> Handle(LoginLinkCreationCommand command)
         {
-            var stripeApiKey = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSetting<string>("Stripe-Api-Key");
+            var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;
             
             var service = new LoginLinkService();
