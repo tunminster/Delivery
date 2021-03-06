@@ -63,10 +63,10 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
             
             //await elasticClient.IndexDocumentAsync(storeContract);
 
-            var indexExisted = await elasticClient.Indices.ExistsAsync("stores");
+            var indexExisted = await elasticClient.Indices.ExistsAsync($"stores-{executingRequestContextAdapter.GetShard().Key}");
             if (!indexExisted.Exists)
             {
-                var createIndexResponse = await elasticClient.Indices.CreateAsync("stores", c => c
+                var createIndexResponse = await elasticClient.Indices.CreateAsync($"stores-{executingRequestContextAdapter.GetShard().Key}", c => c
                     .Map<StoreContract>(m => m.AutoMap()
                         .Properties(p => p
                             .GeoPoint(d => d
@@ -81,12 +81,12 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
                         SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
             }
             
-           var getResponse = await elasticClient.GetAsync<StoreContract>(storeContract.StoreId, d => d.Index("stores"));
+           var getResponse = await elasticClient.GetAsync<StoreContract>(storeContract.StoreId, d => d.Index($"stores-{executingRequestContextAdapter.GetShard().Key}"));
 
            if (getResponse.Found)
            {
                var updateResponse = await elasticClient.UpdateAsync<StoreContract>(storeContract.StoreId,
-                   descriptor => descriptor.Index("stores").Doc(storeContract));
+                   descriptor => descriptor.Index($"stores-{executingRequestContextAdapter.GetShard().Key}").Doc(storeContract));
 
                if (updateResponse.IsValid)
                {
@@ -100,7 +100,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
            {
                var createResponse = await elasticClient.CreateAsync(storeContract,
                    i => i
-                       .Index("stores")
+                       .Index($"stores-{executingRequestContextAdapter.GetShard().Key}")
                        .Id(storeContract.StoreId)
                );
 
