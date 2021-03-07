@@ -6,7 +6,7 @@ using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.Contracts.V1.ModelContracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.Product.Domain.QueryHandlers
+namespace Delivery.Product.Domain.Handlers.QueryHandlers
 {
     public class ProductByIdQueryHandler : IQueryHandler<ProductByIdQuery, ProductContract>
     {

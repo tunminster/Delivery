@@ -1,4 +1,4 @@
-namespace Delivery.Product.Domain.CommandHandlers
+namespace Delivery.Product.Domain.Handlers.CommandHandlers
 {
     public class ProductDeleteCommand
     {

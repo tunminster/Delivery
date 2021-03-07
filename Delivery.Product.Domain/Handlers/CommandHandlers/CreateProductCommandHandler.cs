@@ -1,25 +1,14 @@
-
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Enums;
 using Delivery.Database.Models;
 using Delivery.Domain.CommandHandlers;
-using Delivery.Domain.Helpers;
-using Delivery.Product.Domain.Configurations;
 using Delivery.Product.Domain.Contracts;
-using Delivery.Product.Domain.Contracts.V1.RestContracts;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace Delivery.Product.Domain.CommandHandlers
+namespace Delivery.Product.Domain.Handlers.CommandHandlers
 {
     public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, ProductCreationStatusContract>
     {
