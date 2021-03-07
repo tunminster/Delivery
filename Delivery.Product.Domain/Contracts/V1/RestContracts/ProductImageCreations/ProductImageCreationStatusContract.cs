@@ -11,6 +11,9 @@ namespace Delivery.Product.Domain.Contracts.V1.RestContracts.ProductImageCreatio
         public string ImageUri { get; set; }
         
         [DataMember]
+        public string FileName { get; set; }
+        
+        [DataMember]
         public DateTimeOffset DateCreated { get; set; }
         
         public override string ToString()

@@ -37,7 +37,9 @@ namespace Delivery.Product.Domain.CommandHandlers.ProductImageCreation
             
             var productImage = command.ProductImageCreationContract.ProductImage;
             string ext = System.IO.Path.GetExtension(productImage.FileName);
-            var blobName = $"{command.ProductImageCreationContract.ProductName.Replace(" ", "-").ToLowerInvariant()}.{ext}";
+            var formattedImageName = $"{command.ProductImageCreationContract.ProductName.Replace(" ", "-").ToLowerInvariant()}{ext}";
+
+            var blobName = $"{executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()}/{formattedImageName}";
             
             await using var readStream = productImage.OpenReadStream();
             
@@ -46,7 +48,7 @@ namespace Delivery.Product.Domain.CommandHandlers.ProductImageCreation
             await readStream.CopyToAsync(memoryStream);
             memoryStream.Position = 0;
             
-            var blobParametersModel = new BlobParametersRequestModel(command.ProductImageCreationContract.ProductId, blobName, productImage.ContentType);
+            var blobParametersModel = new BlobParametersRequestModel($"{executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()}", blobName, productImage.ContentType);
             
             var blobParametersUploadModel = new BlobParametersUploadModel(blobParametersModel, memoryStream);
             
@@ -55,6 +57,7 @@ namespace Delivery.Product.Domain.CommandHandlers.ProductImageCreation
             var productImageCreationStatusContract = new ProductImageCreationStatusContract
             {
                 ImageUri = imageUri,
+                FileName =  formattedImageName,
                 DateCreated = DateTimeOffset.UtcNow
             };
 

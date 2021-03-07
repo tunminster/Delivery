@@ -55,6 +55,8 @@ namespace Delivery.Product.Domain.CommandHandlers
                 Currency = Currency.BritishPound.ToString(),
                 CurrencySign = CurrencySign.BritishPound.Code,
                 StoreId =  store.Id,
+                ProductImage = command.ProductCreationContract.ProductImage,
+                ProductImageUrl = command.ProductCreationContract.ProductImageUrl,
                 InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
                 InsertionDateTime = DateTimeOffset.UtcNow
             };
