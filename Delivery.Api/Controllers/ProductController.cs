@@ -125,13 +125,18 @@ namespace Delivery.Api.Controllers
                 ProductId = executingRequestContextAdapter.GetShard().GenerateExternalId(),
                 InsertionDateTime = DateTimeOffset.UtcNow
             };
+
+            var productImageCreationStatusContract = new ProductImageCreationStatusContract();
             
             if (productImage != null)
             {
-                var productImageCreationStatusContract = await
+                productImageCreationStatusContract = await
                     UploadProductImageAsync(productCreationStatusContract.ProductId, productCreationContract.ProductName, productImage,
                         executingRequestContextAdapter);
             }
+
+            productCreationContract.ProductImage = productImageCreationStatusContract.FileName;
+            productCreationContract.ProductImageUrl = productImageCreationStatusContract.ImageUri;
 
             var createProductCommand = new CreateProductCommand(productCreationContract, productCreationStatusContract.ProductId);
 
