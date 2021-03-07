@@ -4,22 +4,18 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Api.Helpers;
-using Delivery.Api.Models;
-using Delivery.Api.Models.Dto;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.ModelBinders;
-using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.FrameWork.Context;
-using Delivery.Domain.QueryHandlers;
-using Delivery.Product.Domain.CommandHandlers;
-using Delivery.Product.Domain.CommandHandlers.ProductImageCreation;
 using Delivery.Product.Domain.Contracts;
 using Delivery.Product.Domain.Contracts.V1.ModelContracts;
 using Delivery.Product.Domain.Contracts.V1.RestContracts;
 using Delivery.Product.Domain.Contracts.V1.RestContracts.ProductImageCreations;
-using Delivery.Product.Domain.QueryHandlers;
+using Delivery.Product.Domain.Handlers.CommandHandlers;
+using Delivery.Product.Domain.Handlers.CommandHandlers.ProductImageCreation;
+using Delivery.Product.Domain.Handlers.QueryHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -163,9 +159,9 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> PutProductAsync(string id, ProductCreationContract productCreationContract, IFormFile file)
+        public async Task<IActionResult> PutProductAsync(ProductUpdateContract productUpdateContract, IFormFile productImage)
         {
-            if(id != productCreationContract.Id)
+            if(string.IsNullOrEmpty(productUpdateContract.ProductId))
             {
                 return BadRequest();
             }
@@ -174,24 +170,35 @@ namespace Delivery.Api.Controllers
 
             var productByIdQueryHandler = new ProductByIdQueryHandler(serviceProvider, executingRequestContextAdapter);
             
-            var productByIdQuery = new ProductByIdQuery(productCreationContract.Id);
+            var productByIdQuery = new ProductByIdQuery(productUpdateContract.ProductId);
             var productContract = await productByIdQueryHandler.Handle(productByIdQuery);
             if(productContract == null)
             {
                 return NotFound();
             }
-
-            productContract.ProductName = productCreationContract.ProductName;
-            productContract.Description = productCreationContract.Description;
-            productContract.ProductImage = productCreationContract.ProductImage;
-            productContract.UnitPrice = productCreationContract.UnitPrice;
-            productContract.CategoryId = productCreationContract.CategoryId;
-            productContract.ProductImageUrl = productCreationContract.ProductImageUrl;
-
-            var productUpdateCommandHandler =
-                new ProductUpdateCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter);
             
-            var productUpdateCommand = new ProductUpdateCommand(productContract, file);
+            var productUpdateStatusContract = new ProductUpdateStatusContract
+            {
+                ProductId = executingRequestContextAdapter.GetShard().GenerateExternalId(),
+                InsertionDateTime = DateTimeOffset.UtcNow
+            };
+
+            var productImageCreationStatusContract = new ProductImageCreationStatusContract();
+            
+            if (productImage != null)
+            {
+                productImageCreationStatusContract = await
+                    UploadProductImageAsync(productUpdateContract.ProductId, productUpdateContract.ProductName, productImage,
+                        executingRequestContextAdapter);
+            }
+
+            productUpdateContract.ProductImage = productImageCreationStatusContract.FileName;
+            productUpdateContract.ProductImageUrl = productImageCreationStatusContract.ImageUri;
+            
+            var productUpdateCommandHandler =
+                new ProductUpdateCommandHandler(serviceProvider, executingRequestContextAdapter);
+            
+            var productUpdateCommand = new ProductUpdateCommand(productUpdateContract);
             var isProductUpdated = await productUpdateCommandHandler.Handle(productUpdateCommand);
             
             return Ok(isProductUpdated);

@@ -8,42 +8,39 @@ using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.Contracts.V1.ModelContracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.Product.Domain.QueryHandlers
+namespace Delivery.Product.Domain.Handlers.QueryHandlers
 {
-    public class ProductByCategoryIdQueryHandler : IQueryHandler<ProductByCategoryIdQuery, List<ProductContract>>
+    public class ProductGetAllQueryHandler : IQueryHandler<ProductGetAllQuery, List<ProductContract>>
     {
         private IServiceProvider serviceProvider;
         private IExecutingRequestContextAdapter executingRequestContextAdapter;
-        public ProductByCategoryIdQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        public ProductGetAllQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<List<ProductContract>> Handle(ProductByCategoryIdQuery query)
+        public async  Task<List<ProductContract>> Handle(ProductGetAllQuery query)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
-
-            var category = await databaseContext.Categories.FirstOrDefaultAsync(x => x.ExternalId == query.CategoryId);
             
-            var productList = await databaseContext.Products.Where(x => x.CategoryId == category.Id)
+            var productContractList =  await databaseContext.Products
                 .Include(x => x.Category)
                 .Include(x => x.Store)
                 .Select(x => new ProductContract
                 {
                     Id = x.ExternalId,
-                    CategoryId = x.Category.ExternalId,
                     CategoryName = x.Category.CategoryName,
+                    CategoryId = x.Category.ExternalId,
                     Description = x.Description,
                     ProductName = x.ProductName,
                     ProductImage = x.ProductImage,
                     ProductImageUrl = x.ProductImageUrl,
                     UnitPrice = x.UnitPrice,
-                    StoreId = x.Store.ExternalId
-                })
-                .ToListAsync();
-            
-            return productList;
+                    StoreId = x.Store.ExternalId 
+                }).ToListAsync();
+
+            return productContractList;
         }
     }
 }

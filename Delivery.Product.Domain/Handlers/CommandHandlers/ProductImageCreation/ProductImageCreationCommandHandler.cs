@@ -9,7 +9,7 @@ using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Constants;
 using Delivery.Product.Domain.Contracts.V1.RestContracts.ProductImageCreations;
 
-namespace Delivery.Product.Domain.CommandHandlers.ProductImageCreation
+namespace Delivery.Product.Domain.Handlers.CommandHandlers.ProductImageCreation
 {
     public class ProductImageCreationCommandHandler : ICommandHandler<ProductImageCreationCommand, ProductImageCreationStatusContract>
     {

@@ -1,7 +1,7 @@
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.Contracts.V1.ModelContracts;
 
-namespace Delivery.Product.Domain.QueryHandlers
+namespace Delivery.Product.Domain.Handlers.QueryHandlers
 {
     public class ProductByIdQuery : IQuery<ProductContract>
     {

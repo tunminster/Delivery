@@ -1,8 +1,6 @@
-using Delivery.Product.Domain.Contracts;
 using Delivery.Product.Domain.Contracts.V1.RestContracts;
-using Microsoft.AspNetCore.Http;
 
-namespace Delivery.Product.Domain.CommandHandlers
+namespace Delivery.Product.Domain.Handlers.CommandHandlers
 {
     public class CreateProductCommand
     {

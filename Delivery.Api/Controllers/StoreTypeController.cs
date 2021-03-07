@@ -7,7 +7,6 @@ using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
-using Delivery.Product.Domain.QueryHandlers;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreTypeCreations;

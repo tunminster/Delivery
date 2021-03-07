@@ -4,7 +4,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 
-namespace Delivery.Product.Domain.CommandHandlers
+namespace Delivery.Product.Domain.Handlers.CommandHandlers
 {
     public class ProductDeleteCommandHandler : ICommandHandler<ProductDeleteCommand, bool>
     {
