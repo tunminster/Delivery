@@ -135,6 +135,7 @@ namespace Delivery.Api.Controllers
         }
 
         [HttpPost]
+        [Route("account/login/apple")]
         public async Task<IActionResult> AppleLoginAsync([FromBody] AppleLoginRequestContract appleLoginRequestContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
