@@ -11,6 +11,7 @@ using Delivery.Domain.Factories;
 using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.Models;
 using Delivery.User.Domain.CommandHandlers;
+using Delivery.User.Domain.Contracts.Apple;
 using Delivery.User.Domain.Contracts.Facebook;
 using Delivery.User.Domain.Contracts.Google;
 using Microsoft.AspNetCore.Identity;
@@ -78,6 +79,69 @@ namespace Delivery.User.Domain.ApplicationServices
             }
             
             return await CreateAccessTokensAsync(user, "Customer");
+        }
+
+        public async Task<string> AppleTokenLoginAsync(AppleLoginRequestContract appleLoginRequestContract)
+        {
+            var user = new Database.Models.ApplicationUser
+                {UserName = appleLoginRequestContract.Email, Email = appleLoginRequestContract.Email};
+
+            var domainUser = await userManager.FindByEmailAsync(appleLoginRequestContract.Email);
+
+            if (domainUser == null)
+            {
+                var createUserResult = await userManager.CreateAsync(user);
+
+                switch (createUserResult.Succeeded)
+                {
+                    case false:
+                        throw new InvalidOperationException($"Apple login creating user has failed with {appleLoginRequestContract.Email}")
+                            .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+                    case true:
+                    {
+                        var userLoginInfo = new UserLoginInfo
+                            ("Apple", user.UserName, user.UserName);
+                        
+                        var createUserLoginResult = await userManager.AddLoginAsync(user, userLoginInfo);
+
+                        switch (createUserLoginResult.Succeeded)
+                        {
+                            case false:
+                                throw new InvalidOperationException($"Apple creating user login info has failed with {appleLoginRequestContract.Email}")
+                                    .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+                            case true:
+                            {
+                                await userManager.AddToRoleAsync(user, "Customer");
+                                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                        
+                                var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
+                                    ClaimValueTypes.String);
+                                await userManager.AddClaimAsync(user, claim);
+                                await userManager.AddClaimAsync(user, groupClaim);
+                        
+                                var customerCreationContract = new CustomerCreationContract
+                                {
+                                    IdentityId = user.Id, 
+                                    Username = user.Email,
+                                    FirstName = appleLoginRequestContract.GivenName,
+                                    LastName = appleLoginRequestContract.FamilyName,
+                                    ContactNumber = string.Empty
+                                };
+
+                                var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
+                                var createCustomerCommandHandler =
+                                    new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
+                                await createCustomerCommandHandler.Handle(createCustomerCommand);
+                                break;
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+            
+            return await CreateAccessTokenStringAsync(user, "Customer");
         }
 
         public async Task<string> GoogleTokenLoginAsync(GoogleLoginRequestContract googleLoginRequestContract)

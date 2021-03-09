@@ -7,6 +7,7 @@ using Delivery.Api.Helpers;
 using Delivery.Api.Models;
 using Delivery.Api.ViewModels;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Database.Context;
 using Delivery.Domain.Factories;
 using Delivery.Domain.Factories.Auth;
@@ -14,8 +15,10 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
 using Delivery.User.Domain.ApplicationServices;
 using Delivery.User.Domain.CommandHandlers;
+using Delivery.User.Domain.Contracts.Apple;
 using Delivery.User.Domain.Contracts.Facebook;
 using Delivery.User.Domain.Contracts.Google;
+using Delivery.User.Domain.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -127,6 +130,34 @@ namespace Delivery.Api.Controllers
             applicationDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
             
             var authorizationTokens = await accountService.GoogleTokenLoginAsync(googleLoginRequestContract);
+            
+            return Ok(authorizationTokens);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AppleLoginAsync([FromBody] AppleLoginRequestContract appleLoginRequestContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var validationResult =
+                await new AppleLoginRequestValidator().ValidateAsync(appleLoginRequestContract);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
+            
+            var accountService = new AccountService(serviceProvider, userManager, jwtFactory, jwtOptions, executingRequestContextAdapter);
+            
+            applicationDbContext.SetExecutingRequestContextAdapter(serviceProvider,executingRequestContextAdapter);
+            
+            var authorizationTokens = await accountService.AppleTokenLoginAsync(appleLoginRequestContract);
             
             return Ok(authorizationTokens);
         }
