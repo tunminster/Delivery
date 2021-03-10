@@ -139,7 +139,6 @@ namespace Delivery.Api.Controllers
         public async Task<IActionResult> AppleLoginAsync([FromBody] AppleLoginRequestContract appleLoginRequestContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-            
             var validationResult =
                 await new AppleLoginRequestValidator().ValidateAsync(appleLoginRequestContract);
             
