@@ -1,4 +1,5 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -19,7 +20,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Delivery.User.Domain.ApplicationServices
 {
@@ -83,8 +83,24 @@ namespace Delivery.User.Domain.ApplicationServices
 
         public async Task<string> AppleTokenLoginAsync(AppleLoginRequestContract appleLoginRequestContract)
         {
+            // Parse the JWT
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var userToken = tokenHandler.ReadJwtToken(appleLoginRequestContract.IdentityToken);
+
+            var tokenEmail = userToken.Claims.FirstOrDefault(x => x.Type == "email")?.Value;
+
+            var appleIdEmail = string.IsNullOrEmpty(appleLoginRequestContract.Email)
+                ? tokenEmail
+                : appleLoginRequestContract.Email;
+
+            if (string.IsNullOrEmpty(appleIdEmail))
+            {
+                throw new InvalidOperationException($"Email address from Apple sign in required.").WithTelemetry(
+                    executingRequestContextAdapter.GetTelemetryProperties());
+            }
+            
             var user = new Database.Models.ApplicationUser
-                {UserName = appleLoginRequestContract.Email, Email = appleLoginRequestContract.Email};
+                {UserName = appleIdEmail, Email = appleIdEmail};
 
             var domainUser = await userManager.FindByEmailAsync(appleLoginRequestContract.Email);
 
