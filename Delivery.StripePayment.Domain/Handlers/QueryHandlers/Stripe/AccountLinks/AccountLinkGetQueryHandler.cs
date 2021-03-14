@@ -12,7 +12,7 @@ using Delivery.Domain.QueryHandlers;
 using Delivery.StripePayment.Domain.Contracts.Models;
 using Microsoft.Azure.Cosmos;
 
-namespace Delivery.StripePayment.Domain.QueryHandlers.Stripe.AccountLinks
+namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.Stripe.AccountLinks
 {
     public class AccountLinkGetQueryHandler : IQueryHandler<AccountLinkGetQuery, List<DocumentContract<StripeAccountContract>>>
     {

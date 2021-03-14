@@ -2,19 +2,15 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
-using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Domain.CommandHandlers;
-using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
-using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.StripePayments;
-using Delivery.StripePayment.Domain.Handlers.MessageHandlers;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
 
-namespace Delivery.StripePayment.Domain.CommandHandlers.PaymentIntent.PaymentIntentConfirmation
+namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.PaymentIntentConfirmation
 {
     public class PaymentIntentConfirmationCommandHandler :  ICommandHandler<PaymentIntentConfirmationCommand, StripePaymentCaptureCreationStatusContract>
     {

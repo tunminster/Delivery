@@ -17,7 +17,7 @@ using Delivery.StripePayment.Domain.DataModels;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
 
-namespace Delivery.StripePayment.Domain.CommandHandlers.AccountCreation
+namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.AccountCreation
 {
     public class AccountCreationCommandHandler :  ICommandHandler<AccountCreationCommand, StripeAccountCreationStatusContract>
     {

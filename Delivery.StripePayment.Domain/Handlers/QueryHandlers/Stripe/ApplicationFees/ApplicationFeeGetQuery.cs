@@ -1,7 +1,7 @@
 using Delivery.Domain.QueryHandlers;
 using Stripe;
 
-namespace Delivery.StripePayment.Domain.QueryHandlers.Stripe.ApplicationFees
+namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.Stripe.ApplicationFees
 {
     public class ApplicationFeeGetQuery : IQuery<StripeList<ApplicationFee>>
     {
