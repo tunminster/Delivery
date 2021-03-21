@@ -1,17 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using Delivery.Azure.Library.Database.DataAccess;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
-using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.StripePayments;
 using Delivery.StripePayment.Domain.Converters.StripePayments;
 using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.StripePayment.Domain.CommandHandlers.StripePaymentCreation
+namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.StripePaymentCreation
 {
     public class StripePaymentCreationCommandHandler : ICommandHandler<StripePaymentCreationCommand, StripePaymentCreationStatusContract>
     {

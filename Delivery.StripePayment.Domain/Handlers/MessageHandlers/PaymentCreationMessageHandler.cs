@@ -5,9 +5,9 @@ using Delivery.Azure.Library.Microservices.Hosting.MessageHandlers;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Domain.Contracts.Enums;
-using Delivery.StripePayment.Domain.CommandHandlers.StripePaymentCreation;
 using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.StripePayments;
+using Delivery.StripePayment.Domain.Handlers.CommandHandlers.StripePaymentCreation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.StripePayment.Domain.Handlers.MessageHandlers

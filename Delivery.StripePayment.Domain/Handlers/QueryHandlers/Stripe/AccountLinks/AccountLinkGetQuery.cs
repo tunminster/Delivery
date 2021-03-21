@@ -3,7 +3,7 @@ using Delivery.Azure.Library.Storage.Cosmos.Contracts;
 using Delivery.Domain.QueryHandlers;
 using Delivery.StripePayment.Domain.Contracts.Models;
 
-namespace Delivery.StripePayment.Domain.QueryHandlers.Stripe.AccountLinks
+namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.Stripe.AccountLinks
 {
     public class AccountLinkGetQuery : IQuery<List<DocumentContract<StripeAccountContract>?>>
     {

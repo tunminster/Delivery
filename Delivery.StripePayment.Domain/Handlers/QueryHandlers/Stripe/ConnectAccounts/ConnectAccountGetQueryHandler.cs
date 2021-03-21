@@ -10,53 +10,55 @@ using Delivery.Domain.QueryHandlers;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
 
-namespace Delivery.StripePayment.Domain.QueryHandlers.Stripe.ApplicationFees
+namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.Stripe.ConnectAccounts
 {
-    public class ApplicationFeeGetQueryHandler : IQueryHandler<ApplicationFeeGetQuery, StripeList<ApplicationFee>>
+    public class ConnectAccountGetQueryHandler : IQueryHandler<ConnectAccountGetQuery, StripeList<Account>>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public ApplicationFeeGetQueryHandler(IServiceProvider serviceProvider,
+        public ConnectAccountGetQueryHandler(IServiceProvider serviceProvider,
             IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StripeList<ApplicationFee>> Handle(ApplicationFeeGetQuery query)
+        public async Task<StripeList<Account>> Handle(ConnectAccountGetQuery query)
         {
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;
             
-            var service = new ApplicationFeeService();
+            var service = new AccountService();
             
-            var dependencyData = new DependencyData(nameof(ApplicationFeeGetQuery),
+            var dependencyData = new DependencyData(nameof(ConnectAccountGetQuery),
                 query);
             var dependencyTarget = service.BasePath;
             var correlationId = executingRequestContextAdapter.GetCorrelationId();
             var customProperties = executingRequestContextAdapter.GetTelemetryProperties();
             customProperties.Add("Request", query.ConvertToJson());
             
-            var options = new ApplicationFeeListOptions
+            var options = new AccountListOptions
             {
-                Limit = 3
+                Limit = query.Limit,
+                StartingAfter = query.StartingAfter,
+                EndingBefore = query.EndingBefore
             };
             
-            var applicationFees = await new DependencyMeasurement(serviceProvider)
+            var accounts = await new DependencyMeasurement(serviceProvider)
                 .ForDependency("Stripe", MeasuredDependencyType.WebService, dependencyData.ConvertToJson(),
                     dependencyTarget)
                 .WithCorrelationId(correlationId)
                 .WithContextualInformation(customProperties)
                 .TrackAsync(async () =>
                 {
-                    StripeList<ApplicationFee> results = await service.ListAsync(
+                    StripeList<Account> results = await service.ListAsync(
                         options
                     );
                     return results;
                 });
 
-            return applicationFees;
+            return accounts;
         }
     }
 }

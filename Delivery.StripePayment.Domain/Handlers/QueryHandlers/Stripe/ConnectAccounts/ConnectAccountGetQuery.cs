@@ -1,7 +1,7 @@
 using Delivery.Domain.QueryHandlers;
 using Stripe;
 
-namespace Delivery.StripePayment.Domain.QueryHandlers.Stripe.ConnectAccounts
+namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.Stripe.ConnectAccounts
 {
     public class ConnectAccountGetQuery : IQuery<StripeList<Account>>
     {

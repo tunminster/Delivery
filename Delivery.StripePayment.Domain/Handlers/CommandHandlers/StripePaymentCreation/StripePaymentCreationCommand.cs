@@ -1,6 +1,6 @@
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.StripePayments;
 
-namespace Delivery.StripePayment.Domain.CommandHandlers.StripePaymentCreation
+namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.StripePaymentCreation
 {
     public class StripePaymentCreationCommand
     {

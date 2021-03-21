@@ -6,7 +6,8 @@ using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.AccountLinkCreation;
 using Delivery.StripePayment.Domain.Contracts.Enums;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
-using Delivery.StripePayment.Domain.QueryHandlers.Stripe.AccountLinks;
+using Delivery.StripePayment.Domain.Handlers.CommandHandlers.AccountCreation;
+using Delivery.StripePayment.Domain.Handlers.QueryHandlers.Stripe.AccountLinks;
 
 namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccounts
 {
