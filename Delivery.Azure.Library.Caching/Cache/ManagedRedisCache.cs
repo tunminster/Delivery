@@ -70,7 +70,6 @@ namespace Delivery.Azure.Library.Caching.Cache
 							.ExecuteAsync(async () => await redisCacheClient.GetDbFromConfiguration().AddAsync(key, targetValue, expiry));
 					});
 
-				await DisposeAsync();
 				return new Maybe<T>(targetValue);
 			}
 			catch (TimeoutException exception)
@@ -155,7 +154,6 @@ namespace Delivery.Azure.Library.Caching.Cache
 							.ExecuteAsync(async () => await redisCacheClient.GetDbFromConfiguration().GetAsync<T>(key));
 					});
 
-				await DisposeAsync();
 				return new Maybe<T>(redisValue);
 			}
 			catch (TimeoutException exception)
