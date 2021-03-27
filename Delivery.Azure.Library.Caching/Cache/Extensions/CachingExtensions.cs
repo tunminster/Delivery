@@ -25,7 +25,9 @@ namespace Delivery.Azure.Library.Caching.Cache.Extensions
 
             serviceCollection.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(new RedisConfiguration
             {
-                ConnectionString = connectionString
+                ConnectionString = connectionString,
+                AbortOnConnectFail = true,
+                ConnectTimeout = 6000
             });
 
             return serviceCollection;
