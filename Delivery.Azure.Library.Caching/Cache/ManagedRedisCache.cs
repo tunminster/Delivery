@@ -1,10 +1,9 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Caching.Cache.Configurations;
 using Delivery.Azure.Library.Caching.Cache.Interfaces;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Core.Monads;
 using Delivery.Azure.Library.Exceptions.Writers;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Enums;
@@ -14,14 +13,14 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependen
 using Delivery.Azure.Library.Core.Extensions.Json;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.DependencyInjection;
-using Polly;
-using StackExchange.Redis.Extensions.Core.Abstractions;
+using ServiceStack;
+using ServiceStack.Redis;
 
 namespace Delivery.Azure.Library.Caching.Cache
 {
     /// <summary>
     ///     Based on the StackExchange redis library to store objects as json strings using the default
-    ///     <see cref="JsonExtensions" />
+    ///     <see cref="ServiceStack.Text.JsonExtensions" />
     ///     Dependencies:
     ///     <see cref="IConfigurationProvider" />
     ///     <see cref="IApplicationInsightsTelemetry" />
@@ -32,7 +31,9 @@ namespace Delivery.Azure.Library.Caching.Cache
     {
         private readonly RedisCacheConfigurationDefinition configurationDefinition;
 		private readonly IServiceProvider serviceProvider;
-		private readonly IRedisCacheClient redisCacheClient;
+		private readonly CancellationTokenSource disposingCancellationTokenSource = new();
+		
+		private readonly IRedisClientsManagerAsync redisClientsManager;
 
 		private IApplicationInsightsTelemetry Telemetry => serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>();
 
@@ -44,7 +45,9 @@ namespace Delivery.Azure.Library.Caching.Cache
 		{
 			this.serviceProvider = serviceProvider;
 			this.configurationDefinition = configurationDefinition;
-			redisCacheClient = serviceProvider.GetRequiredService<IRedisCacheClient>();
+			var license = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSetting("ServiceStack-Redis-LicenseKey");
+			Licensing.RegisterLicense(license);
+			redisClientsManager = serviceProvider.GetRequiredService<IRedisClientsManagerAsync>();
 		}
 
 		public virtual async Task<Maybe<T>> AddAsync<T>(string key, T targetValue, string partition, string correlationId, int? cacheExpirySeconds = null)
@@ -52,22 +55,18 @@ namespace Delivery.Azure.Library.Caching.Cache
 			try
 			{
 				ValidatePartition(partition, key);
-
+				
 				var expiry = TimeSpan.FromSeconds(cacheExpirySeconds.GetValueOrDefault(configurationDefinition.DefaultCacheExpirySeconds));
-				var dependencyName = redisCacheClient.GetDbFromConfiguration().Database.Database.ToString();
-				var dependencyTarget = redisCacheClient.GetDbFromConfiguration().Database.Multiplexer.GetEndPoints().OfType<DnsEndPoint>().FirstOrDefault()?.Host ?? redisCacheClient.GetDbFromConfiguration().Database.Multiplexer.GetEndPoints().OfType<IPEndPoint>().FirstOrDefault()?.Address?.ToString() ?? "Unknown";
 				var dependencyData = new DependencyData("Add", targetValue);
+				await using var redisClient = await redisClientsManager.GetClientAsync(disposingCancellationTokenSource.Token);
 
 				await new DependencyMeasurement(serviceProvider)
-					.ForDependency(dependencyName, MeasuredDependencyType.Redis, dependencyData.ConvertToJson(), dependencyTarget)
+					.ForDependency($"Database-{redisClient.Db}", MeasuredDependencyType.Redis, dependencyData.ConvertToJson(), redisClient.Host)
 					.WithCorrelationId(correlationId)
 					.TrackAsync(async () =>
 					{
-						return await Policy
-							.Handle<InvalidOperationException>()
-							.Or<InvalidOperationException>()
-							.WaitAndRetryAsync(retryCount: 60, retryAttempt => TimeSpan.FromMilliseconds(value: 500))
-							.ExecuteAsync(async () => await redisCacheClient.GetDbFromConfiguration().AddAsync(key, targetValue, expiry));
+						EnsureNotDisposing();
+						return await redisClient.SetAsync(key, targetValue, expiry, disposingCancellationTokenSource.Token);
 					});
 
 				return new Maybe<T>(targetValue);
@@ -91,26 +90,8 @@ namespace Delivery.Azure.Library.Caching.Cache
 				}
 				else
 				{
-					await Policy
-						.Handle<InvalidOperationException>()
-						.Or<InvalidOperationException>()
-						.WaitAndRetryAsync(retryCount: 60, retryAttempt => TimeSpan.FromMilliseconds(value: 500))
-						.ExecuteAsync(async () =>
-						{
-							var connectionMultiplexer = redisCacheClient.GetDbFromConfiguration().Database.Multiplexer;
-							var endpoints = connectionMultiplexer.GetEndPoints();
-							foreach (var endpoint in endpoints)
-							{
-								var server = connectionMultiplexer.GetServer(endpoint);
-								var keys = server.KeysAsync(pattern: partition + "*");
-								await foreach (var redisKey in keys)
-								{
-									await redisCacheClient.GetDbFromConfiguration().Database.KeyDeleteAsync(redisKey);
-								}
-							}
-						});
-					
-					await DisposeAsync();
+					await using var redisClient = await redisClientsManager.GetClientAsync(disposingCancellationTokenSource.Token);
+					await redisClient.RemoveByPatternAsync(partition + "*", disposingCancellationTokenSource.Token);
 				}
 			}
 			catch (TimeoutException exception)
@@ -119,18 +100,19 @@ namespace Delivery.Azure.Library.Caching.Cache
 			}
 		}
 
-		public ValueTask DisposeAsync()
+		public async ValueTask DisposeAsync()
 		{
+			disposingCancellationTokenSource.Cancel();
 			try
 			{
-				redisCacheClient.GetDbFromConfiguration().Database.Multiplexer.Dispose();
+				await using var redisClient = await redisClientsManager.GetClientAsync();
+				await redisClient.DisposeAsync();
+				await Task.CompletedTask;
 			}
 			catch (Exception)
 			{
 				// dispose is best-effort
 			}
-
-			return new ValueTask();
 		}
 
 		public virtual async Task<Maybe<T>> GetAsync<T>(string key, string partition)
@@ -139,19 +121,16 @@ namespace Delivery.Azure.Library.Caching.Cache
 			{
 				ValidatePartition(partition, key);
 
-				var dependencyName = redisCacheClient.GetDbFromConfiguration().Database.Database.ToString();
-				var dependencyTarget = redisCacheClient.GetDbFromConfiguration().Database.Multiplexer.GetEndPoints().OfType<DnsEndPoint>().FirstOrDefault()?.Host ?? redisCacheClient.GetDbFromConfiguration().Database.Multiplexer.GetEndPoints().OfType<IPEndPoint>().FirstOrDefault()?.Address?.ToString() ?? "Unknown";
+				await using var redisClient = await redisClientsManager.GetReadOnlyClientAsync(disposingCancellationTokenSource.Token);
 				var dependencyData = new DependencyData("Get", key);
 
 				var redisValue = await new DependencyMeasurement(serviceProvider)
-					.ForDependency(dependencyName, MeasuredDependencyType.Redis, dependencyData.ConvertToJson(), dependencyTarget)
+					.ForDependency($"Database-{redisClient.Db}", MeasuredDependencyType.Redis, dependencyData.ConvertToJson(), redisClient.Host)
 					.TrackAsync(async () =>
 					{
-						return await Policy
-							.Handle<InvalidOperationException>()
-							.Or<InvalidOperationException>()
-							.WaitAndRetryAsync(retryCount: 60, retryAttempt => TimeSpan.FromMilliseconds(value: 500))
-							.ExecuteAsync(async () => await redisCacheClient.GetDbFromConfiguration().GetAsync<T>(key));
+						EnsureNotDisposing();
+						var result = await redisClient.GetAsync<T>(key, disposingCancellationTokenSource.Token);
+						return result;
 					});
 
 				return new Maybe<T>(redisValue);
@@ -168,6 +147,14 @@ namespace Delivery.Azure.Library.Caching.Cache
 			if (!string.IsNullOrEmpty(key) && !key.StartsWith(partition))
 			{
 				throw new InvalidOperationException($"The partition is a wildcard filter used to clear multiple keys, therefore the key must start with the partition name. Partition: {partition}, key: {key}");
+			}
+		}
+		
+		private void EnsureNotDisposing()
+		{
+			if (disposingCancellationTokenSource.Token.IsCancellationRequested)
+			{
+				throw new OperationCanceledException("A cache operation was attempted during cache disposal");
 			}
 		}
     }

@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Delivery.Api.Models.Dto;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
-using Delivery.Domain.CommandHandlers;
-using Delivery.Domain.Factories;
 using Delivery.Domain.FrameWork.Context;
-using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.Contracts;
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
-using Delivery.Order.Domain.Contracts.RestContracts;
 using Delivery.Order.Domain.Contracts.RestContracts.OrderDetails;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
@@ -20,10 +14,7 @@ using Delivery.Order.Domain.Handlers.MessageHandlers.OrderStatusUpdates;
 using Delivery.Order.Domain.Handlers.QueryHandlers;
 using Delivery.Order.Domain.Services.Applications;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 
 namespace Delivery.Api.Controllers
@@ -34,15 +25,9 @@ namespace Delivery.Api.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IServiceProvider serviceProvider;
-        private readonly IConfiguration configuration;
-        private readonly IHttpClientFactory httpClientFactory;
-        public OrderController(IHttpClientFactory httpClientFactory, 
-            IConfiguration configuration,
-            IServiceProvider serviceProvider)
+        public OrderController(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
-            this.httpClientFactory = httpClientFactory;
-            this.configuration = configuration;
         }
         
         [HttpPost("Payment/CreatePaymentIntent")]
