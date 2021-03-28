@@ -15,16 +15,10 @@ namespace Delivery.Azure.Library.Caching.Cache.Extensions
 {
     public static class CachingExtensions
     {
-        public static IServiceCollection AddPlatformRedisCache(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddPlatformCaching(this IServiceCollection serviceCollection)
         {
-            return new JoinableTaskContext().Factory.Run(async () => await AddPlatformRedisCacheAsync(serviceCollection));
-        }
-
-        public static async Task<IServiceCollection> AddPlatformRedisCacheAsync(this IServiceCollection serviceCollection)
-        {
-            var connectionString = await new RedisCacheConfigurationDefinition(serviceCollection.BuildServiceProvider()).GetConnectionStringAsync();
+            var connectionString = new RedisCacheConfigurationDefinition(serviceCollection.BuildServiceProvider()).GetConnectionString();
             serviceCollection.AddSingleton<IRedisClientsManagerAsync>(_ => new RedisManagerPool(connectionString));
-
             return serviceCollection;
         }
 

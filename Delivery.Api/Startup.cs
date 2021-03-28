@@ -214,7 +214,7 @@ namespace Delivery.Api
             }
             else
             {
-                services.AddPlatformRedisCache();
+                services.AddPlatformCaching();
                 services.AddSingleton<IManagedCache, ManagedRedisCache>();
             }
 
