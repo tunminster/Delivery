@@ -7,6 +7,7 @@ using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Configuration.Features.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Threading;
+using ServiceStack.Redis;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.System.Text.Json;
 
@@ -22,13 +23,7 @@ namespace Delivery.Azure.Library.Caching.Cache.Extensions
         public static async Task<IServiceCollection> AddPlatformRedisCacheAsync(this IServiceCollection serviceCollection)
         {
             var connectionString = await new RedisCacheConfigurationDefinition(serviceCollection.BuildServiceProvider()).GetConnectionStringAsync();
-
-            serviceCollection.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(new RedisConfiguration
-            {
-                ConnectionString = connectionString,
-                AbortOnConnectFail = true,
-                ConnectTimeout = 6000
-            });
+            serviceCollection.AddSingleton<IRedisClientsManagerAsync>(_ => new RedisManagerPool(connectionString));
 
             return serviceCollection;
         }
