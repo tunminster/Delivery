@@ -63,7 +63,7 @@ namespace Delivery.Orders.Host.Kernel
             }
             else
             {
-                serviceCollection.AddPlatformRedisCache();
+                serviceCollection.AddPlatformCaching();
                 serviceCollection.AddSingleton<IManagedCache, ManagedRedisCache>();
             }
             
