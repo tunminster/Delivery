@@ -35,10 +35,12 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             };
             
             //var requestOptions = new RequestOptions {StripeAccount = "acct_1I6NJJRLkhSmnIqS"};
+            var requestOptions = new RequestOptions {StripeAccount = "acct_1IZcqVRDUSzIiY6T"};
             var service = new PaymentIntentService();
             var paymentIntentResponse = await service.ConfirmAsync(
                 command.StripePaymentCaptureCreationContract.StripePaymentIntentId,
-                options
+                options,
+                requestOptions
                 
             );
 
