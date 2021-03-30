@@ -17,4 +17,5 @@ data:
     Elastic-Search-Url: "#{Elastic-Search-Url}#"
     Ring: "#{Ring}#"
     Shards: '#{Shards}#'
+    RedisCache-ConnectionString: "#{RedisCache-ConnectionString}#"
     ServiceStack-Redis-LicenseKey: "#{ServiceStack-Redis-LicenseKey}#"
