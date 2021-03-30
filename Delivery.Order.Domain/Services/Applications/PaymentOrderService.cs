@@ -54,7 +54,7 @@ namespace Delivery.Order.Domain.Services.Applications
                 PaymentMethod = "card",
                 Amount = orderCreationStatus.TotalAmount,
                 ApplicationFeeAmount = ApplicationFeeGenerator.GeneratorFees(orderCreationStatus.TotalAmount),
-                ConnectedStripeAccountId = "acct_1I6NJJRLkhSmnIqS",
+                ConnectedStripeAccountId = "acct_1IZcqVRDUSzIiY6T",
                 OrderId = orderCreationStatus.OrderId,
                 Currency = "gbp"
             };
