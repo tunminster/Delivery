@@ -29,12 +29,13 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             StripeConfiguration.ApiKey = stripeApiKey;
             
             // clone payment method to the connect account
-            ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, "acct_1IZcqVRDUSzIiY6T");
+            var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, "acct_1IZcqVRDUSzIiY6T");
             
             // To create a PaymentIntent for confirmation, see our guide at: https://stripe.com/docs/payments/payment-intents/creating-payment-intents#creating-for-automatic
             var options = new PaymentIntentConfirmOptions
             {
-                PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
+                //PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
+                PaymentMethod = clonePaymentMethodId
             };
             
             //var requestOptions = new RequestOptions {StripeAccount = "acct_1I6NJJRLkhSmnIqS"};
@@ -107,7 +108,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
 
         }
 
-        private void ClonePaymentMethodToConnectedAccount(string stripePaymentMethodId, string connectedAccountId)
+        private string ClonePaymentMethodToConnectedAccount(string stripePaymentMethodId, string connectedAccountId)
         {
             var options = new PaymentMethodCreateOptions
             {
@@ -122,6 +123,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             
             var service = new PaymentMethodService();
             var paymentMethod = service.Create(options, requestOptions);
+            return paymentMethod.Id;
         }
         
         
