@@ -21,6 +21,7 @@ if ($groups.Count -gt 0) {
       $index = $i
     }
   }
+}
 
 "Current version number is" + $csprojcontents.Project.PropertyGroup[$index].Version
 $oldversionNumber = $csprojcontents.Project.PropertyGroup[$index].Version
