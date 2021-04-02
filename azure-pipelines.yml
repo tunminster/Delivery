@@ -152,9 +152,9 @@ stages:
         - group: Hn-Platform-Infra-Variables
         - group: hn-platform-dev
         - name: repository-image
-          value: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildId)'
+          value: 'pngoacr.azurecr.io/delivery-api-$(Build.SourceBranchName):$(Build.BuildNumber)'
         - name: order-service-repository-image
-          value: 'pngoacr.azurecr.io/order-service-$(Build.SourceBranchName):$(Build.BuildId)'
+          value: 'pngoacr.azurecr.io/order-service-$(Build.SourceBranchName):$(Build.BuildNumber)'
         - name: acr-secret-name
           value: 'hn-prod-acr-secret'
         - name: appsettings-secret-name
@@ -205,6 +205,8 @@ stages:
               buildContext: .
               tags: |
                 $(tag)
+              arguments: '--build-arg VersionNumber=$(Build.BuildNumber)'
+
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps'
@@ -298,6 +300,8 @@ stages:
               buildContext: .
               tags: |
                 $(tag)
+              arguments: '--build-arg VersionNumber=$(Build.BuildNumber)'
+              
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates'
