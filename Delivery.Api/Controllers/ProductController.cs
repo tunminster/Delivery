@@ -77,27 +77,7 @@ namespace Delivery.Api.Controllers
             var productContractList = await productByCategoryIdQueryHandler.Handle(productByCategoryIdQuery);
             return Ok(productContractList);
         }
-
-        // [HttpPost("Create")]
-        // [ProducesResponseType(typeof(ProductCreationContract), (int)HttpStatusCode.OK)]
-        // [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        // public async Task<IActionResult> AddProductAsync(ProductCreationContract productCreationContract, IFormFile file)
-        // {
-        //     var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-        //     
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return BadRequest(ModelState);
-        //     }
-        //
-        //     var createProductCommandHandler =
-        //         new CreateProductCommandHandler(storageConfig, serviceProvider, executingRequestContextAdapter);
-        //
-        //     var createProductCommand = new CreateProductCommand(productCreationContract, file);
-        //     var isCreatedProduct = await createProductCommandHandler.Handle(createProductCommand);
-        //     return Ok(isCreatedProduct);
-        // }
-
+        
         /// <summary>
         /// Create product with image upload
         /// </summary>

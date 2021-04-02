@@ -4,7 +4,11 @@ namespace Delivery.Order.Domain.Factories
     {
         public static int GeneratorFees(int totalAmount)
         {
-            return (int)(0.5 % 100 * totalAmount);
+            if (totalAmount < 100)
+            {
+                return 1;
+            }
+            return (int)(0.01 % 100 * totalAmount);
         }
     }
 }
