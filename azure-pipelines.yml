@@ -23,7 +23,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  tag: '$(Build.BuildId)'
+  tag: '$(Build.BuildNumber)'
   imageRepository: 'delivery-api-$(Build.SourceBranchName)'
   orderServiceImageRepository: 'order-service-$(Build.SourceBranchName)'
 
@@ -301,7 +301,7 @@ stages:
               tags: |
                 $(tag)
               arguments: '--build-arg VersionNumber=$(Build.BuildNumber)'
-              
+
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates'
