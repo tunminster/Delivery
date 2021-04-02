@@ -1,3 +1,4 @@
+ARG VersionNumber
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
@@ -21,10 +22,10 @@ COPY ["Delivery.Orders.Host/Delivery.Orders.Host.csproj", "Delivery.Orders.Host/
 RUN dotnet restore "Delivery.Orders.Host/Delivery.Orders.Host.csproj"
 COPY . .
 WORKDIR "/src/Delivery.Orders.Host"
-RUN dotnet build "Delivery.Orders.Host.csproj" -c Release -o /app/build
+RUN dotnet build "Delivery.Orders.Host.csproj" -c Release --version-suffix VersionNumber -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Delivery.Orders.Host.csproj" -c Release -o /app/publish
+RUN dotnet publish "Delivery.Orders.Host.csproj" -c Release --version-suffix VersionNumber -o /app/publish
 
 FROM base AS final
 WORKDIR /app
