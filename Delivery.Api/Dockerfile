@@ -20,10 +20,10 @@ COPY ["Delivery.Api/Delivery.Api.csproj", "Delivery.Api/"]
 RUN dotnet restore "Delivery.Api/Delivery.Api.csproj"
 COPY . .
 WORKDIR "/src/Delivery.Api"
-RUN dotnet build "Delivery.Api.csproj" -c Release /p:Version=$VersionNumber -o /app/build
+RUN dotnet build "Delivery.Api.csproj" -c Release /p:Version=$VersionNumber --no-restore -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Delivery.Api.csproj" -c Release /p:Version=$VersionNumber -o /app/publish
+RUN dotnet publish "Delivery.Api.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
