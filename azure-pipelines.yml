@@ -197,40 +197,40 @@ stages:
           - script: 'dotnet tool install -g dotnet-ef --version 3.1.3'
             displayName: dotnet tool install
 
-          # - pwsh: '$(System.DefaultWorkingDirectory)/DevOps/scripts/set-version-number.ps1 -projectName "Delivery.Api\Delivery.Api.csproj"'
-          #   name: SetVersionNumber
-          #   displayName: 'Set version number'
-          #   failOnStderr: true
-          #   errorActionPreference: 'stop'
+          - pwsh: '$(System.DefaultWorkingDirectory)/DevOps/scripts/set-version-number.ps1 -projectName "Delivery.Api\Delivery.Api.csproj"'
+            name: SetVersionNumber
+            displayName: 'Set version number'
+            failOnStderr: true
+            errorActionPreference: 'stop'
+
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'hn-acr-connection'
+              repository: '$(imageRepository)'
+              command: 'buildAndPush'
+              Dockerfile: '**/Delivery.Api/Dockerfile'
+              buildContext: .
+              tags: |
+                $(tag)
 
           # - task: Docker@2
+          #   displayName: Build docker
           #   inputs:
           #     containerRegistry: 'hn-acr-connection'
           #     repository: '$(imageRepository)'
-          #     command: 'buildAndPush'
+          #     command: 'build'
           #     Dockerfile: '**/Delivery.Api/Dockerfile'
-          #     buildContext: .
-          #     tags: |
-          #       $(tag)
-
-          - task: Docker@2
-            displayName: Build docker
-            inputs:
-              containerRegistry: 'hn-acr-connection'
-              repository: '$(imageRepository)'
-              command: 'build'
-              Dockerfile: '**/Delivery.Api/Dockerfile'
-              buildContext: '.'
-              tags: '$(tag)'
-              arguments: '--build-arg BUILD_VERSION=$(Build.BuildNumber)'
+          #     buildContext: '.'
+          #     tags: '$(tag)'
+          #     arguments: '--build-arg BUILD_VERSION=$(Build.BuildNumber)'
               
-          - task: Docker@2
-            displayName: Publish docker
-            inputs:
-              containerRegistry: 'hn-acr-connection'
-              repository: '$(imageRepository)'
-              command: 'push'
-              tags: '$(tag)'
+          # - task: Docker@2
+          #   displayName: Publish docker
+          #   inputs:
+          #     containerRegistry: 'hn-acr-connection'
+          #     repository: '$(imageRepository)'
+          #     command: 'push'
+          #     tags: '$(tag)'
 
           - task: CopyFiles@2
             inputs:
@@ -318,40 +318,40 @@ stages:
               includePreviewVersions: true
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
-          # - pwsh: '$(System.DefaultWorkingDirectory)/DevOps/scripts/set-version-number.ps1 -projectName "Delivery.Orders.Host\Delivery.Orders.Host.csproj"'
-          #   name: SetVersionNumber
-          #   displayName: 'Set version number'
-          #   failOnStderr: true
-          #   errorActionPreference: 'stop'
+          - pwsh: '$(System.DefaultWorkingDirectory)/DevOps/scripts/set-version-number.ps1 -projectName "Delivery.Orders.Host\Delivery.Orders.Host.csproj"'
+            name: SetVersionNumber
+            displayName: 'Set version number'
+            failOnStderr: true
+            errorActionPreference: 'stop'
+
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'hn-acr-connection'
+              repository: '$(orderServiceImageRepository)'
+              command: 'buildAndPush'
+              Dockerfile: '**/Delivery.Orders.Host/Dockerfile'
+              buildContext: .
+              tags: |
+                $(tag)
 
           # - task: Docker@2
+          #   displayName: Build docker
           #   inputs:
           #     containerRegistry: 'hn-acr-connection'
           #     repository: '$(orderServiceImageRepository)'
-          #     command: 'buildAndPush'
+          #     command: 'build'
           #     Dockerfile: '**/Delivery.Orders.Host/Dockerfile'
-          #     buildContext: .
-          #     tags: |
-          #       $(tag)
-
-          - task: Docker@2
-            displayName: Build docker
-            inputs:
-              containerRegistry: 'hn-acr-connection'
-              repository: '$(orderServiceImageRepository)'
-              command: 'build'
-              Dockerfile: '**/Delivery.Orders.Host/Dockerfile'
-              buildContext: '.'
-              tags: '$(tag)'
-              arguments: '--build-arg BUILD_VERSION=$(Build.BuildNumber)'
+          #     buildContext: '.'
+          #     tags: '$(tag)'
+          #     arguments: '--build-arg BUILD_VERSION=$(Build.BuildNumber)'
               
-          - task: Docker@2
-            displayName: Publish docker
-            inputs:
-              containerRegistry: 'hn-acr-connection'
-              repository: '$(orderServiceImageRepository)'
-              command: 'push'
-              tags: '$(tag)'
+          # - task: Docker@2
+          #   displayName: Publish docker
+          #   inputs:
+          #     containerRegistry: 'hn-acr-connection'
+          #     repository: '$(orderServiceImageRepository)'
+          #     command: 'push'
+          #     tags: '$(tag)'
           
           - task: CopyFiles@2
             inputs:
