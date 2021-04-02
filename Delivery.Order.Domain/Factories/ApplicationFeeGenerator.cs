@@ -4,7 +4,7 @@ namespace Delivery.Order.Domain.Factories
     {
         public static int GeneratorFees(int totalAmount)
         {
-            if (totalAmount < 100)
+            if (totalAmount < 1000)
             {
                 return 1;
             }
