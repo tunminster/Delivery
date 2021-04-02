@@ -1,6 +1,5 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-ARG VersionNumber
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
@@ -20,7 +19,7 @@ COPY ["Delivery.Api/Delivery.Api.csproj", "Delivery.Api/"]
 RUN dotnet restore "Delivery.Api/Delivery.Api.csproj"
 COPY . .
 WORKDIR "/src/Delivery.Api"
-RUN dotnet build "Delivery.Api.csproj" -c Release /p:Version=$VersionNumber --no-restore -o /app/build
+RUN dotnet build "Delivery.Api.csproj" -c Release --no-restore -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "Delivery.Api.csproj" -c Release -o /app/publish

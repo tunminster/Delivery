@@ -205,7 +205,7 @@ stages:
               buildContext: .
               tags: |
                 $(tag)
-              arguments: '--build-arg VersionNumber=$(Build.BuildNumber)'
+              arguments: '--build-arg BUILD_VERSION=$(Build.BuildNumber)'
 
           - task: CopyFiles@2
             inputs:
@@ -300,7 +300,7 @@ stages:
               buildContext: .
               tags: |
                 $(tag)
-              arguments: '--build-arg VersionNumber=$(Build.BuildNumber)'
+              arguments: '--build-arg BUILD_VERSION=$(Build.BuildNumber)'
 
           - task: CopyFiles@2
             inputs:
