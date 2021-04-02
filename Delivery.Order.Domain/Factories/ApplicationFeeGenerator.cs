@@ -6,7 +6,7 @@ namespace Delivery.Order.Domain.Factories
         {
             if (totalAmount < 1000)
             {
-                return 1;
+                return 100;
             }
             return (int)(0.01 % 100 * totalAmount);
         }
