@@ -226,7 +226,7 @@ stages:
               repository: '$(imageRepository)'
               command: 'push'
               tags: '$(tag)'
-              arguments: '--build-arg BUILD_VERSION=$(Build.BuildNumber)'
+
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps'
@@ -274,6 +274,7 @@ stages:
           #     deployType: 'SqlTask'
           #     SqlFile: '$(Build.ArtifactStagingDirectory)/$(scriptName).sql'
           #     IpDetectionMethod: 'AutoDetect'
+
           - task: Kubernetes@1
             inputs:
               connectionType: 'Kubernetes Service Connection'
@@ -311,6 +312,7 @@ stages:
               performMultiLevelLookup: true
               includePreviewVersions: true
               installationPath: $(Agent.ToolsDirectory)/dotnet
+
           # - task: Docker@2
           #   inputs:
           #     containerRegistry: 'hn-acr-connection'
@@ -340,8 +342,6 @@ stages:
               repository: '$(orderServiceImageRepository)'
               command: 'push'
               tags: '$(tag)'
-              arguments: '--build-arg BUILD_VERSION=$(Build.BuildNumber)' 
-
           
           - task: CopyFiles@2
             inputs:
