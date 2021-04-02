@@ -22,10 +22,10 @@ COPY ["Delivery.Orders.Host/Delivery.Orders.Host.csproj", "Delivery.Orders.Host/
 RUN dotnet restore "Delivery.Orders.Host/Delivery.Orders.Host.csproj"
 COPY . .
 WORKDIR "/src/Delivery.Orders.Host"
-RUN dotnet build "Delivery.Orders.Host.csproj" -c Release /p:Version=VersionNumber -o /app/build
+RUN dotnet build "Delivery.Orders.Host.csproj" -c Release /p:Version=$VersionNumber -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Delivery.Orders.Host.csproj" -c Release /p:Version=VersionNumber -o /app/publish
+RUN dotnet publish "Delivery.Orders.Host.csproj" -c Release /p:Version=$VersionNumber -o /app/publish
 
 FROM base AS final
 WORKDIR /app
