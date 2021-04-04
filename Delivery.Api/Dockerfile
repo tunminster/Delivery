@@ -21,7 +21,7 @@ WORKDIR "/src/Delivery.Api"
 RUN dotnet build "Delivery.Api.csproj" -c Release /property:Version=1.1.2 -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Delivery.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish "Delivery.Api.csproj" -c Release /property:Version=1.1.2 -o /app/publish
 
 FROM base AS final
 WORKDIR /app
