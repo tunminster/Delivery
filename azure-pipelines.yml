@@ -224,7 +224,7 @@ stages:
               Dockerfile: '**/Delivery.Api/Dockerfile'
               buildContext: '.'
               tags: '$(tag)'
-              arguments: '--build-arg BuildVersion=$(build-number)'
+              arguments: '--build-arg BuildVersion=$(Build.BuildNumber)'
               
           - task: Docker@2
             displayName: Publish docker
