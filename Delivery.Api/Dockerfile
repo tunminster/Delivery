@@ -11,6 +11,7 @@ RUN \
     && apk add --no-cache icu-libs bash
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+ENV Version=1.1.2
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src
@@ -18,10 +19,10 @@ COPY ["Delivery.Api/Delivery.Api.csproj", "Delivery.Api/"]
 RUN dotnet restore "Delivery.Api/Delivery.Api.csproj"
 COPY . .
 WORKDIR "/src/Delivery.Api"
-RUN dotnet build "Delivery.Api.csproj" -c Release /property:Version=1.1.2 -o /app/build
+RUN dotnet build "Delivery.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Delivery.Api.csproj" -c Release /property:Version=1.1.2 -o /app/publish
+RUN dotnet publish "Delivery.Api.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
