@@ -4,6 +4,8 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+ARG BuildVersion
+
 RUN \
     apk --no-cache update \
     && apk --no-cache upgrade \

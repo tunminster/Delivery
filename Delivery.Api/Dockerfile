@@ -11,6 +11,8 @@ RUN \
     && apk add --no-cache tzdata \
     && apk add --no-cache icu-libs bash
 
+ARG BuildVersion
+
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 ENV Version=$BuildVersion
 
