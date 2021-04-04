@@ -1,4 +1,5 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+ARG Build_Version
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
@@ -11,7 +12,7 @@ RUN \
     && apk add --no-cache icu-libs bash
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-ENV Version=1.1.2
+ENV Version=$Build_Version
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src

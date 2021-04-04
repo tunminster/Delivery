@@ -1,3 +1,4 @@
+ARG Build_Version
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
@@ -10,6 +11,7 @@ RUN \
     && apk add --no-cache icu-libs bash
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+ENV Version=$Build_Version
 
 RUN addgroup -S hn --gid 1000 && adduser -S hnuser -G hn --uid 1000 \
     && mkdir -p /usr/src/app \
