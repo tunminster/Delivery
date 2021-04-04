@@ -171,6 +171,8 @@ stages:
           value: 'ApplicationDbContext'
         - name: scriptName
           value: 'migrationscript'
+        - name: build-number
+          value: '$(Build.BuildNumber)'
         - name: env-name
           value: 'dev'
         - name: env-namespace
@@ -222,7 +224,7 @@ stages:
               Dockerfile: '**/Delivery.Api/Dockerfile'
               buildContext: '.'
               tags: '$(tag)'
-              arguments: '--build-arg BuildVersion="$(Build.BuildNumber)"'
+              arguments: '--build-arg BuildVersion=$(build-number)'
               
           - task: Docker@2
             displayName: Publish docker
@@ -343,7 +345,7 @@ stages:
               Dockerfile: '**/Delivery.Orders.Host/Dockerfile'
               buildContext: '.'
               tags: '$(tag)'
-              arguments: '--build-arg BuildVersion="$(Build.BuildNumber)"'
+              arguments: '--build-arg BuildVersion=$(build-number)'
               
           - task: Docker@2
             displayName: Publish docker
