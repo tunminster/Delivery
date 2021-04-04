@@ -11,7 +11,7 @@ RUN \
     && apk add --no-cache icu-libs bash
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-ENV Version=$BuildVersion
+ENV Version=${BuildVersion}
 
 RUN addgroup -S hn --gid 1000 && adduser -S hnuser -G hn --uid 1000 \
     && mkdir -p /usr/src/app \
