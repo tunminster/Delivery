@@ -14,7 +14,7 @@ RUN \
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 ENV Version=$BuildVersion
 
-RUN Echo "version number" $BuildVersion
+RUN echo "version number" $BuildVersion
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src
