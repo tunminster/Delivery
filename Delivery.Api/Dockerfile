@@ -12,9 +12,9 @@ RUN \
     && apk add --no-cache icu-libs bash
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-ENV Version=${BuildVersion}
+ENV Version=$BuildVersion
 
-RUN echo "version number" ${BuildVersion}
+RUN echo "version number" $BuildVersion
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src
