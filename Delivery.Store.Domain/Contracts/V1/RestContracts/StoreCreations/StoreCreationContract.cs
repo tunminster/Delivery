@@ -10,33 +10,79 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
     [DataContract]
     public class StoreCreationContract
     {
+        /// <summary>
+        ///  Store name
+        /// </summary>
+        ///<example>Store name</example>
         [DataMember]
         public string StoreName { get; set; }
         
+        /// <summary>
+        ///  Image uri
+        /// </summary>
+        /// <example>https://www.imageurl.com</example>
         [DataMember]
         public string ImageUri { get; set; }
         
+        /// <summary>
+        ///  Address line 1
+        /// </summary>
+        /// <example>Address line 1</example>
         [DataMember]
         public string AddressLine1 { get; set; }
         
+        /// <summary>
+        ///  Address Line 2
+        /// </summary>
+        /// <example>Address line 2</example>
         [DataMember]
         public string AddressLine2 { get; set; }
         
+        /// <summary>
+        ///  City
+        /// </summary>
+        /// <example>New york city</example>
         [DataMember]
         public string City { get; set; }
         
+        /// <summary>
+        ///  County
+        /// </summary>
+        /// <example>New york</example>
         [DataMember]
         public string County { get; set; }
         
+        /// <summary>
+        ///  Country
+        /// </summary>
+        /// <example>United States</example>
         [DataMember]
         public string Country { get; set; }
         
+        /// <summary>
+        ///  Postalcode
+        /// </summary>
+        /// <example>95012</example>
         [DataMember]
         public string PostalCode { get; set; }
         
+        /// <summary>
+        ///  StoreTypeId
+        /// </summary>
+        /// <example>da12345</example>
         [DataMember]
         public string StoreTypeId { get; set; }
         
+        /// <summary>
+        ///  Payment account number
+        /// </summary>
+        /// <example>acct_1IZcerRGV3DhAqtX</example>
+        [DataMember]
+        public string PaymentAccountNumber { get; set; }
+        
+        /// <summary>
+        ///  Store opening hours
+        /// </summary>
         [DataMember]
         public List<StoreOpeningHourCreationContract> StoreOpeningHours { get; set; }
         

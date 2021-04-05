@@ -33,6 +33,9 @@ using Nest;
 
 namespace Delivery.Api.Controllers
 {
+    /// <summary>
+    ///  Store controller
+    /// </summary>
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize(Policy = "ApiUser")]
@@ -40,6 +43,10 @@ namespace Delivery.Api.Controllers
     {
         private readonly IServiceProvider serviceProvider;
 
+        /// <summary>
+        ///  store controller contructor
+        /// </summary>
+        /// <param name="serviceProvider"></param>
         public StoreController(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
@@ -54,7 +61,7 @@ namespace Delivery.Api.Controllers
         [HttpPost("CreateStore")]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CreateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreCreationContract storeCreationContract, IFormFile storeImage)
+        public async Task<IActionResult> CreateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreCreationContract storeCreationContract,IFormFile storeImage)
         {
             var validationResult =
                 await new StoreCreationValidator().ValidateAsync(storeCreationContract);
@@ -89,16 +96,17 @@ namespace Delivery.Api.Controllers
             
             return Ok(storeCreationStatusContract);
         }
-        
+
         /// <summary>
         ///  Store: Update store endpoint allows to update store
         /// </summary>
         /// <param name="storeUpdateContract"></param>
+        /// <param name="storeImage"></param>
         /// <returns></returns>
         [HttpPost("UpdateStore")]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateStoreAsync(StoreUpdateContract storeUpdateContract)
+        public async Task<IActionResult> UpdateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreUpdateContract storeUpdateContract, IFormFile storeImage)
         {
             var validationResult =
                 await new StoreUpdateValidator().ValidateAsync(storeUpdateContract);
@@ -108,10 +116,20 @@ namespace Delivery.Api.Controllers
             }
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            // upload image
+            if (storeImage != null)
+            {
+                var storeImageUpdateStatusContract = await
+                    UploadStoreImageAsync(storeUpdateContract.StoreId, storeUpdateContract.StoreName, storeImage,
+                        executingRequestContextAdapter);
+
+                storeUpdateContract.ImageUri = storeImageUpdateStatusContract.ImageUri;
+            }
 
             var storeUpdateStatusContract = new StoreUpdateStatusContract
             {
-                StoreId = executingRequestContextAdapter.GetShard().GenerateExternalId(),
+                StoreId = storeUpdateContract.StoreId,
                 InsertionDateTime = DateTimeOffset.UtcNow
             };
 

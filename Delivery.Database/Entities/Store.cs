@@ -52,5 +52,7 @@ namespace Delivery.Database.Entities
         public bool IsDeleted { get; set; }
         
         public virtual ICollection<OpeningHour> OpeningHours { get; set; }
+        
+        public virtual StorePaymentAccount StorePaymentAccount { get; set; }
     }
 }
