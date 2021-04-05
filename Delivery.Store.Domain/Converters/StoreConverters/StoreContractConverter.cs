@@ -9,7 +9,7 @@ namespace Delivery.Store.Domain.Converters.StoreConverters
     {
         public static List<StoreContract> Convert(List<Database.Entities.Store> stores)
         {
-            var storeTypeContractList = stores.Select(x => new StoreContract
+            var storeContractList = stores.Select(x => new StoreContract
             {
                 StoreId = x.ExternalId,
                 StoreName = x.StoreName,
@@ -20,7 +20,8 @@ namespace Delivery.Store.Domain.Converters.StoreConverters
                 County = x.County,
                 Country = x.Country,
                 PostalCode = x.PostalCode,
-                StoreType = x.StoreType.StoreTypeName,
+                StoreType = x.StoreType?.StoreTypeName,
+                StorePaymentAccountNumber = x.StorePaymentAccount?.AccountNumber ?? string.Empty,
                 StoreOpeningHours = x.OpeningHours.Select(op => new StoreOpeningHourContract
                 {
                     DayOfWeek = op.DayOfWeek,
@@ -30,7 +31,7 @@ namespace Delivery.Store.Domain.Converters.StoreConverters
                 Location =  new GeoLocation(x.Latitude ?? 0, x.Longitude ?? 0)
             }).ToList();
             
-            return storeTypeContractList;
+            return storeContractList;
         }
     }
 }

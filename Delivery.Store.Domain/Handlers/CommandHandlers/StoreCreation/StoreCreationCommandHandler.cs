@@ -67,8 +67,8 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
             // add payment account number
             store.StorePaymentAccount = new StorePaymentAccount
             {
-                StoreId = store.Id,
-                AccountNumber = command.StoreCreationContract.PaymentAccountNumber
+                AccountNumber = command.StoreCreationContract.PaymentAccountNumber,
+                IsDeleted = false
             };
             
             await databaseContext.Stores.AddAsync(store);

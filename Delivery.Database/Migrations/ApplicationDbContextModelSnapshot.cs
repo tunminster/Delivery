@@ -494,6 +494,9 @@ namespace Delivery.Database.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int?>("StorePaymentAccountId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StoreTypeId")
                         .HasColumnType("int");
 
@@ -502,6 +505,8 @@ namespace Delivery.Database.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique()
                         .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("StorePaymentAccountId");
 
                     b.HasIndex("StoreTypeId");
 
@@ -533,16 +538,11 @@ namespace Delivery.Database.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("StoreId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ExternalId")
                         .IsUnique()
                         .HasDatabaseName("IX_UniqueExternalId");
-
-                    b.HasIndex("StoreId");
 
                     b.ToTable("StorePaymentAccounts");
                 });
@@ -1057,24 +1057,19 @@ namespace Delivery.Database.Migrations
 
             modelBuilder.Entity("Delivery.Database.Entities.Store", b =>
                 {
+                    b.HasOne("Delivery.Database.Entities.StorePaymentAccount", "StorePaymentAccount")
+                        .WithMany()
+                        .HasForeignKey("StorePaymentAccountId");
+
                     b.HasOne("Delivery.Database.Entities.StoreType", "StoreType")
                         .WithMany()
                         .HasForeignKey("StoreTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("StorePaymentAccount");
+
                     b.Navigation("StoreType");
-                });
-
-            modelBuilder.Entity("Delivery.Database.Entities.StorePaymentAccount", b =>
-                {
-                    b.HasOne("Delivery.Database.Entities.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.StripePayment", b =>

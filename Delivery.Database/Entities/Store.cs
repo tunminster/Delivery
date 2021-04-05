@@ -45,6 +45,11 @@ namespace Delivery.Database.Entities
         [ForeignKey("StoreTypeId")]
         public virtual StoreType StoreType { get; set; }
         
+        public int? StorePaymentAccountId { get; set; }
+        
+        [ForeignKey("StorePaymentAccountId")]
+        public virtual StorePaymentAccount StorePaymentAccount { get; set; }
+        
         [MaxLength(250)]
         public string InsertedBy { get; set; }
         
@@ -53,6 +58,5 @@ namespace Delivery.Database.Entities
         
         public virtual ICollection<OpeningHour> OpeningHours { get; set; }
         
-        public virtual StorePaymentAccount StorePaymentAccount { get; set; }
     }
 }
