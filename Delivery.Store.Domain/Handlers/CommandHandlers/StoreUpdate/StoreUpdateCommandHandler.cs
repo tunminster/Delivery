@@ -44,7 +44,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
             store.StoreName = command.StoreUpdateContract.StoreName;
             store.AddressLine1 = command.StoreUpdateContract.AddressLine1;
             store.AddressLine2 = command.StoreUpdateContract.AddressLine2;
-            store.ImageUri = command.StoreUpdateContract.ImageUri;
+            store.ImageUri = string.IsNullOrEmpty(command.StoreUpdateContract.ImageUri) ? store.ImageUri : command.StoreUpdateContract.ImageUri;
             store.City = command.StoreUpdateContract.City;
             store.County = command.StoreUpdateContract.County;
             store.Country = command.StoreUpdateContract.Country;
