@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Database.DataAccess;
+using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
@@ -35,6 +36,12 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
 
             var products = await dataAccess.GetCachedItemsAsync(CacheKey, databaseContext.GlobalDatabaseCacheRegion,
                 async () => await databaseContext.Products.Where(x => productIds.Contains(x.ExternalId)).ToListAsync());
+
+            var store = await dataAccess.GetCachedItemsAsync(
+                $"Database-{executingRequestContextAdapter.GetShard().Key}-store-{command.StripeOrderCreationContract.StoreId}-default-includes",
+                databaseContext.GlobalDatabaseCacheRegion,
+                async () => await databaseContext.Stores.Include(x => x.StorePaymentAccount)
+                    .FirstOrDefaultAsync(x => x.ExternalId == command.StripeOrderCreationContract.StoreId));
             
             var totalAmount = 0;
 
@@ -52,7 +59,15 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             }
             
             var orderCreationStatus =
-                new OrderCreationStatusContract{OrderId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()), CurrencyCode = command.OrderCreationStatusContract.CurrencyCode, TotalAmount = totalAmount, CreatedDateTime = DateTimeOffset.UtcNow};
+                new OrderCreationStatusContract
+                {
+                    OrderId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()), 
+                    CurrencyCode = command.OrderCreationStatusContract.CurrencyCode, 
+                    TotalAmount = totalAmount, 
+                    CreatedDateTime = DateTimeOffset.UtcNow,
+                    PaymentAccountNumber = store?.StorePaymentAccount?.AccountNumber ?? throw new InvalidOperationException($" {command.StripeOrderCreationContract.StoreId} doesn't have payment account number.")
+                        .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties())
+                };
             return orderCreationStatus;
         }
         

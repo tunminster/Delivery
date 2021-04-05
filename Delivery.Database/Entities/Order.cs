@@ -31,6 +31,9 @@ namespace Delivery.Database.Entities
 
         [MaxLength(50)]
         public string PaymentIntentId { get; set; }
+        
+        [MaxLength(500)]
+        public string PaymentAccountNumber { get; set; }
 
         public int CustomerId { get; set; }
 

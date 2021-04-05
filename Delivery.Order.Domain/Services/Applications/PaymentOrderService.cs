@@ -46,15 +46,14 @@ namespace Delivery.Order.Domain.Services.Applications
                 await new StripeOrderTotalAmountCreationCommandHandler(serviceProvider, executingRequestContextAdapter,
                     cacheKey).Handle(stripeOrderTotalAmountCreationCommand);
             
-            await PublishOrderCreationMessageAsync(paymentOrderServiceRequest.StripeOrderCreationContract,
-                orderCreationStatus);
             
             var paymentIntentCreationContract = new PaymentIntentCreationContract
             {
                 PaymentMethod = "card",
                 Amount = orderCreationStatus.TotalAmount,
                 ApplicationFeeAmount = ApplicationFeeGenerator.GeneratorFees(orderCreationStatus.TotalAmount),
-                ConnectedStripeAccountId = "acct_1IZcqVRDUSzIiY6T",
+                //ConnectedStripeAccountId = "acct_1IZcqVRDUSzIiY6T",
+                ConnectedStripeAccountId = orderCreationStatus.PaymentAccountNumber,
                 OrderId = orderCreationStatus.OrderId,
                 Currency = "gbp"
             };
@@ -62,6 +61,11 @@ namespace Delivery.Order.Domain.Services.Applications
             var paymentIntentCreationCommand = new PaymentIntentCreationCommand(paymentIntentCreationContract);
             var paymentIntentCreationStatusContract =
                 await new PaymentIntentCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(paymentIntentCreationCommand);
+
+            orderCreationStatus.StripePaymentIntentId = paymentIntentCreationStatusContract.StripePaymentIntentId;
+            
+            await PublishOrderCreationMessageAsync(paymentOrderServiceRequest.StripeOrderCreationContract,
+                orderCreationStatus);
 
             return paymentIntentCreationStatusContract;
 

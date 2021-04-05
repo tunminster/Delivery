@@ -57,6 +57,8 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 CurrencyCode = command.OrderCreationStatusContract.CurrencyCode,
                 PaymentType = "Card",
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
+                PaymentIntentId = command.OrderCreationStatusContract.StripePaymentIntentId,
+                PaymentAccountNumber = command.OrderCreationStatusContract.PaymentAccountNumber,
                 OrderStatus = OrderStatusEnum.Preparing.ToString(),
                 Description = string.Empty,
                 OrderItems = orderItems,
