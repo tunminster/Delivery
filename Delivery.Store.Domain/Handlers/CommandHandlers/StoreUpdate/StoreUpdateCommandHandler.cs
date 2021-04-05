@@ -71,6 +71,13 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
                     });
                 }
             }
+            
+            // add payment account number
+            store.StorePaymentAccount = new StorePaymentAccount
+            {
+                StoreId = store.Id,
+                AccountNumber = command.StoreUpdateContract.PaymentAccountNumber
+            };
 
             databaseContext.Stores.Update(store);
             await databaseContext.SaveChangesAsync();

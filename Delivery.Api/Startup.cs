@@ -243,7 +243,6 @@ namespace Delivery.Api
             app.UseRouting();
 
             app.UseStaticFiles();
-            //app.UseIdentityServer();
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()
@@ -253,12 +252,8 @@ namespace Delivery.Api
             app.UseMiddleware<RequestBufferingMiddleware>();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             
-
             app.UseAuthentication();
             app.UseAuthorization();
-
-            // use middelware response cache
-            //app.UseResponseCaching();
             
             app.Use(async (context, next) =>
             {
@@ -284,7 +279,7 @@ namespace Delivery.Api
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "RagiBull API V1");
             });
 
             app.UseEndpoints(endpoints =>

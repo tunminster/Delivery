@@ -51,6 +51,8 @@ namespace Delivery.Database.Context
         
         public DbSet<OpeningHour> OpeningHours { get; set; }
         
+        public DbSet<StorePaymentAccount> StorePaymentAccounts { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
