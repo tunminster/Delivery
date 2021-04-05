@@ -33,6 +33,14 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
                 await databaseContext.StoreTypes.FirstOrDefaultAsync(x =>
                     x.ExternalId == command.StoreUpdateContract.StoreTypeId);
 
+            var storePaymentAccount = await databaseContext.StorePaymentAccounts
+                .FirstOrDefaultAsync(x => x.Id == store.StorePaymentAccountId);
+
+            if (storePaymentAccount != null)
+            {
+                storePaymentAccount.AccountNumber = command.StoreUpdateContract.PaymentAccountNumber;
+            }
+
             store.StoreName = command.StoreUpdateContract.StoreName;
             store.AddressLine1 = command.StoreUpdateContract.AddressLine1;
             store.AddressLine2 = command.StoreUpdateContract.AddressLine2;
@@ -72,13 +80,6 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
                 }
             }
             
-            // add payment account number
-            store.StorePaymentAccount = new StorePaymentAccount
-            {
-                StoreId = store.Id,
-                AccountNumber = command.StoreUpdateContract.PaymentAccountNumber
-            };
-
             databaseContext.Stores.Update(store);
             await databaseContext.SaveChangesAsync();
             

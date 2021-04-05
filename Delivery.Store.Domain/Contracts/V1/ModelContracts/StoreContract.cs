@@ -42,6 +42,9 @@ namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
         public string StoreType { get; set; }
         
         [DataMember]
+        public string StorePaymentAccountNumber { get; set; }
+        
+        [DataMember]
         public List<StoreOpeningHourContract> StoreOpeningHours { get; set; }
         
         [DataMember]

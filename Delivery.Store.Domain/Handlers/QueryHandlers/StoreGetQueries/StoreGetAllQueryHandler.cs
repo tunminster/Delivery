@@ -31,6 +31,8 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries
 
             var stores = await databaseContext.Stores
                 .Include(x => x.StoreType)
+                .Include(x => x.OpeningHours)
+                .Include(x => x.StorePaymentAccount)
                 .Where(x => !x.IsDeleted)
                 .Skip(query.NumberOfObjectPerPage * (query.PageNumber - 1))
                 .Take(query.NumberOfObjectPerPage).ToListAsync();

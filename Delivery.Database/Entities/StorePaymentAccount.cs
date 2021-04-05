@@ -8,15 +8,12 @@ namespace Delivery.Database.Entities
 {
     public class StorePaymentAccount : Entity , IAuditableEntity, ISoftDeleteEntity
     {
-        public int StoreId { get; set; }
-        
         [MaxLength(500)]
         public string AccountNumber { get; set; }
         public string InsertedBy { get; set; }
         public DateTimeOffset InsertionDateTime { get; set; }
         public bool IsDeleted { get; set; }
         
-        [ForeignKey("StoreId")]
-        public virtual Store Store { get; set; }
+        
     }
 }
