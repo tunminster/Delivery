@@ -40,6 +40,16 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
             {
                 storePaymentAccount.AccountNumber = command.StoreUpdateContract.PaymentAccountNumber;
             }
+            else
+            {
+                store.StorePaymentAccount = new StorePaymentAccount
+                {
+                    AccountNumber = command.StoreUpdateContract.PaymentAccountNumber,
+                    IsDeleted = false
+                };
+            }
+            
+            
 
             store.StoreName = command.StoreUpdateContract.StoreName;
             store.AddressLine1 = command.StoreUpdateContract.AddressLine1;
