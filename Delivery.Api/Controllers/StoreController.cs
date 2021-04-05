@@ -21,6 +21,7 @@ using Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearchQuer
 using Delivery.Store.Domain.ElasticSearch.Validators;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation;
 using Delivery.Store.Domain.Handlers.QueryHandlers.StoreDetailsQueries;
+using Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreCreations;
 using Delivery.Store.Domain.Services.ApplicationServices.StoreUpdates;
 using Delivery.Store.Domain.Validators;
@@ -167,28 +168,31 @@ namespace Delivery.Api.Controllers
             return Ok(storeIndexStatusContract);
         }
         
-        // [HttpGet("GetAllStores")]
-        // [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
-        // [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        // public async Task<IActionResult> GetStoresAsync(string numberOfObjectPerPage, string pageNumber, CancellationToken cancellationToken = default)
-        // {
-        //     var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-        //
-        //     int.TryParse(numberOfObjectPerPage, out var iNumberOfObjectPerPage);
-        //     int.TryParse(pageNumber, out var iPageNumber);
-        //
-        //     var storeGetAllQuery =
-        //         new StoreGetAllQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-store-{iNumberOfObjectPerPage}-{iPageNumber}", iNumberOfObjectPerPage, iPageNumber);
-        //     var storeContractList =
-        //         await new StoreGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
-        //             .Handle(storeGetAllQuery);
-        //
-        //     await IndexStoreAsync(storeContractList.FirstOrDefault());
-        //
-        //     var result = GetStoreAsync("thai", 1, 5);
-        //   
-        //     return Ok(storeContractList);
-        // }
+        /// <summary>
+        ///  Get all stores
+        /// </summary>
+        /// <param name="numberOfObjectPerPage"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllStores")]
+        [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetStoresAsync(string numberOfObjectPerPage, string pageNumber, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+        
+            int.TryParse(numberOfObjectPerPage, out var iNumberOfObjectPerPage);
+            int.TryParse(pageNumber, out var iPageNumber);
+        
+            var storeGetAllQuery =
+                new StoreGetAllQuery(iNumberOfObjectPerPage, iPageNumber);
+            var storeContractList =
+                await new StoreGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(storeGetAllQuery);
+            
+            return Ok(storeContractList);
+        }
 
         /// <summary>
         ///  Store: Search store endpoint allows to search stores 

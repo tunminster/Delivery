@@ -28,12 +28,12 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries
                 serviceProvider, () => PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter));
             
             var databaseContext = await dataAccess.ReusableDatabaseContext.GetOrCreateContextAsync();
-            var stores = await dataAccess.GetCachedItemsAsync(query.CacheKey, databaseContext.GlobalDatabaseCacheRegion,
-                async () => await databaseContext.Stores
-                    .Include(x =>x.StoreType)
-                    .Where(x => !x.IsDeleted)
-                    .Skip(query.NumberOfObjectPerPage * (query.PageNumber - 1))
-                    .Take(query.NumberOfObjectPerPage).ToListAsync());
+
+            var stores = await databaseContext.Stores
+                .Include(x => x.StoreType)
+                .Where(x => !x.IsDeleted)
+                .Skip(query.NumberOfObjectPerPage * (query.PageNumber - 1))
+                .Take(query.NumberOfObjectPerPage).ToListAsync();
             
             if (stores == null)
             {

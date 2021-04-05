@@ -13,7 +13,7 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
         /// <summary>
         ///  Store name
         /// </summary>
-        ///<example>Store name</example>
+        ///<example>Buenos Aires</example>
         [DataMember]
         public string StoreName { get; set; }
         
