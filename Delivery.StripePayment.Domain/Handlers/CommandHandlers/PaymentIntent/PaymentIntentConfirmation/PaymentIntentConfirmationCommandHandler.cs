@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
@@ -29,10 +30,11 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;
             
-            // await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
-            // var order = databaseContext.Orders.FirstOrDefault(x =>
-            //     x.PaymentIntentId == command.StripePaymentCaptureCreationContract.StripePaymentIntentId);
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var order = databaseContext.Orders.FirstOrDefault(x =>
+                x.PaymentIntentId == command.StripePaymentCaptureCreationContract.StripePaymentIntentId);
             
+            //todopolly
             
             // clone payment method to the connect account
             var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, "acct_1IZcqVRDUSzIiY6T");
@@ -45,13 +47,17 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             };
             
             
-            //var requestOptions = new RequestOptions {StripeAccount = "acct_1I6NJJRLkhSmnIqS"};
             //var requestOptions = new RequestOptions {StripeAccount = "acct_1IZcqVRDUSzIiY6T"};
+            var requestOptions = new RequestOptions
+            {
+                StripeAccount = order?.PaymentAccountNumber ?? throw new InvalidOperationException($"{command.StripePaymentCaptureCreationContract.StripePaymentIntentId} is not existed.")
+                    .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties())
+            };
             var service = new PaymentIntentService();
             var paymentIntentResponse = await service.ConfirmAsync(
                 command.StripePaymentCaptureCreationContract.StripePaymentIntentId,
-                options
-                //requestOptions
+                options,
+                requestOptions
                 
             );
 
