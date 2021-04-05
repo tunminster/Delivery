@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -28,6 +29,11 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;
             
+            // await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            // var order = databaseContext.Orders.FirstOrDefault(x =>
+            //     x.PaymentIntentId == command.StripePaymentCaptureCreationContract.StripePaymentIntentId);
+            
+            
             // clone payment method to the connect account
             var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, "acct_1IZcqVRDUSzIiY6T");
             
@@ -38,13 +44,14 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
                 PaymentMethod = clonePaymentMethodId
             };
             
+            
             //var requestOptions = new RequestOptions {StripeAccount = "acct_1I6NJJRLkhSmnIqS"};
-            var requestOptions = new RequestOptions {StripeAccount = "acct_1IZcqVRDUSzIiY6T"};
+            //var requestOptions = new RequestOptions {StripeAccount = "acct_1IZcqVRDUSzIiY6T"};
             var service = new PaymentIntentService();
             var paymentIntentResponse = await service.ConfirmAsync(
                 command.StripePaymentCaptureCreationContract.StripePaymentIntentId,
-                options,
-                requestOptions
+                options
+                //requestOptions
                 
             );
 

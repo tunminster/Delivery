@@ -17,6 +17,12 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrder
         public string CurrencyCode { get; set; }
         
         [DataMember]
+        public string PaymentAccountNumber { get; set; }
+        
+        [DataMember]
+        public string StripePaymentIntentId { get; set; }
+        
+        [DataMember]
         public DateTimeOffset CreatedDateTime { get; set; }
     }
 }
