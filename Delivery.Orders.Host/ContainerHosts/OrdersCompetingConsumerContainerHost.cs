@@ -16,11 +16,13 @@ using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreGeoUpdates;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreTypeCreations;
+using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreUpdate;
 using Delivery.Store.Domain.ElasticSearch.Contracts.V1.MessageContracts.StoreIndexing;
 using Delivery.Store.Domain.ElasticSearch.Handlers.MessageHandlers.StoreIndexing;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreCreation;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreTypeCreations;
+using Delivery.Store.Domain.Handlers.MessageHandlers.StoreUpdate;
 using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
 using Delivery.StripePayment.Domain.Handlers.MessageHandlers;
 using Microsoft.Azure.ServiceBus;
@@ -79,6 +81,12 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var storeCreationMessageHandler = new StoreCreationMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(storeCreationMessage.RequestContext));
                     await storeCreationMessageHandler.HandleMessageAsync(storeCreationMessage, processingState);
+                    break;
+                case nameof(StoreUpdateMessage):
+                    var storeUpdateMessage = message.Deserialize<StoreUpdateMessage>();
+                    var storeUpdateMessageHandler = new StoreUpdateMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(storeUpdateMessage.RequestContext));
+                    await storeUpdateMessageHandler.HandleMessageAsync(storeUpdateMessage, processingState);
                     break;
                 case nameof(StoreTypeCreationMessageContract):
                     var storeTypeCreationMessage = message.Deserialize<StoreTypeCreationMessageContract>();
