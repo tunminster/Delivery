@@ -104,7 +104,7 @@ namespace Delivery.Api.Controllers
         /// <param name="storeUpdateContract"></param>
         /// <param name="storeImage"></param>
         /// <returns></returns>
-        [HttpPost("UpdateStore")]
+        [HttpPut("UpdateStore")]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> UpdateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreUpdateContract storeUpdateContract, IFormFile storeImage)
