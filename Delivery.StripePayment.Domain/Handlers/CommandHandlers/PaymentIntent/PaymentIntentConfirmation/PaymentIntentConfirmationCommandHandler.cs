@@ -33,11 +33,19 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var order = databaseContext.Orders.FirstOrDefault(x =>
                 x.PaymentIntentId == command.StripePaymentCaptureCreationContract.StripePaymentIntentId);
+
+            if (order == null)
+            {
+                throw new InvalidOperationException(
+                        $"Order not found with payment intent id {command.StripePaymentCaptureCreationContract.StripePaymentIntentId}")
+                    .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+            }
             
             //todopolly
             
             // clone payment method to the connect account
-            var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, "acct_1IZcqVRDUSzIiY6T");
+            //var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, "acct_1IZcqVRDUSzIiY6T");
+            var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, order?.PaymentAccountNumber);
             
             // To create a PaymentIntent for confirmation, see our guide at: https://stripe.com/docs/payments/payment-intents/creating-payment-intents#creating-for-automatic
             var options = new PaymentIntentConfirmOptions
