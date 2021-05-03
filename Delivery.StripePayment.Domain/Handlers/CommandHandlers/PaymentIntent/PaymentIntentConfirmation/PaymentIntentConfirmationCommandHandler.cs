@@ -9,7 +9,9 @@ using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
 using Stripe;
 
 namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.PaymentIntentConfirmation
@@ -31,8 +33,14 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             StripeConfiguration.ApiKey = stripeApiKey;
             
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
-            var order = databaseContext.Orders.FirstOrDefault(x =>
-                x.PaymentIntentId == command.StripePaymentCaptureCreationContract.StripePaymentIntentId);
+            
+            var order = await Policy.HandleResult<Delivery.Database.Entities.Order>(x => x == null)
+                .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(value: 2))
+                .ExecuteAsync(async () =>
+                {
+                    return await databaseContext.Orders.FirstOrDefaultAsync(x =>
+                        x.PaymentIntentId == command.StripePaymentCaptureCreationContract.StripePaymentIntentId);
+                });
 
             if (order == null)
             {
@@ -41,10 +49,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
                     .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
             }
             
-            //todopolly
-            
             // clone payment method to the connect account
-            //var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, "acct_1IZcqVRDUSzIiY6T");
             var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, order?.PaymentAccountNumber);
             
             // To create a PaymentIntent for confirmation, see our guide at: https://stripe.com/docs/payments/payment-intents/creating-payment-intents#creating-for-automatic
@@ -53,9 +58,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
                 //PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
                 PaymentMethod = clonePaymentMethodId
             };
-            
-            
-            //var requestOptions = new RequestOptions {StripeAccount = "acct_1IZcqVRDUSzIiY6T"};
+
             var requestOptions = new RequestOptions
             {
                 StripeAccount = order?.PaymentAccountNumber ?? throw new InvalidOperationException($"{command.StripePaymentCaptureCreationContract.StripePaymentIntentId} is not existed.")
