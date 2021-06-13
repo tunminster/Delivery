@@ -126,7 +126,7 @@ stages:
               -backend-config="storage_account_name=pngosa" \
               -backend-config="container_name=platform-tf-state-container" \
               -backend-config="key=platform-tf-state.tfstate" \
-              -backend-config="sas_token=VdocVPIo7hW/yDsMtIi6zGYYW0N+mrIcIZMSRVxJoqUKm4XQD6mouZTJIDAy0cXj6U6MViu9Kc8QgU+TX1MeDQ=="
+              -backend-config="sas_token=?sv=2020-02-10&ss=bfqt&srt=c&sp=rwdlacuptfx&se=2035-06-14T06:55:57Z&st=2021-06-13T22:55:57Z&spr=https,http&sig=1GUVBvFbBhnyMTRezGNo33onbibBpTn%2FF%2BUBvTZV8lM%3D"
             displayName: Terraform Init
             workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
             env:
