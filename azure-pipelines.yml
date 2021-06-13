@@ -120,18 +120,18 @@ stages:
           #     backendAzureRmKey: 'platform-tf-state.tfstate'
           #     allowTelemetryCollection: true
           
-          - task: TerraformCLI@0
-            inputs:
-              command: 'init'
+          # - task: TerraformCLI@0
+          #   inputs:
+          #     command: 'init'
               #commandOptions: '-reconfigure'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              backendType: 'azurerm'
+              # workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+              # backendType: 'azurerm'
               #backendServiceArm: 'hn-platform-az-connection'
               #backendAzureRmResourceGroupName: 'pngo_vn_rg'
               #backendAzureRmStorageAccountName: 'pngosa'
               #backendAzureRmContainerName: 'platform-tf-state-container'
               #backendAzureRmKey: 'platform-tf-state.tfstate'
-              allowTelemetryCollection: true
+              # allowTelemetryCollection: true
 
           - task: TerraformCLI@0
             inputs:
