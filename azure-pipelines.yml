@@ -68,8 +68,9 @@ stages:
   
   - stage: InfraProvisions
     displayName: Deploy infrastructure provisions
-    dependsOn: Build
-    condition: and(succeeded(), eq('${{ parameters.RunInfraProvisionStage }}' , true))
+    #dependsOn: Build
+    #condition: and(succeeded(), eq('${{ parameters.RunInfraProvisionStage }}' , true))
+    condition: eq('${{ parameters.RunInfraProvisionStage }}' , true)
     variables:
         - group: Hn-Platform-Infra-Variables
         - group: Hn-Platform-Infra
