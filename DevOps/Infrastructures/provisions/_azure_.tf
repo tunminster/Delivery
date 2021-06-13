@@ -7,9 +7,9 @@ provider "azurerm" {
 
 terraform{
   backend "azurerm" {
-    storage_account_name = "pngosa"
-    container_name       = "platform-tf-state-container"
-    key                  = "platform-tf-state.tfstate"
+    #storage_account_name = "pngosa"
+    #container_name       = "platform-tf-state-container"
+    #key                  = "platform-tf-state.tfstate"
 
   }
 }
