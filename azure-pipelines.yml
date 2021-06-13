@@ -123,10 +123,10 @@ stages:
           
           - bash: |
               terraform init \
-              -backend-config="storage_account_name=pngosa" \
-              -backend-config="container_name=platform-tf-state-container" \
-              -backend-config="key=platform-tf-state.tfstate" \
-              -backend-config="access_key=VdocVPIo7hW/yDsMtIi6zGYYW0N+mrIcIZMSRVxJoqUKm4XQD6mouZTJIDAy0cXj6U6MViu9Kc8QgU+TX1MeDQ=="
+              -backend-config="storage_account_name=$TF_STATE_BLOB_ACCOUNT_NAME" \
+              -backend-config="container_name=$TF_STATE_BLOB_CONTAINER_NAME" \
+              -backend-config="key=$TF_STATE_BLOB_FILE" \
+              -backend-config="access_key=$TF_STATE_BLOB_Access_TOKEN"
             displayName: Terraform Init
             workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
             env:
@@ -134,9 +134,10 @@ stages:
               ARM_CLIENT_SECRET: $(app-dev-secret)
               ARM_SUBSCRIPTION_ID: $(app-dev-subscription-id)
               ARM_TENANT_ID: $(app-dev-tenant-id)
-              TF_STATE_BLOB_ACCOUNT_NAME:   'pngosa'
-              TF_STATE_BLOB_CONTAINER_NAME: 'platform-tf-state-container'
-              TF_STATE_BLOB_FILE:           'platform-tf-state.tfstate'
+              TF_STATE_BLOB_ACCOUNT_NAME:   $(tf-state-account-name)
+              TF_STATE_BLOB_CONTAINER_NAME: $(tf-state-blob-container)
+              TF_STATE_BLOB_FILE:           $(tf-state-blob-fille)
+              TF_STATE_BLOB_Access_TOKEN:   $(tf-state-access-token)
               
 
           # - task: Bash@3
