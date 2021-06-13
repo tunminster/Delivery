@@ -111,7 +111,7 @@ stages:
             inputs:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              #backendType: 'azurerm'
+              backendType: 'azurerm'
               #backendServiceArm: 'hn-platform-az-connection'
               #backendAzureRmResourceGroupName: 'pngo_vn_rg'
               #backendAzureRmStorageAccountName: 'pngosa'
