@@ -104,20 +104,20 @@ stages:
           - task: TerraformInstaller@0
             displayName: 'Install latest terraform'
             inputs:
-              terraformVersion: '2.40.0'
+              terraformVersion: 'latest'
 
           - task: TerraformCLI@0
             displayName: 'Init terraform'
             inputs:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              backendType: 'azurerm'
-              backendServiceArm: 'hn-platform-az-connection'
-              backendAzureRmResourceGroupName: 'pngo_vn_rg'
-              backendAzureRmStorageAccountName: 'pngosa'
-              backendAzureRmContainerName: 'platform-tf-state-container'
-              backendAzureRmKey: 'platform-tf-state.tfstate'
-              allowTelemetryCollection: true
+              #backendType: 'azurerm'
+              #backendServiceArm: 'hn-platform-az-connection'
+              #backendAzureRmResourceGroupName: 'pngo_vn_rg'
+              #backendAzureRmStorageAccountName: 'pngosa'
+              #backendAzureRmContainerName: 'platform-tf-state-container'
+              #backendAzureRmKey: 'platform-tf-state.tfstate'
+              #allowTelemetryCollection: true
 
           - task: TerraformCLI@0
             displayName: 'Validate terraform'
@@ -134,14 +134,14 @@ stages:
               commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
 
-          - task: TerraformCLI@0
-            displayName: 'Apply terraform'
-            inputs:
-              command: 'apply'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              environmentServiceName: 'hn-platform-az-Connection'
-              commandOptions: '-var-file=$(tfvarfile) -input=false -auto-approve'
-              allowTelemetryCollection: true
+          # - task: TerraformCLI@0
+          #   displayName: 'Apply terraform'
+          #   inputs:
+          #     command: 'apply'
+          #     workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+          #     environmentServiceName: 'hn-platform-az-Connection'
+          #     commandOptions: '-var-file=$(tfvarfile) -input=false -auto-approve'
+          #     allowTelemetryCollection: true
 
   - stage: DeployDev
     displayName: Deploy Development Env
