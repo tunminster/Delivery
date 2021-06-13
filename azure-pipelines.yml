@@ -134,6 +134,17 @@ stages:
               allowTelemetryCollection: true
 
           - task: TerraformCLI@0
+            inputs:
+              command: 'init'
+              commandOptions: '-reconfigure=true'
+              backendType: 'azurerm'
+              backendServiceArm: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
+              backendAzureRmResourceGroupName: 'pngo_vn_rg'
+              backendAzureRmStorageAccountName: 'pngosa'
+              backendAzureRmContainerName: 'platform-tf-state-container'
+              backendAzureRmKey: 'platform-tf-state.tfstate'
+              allowTelemetryCollection: true
+          - task: TerraformCLI@0
             displayName: 'Validate terraform'
             inputs:
               command: 'validate'
