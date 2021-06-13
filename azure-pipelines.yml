@@ -122,7 +122,8 @@ stages:
           
           - task: TerraformCLI@0
             inputs:
-              command: 'init -reconfigure'
+              command: 'init'
+              commandOptions: '-reconfigure'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
               backendType: 'azurerm'
               backendServiceArm: 'hn-platform-az-connection'
