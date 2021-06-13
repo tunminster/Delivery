@@ -112,12 +112,12 @@ stages:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
               backendType: 'azurerm'
-              #backendServiceArm: 'hn-platform-az-connection'
-              #backendAzureRmResourceGroupName: 'pngo_vn_rg'
-              #backendAzureRmStorageAccountName: 'pngosa'
-              #backendAzureRmContainerName: 'platform-tf-state-container'
-              #backendAzureRmKey: 'platform-tf-state.tfstate'
-              #allowTelemetryCollection: true
+              backendServiceArm: 'hn-platform-az-connection'
+              backendAzureRmResourceGroupName: 'pngo_vn_rg'
+              backendAzureRmStorageAccountName: 'pngosa'
+              backendAzureRmContainerName: 'platform-tf-state-container'
+              backendAzureRmKey: 'platform-tf-state.tfstate'
+              allowTelemetryCollection: true
 
           - task: TerraformCLI@0
             displayName: 'Validate terraform'
