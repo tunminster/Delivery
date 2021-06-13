@@ -122,18 +122,18 @@ stages:
           #     allowTelemetryCollection: true
           
           - bash: |
-              terraform init \
-                -backend-config="storage_account_name=$TF_STATE_BLOB_ACCOUNT_NAME" \
-                -backend-config="container_name=$TF_STATE_BLOB_CONTAINER_NAME" \
-                -backend-config="key=$TF_STATE_BLOB_FILE" \
-                -backend-config="sas_token=$TF_STATE_BLOB_SAS_TOKEN"
+              terraform init 
             displayName: Terraform Init
             workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
             env:
+              ARM_CLIENT_ID: $(servicePrincipalClientId)
+              ARM_CLIENT_SECRET: $(servicePrincipalAuthKey)
+              ARM_SUBSCRIPTION_ID: $(parameters.subscriptionId)
+              ARM_TENANT_ID: $(parameters.tenantId)
               TF_STATE_BLOB_ACCOUNT_NAME:   'pngosa'
               TF_STATE_BLOB_CONTAINER_NAME: 'platform-tf-state-container'
               TF_STATE_BLOB_FILE:           'platform-tf-state.tfstate'
-              TF_STATE_BLOB_SAS_TOKEN:      'VdocVPIo7hW/yDsMtIi6zGYYW0N+mrIcIZMSRVxJoqUKm4XQD6mouZTJIDAy0cXj6U6MViu9Kc8QgU+TX1MeDQ=='
+              
 
           # - task: Bash@3
           #   displayName: 'Init terraform'
