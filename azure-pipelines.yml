@@ -107,34 +107,54 @@ stages:
             inputs:
               terraformVersion: 'latest'
 
-          - task: TerraformCLI@0
+          # - task: TerraformCLI@0
+          #   displayName: 'Init terraform'
+          #   inputs:
+          #     command: 'init'
+          #     commandOptions: '-reconfigure'
+          #     workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+          #     backendType: azurerm
+          #     backendServiceArm: 'hn-platform-az-connection'
+          #     backendAzureRmResourceGroupName: 'pngo_vn_rg'
+          #     backendAzureRmStorageAccountName: 'pngosa'
+          #     backendAzureRmContainerName: 'platform-tf-state-container'
+          #     backendAzureRmKey: 'platform-tf-state.tfstate'
+          #     allowTelemetryCollection: true
+          
+          - task: Bash@3
             displayName: 'Init terraform'
             inputs:
-              command: 'init'
-              commandOptions: '-reconfigure'
+              targetType: 'inline'
+              script: 'terraform init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              backendType: azurerm
-              backendServiceArm: 'hn-platform-az-connection'
-              backendAzureRmResourceGroupName: 'pngo_vn_rg'
-              backendAzureRmStorageAccountName: 'pngosa'
-              backendAzureRmContainerName: 'platform-tf-state-container'
-              backendAzureRmKey: 'platform-tf-state.tfstate'
-              allowTelemetryCollection: true
-          
-         
-          - task: TerraformCLI@0
+              
+          - task: Bash@3
             displayName: 'Validate terraform'
             inputs:
-              command: 'validate'
-              allowTelemetryCollection: true
+              targetType: 'inline'
+              script: 'terraform validate'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'    
 
-          - task: TerraformCLI@0
+          # - task: TerraformCLI@0
+          #   displayName: 'Validate terraform'
+          #   inputs:
+          #     command: 'validate'
+          #     allowTelemetryCollection: true
+
+          - task: Bash@3
             displayName: 'Plan terraform'
             inputs:
-              command: 'plan'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              environmentServiceName: 'hn-platform-az-Connection'
-              commandOptions: '-var-file=$(tfvarfile) -input=false'
+              targetType: 'inline'
+              script: 'terraform plan -var-file=$(tfvarfile) -input=false'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions' 
+
+          # - task: TerraformCLI@0
+          #   displayName: 'Plan terraform'
+          #   inputs:
+          #     command: 'plan'
+          #     workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+          #     environmentServiceName: 'hn-platform-az-Connection'
+          #     commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
 
           # - task: TerraformCLI@0
