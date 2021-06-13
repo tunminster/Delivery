@@ -166,6 +166,11 @@ stages:
               targetType: 'inline'
               script: 'terraform plan -var-file=$(tfvarfile) -input=false'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions' 
+            env:
+              ARM_CLIENT_ID: $(app-dev-client-id)
+              ARM_CLIENT_SECRET: $(app-dev-secret)
+              ARM_SUBSCRIPTION_ID: $(app-dev-subscription-id)
+              ARM_TENANT_ID: $(app-dev-tenant-id)
 
           # - task: TerraformCLI@0
           #   displayName: 'Plan terraform'
