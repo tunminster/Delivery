@@ -107,44 +107,21 @@ stages:
             inputs:
               terraformVersion: 'latest'
 
-          # - task: TerraformCLI@0
-          #   displayName: 'Init terraform'
-          #   inputs:
-          #     command: 'init'
-          #     workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-          #     backendType: 'azurerm'
-          #     backendServiceArm: 'hn-platform-az-connection'
-          #     backendAzureRmResourceGroupName: 'pngo_vn_rg'
-          #     backendAzureRmStorageAccountName: 'pngosa'
-          #     backendAzureRmContainerName: 'platform-tf-state-container'
-          #     backendAzureRmKey: 'platform-tf-state.tfstate'
-          #     allowTelemetryCollection: true
-          
-          # - task: TerraformCLI@0
-          #   inputs:
-          #     command: 'init'
-              #commandOptions: '-reconfigure'
-              # workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              # backendType: 'azurerm'
-              #backendServiceArm: 'hn-platform-az-connection'
-              #backendAzureRmResourceGroupName: 'pngo_vn_rg'
-              #backendAzureRmStorageAccountName: 'pngosa'
-              #backendAzureRmContainerName: 'platform-tf-state-container'
-              #backendAzureRmKey: 'platform-tf-state.tfstate'
-              # allowTelemetryCollection: true
-
           - task: TerraformCLI@0
+            displayName: 'Init terraform'
             inputs:
               command: 'init'
-              commandOptions: '-reconfigure=true'
+              commandOptions: '-reconfigure'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
-              backendType: 'azurerm'
-              backendServiceArm: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
+              backendType: azurerm
+              backendServiceArm: 'hn-platform-az-connection'
               backendAzureRmResourceGroupName: 'pngo_vn_rg'
               backendAzureRmStorageAccountName: 'pngosa'
               backendAzureRmContainerName: 'platform-tf-state-container'
               backendAzureRmKey: 'platform-tf-state.tfstate'
               allowTelemetryCollection: true
+          
+         
           - task: TerraformCLI@0
             displayName: 'Validate terraform'
             inputs:
