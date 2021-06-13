@@ -123,9 +123,10 @@ stages:
           
           - bash: |
               terraform init \
-              -backend-config="storage_account_name=$TF_STATE_BLOB_ACCOUNT_NAME" \
-              -backend-config="container_name=$TF_STATE_BLOB_CONTAINER_NAME" \
-              -backend-config="key=$TF_STATE_BLOB_FILE" \
+              -backend-config="storage_account_name=pngosa" \
+              -backend-config="container_name=platform-tf-state-container" \
+              -backend-config="key=platform-tf-state.tfstate" \
+              -backend-config="sas_token=VdocVPIo7hW/yDsMtIi6zGYYW0N+mrIcIZMSRVxJoqUKm4XQD6mouZTJIDAy0cXj6U6MViu9Kc8QgU+TX1MeDQ=="
             displayName: Terraform Init
             workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
             env:
