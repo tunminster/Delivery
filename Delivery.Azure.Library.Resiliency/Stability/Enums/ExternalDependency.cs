@@ -11,6 +11,7 @@ namespace Delivery.Azure.Library.Resiliency.Stability.Enums
         [EnumMember] PlatformDatabase,
         [EnumMember] KeyVault,
         [EnumMember] Cosmos,
-        [EnumMember] SendGrid
+        [EnumMember] SendGrid,
+        [EnumMember] NotificationHub
     }
 }

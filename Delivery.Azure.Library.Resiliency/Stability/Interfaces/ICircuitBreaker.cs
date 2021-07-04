@@ -114,5 +114,20 @@ namespace Delivery.Azure.Library.Resiliency.Stability.Interfaces
 		/// <param name="customTelemetryProperties">Information that will be used in telemetry</param>
 		/// <returns>Response from Azure Service Bus</returns>
 		Task<Message> CommunicateWithServiceBusAsync(Func<Task<Message>> communicationFunc, AsyncRetryPolicy? retryPolicy = null, CancellationToken? cancellationToken = null, int? retries = null, int? retryWaitMilliseconds = null, Dictionary<string, string>? customTelemetryProperties = null);
+		
+		/// <summary>
+		///     Communicates with Azure Notification hub by using the Circuit Breaker-principle
+		/// </summary>
+		/// <param name="communicationFunc">
+		///     Function to communicate with Azure Notification Hub. Note: function must create BrokeredMessage in scope
+		///     for retry logic
+		/// </param>
+		/// <param name="retryPolicy">Retry policy to use, if applicable</param>
+		/// <param name="cancellationToken">Cancellation Token</param>
+		/// <param name="retries">The number of times to retry. Important: use only for GET requests</param>
+		/// <param name="retryWaitMilliseconds">The amount of time to wait in between retries</param>
+		/// <param name="customTelemetryProperties">Information that will be used in telemetry</param>
+		/// <returns>Response from Azure Notification hub</returns>
+		Task<string> CommunicateWithNotificationHubAsync(Func<Task<string>> communicationFunc, AsyncRetryPolicy? retryPolicy = null, CancellationToken? cancellationToken = null, int? retries = null, int? retryWaitMilliseconds = null, Dictionary<string, string>? customTelemetryProperties = null);
 	}
 }
