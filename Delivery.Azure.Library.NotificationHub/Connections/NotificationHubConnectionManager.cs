@@ -46,11 +46,11 @@ namespace Delivery.Azure.Library.NotificationHub.Connections
         
         private TConnection CreateNotificationHubConnection(IConnectionMetadata connectionMetadata, string connectionString)
         {
-            var queueOrTopicName = connectionMetadata.EntityName;
+            var hubName = connectionMetadata.EntityName;
 
             connectionString = ReplaceEntityPath(connectionString);
 
-            var messageSender = CreateConnection(connectionMetadata, connectionString, queueOrTopicName);
+            var messageSender = CreateConnection(connectionMetadata, connectionString, hubName);
             return messageSender;
         }
         

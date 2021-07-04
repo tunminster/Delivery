@@ -71,6 +71,7 @@
     <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\Delivery.Notifications\Delivery.Notifications.csproj" />
     <ProjectReference Include="..\Delivery.Order.Domain\Delivery.Order.Domain.csproj" />
     <ProjectReference Include="..\Delivery.Product.Domain\Delivery.Product.Domain.csproj" />
     <ProjectReference Include="..\Delivery.Address.Domain\Delivery.Address.Domain.csproj">
