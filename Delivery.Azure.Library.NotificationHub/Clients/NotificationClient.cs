@@ -25,8 +25,6 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
     public class NotificationClient : NotificationHubSenderMiddleware, INotificationClient
     {
         private readonly IServiceProvider serviceProvider;
-        
-
         protected NotificationClient(IServiceProvider serviceProvider, NotificationHubSenderConnection notificationHubSenderConnection) 
             : base(serviceProvider, notificationHubSenderConnection)
         {
