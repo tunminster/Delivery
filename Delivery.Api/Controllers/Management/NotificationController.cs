@@ -6,6 +6,7 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Notifications.Contracts.V1.RestContracts;
 using Delivery.Notifications.Handlers.CommandHandlers.CreateRegistrationId;
+using Delivery.Notifications.Handlers.CommandHandlers.DeleteRegisterDevice;
 using Delivery.Notifications.Handlers.CommandHandlers.RegisterDevice;
 using Delivery.Notifications.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -77,5 +78,29 @@ namespace Delivery.Api.Controllers.Management
                 await new RegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
             return Ok(deviceRegistrationResponseContract);
         }
+
+        /// <summary>
+        ///  Delete registration
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("Register")]
+        [ProducesResponseType(typeof(DeviceRegistrationResponseContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> DeleteRegistrationAsync(string id)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var command = new DeleteRegisterCommand(id);
+            var registrationId = await new DeleteRegisterCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+
+            var deviceRegistrationResponseContract = new DeviceRegistrationResponseContract
+            {
+                Id = registrationId
+            };
+            
+            return Ok(deviceRegistrationResponseContract);
+        }
+        
     }
 }
