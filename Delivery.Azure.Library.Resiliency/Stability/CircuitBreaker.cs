@@ -150,6 +150,16 @@ namespace Delivery.Azure.Library.Resiliency.Stability
 
 			return await ExecuteWithResultAsync(communicationFunc, UnhealthyResultPredicate, retryPolicy, retries, customTelemetryProperties: customTelemetryProperties);
 		}
+		
+		public async Task<string> CommunicateWithNotificationHubAsync(Func<Task<string>> communicationFunc, AsyncRetryPolicy? retryPolicy = null, CancellationToken? cancellationToken = null, int? retries = null, int? retryWaitMilliseconds = null, Dictionary<string, string>? customTelemetryProperties = null)
+		{
+			retries ??= configurationDefinition.DefaultRetryLimit;
+			bool UnhealthyResultPredicate(string result) => false;
+
+			customTelemetryProperties = EnrichTelemetry(DependencyType.Messaging, customTelemetryProperties);
+
+			return await ExecuteWithResultAsync(communicationFunc, UnhealthyResultPredicate, retryPolicy, retries, customTelemetryProperties: customTelemetryProperties);
+		}
 
 		private async Task ExecuteAsync(Func<Task> communicationFunc, Func<Exception, bool> unhealthyResultPredicate, AsyncRetryPolicy? retryPolicy = null, int? retries = null, int? retryWaitMilliseconds = 200, Dictionary<string, string>? customTelemetryProperties = null)
 		{

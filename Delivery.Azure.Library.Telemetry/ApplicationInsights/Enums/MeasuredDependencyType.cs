@@ -12,6 +12,7 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.Enums
         [EnumMember] AzureEventHub,
         [EnumMember] AzureQueue,
         [EnumMember] AzureServiceBus,
+        [EnumMember] AzureNotificationHub,
         [EnumMember] AzureStorage,
         [EnumMember] AzureTable,
         [EnumMember] Sql,

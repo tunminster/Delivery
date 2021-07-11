@@ -58,7 +58,6 @@ namespace Delivery.Azure.Library.Messaging.ServiceBus.Connections
 			var entityPath = "EntityPath=";
 			if (connectionString.Contains(entityPath))
 			{
-				// service bus has a strange quirk where it creates a connection string containing the entity path but doesn't allow to use it
 				connectionString = connectionString.Split(entityPath)[0];
 			}
 
