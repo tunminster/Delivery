@@ -52,7 +52,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
         public async Task<string> CreateRegistrationIdAsync(RegistrationIdCreationModel registrationIdCreationModel)
         {
             var dependencyName = NotificationHubSenderConnection.Hub.GetBaseUri();
-            var dependencyData = new DependencyData("SendNotification", registrationIdCreationModel.Handle);
+            var dependencyData = new DependencyData("CreateNotificationRegistrationId", registrationIdCreationModel.Handle);
             var dependencyTarget = NotificationHubSenderConnection.Hub.GetBaseUri().AbsolutePath;
 
             var hub = NotificationHubSenderConnection.Hub;
@@ -111,7 +111,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
             var hub = NotificationHubSenderConnection.Hub;
             
             var dependencyName = NotificationHubSenderConnection.Hub.GetBaseUri();
-            var dependencyData = new DependencyData("SendNotification", deviceRegistrationCreateModel.ConvertToJson());
+            var dependencyData = new DependencyData("RegisterNotificationDevice", deviceRegistrationCreateModel.ConvertToJson());
             var dependencyTarget = NotificationHubSenderConnection.Hub.GetBaseUri().AbsolutePath;
             var telemetryContextProperties = new Dictionary<string, string>
             {
@@ -167,7 +167,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
             var hub = NotificationHubSenderConnection.Hub;
             
             var dependencyName = NotificationHubSenderConnection.Hub.GetBaseUri();
-            var dependencyData = new DependencyData("SendNotification", registrationDeleteModel.ConvertToJson());
+            var dependencyData = new DependencyData("DeleteNotificationRegistration", registrationDeleteModel.ConvertToJson());
             var dependencyTarget = NotificationHubSenderConnection.Hub.GetBaseUri().AbsolutePath;
             var telemetryContextProperties = new Dictionary<string, string>
             {
@@ -182,6 +182,74 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                     dependencyData.ConvertToJson(), dependencyTarget)
                 .WithContextualInformation(telemetryContextProperties)
                 .TrackAsync(async () => await hub.DeleteRegistrationAsync(registrationDeleteModel.RegistrationId));
+        }
+
+        public async Task<HttpStatusCode> SendNotificationToUser(NotificationSendModel notificationSendModel)
+        {
+            var hub = NotificationHubSenderConnection.Hub;
+            
+            var dependencyName = NotificationHubSenderConnection.Hub.GetBaseUri();
+            var dependencyData = new DependencyData("SendNotification", notificationSendModel.ConvertToJson());
+            var dependencyTarget = NotificationHubSenderConnection.Hub.GetBaseUri().AbsolutePath;
+            var telemetryContextProperties = new Dictionary<string, string>
+            {
+                {"Body", notificationSendModel.ConvertToJson()},
+                {CustomProperties.CorrelationId, notificationSendModel.CorrelationId},
+                {CustomProperties.Shard, notificationSendModel.ShardKey},
+                {CustomProperties.Ring, notificationSendModel.RingKey}
+            };
+            
+            var user = notificationSendModel.Username;
+            string[] userTag = new string[2];
+            userTag[0] = "username:" + notificationSendModel.ToTag;
+            userTag[1] = "from:" + user;
+            
+            NotificationOutcome outcome = null;
+            HttpStatusCode httpStatusCode = HttpStatusCode.InternalServerError;
+
+            switch (notificationSendModel.Pns.ToLower())
+            {
+                case "wns":
+                    // Windows 8.1 / Windows Phone 8.1
+                    var toast = @"<toast><visual><binding template=""ToastText01""><text id=""1"">" + 
+                                "From " + user + ": " + notificationSendModel.Message + "</text></binding></visual></toast>";
+                    
+                    outcome = await new DependencyMeasurement(serviceProvider)
+                        .ForDependency(dependencyName.ToString(), MeasuredDependencyType.AzureNotificationHub,
+                            dependencyData.ConvertToJson(), dependencyTarget)
+                        .WithContextualInformation(telemetryContextProperties)
+                        .TrackAsync(async () => await hub.SendWindowsNativeNotificationAsync(toast, userTag));
+                    break;
+                case "apns":
+                    // iOS
+                    var alert = "{\"aps\":{\"alert\":\"" + "From " + user + ": " + notificationSendModel.Message + "\"}}";
+                    outcome = await new DependencyMeasurement(serviceProvider)
+                        .ForDependency(dependencyName.ToString(), MeasuredDependencyType.AzureNotificationHub,
+                            dependencyData.ConvertToJson(), dependencyTarget)
+                        .WithContextualInformation(telemetryContextProperties)
+                        .TrackAsync(async () => await hub.SendAppleNativeNotificationAsync(alert, userTag));
+                    break;
+                case "fcm":
+                    // Android
+                    var notif = "{ \"data\" : {\"message\":\"" + "From " + user + ": " + notificationSendModel.Message + "\"}}";
+                    outcome = await new DependencyMeasurement(serviceProvider)
+                        .ForDependency(dependencyName.ToString(), MeasuredDependencyType.AzureNotificationHub,
+                            dependencyData.ConvertToJson(), dependencyTarget)
+                        .WithContextualInformation(telemetryContextProperties)
+                        .TrackAsync(async () => await hub.SendFcmNativeNotificationAsync(notif, userTag));
+                    break;
+            }
+            
+            if (outcome != null)
+            {
+                if (!((outcome.State == Microsoft.Azure.NotificationHubs.NotificationOutcomeState.Abandoned) ||
+                      (outcome.State == Microsoft.Azure.NotificationHubs.NotificationOutcomeState.Unknown)))
+                {
+                    httpStatusCode = HttpStatusCode.OK;
+                }
+            }
+
+            return httpStatusCode;
         }
 
         private static void ReturnGoneIfHubResponseIsGone(MessagingException e)

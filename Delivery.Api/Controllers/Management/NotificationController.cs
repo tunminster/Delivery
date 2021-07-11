@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.NotificationHub.Contracts.V1;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Notifications.Contracts.V1.Enums;
 using Delivery.Notifications.Contracts.V1.RestContracts;
 using Delivery.Notifications.Handlers.CommandHandlers.CreateRegistrationId;
 using Delivery.Notifications.Handlers.CommandHandlers.DeleteRegisterDevice;
 using Delivery.Notifications.Handlers.CommandHandlers.RegisterDevice;
+using Delivery.Notifications.Handlers.CommandHandlers.SendNotificationToUser;
 using Delivery.Notifications.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -100,6 +102,32 @@ namespace Delivery.Api.Controllers.Management
             };
             
             return Ok(deviceRegistrationResponseContract);
+        }
+
+        /// <summary>
+        ///  Send push notification
+        /// </summary>
+        /// <param name="notificationRequestContract"></param>
+        /// <returns></returns>
+        [HttpPost("Send/Message")]
+        [ProducesResponseType(typeof(NotificationResponseContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> SendPushNotificationAsync(NotificationRequestContract notificationRequestContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var command = new SendNotificationToUserCommand(notificationRequestContract);
+
+            await new SendNotificationToUserCommandHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(command);
+
+            var notificationResponseContract = new NotificationResponseContract
+            {
+                Status = NotificationStatus.Created,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+
+            return Ok(notificationResponseContract);
         }
         
     }

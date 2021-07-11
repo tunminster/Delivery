@@ -6,4 +6,9 @@ namespace Delivery.Domain.CommandHandlers
     {
         Task<TResult> Handle(TCommand command);
     }
+    
+    public interface ICommandHandler<TCommand>
+    {
+        Task Handle(TCommand command);
+    }
 }

@@ -33,5 +33,12 @@ namespace Delivery.Azure.Library.NotificationHub.Clients.Interfaces
         /// <param name="registrationDeleteModel"></param>
         /// <returns></returns>
         Task DeleteRegistration(RegistrationDeleteModel registrationDeleteModel);
+
+        /// <summary>
+        ///  Send notification model
+        /// </summary>
+        /// <param name="notificationSendModel"></param>
+        /// <returns></returns>
+        Task<HttpStatusCode> SendNotificationToUser(NotificationSendModel notificationSendModel);
     }
 }
