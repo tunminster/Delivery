@@ -53,6 +53,8 @@ namespace Delivery.Database.Context
         
         public DbSet<StorePaymentAccount> StorePaymentAccounts { get; set; }
         
+        public DbSet<Driver> Drivers { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
