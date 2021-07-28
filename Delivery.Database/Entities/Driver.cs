@@ -42,6 +42,9 @@ namespace Delivery.Database.Entities
         [MaxLength(500)]
         public string DrivingLicenseBackUri { get; set; }
         
+        [MaxLength(250)]
+        public string ServiceArea { get; set; }
+        
         [MaxLength(50)]
         public string InsertedBy { get; set; }
         public DateTimeOffset InsertionDateTime { get; set; }
