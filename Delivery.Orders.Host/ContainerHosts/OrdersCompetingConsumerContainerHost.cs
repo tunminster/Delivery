@@ -10,6 +10,8 @@ using Delivery.Azure.Library.Microservices.Hosting.Hosts;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Metrics;
 using Delivery.Domain.Contracts.Enums;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
+using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
@@ -105,6 +107,14 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var storeIndexMessageHandler = new StoreIndexingMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(storeIndexingMessageContract.RequestContext));
                     await storeIndexMessageHandler.HandleMessageAsync(storeIndexingMessageContract, processingState);
+                    break;
+                
+                case nameof(DriverCreationMessageContract):
+                    var driverCreationMessageContract = message.Deserialize<DriverCreationMessageContract>();
+                    var driverCreationMessageHandler = new DriverCreationMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(driverCreationMessageContract.RequestContext));
+                    await driverCreationMessageHandler.HandleMessageAsync(driverCreationMessageContract,
+                        processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");

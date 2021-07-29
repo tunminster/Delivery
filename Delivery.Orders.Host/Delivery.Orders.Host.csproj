@@ -31,6 +31,7 @@
       <ProjectReference Include="..\Delivery.Azure.Library.Storage\Delivery.Azure.Library.Storage.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.WebApi\Delivery.Azure.Library.WebApi.csproj" />
       <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.Driver.Domain\Delivery.Driver.Domain.csproj" />
       <ProjectReference Include="..\Delivery.Order.Domain\Delivery.Order.Domain.csproj" />
       <ProjectReference Include="..\Delivery.Store.Domain\Delivery.Store.Domain.csproj" />
       <ProjectReference Include="..\Delivery.StripePayment.Domain\Delivery.StripePayment.Domain.csproj" />
