@@ -14,19 +14,19 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
         ///  The id that stripe provides by calling the create payment id
         /// </summary>
         [DataMember]
-        public string StripePaymentIntentId { get; set; }
-        
+        public string StripePaymentIntentId { get; set; } = string.Empty;
+
         /// <summary>
         ///  The id that stripe provides by calling the create payment type
         /// </summary>
         [DataMember]
-        public string StripePaymentMethodId { get; set; }
-        
+        public string StripePaymentMethodId { get; set; } = string.Empty;
+
         /// <summary>
         ///  The finger print that stripe provides by calling the create payment type
         /// </summary>
         [DataMember]
-        public string StripeFingerPrint { get; set; }
+        public string StripeFingerPrint { get; set; } = string.Empty;
 
         public override string ToString()
         {

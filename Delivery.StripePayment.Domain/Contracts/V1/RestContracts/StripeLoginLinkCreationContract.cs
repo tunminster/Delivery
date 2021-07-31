@@ -10,8 +10,7 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
     [DataContract]
     public class StripeLoginLinkCreationContract
     {
-        [DataMember]
-        public string AccountId { get; set; }
+        [DataMember] public string AccountId { get; set; } = string.Empty;
 
         public override string ToString()
         {
