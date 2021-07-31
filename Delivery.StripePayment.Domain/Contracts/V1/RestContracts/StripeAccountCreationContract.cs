@@ -15,9 +15,9 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
         
         [DataMember]
         public StripeCountryCode StripeCountryCode { get; set; }
-        
-        [DataMember]
-        public string Email { get; set; }
+
+        [DataMember] 
+        public string Email { get; set; } = string.Empty;
         
         [DataMember]
         public bool AccountPaymentOption { get; set; }
