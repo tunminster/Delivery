@@ -209,7 +209,7 @@ namespace Delivery.Api.Controllers
         [HttpGet("Stores-Search")]
         [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetStoreSearchAsync(string searchQuery, string filters, string storeTypes,
+        public async Task<IActionResult> GetStoreSearchAsync(string? searchQuery, string? filters, string? storeTypes,
             string latitude, string longitude, string page, string pageSize, CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
