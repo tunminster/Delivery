@@ -59,6 +59,7 @@ namespace Delivery.Database.Context
         public DbSet<Report> Reports { get; set; }
         public DbSet<OpeningHour> OpeningHours { get; set; }
         public DbSet<StorePaymentAccount> StorePaymentAccounts { get; set; }
+        public DbSet<Driver> Drivers { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

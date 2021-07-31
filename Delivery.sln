@@ -95,6 +95,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Azure.Library.Noti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Notifications", "Delivery.Notifications\Delivery.Notifications.csproj", "{2C9A115D-9764-4B3D-870C-B8F0D92AC1C3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Drivers", "Drivers", "{E47CB849-5D3F-44F8-BADD-6C34FE5E6AAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Driver.Domain", "Delivery.Driver.Domain\Delivery.Driver.Domain.csproj", "{CEDC3CF7-C70B-44F6-9F23-9E9BBF1D310B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -225,6 +229,10 @@ Global
 		{2C9A115D-9764-4B3D-870C-B8F0D92AC1C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C9A115D-9764-4B3D-870C-B8F0D92AC1C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C9A115D-9764-4B3D-870C-B8F0D92AC1C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEDC3CF7-C70B-44F6-9F23-9E9BBF1D310B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEDC3CF7-C70B-44F6-9F23-9E9BBF1D310B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEDC3CF7-C70B-44F6-9F23-9E9BBF1D310B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEDC3CF7-C70B-44F6-9F23-9E9BBF1D310B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -275,5 +283,7 @@ Global
 		{D43F228A-9744-4570-BB66-4A57B3226A43} = {BB999488-A917-444D-B2B7-438CA498A816}
 		{BF994038-E205-4D4E-8AF9-20AF569F8FBB} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
 		{2C9A115D-9764-4B3D-870C-B8F0D92AC1C3} = {DD596254-9ACF-448E-926E-4183C546239E}
+		{E47CB849-5D3F-44F8-BADD-6C34FE5E6AAE} = {138DD804-2DE2-4127-A54C-2D138E40BF22}
+		{CEDC3CF7-C70B-44F6-9F23-9E9BBF1D310B} = {E47CB849-5D3F-44F8-BADD-6C34FE5E6AAE}
 	EndGlobalSection
 EndGlobal
