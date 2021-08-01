@@ -36,7 +36,7 @@ namespace Delivery.Api.Controllers
     /// </summary>
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class DriversController : Controller
+    public class DriversController : ControllerBase
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IJwtFactory jwtFactory;
@@ -63,7 +63,7 @@ namespace Delivery.Api.Controllers
             IEnumerable<IUserValidator<Database.Models.ApplicationUser>> userValidators,
             IEnumerable<IPasswordValidator<Database.Models.ApplicationUser>> passwordValidators,
             IJwtFactory jwtFactory,
-            JwtIssuerOptions jwtOptions,
+            IOptions<JwtIssuerOptions> jwtOptions,
             ILookupNormalizer keyNormalizer,
             IdentityErrorDescriber errors,
             ILogger<UserManager<Database.Models.ApplicationUser>> logger
@@ -75,7 +75,7 @@ namespace Delivery.Api.Controllers
             this.userValidators = userValidators;
             this.passwordValidators = passwordValidators;
             this.jwtFactory = jwtFactory;
-            this.jwtOptions = jwtOptions;
+            this.jwtOptions = jwtOptions.Value;
             this.keyNormalizer = keyNormalizer;
             this.errors = errors;
             this.logger = logger;
