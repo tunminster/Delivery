@@ -45,6 +45,8 @@ namespace Delivery.Database.Entities
         [MaxLength(250)]
         public string ServiceArea { get; set; }
         
+        public bool Approved { get; set; }
+        
         [MaxLength(50)]
         public string InsertedBy { get; set; }
         public DateTimeOffset InsertionDateTime { get; set; }
