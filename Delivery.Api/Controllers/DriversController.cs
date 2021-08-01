@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Azure.Library.WebApi.ModelBinders;
+using Delivery.Customer.Domain.CommandHandlers;
+using Delivery.Customer.Domain.Contracts.RestContracts;
 using Delivery.Database.Context;
+using Delivery.Database.Models;
 using Delivery.Domain.Factories;
 using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.FrameWork.Context;
@@ -111,6 +115,11 @@ namespace Delivery.Api.Controllers
             var driverImageCreationStatusContract = await new DriverService(serviceProvider, executingRequestContextAdapter)
                 .UploadDriverImagesAsync(driverImageCreationContract);
 
+            if(!await CreateUserAsync(driverCreationContract, executingRequestContextAdapter))
+            {
+                throw new InvalidOperationException($"{nameof(DriverCreationContract)} should be able to create a user account. Instead: throw errors with {driverCreationContract.ConvertToJson()}")
+            }
+
             var driverCreationStatusContract = new DriverCreationStatusContract
             {
                 DateCreated = DateTimeOffset.UtcNow,
@@ -171,6 +180,47 @@ namespace Delivery.Api.Controllers
             
             var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, driverLoginContract.Username, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
             return new OkObjectResult(jwt);
+        }
+
+        private async Task<bool> CreateUserAsync(DriverCreationContract driverCreationContract, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            using var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
+            
+            var user = new Database.Models.ApplicationUser { UserName = driverCreationContract.EmailAddress, Email = driverCreationContract.EmailAddress };
+            var result = await userManager.CreateAsync(user, driverCreationContract.Password);
+            
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, "Driver");
+                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
+                    ClaimValueTypes.String);
+                await userManager.AddClaimAsync(user, claim);
+
+
+                await userManager.AddClaimAsync(user, groupClaim);
+                var customerCreationContract = new CustomerCreationContract
+                {
+                    IdentityId = user.Id, 
+                    Username = user.Email,
+                    FirstName = string.Empty,
+                    LastName = string.Empty,
+                    ContactNumber = string.Empty
+                };
+
+                var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
+                var createCustomerCommandHandler =
+                    new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
+                await createCustomerCommandHandler.Handle(createCustomerCommand);
+
+                return true;
+            }
+
+            return false;
         }
         
         private async Task<ClaimsIdentity?> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)
