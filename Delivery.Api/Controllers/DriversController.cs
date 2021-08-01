@@ -117,7 +117,8 @@ namespace Delivery.Api.Controllers
 
             if(!await CreateUserAsync(driverCreationContract, executingRequestContextAdapter))
             {
-                throw new InvalidOperationException($"{nameof(DriverCreationContract)} should be able to create a user account. Instead: throw errors with {driverCreationContract.ConvertToJson()}")
+                throw new InvalidOperationException(
+                    $"{nameof(DriverCreationContract)} should be able to create a user account. Instead: throw errors with {driverCreationContract.ConvertToJson()}");
             }
 
             var driverCreationStatusContract = new DriverCreationStatusContract
