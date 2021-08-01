@@ -59,6 +59,11 @@ namespace Delivery.Api.Controllers
         }
 
         // POST: api/User
+        /// <summary>
+        ///  Register user endpoint 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("register")]
         public async Task<IActionResult> PostAsync([FromBody] RegistrationViewModel model)
         {

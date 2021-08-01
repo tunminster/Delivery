@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Storage.Blob.Accessors;
 using Delivery.Azure.Library.Storage.Blob.Models;
+using Delivery.Database.Context;
 using Delivery.Domain.Constants;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Microsoft.AspNetCore.Http;
@@ -67,6 +69,20 @@ namespace Delivery.Driver.Domain.Services
             };
 
             return driverImageCreationStatusContract;
+        }
+
+        public async Task<bool> IsDriverApprovedAsync(string emailAddress)
+        {
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+            var driver = databaseContext.Drivers.FirstOrDefault(x => x.EmailAddress == emailAddress);
+
+            if (driver is null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private async Task<string> UploadBlobAsync(IFormFile image, string blobName, string driverName, BlobStorageDataAccessor blobStorageAccessor)

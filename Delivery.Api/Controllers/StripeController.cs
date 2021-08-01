@@ -24,6 +24,9 @@ using Stripe;
 
 namespace Delivery.Api.Controllers
 {
+    /// <summary>
+    ///  Stripe api endpoint allows to make payment
+    /// </summary>
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize(Policy = "ApiUser")]
@@ -31,11 +34,20 @@ namespace Delivery.Api.Controllers
     {
         private readonly IServiceProvider serviceProvider;
 
+        /// <summary>
+        ///  Stripe api endpoint
+        /// </summary>
+        /// <param name="serviceProvider"></param>
         public StripeController(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
 
+        /// <summary>
+        ///  Create connect account
+        /// </summary>
+        /// <param name="stripeAccountCreationContract"></param>
+        /// <returns></returns>
         [HttpPost("Account/CreateAccount")]
         [ProducesResponseType(typeof(StripeAccountCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -59,6 +71,11 @@ namespace Delivery.Api.Controllers
             return Ok(stripeAccountCreationServiceResult.StripeAccountCreationStatusContract);
         }
 
+        /// <summary>
+        ///  Create login link
+        /// </summary>
+        /// <param name="stripeLoginLinkCreationContract"></param>
+        /// <returns></returns>
         [HttpPost("Account/CreatLoginLink")]
         [ProducesResponseType(typeof(StripeLoginLinkCreationStatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -82,6 +99,11 @@ namespace Delivery.Api.Controllers
             return Ok(loginLinkCreationStatusContract);
         }
         
+        /// <summary>
+        ///  Create on boarding link 
+        /// </summary>
+        /// <param name="stripeAccountLinkCreationContract"></param>
+        /// <returns></returns>
         [HttpPost("Account/CreatOnBoardingLink")]
         [ProducesResponseType(typeof(StripeAccountLinkCreationStatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -108,6 +130,10 @@ namespace Delivery.Api.Controllers
 
         }
 
+        /// <summary>
+        ///  Get connected account
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("Account/GetConnectedAccounts")]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -124,6 +150,10 @@ namespace Delivery.Api.Controllers
         }
 
 
+        /// <summary>
+        ///  Get all application fees
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("ApplicationFees/GetAllApplicationFees")]
         [ProducesResponseType(typeof(StripeList<ApplicationFee>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -139,6 +169,11 @@ namespace Delivery.Api.Controllers
             return Ok(applicationFees);
         }
 
+        /// <summary>
+        ///  Create capture payment
+        /// </summary>
+        /// <param name="stripePaymentCaptureCreationContract"></param>
+        /// <returns></returns>
         [HttpPost("Payment/CapturePayment")]
         [ProducesResponseType(typeof(StripePaymentCaptureCreationStatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -164,7 +199,10 @@ namespace Delivery.Api.Controllers
             return Ok(stripeCapturePaymentServiceResult.StripePaymentCaptureCreationStatusContract);
         }
 
-        
+        /// <summary>
+        ///  Get generated id
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("Generate/GetGeneratedId")]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
