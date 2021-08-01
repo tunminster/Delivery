@@ -58,5 +58,10 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
         /// </summary>
         public string ServiceArea { get; init; } = string.Empty;
 
+        /// <summary>
+        ///  Driver user account password
+        /// </summary>
+        public string Password { get; init; } = string.Empty;
+
     }
 }
