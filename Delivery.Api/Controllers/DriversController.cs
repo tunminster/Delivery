@@ -16,6 +16,7 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverEmailVerification;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Driver.Domain.Services;
 using Delivery.Driver.Domain.Validators;
@@ -181,6 +182,30 @@ namespace Delivery.Api.Controllers
             
             var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, driverLoginContract.Username, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
             return new OkObjectResult(jwt);
+        }
+
+        /// <summary>
+        ///  Request email verification
+        /// </summary>
+        /// <param name="driverStartEmailVerificationContract"></param>
+        /// <returns></returns>
+        [HttpPost("request-email-otp")]
+        public async Task<IActionResult> Post_VerifyEmailOtpAsync(
+            [FromBody] DriverStartEmailVerificationContract driverStartEmailVerificationContract)
+        {
+            var validationResult = await new DriverStartEmailVerificationValidator().ValidateAsync(driverStartEmailVerificationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var driverStartEmailVerificationStatusContract =
+                await new DriverStartEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new DriverStartEmailVerificationCommand(driverStartEmailVerificationContract));
+
+            return Ok(driverStartEmailVerificationStatusContract);
         }
 
         private async Task<bool> CreateUserAsync(DriverCreationContract driverCreationContract, IExecutingRequestContextAdapter executingRequestContextAdapter)

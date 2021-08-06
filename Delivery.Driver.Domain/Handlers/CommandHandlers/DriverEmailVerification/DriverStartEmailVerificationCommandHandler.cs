@@ -34,9 +34,9 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverEmailVerificatio
             var twilioProvider = await TwilioEmailVerificationProvider.CreateAsync(serviceProvider, new TwilioEmailVerifyServiceConfiguration(twilioAccountSid, twilioAuthToken));
             var twilioEmailVerificationStatusContract = await twilioProvider.SendVerificationEmail(command.DriverStartEmailVerificationContract
                 .ConvertToTwilio().WithExecutingContext(executingRequestContextAdapter));
-            
-            
-            throw new System.NotImplementedException();
+
+
+            return twilioEmailVerificationStatusContract.ConvertToDriverStartEmailVerificationStatusContract();
         }
     }
 }
