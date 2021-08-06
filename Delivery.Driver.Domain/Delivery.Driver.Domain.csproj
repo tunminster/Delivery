@@ -11,6 +11,7 @@
       <ProjectReference Include="..\Delivery.Azure.Library.Storage\Delivery.Azure.Library.Storage.csproj" />
       <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj" />
       <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.Library.Twilio\Delivery.Library.Twilio.csproj" />
     </ItemGroup>
 
 </Project>
