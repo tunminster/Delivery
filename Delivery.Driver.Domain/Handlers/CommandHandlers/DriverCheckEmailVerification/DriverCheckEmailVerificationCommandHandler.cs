@@ -8,35 +8,34 @@ using Delivery.Driver.Domain.Converters;
 using Delivery.Library.Twilio.Configurations;
 using Delivery.Library.Twilio.EmailVerifications;
 using Delivery.Library.Twilio.Extensions;
-using Delivery.Library.Twilio.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverEmailVerification
+namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCheckEmailVerification
 {
-    public record DriverStartEmailVerificationCommand(DriverStartEmailVerificationContract DriverStartEmailVerificationContract);
+    public record DriverCheckEmailVerificationCommand(DriverCheckEmailVerificationContract DriverCheckEmailVerificationContract);
     
-    public class DriverStartEmailVerificationCommandHandler : ICommandHandler<DriverStartEmailVerificationCommand, DriverEmailVerificationStatusContract>
+    public class DriverCheckEmailVerificationCommandHandler : ICommandHandler<DriverCheckEmailVerificationCommand, DriverEmailVerificationStatusContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
-
-        public DriverStartEmailVerificationCommandHandler(IServiceProvider serviceProvider,
+        
+        public DriverCheckEmailVerificationCommandHandler(IServiceProvider serviceProvider,
             IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
-        public async Task<DriverEmailVerificationStatusContract> Handle(DriverStartEmailVerificationCommand command)
+        
+        public async Task<DriverEmailVerificationStatusContract> Handle(DriverCheckEmailVerificationCommand command)
         {
             var twilioAccountSid = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Account-Sid");
             var twilioAuthToken = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Auth-Token");
-
+            
             var twilioProvider = await TwilioEmailVerificationProvider.CreateAsync(serviceProvider, new TwilioEmailVerifyServiceConfiguration(twilioAccountSid, twilioAuthToken));
-            var twilioEmailVerificationStatusContract = await twilioProvider.SendVerificationEmail(command.DriverStartEmailVerificationContract
+            var twilioEmailVerificationStatusContract = await twilioProvider.CheckVerificationEmail(command.DriverCheckEmailVerificationContract
                 .ConvertToTwilio().WithExecutingContext(executingRequestContextAdapter));
-
-
-            return twilioEmailVerificationStatusContract.ConvertToDriverStartEmailVerificationStatusContract();
+            
+            throw new System.NotImplementedException();
         }
     }
 }

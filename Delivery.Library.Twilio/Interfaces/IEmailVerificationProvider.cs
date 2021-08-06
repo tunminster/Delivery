@@ -12,5 +12,13 @@ namespace Delivery.Library.Twilio.Interfaces
         /// <param name="twilioEmailVerificationContract"></param>
         /// <returns></returns>
         Task<TwilioEmailVerificationStatusContract> SendVerificationEmail(TwilioEmailVerificationContract twilioEmailVerificationContract);
+
+        /// <summary>
+        ///  Check verification code
+        /// </summary>
+        /// <param name="twilioCheckEmailVerificationContract"></param>
+        /// <returns></returns>
+        Task<TwilioEmailVerificationStatusContract> CheckVerificationEmail(
+            TwilioCheckEmailVerificationContract twilioCheckEmailVerificationContract);
     }
 }

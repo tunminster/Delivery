@@ -16,11 +16,23 @@ namespace Delivery.Driver.Domain.Converters
 
             return twilioEmailVerificationContract;
         }
+        
+        public static TwilioCheckEmailVerificationContract ConvertToTwilio(
+            this DriverCheckEmailVerificationContract driverCheckEmailVerificationContract)
+        {
+            var twilioCheckEmailVerificationContract = new TwilioCheckEmailVerificationContract
+            {
+                Email = driverCheckEmailVerificationContract.Email,
+                Code = driverCheckEmailVerificationContract.Code
+            };
 
-        public static DriverStartEmailVerificationStatusContract ConvertToDriverStartEmailVerificationStatusContract(
+            return twilioCheckEmailVerificationContract;
+        }
+
+        public static DriverEmailVerificationStatusContract ConvertToDriverStartEmailVerificationStatusContract(
             this TwilioEmailVerificationStatusContract twilioEmailVerificationStatusContract)
         {
-            var driverStartEmailVerificationStatusContract = new DriverStartEmailVerificationStatusContract
+            var driverStartEmailVerificationStatusContract = new DriverEmailVerificationStatusContract
             {
                 UserEmailAddress = twilioEmailVerificationStatusContract.To,
                 Status = twilioEmailVerificationStatusContract.Status,

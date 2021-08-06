@@ -16,6 +16,7 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCheckEmailVerification;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverEmailVerification;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Driver.Domain.Services;
@@ -27,10 +28,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Graph;
 using Newtonsoft.Json;
 
-namespace Delivery.Api.Controllers
+namespace Delivery.Api.Controllers.Drivers
 {
     /// <summary>
     ///  Driver controller
@@ -190,7 +190,7 @@ namespace Delivery.Api.Controllers
         /// <param name="driverStartEmailVerificationContract"></param>
         /// <returns></returns>
         [HttpPost("request-email-otp")]
-        public async Task<IActionResult> Post_VerifyEmailOtpAsync(
+        public async Task<IActionResult> Post_RequestEmailOtpAsync(
             [FromBody] DriverStartEmailVerificationContract driverStartEmailVerificationContract)
         {
             var validationResult = await new DriverStartEmailVerificationValidator().ValidateAsync(driverStartEmailVerificationContract);
@@ -206,6 +206,30 @@ namespace Delivery.Api.Controllers
                     .Handle(new DriverStartEmailVerificationCommand(driverStartEmailVerificationContract));
 
             return Ok(driverStartEmailVerificationStatusContract);
+        }
+        
+        /// <summary>
+        ///  Request email verification
+        /// </summary>
+        /// <param name="driverCheckEmailVerificationContract"></param>
+        /// <returns></returns>
+        [HttpPost("verify-email-otp")]
+        public async Task<IActionResult> Post_VerifyEmailOtpAsync(
+            [FromBody] DriverCheckEmailVerificationContract driverCheckEmailVerificationContract)
+        {
+            var validationResult = await new DriverCheckEmailVerificationValidator().ValidateAsync(driverCheckEmailVerificationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var driverEmailVerificationStatusContract =
+                await new DriverCheckEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new DriverCheckEmailVerificationCommand(driverCheckEmailVerificationContract));
+
+            return Ok(driverEmailVerificationStatusContract);
         }
 
         private async Task<bool> CreateUserAsync(DriverCreationContract driverCreationContract, IExecutingRequestContextAdapter executingRequestContextAdapter)

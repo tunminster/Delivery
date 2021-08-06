@@ -5,7 +5,7 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
     /// <summary>
     ///  Driver email verification status
     /// </summary>
-    public record DriverStartEmailVerificationStatusContract
+    public record DriverEmailVerificationStatusContract
     {
         /// <summary>
         ///  Verification status

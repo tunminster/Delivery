@@ -52,15 +52,49 @@ namespace Delivery.Library.Twilio.EmailVerifications
                  {CustomProperties.Ring, twilioEmailVerificationContract.GetRing()?.ToString() ?? "Unknown"}
              };
              
+             var channelConfiguration = new Dictionary<string, object>
+             {
+                 {"substitutions", new Dictionary<string, object>
+                 {
+                     {"username", twilioEmailVerificationContract.Username}
+                 }}
+             };
+             
              var verificationResource = await new DependencyMeasurement(serviceProvider)
                  .ForDependency(dependencyName, MeasuredDependencyType.AzureServiceBus, dependencyData.ConvertToJson(), dependencyTarget)
                  .WithContextualInformation(telemetryContextProperties)
                  .TrackAsync(async () => await VerificationResource.CreateAsync(
+                     channelConfiguration: channelConfiguration,
                      to: twilioEmailVerificationContract.Email,
                      channel: "email",
                      pathServiceSid: EmailVerifyServiceConfiguration?.AccountSid));
              
              return verificationResource.ConvertToJson().ConvertFromJson<TwilioEmailVerificationStatusContract>();
+        }
+
+        public async Task<TwilioEmailVerificationStatusContract> CheckVerificationEmail(TwilioCheckEmailVerificationContract twilioCheckEmailVerificationContract)
+        {
+            const string dependencyName = "TwilioCheckEmailVerification";
+            var dependencyData = new DependencyData("Request", twilioCheckEmailVerificationContract.ConvertToJson());
+            const string dependencyTarget = "Twilio_Email_Verify_Service";
+            
+            var telemetryContextProperties = new Dictionary<string, string>
+            {
+                {"Body", twilioCheckEmailVerificationContract.ConvertToJson()},
+                {CustomProperties.CorrelationId, twilioCheckEmailVerificationContract.GetCorrelationId() ?? string.Empty},
+                {CustomProperties.Shard, twilioCheckEmailVerificationContract.GetShard().Key},
+                {CustomProperties.Ring, twilioCheckEmailVerificationContract.GetRing()?.ToString() ?? "Unknown"}
+            };
+            
+            var verificationResource = await new DependencyMeasurement(serviceProvider)
+                .ForDependency(dependencyName, MeasuredDependencyType.AzureServiceBus, dependencyData.ConvertToJson(), dependencyTarget)
+                .WithContextualInformation(telemetryContextProperties)
+                .TrackAsync(async () => await VerificationCheckResource.CreateAsync(
+                    to: twilioCheckEmailVerificationContract.Email,
+                    code: twilioCheckEmailVerificationContract.Code,
+                    pathServiceSid: EmailVerifyServiceConfiguration?.AccountSid));
+             
+            return verificationResource.ConvertToJson().ConvertFromJson<TwilioEmailVerificationStatusContract>();
         }
     }
 }
