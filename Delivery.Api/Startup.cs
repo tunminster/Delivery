@@ -70,9 +70,13 @@ namespace Delivery.Api
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DeliveryDevConnection")));
             
-            services.AddIdentity<Database.Models.ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
-            
+            services.AddIdentity<Database.Models.ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
+            services.Configure<DataProtectionTokenProviderOptions>(opt =>
+                opt.TokenLifespan = TimeSpan.FromHours(2));
+            
             services.Configure<IdentityOptions>(options =>
             {
                 // Default Password settings.

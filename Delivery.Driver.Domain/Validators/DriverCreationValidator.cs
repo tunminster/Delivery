@@ -10,6 +10,9 @@ namespace Delivery.Driver.Domain.Validators
             RuleFor(x => x.FullName).NotEmpty().NotNull().WithMessage("Driver full name must be provided.");
             RuleFor(x => x.EmailAddress).NotEmpty().NotNull().WithMessage("Email address must be provided.");
             RuleFor(x => x.BankName).NotEmpty().NotNull().WithMessage("Bank name must be provided.");
+            RuleFor(x => x.Password).NotEmpty().NotNull().WithMessage("Password must be valid.");
+            RuleFor(x => x.Password).MinimumLength(6).WithMessage("Password must be at least 6 characters");
+
         }
     }
 }
