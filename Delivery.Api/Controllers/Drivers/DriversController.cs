@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Core.Extensions.Collections;
 using Delivery.Azure.Library.Core.Extensions.Json;
+using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Azure.Library.WebApi.ModelBinders;
@@ -17,7 +19,9 @@ using Delivery.Domain.Models;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCheckEmailVerification;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCheckResetPasswordVerification;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverEmailVerification;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverResetPasswordVerification;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Driver.Domain.Services;
 using Delivery.Driver.Domain.Validators;
@@ -229,7 +233,125 @@ namespace Delivery.Api.Controllers.Drivers
                 await new DriverCheckEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
                     .Handle(new DriverCheckEmailVerificationCommand(driverCheckEmailVerificationContract));
 
+            if (driverEmailVerificationStatusContract.Status == "approved")
+            {
+                await ConfirmEmailAsync(driverCheckEmailVerificationContract, executingRequestContextAdapter);
+            }
+
             return Ok(driverEmailVerificationStatusContract);
+        }
+
+        /// <summary>
+        ///  Request reset password otp
+        /// </summary>
+        /// <param name="driverResetPasswordRequestContract"></param>
+        /// <returns></returns>
+        [HttpPost("request-reset-password-otp")]
+        public async Task<IActionResult> Post_RequestResetPasswordAsync(
+            [FromBody] DriverResetPasswordRequestContract driverResetPasswordRequestContract)
+        {
+            var validationResult = await new DriverResetPasswordRequestValidator().ValidateAsync(driverResetPasswordRequestContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var driverResetPasswordStatusContract =
+                await new DriverResetPasswordVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new DriverResetPasswordVerificationCommand(driverResetPasswordRequestContract));
+
+            return Ok(driverResetPasswordStatusContract);
+        }
+
+        /// <summary>
+        ///  Verify otp and reset password
+        /// </summary>
+        /// <param name="driverResetPasswordCreationContract"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        [HttpPost("verify-reset-password")]
+        public async Task<IActionResult> Post_VerifyResetPasswordOtpAsync([FromBody] DriverResetPasswordCreationContract driverResetPasswordCreationContract)
+        {
+            var validationResult =
+                await new DriverCheckResetPasswordVerificationValidator().ValidateAsync(
+                    driverResetPasswordCreationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var driverResetPasswordStatusContract =
+                await new DriverCheckResetPasswordVerificationCommandHandler(serviceProvider,
+                        executingRequestContextAdapter)
+                    .Handle(new DriverCheckResetPasswordVerificationCommand(driverResetPasswordCreationContract));
+
+            if (driverResetPasswordStatusContract.Status == "approved")
+            {
+                await using var applicationDbContext =
+                    await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+                var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+                var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                    passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider, logger);
+
+                var user = await userManager.FindByEmailAsync(driverResetPasswordCreationContract.Email);
+
+                if (user == null)
+                {
+                    throw new InvalidOperationException($"Expected to be found {driverResetPasswordCreationContract.Email} user.").WithTelemetry(
+                        executingRequestContextAdapter.GetTelemetryProperties());
+                }
+                
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                var passwordResetResult = await userManager.ResetPasswordAsync(user, token, driverResetPasswordCreationContract.Password);
+
+                if (passwordResetResult.Succeeded)
+                {
+                    return Ok(driverResetPasswordStatusContract);
+                }
+
+                foreach (var error in passwordResetResult.Errors)
+                {
+                    validationResult.Errors.Add(new ValidationFailure(error.Code, error.Description));
+                }
+                
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var errorResult = driverResetPasswordStatusContract with
+            {
+                Status = "error",
+                Valid = false
+            };
+
+            return Ok(errorResult);
+        }
+        
+
+        private async Task ConfirmEmailAsync(DriverCheckEmailVerificationContract driverCheckEmailVerificationContract,
+            IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            await using var applicationDbContext =
+                await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider, logger);
+
+            var user = await userManager.FindByEmailAsync(driverCheckEmailVerificationContract.Email);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("Expected to be found user.").WithTelemetry(
+                    executingRequestContextAdapter.GetTelemetryProperties());
+            }
+
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            await userManager.ConfirmEmailAsync(user, token);
         }
 
         private async Task<bool> CreateUserAsync(DriverCreationContract driverCreationContract, IExecutingRequestContextAdapter executingRequestContextAdapter)

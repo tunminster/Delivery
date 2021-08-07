@@ -56,7 +56,8 @@ namespace Delivery.Library.Twilio.EmailVerifications
              {
                  {"substitutions", new Dictionary<string, object>
                  {
-                     {"username", twilioEmailVerificationContract.Username}
+                     {"username", twilioEmailVerificationContract.Username},
+                     {"application-name", ""}
                  }}
              };
              

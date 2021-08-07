@@ -17,6 +17,18 @@ namespace Delivery.Driver.Domain.Converters
             return twilioEmailVerificationContract;
         }
         
+        public static TwilioEmailVerificationContract ConvertToTwilio(
+            this DriverResetPasswordRequestContract driverResetPasswordRequestContract)
+        {
+            var twilioEmailVerificationContract = new TwilioEmailVerificationContract
+            {
+                Username = string.Empty,
+                Email = driverResetPasswordRequestContract.Email
+            };
+
+            return twilioEmailVerificationContract;
+        }
+        
         public static TwilioCheckEmailVerificationContract ConvertToTwilio(
             this DriverCheckEmailVerificationContract driverCheckEmailVerificationContract)
         {
@@ -28,8 +40,20 @@ namespace Delivery.Driver.Domain.Converters
 
             return twilioCheckEmailVerificationContract;
         }
+        
+        public static TwilioCheckEmailVerificationContract ConvertToTwilio(
+            this DriverResetPasswordCreationContract driverResetPasswordCreationContract)
+        {
+            var twilioCheckEmailVerificationContract = new TwilioCheckEmailVerificationContract
+            {
+                Email = driverResetPasswordCreationContract.Email,
+                Code = driverResetPasswordCreationContract.Code
+            };
 
-        public static DriverEmailVerificationStatusContract ConvertToDriverStartEmailVerificationStatusContract(
+            return twilioCheckEmailVerificationContract;
+        }
+
+        public static DriverEmailVerificationStatusContract ConvertToDriverEmailVerificationStatusContract(
             this TwilioEmailVerificationStatusContract twilioEmailVerificationStatusContract)
         {
             var driverStartEmailVerificationStatusContract = new DriverEmailVerificationStatusContract
@@ -41,6 +65,20 @@ namespace Delivery.Driver.Domain.Converters
             };
 
             return driverStartEmailVerificationStatusContract;
+        }
+        
+        public static DriverResetPasswordStatusContract ConvertToDriverResetPasswordStatusContract(
+            this TwilioEmailVerificationStatusContract twilioEmailVerificationStatusContract)
+        {
+            var driverResetPasswordStatusContract = new DriverResetPasswordStatusContract
+            {
+                Email = twilioEmailVerificationStatusContract.To,
+                Status = twilioEmailVerificationStatusContract.Status,
+                Valid = twilioEmailVerificationStatusContract.Valid,
+                DateCreated = twilioEmailVerificationStatusContract.DateCreated
+            };
+
+            return driverResetPasswordStatusContract;
         }
     }
 }
