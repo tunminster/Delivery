@@ -23,7 +23,7 @@ namespace Delivery.Library.Twilio.Contracts
 
         public string Status { get; init; } = string.Empty;
         
-        public bool Valid { get; init; }
+        public bool? Valid { get; init; }
         
         [JsonPropertyName("date_created")]
         public DateTimeOffset DateCreated { get; init; }
@@ -31,15 +31,15 @@ namespace Delivery.Library.Twilio.Contracts
         [JsonPropertyName("date_updated")]
         public DateTimeOffset DateUpdated { get; init; }
 
-        public CarrierContract Lookup { get; init; } = new();
+        public object Lookup { get; init; } = new();
         
         public string? Amount { get; init; }
         
         public string? Payee { get; init; }
 
-        public List<AttemptsContract> SendCodeAttempts { get; init; } = new();
+        public List<object> SendCodeAttempts { get; init; } = new();
 
-        public string Url { get; init; } = string.Empty;
+        public Uri? Url { get; init; }
     }
 
     public record CarrierContract
