@@ -20,7 +20,7 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
         /// <summary>
         ///  Valid status
         /// </summary>
-        public bool Valid { get; init; }
+        public bool? Valid { get; init; }
         
         /// <summary>
         ///  Verification requested date.

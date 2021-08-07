@@ -9,6 +9,7 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Dependen
 using Delivery.Azure.Library.Telemetry.Constants;
 using Delivery.Library.Twilio.Configurations;
 using Delivery.Library.Twilio.Contracts;
+using Delivery.Library.Twilio.Converters;
 using Delivery.Library.Twilio.Extensions;
 using Delivery.Library.Twilio.Interfaces;
 using Twilio;
@@ -68,9 +69,9 @@ namespace Delivery.Library.Twilio.EmailVerifications
                      channelConfiguration: channelConfiguration,
                      to: twilioEmailVerificationContract.Email,
                      channel: "email",
-                     pathServiceSid: EmailVerifyServiceConfiguration?.AccountSid));
+                     pathServiceSid: EmailVerifyServiceConfiguration?.EmailVerifyServiceId));
              
-             return verificationResource.ConvertToJson().ConvertFromJson<TwilioEmailVerificationStatusContract>();
+             return verificationResource.ConvertToTwilioEmailVerificationStatusContract();
         }
 
         public async Task<TwilioEmailVerificationStatusContract> CheckVerificationEmail(TwilioCheckEmailVerificationContract twilioCheckEmailVerificationContract)
@@ -93,9 +94,9 @@ namespace Delivery.Library.Twilio.EmailVerifications
                 .TrackAsync(async () => await VerificationCheckResource.CreateAsync(
                     to: twilioCheckEmailVerificationContract.Email,
                     code: twilioCheckEmailVerificationContract.Code,
-                    pathServiceSid: EmailVerifyServiceConfiguration?.AccountSid));
+                    pathServiceSid: EmailVerifyServiceConfiguration?.EmailVerifyServiceId));
              
-            return verificationResource.ConvertToJson().ConvertFromJson<TwilioEmailVerificationStatusContract>();
+            return verificationResource.ConvertToTwilioEmailVerificationStatusContract();
         }
     }
 }
