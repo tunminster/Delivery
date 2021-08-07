@@ -9,6 +9,7 @@ namespace Delivery.Driver.Domain.Validators
         {
             RuleFor(x => x.Username).NotEmpty().NotNull().WithMessage("Username must be provided.");
             RuleFor(x => x.Password).NotEmpty().NotNull().WithMessage("Password must be provided.");
+            RuleFor(x => x.Password).MinimumLength(6).WithMessage("Password must be at least 6 characters.");
         }
     }
 }
