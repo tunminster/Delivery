@@ -1,4 +1,4 @@
-namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
+namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverResetPasswordVerification
 {
     /// <summary>
     ///  Request password reset contract

@@ -1,4 +1,6 @@
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverCheckEmailVerification;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverResetPasswordVerification;
 using Delivery.Library.Twilio.Contracts;
 
 namespace Delivery.Driver.Domain.Converters

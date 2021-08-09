@@ -47,6 +47,8 @@ namespace Delivery.Database.Entities
         
         public bool Approved { get; set; }
         
+        public bool IsActive { get; set; }
+        
         [MaxLength(50)]
         public string InsertedBy { get; set; }
         public DateTimeOffset InsertionDateTime { get; set; }

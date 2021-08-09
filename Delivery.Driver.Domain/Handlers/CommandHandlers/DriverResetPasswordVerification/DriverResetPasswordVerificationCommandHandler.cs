@@ -4,6 +4,7 @@ using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverResetPasswordVerification;
 using Delivery.Driver.Domain.Converters;
 using Delivery.Library.Twilio.Configurations;
 using Delivery.Library.Twilio.EmailVerifications;
