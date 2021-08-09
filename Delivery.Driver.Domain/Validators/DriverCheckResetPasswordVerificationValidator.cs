@@ -1,4 +1,5 @@
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverResetPasswordVerification;
 using FluentValidation;
 
 namespace Delivery.Driver.Domain.Validators

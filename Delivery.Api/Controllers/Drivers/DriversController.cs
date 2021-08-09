@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Authentication.OpenIdConnect.Extensions;
 using Delivery.Azure.Library.Core.Extensions.Collections;
 using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Exceptions.Extensions;
@@ -18,6 +19,10 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverActive;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverCheckEmailVerification;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverResetPasswordVerification;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverActive;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCheckEmailVerification;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCheckResetPasswordVerification;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverEmailVerification;
@@ -26,6 +31,7 @@ using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Driver.Domain.Services;
 using Delivery.Driver.Domain.Validators;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -330,7 +336,36 @@ namespace Delivery.Api.Controllers.Drivers
 
             return Ok(errorResult);
         }
-        
+
+        /// <summary>
+        ///  Set driver online or offline
+        /// </summary>
+        /// <param name="driverActiveCreationContract"></param>
+        /// <returns></returns>
+        [HttpPost("active")]
+        [Authorize]
+        public async Task<IActionResult> Post_ActiveDriverAsync(
+            [FromBody] DriverActiveCreationContract driverActiveCreationContract)
+        {
+            var authenticatedUser = Request.GetAuthenticatedUser("user");
+            
+            var validationResult =
+                await new DriverActiveValidator(authenticatedUser.UserEmail!).ValidateAsync(
+                    driverActiveCreationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var driverActiveStatusContract =
+                await new DriverActiveCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new DriverActiveCommand(driverActiveCreationContract));
+
+            return Ok(driverActiveStatusContract);
+
+        }
 
         private async Task ConfirmEmailAsync(DriverCheckEmailVerificationContract driverCheckEmailVerificationContract,
             IExecutingRequestContextAdapter executingRequestContextAdapter)

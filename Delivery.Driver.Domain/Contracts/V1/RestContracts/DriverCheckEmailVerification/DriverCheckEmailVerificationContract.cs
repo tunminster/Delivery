@@ -1,4 +1,4 @@
-namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
+namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverCheckEmailVerification
 {
     /// <summary>
     ///  Driver verification check contract

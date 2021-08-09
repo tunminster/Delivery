@@ -1,6 +1,6 @@
 using System;
 
-namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
+namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverResetPasswordVerification
 {
     /// <summary>
     ///  Reset password status contract
