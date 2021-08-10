@@ -126,10 +126,9 @@ namespace Delivery.Api.Controllers.Drivers
             var driverImageCreationStatusContract = await new DriverService(serviceProvider, executingRequestContextAdapter)
                 .UploadDriverImagesAsync(driverImageCreationContract);
 
-            if(!await CreateUserAsync(driverCreationContract, executingRequestContextAdapter))
+            if(!await CreateUserAsync(driverCreationContract, executingRequestContextAdapter, validationResult))
             {
-                throw new InvalidOperationException(
-                    $"{nameof(DriverCreationContract)} should be able to create a user account. Instead: throw errors with {driverCreationContract.ConvertToJson()}");
+                return validationResult.ConvertToBadRequest();
             }
 
             var driverCreationStatusContract = new DriverCreationStatusContract
@@ -144,7 +143,8 @@ namespace Delivery.Api.Controllers.Drivers
             var driverCreationMessage = new DriverCreationMessageContract
             {
                 PayloadIn = driverCreationContract,
-                PayloadOut = driverCreationStatusContract
+                PayloadOut = driverCreationStatusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
             };
             
             await new DriverCreationMessagePublisher(serviceProvider).PublishAsync(driverCreationMessage);
@@ -389,7 +389,7 @@ namespace Delivery.Api.Controllers.Drivers
             await userManager.ConfirmEmailAsync(user, token);
         }
 
-        private async Task<bool> CreateUserAsync(DriverCreationContract driverCreationContract, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        private async Task<bool> CreateUserAsync(DriverCreationContract driverCreationContract, IExecutingRequestContextAdapter executingRequestContextAdapter, ValidationResult validationResult)
         {
             await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
@@ -406,27 +406,18 @@ namespace Delivery.Api.Controllers.Drivers
                 var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
                 var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
                     ClaimValueTypes.String);
+                
                 await userManager.AddClaimAsync(user, claim);
-
-
                 await userManager.AddClaimAsync(user, groupClaim);
-                var customerCreationContract = new CustomerCreationContract
-                {
-                    IdentityId = user.Id, 
-                    Username = user.Email,
-                    FirstName = string.Empty,
-                    LastName = string.Empty,
-                    ContactNumber = string.Empty
-                };
-
-                var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
-                var createCustomerCommandHandler =
-                    new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
-                await createCustomerCommandHandler.Handle(createCustomerCommand);
-
+                
                 return true;
             }
 
+            foreach (var error in result.Errors)
+            {
+                validationResult.Errors.Add(new ValidationFailure(error.Code, error.Description));
+            }
+            
             return false;
         }
         
