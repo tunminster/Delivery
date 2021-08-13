@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Authentication.OpenIdConnect.Extensions;
@@ -7,6 +8,7 @@ using Delivery.Azure.Library.Core.Extensions.Collections;
 using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Azure.Library.WebApi.ModelBinders;
 using Delivery.Customer.Domain.CommandHandlers;
@@ -45,7 +47,7 @@ namespace Delivery.Api.Controllers.Drivers
     /// <summary>
     ///  Driver controller
     /// </summary>
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/[controller]", Name = "1 - Driver")]
     [ApiController]
     public class DriversController : ControllerBase
     {
@@ -100,7 +102,10 @@ namespace Delivery.Api.Controllers.Drivers
         /// <param name="drivingLicenseFrontImage"></param>
         /// <param name="drivingLicenseBackImage"></param>
         /// <returns></returns>
-        [HttpPost("register")]
+        [Route("register", Order = 1)]
+        [ProducesResponseType(typeof(DriverCreationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
         public async Task<IActionResult> Post_RegisterDriverAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] DriverCreationContract driverCreationContract, 
             IFormFile? driverImage, IFormFile? drivingLicenseFrontImage, IFormFile? drivingLicenseBackImage)
         {
@@ -157,7 +162,8 @@ namespace Delivery.Api.Controllers.Drivers
         /// </summary>
         /// <param name="driverLoginContract"></param>
         /// <returns></returns>
-        [HttpPost("login")]
+        [Route("login", Order = 2)]
+        [HttpPost]
         public async Task<IActionResult> Post_LoginAsync([FromBody] DriverLoginContract driverLoginContract)
         {
             var validationResult = await new DriverLoginValidator().ValidateAsync(driverLoginContract);
@@ -199,7 +205,10 @@ namespace Delivery.Api.Controllers.Drivers
         /// </summary>
         /// <param name="driverStartEmailVerificationContract"></param>
         /// <returns></returns>
-        [HttpPost("request-email-otp")]
+        [Route("request-email-otp", Order = 3)]
+        [ProducesResponseType(typeof(DriverEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
         public async Task<IActionResult> Post_RequestEmailOtpAsync(
             [FromBody] DriverStartEmailVerificationContract driverStartEmailVerificationContract)
         {
@@ -223,7 +232,10 @@ namespace Delivery.Api.Controllers.Drivers
         /// </summary>
         /// <param name="driverCheckEmailVerificationContract"></param>
         /// <returns></returns>
-        [HttpPost("verify-email-otp")]
+        [Route("verify-email-otp", Order = 4)]
+        [ProducesResponseType(typeof(DriverEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
         public async Task<IActionResult> Post_VerifyEmailOtpAsync(
             [FromBody] DriverCheckEmailVerificationContract driverCheckEmailVerificationContract)
         {
@@ -252,7 +264,10 @@ namespace Delivery.Api.Controllers.Drivers
         /// </summary>
         /// <param name="driverResetPasswordRequestContract"></param>
         /// <returns></returns>
-        [HttpPost("request-reset-password-otp")]
+        [Route("request-reset-password-otp", Order = 5)]
+        [ProducesResponseType(typeof(DriverResetPasswordStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
         public async Task<IActionResult> Post_RequestResetPasswordAsync(
             [FromBody] DriverResetPasswordRequestContract driverResetPasswordRequestContract)
         {
@@ -277,7 +292,10 @@ namespace Delivery.Api.Controllers.Drivers
         /// <param name="driverResetPasswordCreationContract"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [HttpPost("verify-reset-password")]
+        [Route("verify-reset-password", Order = 7)]
+        [ProducesResponseType(typeof(DriverResetPasswordStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
         public async Task<IActionResult> Post_VerifyResetPasswordOtpAsync([FromBody] DriverResetPasswordCreationContract driverResetPasswordCreationContract)
         {
             var validationResult =
@@ -342,7 +360,10 @@ namespace Delivery.Api.Controllers.Drivers
         /// </summary>
         /// <param name="driverActiveCreationContract"></param>
         /// <returns></returns>
-        [HttpPost("active")]
+        [Route("active", Order = 8)]
+        [ProducesResponseType(typeof(DriverActiveStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post_ActiveDriverAsync(
             [FromBody] DriverActiveCreationContract driverActiveCreationContract)
