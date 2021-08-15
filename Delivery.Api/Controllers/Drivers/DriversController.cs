@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Authentication.OpenIdConnect.Extensions;
 using Delivery.Azure.Library.Core.Extensions.Collections;
 using Delivery.Azure.Library.Core.Extensions.Json;
@@ -48,6 +50,7 @@ namespace Delivery.Api.Controllers.Drivers
     ///  Driver controller
     /// </summary>
     [Route("api/v1/[controller]", Name = "1 - Driver")]
+    [PlatformSwaggerCategory(ApiCategory.Driver)]
     [ApiController]
     public class DriversController : ControllerBase
     {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Order.Domain.Contracts;
@@ -19,9 +21,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    ///  Order apis
+    /// </summary>
+    [Route("api/[controller]", Name = "6 - Order management")]
     [ApiController]
     [Authorize]
+    [PlatformSwaggerCategory(ApiCategory.Customer)]
     public class OrderController : ControllerBase
     {
         private readonly IServiceProvider serviceProvider;
@@ -30,7 +36,13 @@ namespace Delivery.Api.Controllers
             this.serviceProvider = serviceProvider;
         }
         
-        [HttpPost("Payment/CreatePaymentIntent")]
+        /// <summary>
+        ///  create payment intent
+        /// </summary>
+        /// <param name="stripeOrderCreationContract"></param>
+        /// <returns></returns>
+        [Route("Payment/CreatePaymentIntent", Order = 1)]
+        [HttpPost]
         [ProducesResponseType(typeof(PaymentIntentCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreatePaymentIntentAsync(StripeOrderCreationContract stripeOrderCreationContract)
@@ -50,7 +62,13 @@ namespace Delivery.Api.Controllers
             return Ok(paymentIntentCreationStatusContract);
         }
         
-        [HttpPost("Update-Order-Status")]
+        /// <summary>
+        ///  Update order status
+        /// </summary>
+        /// <param name="stripeUpdateOrderContract"></param>
+        /// <returns></returns>
+        [Route("Update-Order-Status", Order = 2)]
+        [HttpPost]
         [ProducesResponseType(typeof(StripeUpdateOrderStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> UpdateOrderAsync(StripeUpdateOrderContract stripeUpdateOrderContract)
@@ -87,7 +105,8 @@ namespace Delivery.Api.Controllers
         /// <param name="page"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        [HttpGet("GetByUserId/{userId}")]
+        [Route("GetByUserId/{userId}", Order = 3)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<OrderContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProductByCategoryIdAsync(int userId, int page = 1, int pageSize = 20)
@@ -109,7 +128,8 @@ namespace Delivery.Api.Controllers
         /// <param name="orderId"></param>
         /// <param name="timeZone"></param>
         /// <returns></returns>
-        [HttpGet("GetOrderDetails")]
+        [Route("GetOrderDetails", Order = 4)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<OrderDetailsContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProductByCategoryIdAsync(string orderId, string timeZone)

@@ -5,6 +5,10 @@
         <OutputType>Library</OutputType>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\Delivery.Azure.Library.ConnectionManagement\Delivery.Azure.Library.ConnectionManagement.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Connection\Delivery.Azure.Library.Connection.csproj" />

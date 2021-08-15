@@ -16,7 +16,6 @@ namespace Delivery.Azure.Library.Telemetry.Constants
         public const string EntityName = "EntityName";
         public const string ExternalDependency = "ExternalDependency";
         public const string FormattedException = "FormattedException";
-        public const string InsuranceProductName = "InsuranceProductName";
         public const string MessageEnqueuedTimeUtc = "MessageEnqueuedTimeUtc";
         public const string MessageId = "MessageId";
         public const string Method = "Method";

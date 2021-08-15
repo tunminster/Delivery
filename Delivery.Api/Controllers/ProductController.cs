@@ -4,6 +4,8 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Api.Helpers;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
@@ -23,10 +25,13 @@ using Microsoft.Extensions.Options;
 
 namespace Delivery.Api.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    ///  Product apis
+    /// </summary>
+    [Route("api/[controller]", Name = "3 - Product management")]
     [ApiController]
     [Authorize(Policy = "ApiUser")]
-    //[Authorize]
+    [PlatformSwaggerCategory(ApiCategory.Management)]
     public class ProductController : ControllerBase
     {
         private readonly Delivery.Domain.Configuration.AzureStorageConfig storageConfig = null;
@@ -41,7 +46,13 @@ namespace Delivery.Api.Controllers
             this.serviceProvider = serviceProvider;
         }
 
-        [HttpGet("getAllProducts")]
+        /// <summary>
+        ///  Get all products
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [Route("getAllProducts", Order = 1)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<ProductContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetAsync(CancellationToken cancellationToken = default)
@@ -52,7 +63,13 @@ namespace Delivery.Api.Controllers
             return Ok(productContractList);
         }
 
-        [HttpGet("GetProductById/{id}")]
+        /// <summary>
+        ///  Get product by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("GetProductById/{id}", Order = 2)]
+        [HttpGet]
         [ProducesResponseType(typeof(ProductContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProductByIdAsync(string id)
@@ -65,7 +82,13 @@ namespace Delivery.Api.Controllers
             return Ok(productContract);
         }
 
-        [HttpGet("GetProductByCategoryId/{id}")]
+        /// <summary>
+        ///  Get product by category id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("GetProductByCategoryId/{id}", Order = 3)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<ProductContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetProductByCategoryIdAsync(string id)
@@ -84,7 +107,8 @@ namespace Delivery.Api.Controllers
         /// <param name="productCreationContract"></param>
         /// <param name="file"></param>
         /// <returns></returns>
-        [HttpPost("CreateProduct")]
+        [Route("CreateProduct", Order = 4)]
+        [HttpPost]
         [ProducesResponseType(typeof(ProductCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddProductAsync([ModelBinder(BinderType = typeof(JsonModelBinder))]  ProductCreationContract productCreationContract, IFormFile productImage)
@@ -123,9 +147,12 @@ namespace Delivery.Api.Controllers
             return Ok(result);
         }
         
-        // GET /api/images/thumbnails
-        
-        [HttpGet("thumbnails")]
+        /// <summary>
+        ///  Get thunbnails
+        /// </summary>
+        /// <returns></returns>
+        [Route("thumbnails", Order = 5)]
+        [HttpGet]
         public async Task<IActionResult> GetThumbNailsAsync()
         {
             if (storageConfig.AccountKey == string.Empty || storageConfig.AccountName == string.Empty)
@@ -138,8 +165,15 @@ namespace Delivery.Api.Controllers
             return new ObjectResult(thumbnailUrls);
         }
 
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> PutProductAsync(ProductUpdateContract productUpdateContract, IFormFile productImage)
+        /// <summary>
+        ///  Update product
+        /// </summary>
+        /// <returns></returns>
+        [Route("update/{id}", Order = 6)]
+        [HttpPut]
+        [ProducesResponseType(typeof(ProductUpdateStatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> PutProductAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] ProductUpdateContract productUpdateContract, IFormFile productImage, string id)
         {
             if(string.IsNullOrEmpty(productUpdateContract.ProductId))
             {
@@ -147,7 +181,7 @@ namespace Delivery.Api.Controllers
             }
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-
+        
             var productByIdQueryHandler = new ProductByIdQueryHandler(serviceProvider, executingRequestContextAdapter);
             
             var productByIdQuery = new ProductByIdQuery(productUpdateContract.ProductId);
@@ -162,7 +196,7 @@ namespace Delivery.Api.Controllers
                 ProductId = executingRequestContextAdapter.GetShard().GenerateExternalId(),
                 InsertionDateTime = DateTimeOffset.UtcNow
             };
-
+        
             var productImageCreationStatusContract = new ProductImageCreationStatusContract();
             
             if (productImage != null)
@@ -171,7 +205,7 @@ namespace Delivery.Api.Controllers
                     UploadProductImageAsync(productUpdateContract.ProductId, productUpdateContract.ProductName, productImage,
                         executingRequestContextAdapter);
             }
-
+        
             productUpdateContract.ProductImage = productImageCreationStatusContract.FileName;
             productUpdateContract.ProductImageUrl = productImageCreationStatusContract.ImageUri;
             
@@ -184,7 +218,13 @@ namespace Delivery.Api.Controllers
             return Ok(isProductUpdated);
         }
 
-        [HttpDelete("delete/{id}")]
+        /// <summary>
+        ///  Delete product
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("delete/{id}", Order = 7)]
+        [HttpDelete]
         public async Task<IActionResult> DeleteProductAsync(int id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();

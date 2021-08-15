@@ -9,6 +9,8 @@ using Delivery.Address.Domain.CommandHandlers;
 using Delivery.Address.Domain.Contracts;
 using Delivery.Address.Domain.QueryHandlers;
 using Delivery.Api.Models.Dto;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
@@ -27,7 +29,11 @@ using Microsoft.Extensions.Logging;
 namespace Delivery.Api.Controllers
 {
     
-    [Route("api/[controller]")]
+    /// <summary>
+    ///  Address controller
+    /// </summary>
+    [Route("api/[controller]", Name = "2 - Address management")]
+    [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
     [Authorize]
     public class AddressController : ControllerBase
@@ -37,12 +43,22 @@ namespace Delivery.Api.Controllers
         // private readonly IQueryHandler<AddressByUserIdQuery, List<AddressContract>> addressByUserIdQueryHandler;
         private readonly IServiceProvider serviceProvider;
 
+        /// <summary>
+        ///  Address controller
+        /// </summary>
+        /// <param name="serviceProvider"></param>
         public AddressController(
             IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
 
+        /// <summary>
+        ///  Get address by user id
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpGet("GetAddressByUserId/{customerId}")]
         [ProducesResponseType(typeof(List<AddressContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -57,10 +73,16 @@ namespace Delivery.Api.Controllers
             return Ok(addressContactList);
         }
 
-        [HttpGet("GetAddressById/{id}")]
+        /// <summary>
+        ///  Get address by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("GetAddressById/{id}", Order = 1)]
+        [HttpGet]
         [ProducesResponseType(typeof(AddressContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetAddressById(int id)
+        public async Task<IActionResult> GetAddressByIdAsync(int id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var addressByIdQuery = new AddressByIdQuery(id);
@@ -70,10 +92,16 @@ namespace Delivery.Api.Controllers
             return Ok(addressContract);
         }
 
-        [HttpPost("Create")]
+        /// <summary>
+        ///  Create address
+        /// </summary>
+        /// <param name="addressContract"></param>
+        /// <returns></returns>
+        [Route("Create", Order = 2)]
+        [HttpPost]
         [ProducesResponseType(typeof(AddressCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddAddress(AddressContract addressContract)
+        public async Task<IActionResult> AddAddressAsync(AddressContract addressContract)
         {
 
             if (!ModelState.IsValid)

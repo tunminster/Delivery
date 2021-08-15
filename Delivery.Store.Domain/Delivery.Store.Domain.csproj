@@ -4,6 +4,10 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\Delivery.Azure.Library.Core\Delivery.Azure.Library.Core.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Messaging\Delivery.Azure.Library.Messaging.csproj" />

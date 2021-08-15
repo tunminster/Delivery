@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
@@ -37,9 +39,10 @@ namespace Delivery.Api.Controllers
     /// <summary>
     ///  Store controller
     /// </summary>
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/[controller]", Name = "7 - Store apis")]
     [ApiController]
     [Authorize(Policy = "ApiUser")]
+    [PlatformSwaggerCategory(ApiCategory.Customer)]
     public class StoreController : Controller
     {
         private readonly IServiceProvider serviceProvider;
@@ -59,7 +62,8 @@ namespace Delivery.Api.Controllers
         /// <param name="storeCreationContract"></param>
         /// <param name="storeImage"></param>
         /// <returns></returns>
-        [HttpPost("CreateStore")]
+        [Route("CreateStore", Order = 1)]
+        [HttpPost]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreCreationContract storeCreationContract,IFormFile storeImage)
@@ -104,7 +108,8 @@ namespace Delivery.Api.Controllers
         /// <param name="storeUpdateContract"></param>
         /// <param name="storeImage"></param>
         /// <returns></returns>
-        [HttpPut("UpdateStore")]
+        [Route("UpdateStore", Order = 2)]
+        [HttpPut]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> UpdateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreUpdateContract storeUpdateContract, IFormFile storeImage)
@@ -148,7 +153,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="storeIndexCreationContract"></param>
         /// <returns></returns>
-        [HttpPost("Index-Store")]
+        [Route("Index-Store", Order = 3)]
+        [HttpPost]
         [ProducesResponseType(typeof(StoreIndexCreationContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> StoreIndexAsync(StoreIndexCreationContract storeIndexCreationContract)
@@ -175,7 +181,8 @@ namespace Delivery.Api.Controllers
         /// <param name="pageNumber"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpGet("GetAllStores")]
+        [Route("GetAllStores", Order = 4)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetStoresAsync(string numberOfObjectPerPage, string pageNumber, CancellationToken cancellationToken = default)
@@ -206,7 +213,8 @@ namespace Delivery.Api.Controllers
         /// <param name="pageSize"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpGet("Stores-Search")]
+        [Route("Stores-Search", Order = 5)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetStoreSearchAsync(string? searchQuery, string? filters, string? storeTypes,
@@ -241,7 +249,8 @@ namespace Delivery.Api.Controllers
         /// <param name="pageSize"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpGet("Stores-Search-By-Store-Type")]
+        [Route("Stores-Search-By-Store-Type", Order = 6)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetStoreSearchByStoreTypeAsync(string storeType,
@@ -271,7 +280,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="storeId"></param>
         /// <returns></returns>
-        [HttpGet("Store-Details")]
+        [Route("Store-Details", Order = 7)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetStoreDetailsByIdAsync(string storeId)
@@ -288,7 +298,12 @@ namespace Delivery.Api.Controllers
             return Ok(storeDetailsList);
         }
 
-        [HttpGet("Store-Generate-Id")]
+        /// <summary>
+        ///  Get external id
+        /// </summary>
+        /// <returns></returns>
+        [Route("Store-Generate-Id", Order = 8)]
+        [HttpGet]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public IActionResult GetExternalId()

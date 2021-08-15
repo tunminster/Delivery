@@ -54,7 +54,7 @@
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageReference Include="Serilog.Sinks.AzureAnalytics" Version="2019.1.20" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="5.4.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="6.1.5" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
@@ -80,6 +80,7 @@
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
     <ProjectReference Include="..\Delivery.Store.Domain\Delivery.Store.Domain.csproj" />
+    <ProjectReference Include="..\Delivery.StoreOwner.Domain\Delivery.StoreOwner.Domain.csproj" />
     <ProjectReference Include="..\Delivery.StripePayment.Domain\Delivery.StripePayment.Domain.csproj" />
     <ProjectReference Include="..\Delivery.User.Domain\Delivery.User.Domain.csproj" />
   </ItemGroup>

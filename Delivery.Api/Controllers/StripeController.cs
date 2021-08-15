@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
@@ -27,9 +29,10 @@ namespace Delivery.Api.Controllers
     /// <summary>
     ///  Stripe api endpoint allows to make payment
     /// </summary>
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/[controller]", Name="8 - Stripe apis")]
     [ApiController]
     [Authorize(Policy = "ApiUser")]
+    [PlatformSwaggerCategory(ApiCategory.Customer)]
     public class StripeController : Controller
     {
         private readonly IServiceProvider serviceProvider;
@@ -48,7 +51,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="stripeAccountCreationContract"></param>
         /// <returns></returns>
-        [HttpPost("Account/CreateAccount")]
+        [Route("Account/CreateAccount", Order = 1)]
+        [HttpPost]
         [ProducesResponseType(typeof(StripeAccountCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreateConnectAccountAsync(StripeAccountCreationContract stripeAccountCreationContract)
@@ -76,7 +80,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="stripeLoginLinkCreationContract"></param>
         /// <returns></returns>
-        [HttpPost("Account/CreatLoginLink")]
+        [Route("Account/CreatLoginLink", Order = 2)]
+        [HttpPost]
         [ProducesResponseType(typeof(StripeLoginLinkCreationStatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreateConnectAccountLoginLinkAsync(
@@ -104,7 +109,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="stripeAccountLinkCreationContract"></param>
         /// <returns></returns>
-        [HttpPost("Account/CreatOnBoardingLink")]
+        [Route("Account/CreatOnBoardingLink", Order = 3)]
+        [HttpPost]
         [ProducesResponseType(typeof(StripeAccountLinkCreationStatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreateAccountOnBoardingLinkAsync(
@@ -134,7 +140,8 @@ namespace Delivery.Api.Controllers
         ///  Get connected account
         /// </summary>
         /// <returns></returns>
-        [HttpGet("Account/GetConnectedAccounts")]
+        [Route("Account/GetConnectedAccounts", Order = 4)]
+        [HttpGet]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetConnectedAccountsAsync()
@@ -154,7 +161,8 @@ namespace Delivery.Api.Controllers
         ///  Get all application fees
         /// </summary>
         /// <returns></returns>
-        [HttpGet("ApplicationFees/GetAllApplicationFees")]
+        [Route("ApplicationFees/GetAllApplicationFees", Order = 5)]
+        [HttpGet]
         [ProducesResponseType(typeof(StripeList<ApplicationFee>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetAllApplicationFeesAsync()
@@ -174,7 +182,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="stripePaymentCaptureCreationContract"></param>
         /// <returns></returns>
-        [HttpPost("Payment/CapturePayment")]
+        [Route("Payment/CapturePayment", Order = 6)]
+        [HttpPost]
         [ProducesResponseType(typeof(StripePaymentCaptureCreationStatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CapturePaymentAsync(
@@ -203,7 +212,8 @@ namespace Delivery.Api.Controllers
         ///  Get generated id
         /// </summary>
         /// <returns></returns>
-        [HttpGet("Generate/GetGeneratedId")]
+        [Route("Generate/GetGeneratedId", Order = 7)]
+        [HttpGet]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public  IActionResult GetGeneratedId()

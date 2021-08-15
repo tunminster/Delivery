@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
@@ -19,9 +21,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers
 {
-    [Route("api/v1/[controller]")]
+    /// <summary>
+    ///  Store type apis
+    /// </summary>
+    [Route("api/v1/[controller]", Name = "4 - Store type apis")]
     [ApiController]
     [Authorize(Policy = "ApiUser")]
+    [PlatformSwaggerCategory(ApiCategory.Management)]
     public class StoreTypeController : Controller
     {
         private readonly IServiceProvider serviceProvider;
@@ -31,8 +37,13 @@ namespace Delivery.Api.Controllers
             this.serviceProvider = serviceProvider;
         }
         
-        
-        [HttpPost("Create-StoreType")]
+        /// <summary>
+        ///  Create store type
+        /// </summary>
+        /// <param name="storeTypeCreationContract"></param>
+        /// <returns></returns>
+        [Route("Create-StoreType")]
+        [HttpPost]
         [ProducesResponseType(typeof(StoreTypeCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreateStoreTypeAsync(StoreTypeCreationContract storeTypeCreationContract)
@@ -61,7 +72,13 @@ namespace Delivery.Api.Controllers
             return Ok(storeTypeCreationStatusContract);
         }
         
-        [HttpGet("GetAllStoreTypes")]
+        /// <summary>
+        ///  Get store type
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [Route("GetAllStoreTypes")]
+        [HttpGet]
         [ProducesResponseType(typeof(List<StoreTypeContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetStoreTypesAsync(CancellationToken cancellationToken = default)
@@ -76,7 +93,5 @@ namespace Delivery.Api.Controllers
           
             return Ok(storeTypeContractList);
         }
-        
-        
     }
 }
