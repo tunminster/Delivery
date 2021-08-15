@@ -101,6 +101,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Driver.Domain", "D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Library.Twilio", "Delivery.Library.Twilio\Delivery.Library.Twilio.csproj", "{573BD37A-793D-48A7-AC9E-3C9B9D0F8D7B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StoreOwner", "StoreOwner", "{94092181-EDEC-403D-83E7-17CB9C697436}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.StoreOwner.Domain", "Delivery.StoreOwner.Domain\Delivery.StoreOwner.Domain.csproj", "{F3FCBFC1-2F83-471D-B13A-1EB4FFD167A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -239,6 +243,10 @@ Global
 		{573BD37A-793D-48A7-AC9E-3C9B9D0F8D7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{573BD37A-793D-48A7-AC9E-3C9B9D0F8D7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{573BD37A-793D-48A7-AC9E-3C9B9D0F8D7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3FCBFC1-2F83-471D-B13A-1EB4FFD167A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3FCBFC1-2F83-471D-B13A-1EB4FFD167A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3FCBFC1-2F83-471D-B13A-1EB4FFD167A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3FCBFC1-2F83-471D-B13A-1EB4FFD167A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -292,5 +300,7 @@ Global
 		{E47CB849-5D3F-44F8-BADD-6C34FE5E6AAE} = {138DD804-2DE2-4127-A54C-2D138E40BF22}
 		{CEDC3CF7-C70B-44F6-9F23-9E9BBF1D310B} = {E47CB849-5D3F-44F8-BADD-6C34FE5E6AAE}
 		{573BD37A-793D-48A7-AC9E-3C9B9D0F8D7B} = {A2CC8780-53F1-405D-8235-ADE14DEC0EBE}
+		{94092181-EDEC-403D-83E7-17CB9C697436} = {138DD804-2DE2-4127-A54C-2D138E40BF22}
+		{F3FCBFC1-2F83-471D-B13A-1EB4FFD167A5} = {94092181-EDEC-403D-83E7-17CB9C697436}
 	EndGlobalSection
 EndGlobal

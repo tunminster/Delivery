@@ -60,6 +60,7 @@ namespace Delivery.Database.Context
         public DbSet<OpeningHour> OpeningHours { get; set; }
         public DbSet<StorePaymentAccount> StorePaymentAccounts { get; set; }
         public DbSet<Driver> Drivers { get; set; }
+        public DbSet<DriverOrder> DriverOrders { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

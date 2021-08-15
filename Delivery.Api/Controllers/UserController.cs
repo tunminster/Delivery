@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Delivery.Api.Helpers;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Customer.Domain.CommandHandlers;
@@ -24,8 +26,13 @@ using ApplicationUser = Delivery.Api.Models.ApplicationUser;
 
 namespace Delivery.Api.Controllers
 {
-    [Route("api/[controller]")]
+    
+    /// <summary>
+    ///  User apis
+    /// </summary>
+    [Route("api/[controller]", Name="9 - User apis")]
     [ApiController]
+    [PlatformSwaggerCategory(ApiCategory.Customer)]
     public class UserController : ControllerBase
     {
         private readonly IPasswordHasher<Database.Models.ApplicationUser> passwordHasher;
@@ -64,7 +71,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost("register")]
+        [Route("register", Order = 1)]
+        [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] RegistrationViewModel model)
         {
             if (!ModelState.IsValid)
@@ -111,11 +119,16 @@ namespace Delivery.Api.Controllers
             return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
         }
 
-        [HttpGet("GetUser")]
+        /// <summary>
+        ///  Get user
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetUser", Order = 2)]
+        [HttpGet]
         [Authorize]
         [ProducesResponseType(typeof(UserContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public IActionResult GetUser()
+        public IActionResult GetUserAsync()
         {
             string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             var result = new UserContract { UserName = userName };

@@ -248,6 +248,49 @@ namespace Delivery.Database.Migrations
                     b.ToTable("Drivers");
                 });
 
+            modelBuilder.Entity("Delivery.Database.Entities.DriverOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR(40)");
+
+                    b.Property<string>("InsertedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("DriverOrders");
+                });
+
             modelBuilder.Entity("Delivery.Database.Entities.OpeningHour", b =>
                 {
                     b.Property<int>("Id")
@@ -1074,6 +1117,25 @@ namespace Delivery.Database.Migrations
                         .HasForeignKey("IdentityId");
 
                     b.Navigation("Identity");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.DriverOrder", b =>
+                {
+                    b.HasOne("Delivery.Database.Entities.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Delivery.Database.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.OpeningHour", b =>

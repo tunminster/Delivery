@@ -5,6 +5,10 @@
         <OutputType>Library</OutputType>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\Delivery.Azure.Library.Authentication\Delivery.Azure.Library.Authentication.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Caching\Delivery.Azure.Library.Caching.csproj" />

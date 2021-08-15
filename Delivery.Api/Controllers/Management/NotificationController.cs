@@ -1,6 +1,8 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.NotificationHub.Contracts.V1;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.FrameWork.Context;
@@ -19,7 +21,8 @@ namespace Delivery.Api.Controllers.Management
     /// <summary>
     ///  Notification controller
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/[controller]" , Name = "1 - Notification management")]
+    [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
     [Authorize]
     public class NotificationController : ControllerBase
@@ -41,7 +44,8 @@ namespace Delivery.Api.Controllers.Management
         /// </summary>
         /// <param name="handle"></param>
         /// <returns></returns>
-        [HttpPost("Register")]
+        [Route("register", Order = 1)]
+        [HttpPost]
         [ProducesResponseType(typeof(DeviceRegistrationResponseContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreateRegistrationIdAsync(string handle = null)
@@ -62,7 +66,8 @@ namespace Delivery.Api.Controllers.Management
         /// <param name="id"></param>
         /// <param name="deviceRegistrationContract"></param>
         /// <returns></returns>
-        [HttpPut("Register")]
+        [Route("register", Order = 2)]
+        [HttpPut]
         [ProducesResponseType(typeof(DeviceRegistrationResponseContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CreateOrUpdateRegistrationAsync(string id, DeviceRegistrationContract deviceRegistrationContract)
@@ -86,7 +91,8 @@ namespace Delivery.Api.Controllers.Management
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("Register")]
+        [Route("register", Order = 3)]
+        [HttpDelete]
         [ProducesResponseType(typeof(DeviceRegistrationResponseContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> DeleteRegistrationAsync(string id)
@@ -109,7 +115,8 @@ namespace Delivery.Api.Controllers.Management
         /// </summary>
         /// <param name="notificationRequestContract"></param>
         /// <returns></returns>
-        [HttpPost("Send/Message")]
+        [Route("send/message", Order = 4)]
+        [HttpPost]
         [ProducesResponseType(typeof(NotificationResponseContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> SendPushNotificationAsync(NotificationRequestContract notificationRequestContract)

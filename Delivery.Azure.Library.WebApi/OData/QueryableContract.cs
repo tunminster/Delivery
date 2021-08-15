@@ -29,7 +29,7 @@ namespace Delivery.Azure.Library.WebApi.OData
 		/// </summary>
 		[Display(Name = "$filter", Description = "Arithmetic Operators=Value le 333.333" +
 		                                         "|Logical Operators=Underwriter eq 'Jane Smith' and PolicyType eq 'IndustryMachinery' or InceptionDate gt datetime'2020-04-01 09:15:53.4240000'" +
-		                                         "|String Functions=substringof('swissre.com',InsertedBy)" +
+		                                         "|String Functions=substringof('ragibull.com',InsertedBy)" +
 		                                         "|Date Functions=day(ExpirationDate) eq 21" +
 		                                         "|Boolean Operators=not (Underwriter eq 'Jane Smith' and (PolicyType eq 'IndustryMachinery' or InceptionDate gt datetime'2020-04-01 09:15:53.4240000'))")]
 		[DataMember]

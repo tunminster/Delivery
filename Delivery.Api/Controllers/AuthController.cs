@@ -5,6 +5,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Delivery.Api.Helpers;
 using Delivery.Api.Models;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Api.ViewModels;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.WebApi.Extensions;
@@ -33,7 +35,11 @@ using Newtonsoft.Json;
 
 namespace Delivery.Api.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    ///  Authentication controller
+    /// </summary>
+    [Route("api/[controller]", Name = "3 = Authentication")]
+    [PlatformSwaggerCategory(ApiCategory.Customer)]
     public class AuthController : ControllerBase
     {
         private readonly IJwtFactory jwtFactory;
@@ -72,7 +78,13 @@ namespace Delivery.Api.Controllers
             this.logger = logger;
         }
 
-        [HttpPost("login")]
+        /// <summary>
+        ///  Login
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Route("login", Order = 1)]
+        [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]CredentialsViewModel model)
         {
             if(!ModelState.IsValid)
@@ -92,8 +104,13 @@ namespace Delivery.Api.Controllers
             return new OkObjectResult(jwt);
         }
         
+        /// <summary>
+        ///  Foacebook login
+        /// </summary>
+        /// <param name="facebookLoginContract"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("account/login/facebook")]
+        [Route("account/login/facebook", Order = 2)]
         public async Task<IActionResult> FacebookLoginAsync([FromBody] FacebookLoginContract facebookLoginContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -113,8 +130,13 @@ namespace Delivery.Api.Controllers
             return Ok(authorizationTokens);
         }
 
+        /// <summary>
+        ///  Google login
+        /// </summary>
+        /// <param name="googleLoginRequestContract"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("account/login/google")]
+        [Route("account/login/google", Order = 3)]
         public async Task<IActionResult> GoogleLoginAsync([FromBody] GoogleLoginRequestContract googleLoginRequestContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -134,8 +156,13 @@ namespace Delivery.Api.Controllers
             return Ok(authorizationTokens);
         }
 
+        /// <summary>
+        ///  Apple login
+        /// </summary>
+        /// <param name="appleLoginRequestContract"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("account/login/apple")]
+        [Route("account/login/apple", Order = 4)]
         public async Task<IActionResult> AppleLoginAsync([FromBody] AppleLoginRequestContract appleLoginRequestContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();

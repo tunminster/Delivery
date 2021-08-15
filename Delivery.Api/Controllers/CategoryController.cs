@@ -4,6 +4,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Category.Domain.CommandHandlers;
 using Delivery.Category.Domain.QueryHandlers;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
@@ -13,7 +15,11 @@ using Delivery.Domain.FrameWork.Context;
 
 namespace Delivery.Api.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    ///  Category api
+    /// </summary>
+    [Route("api/[controller]", Name = "3 - Category")]
+    [PlatformSwaggerCategory(ApiCategory.Customer)]
     [ApiController]
     //[Authorize]
     public class CategoryController : ControllerBase
@@ -33,7 +39,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpGet("getAllCategories")]
+        [Route("getAllCategories", Order = 1)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<CategoryContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetAsync(CancellationToken cancellationToken = default)
@@ -52,7 +59,8 @@ namespace Delivery.Api.Controllers
         /// <param name="parentId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpGet("getAllCategoriesByParentId/{parentId}")]        
+        [Route("getAllCategoriesByParentId/{parentId}", Order = 2)]
+        [HttpGet]        
         [ProducesResponseType(typeof(List<Database.Entities.Category>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetCategoriesByParentIdAsync(string parentId, CancellationToken cancellationToken = default)
@@ -71,7 +79,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("GetCategoryById/{id}")]
+        [Route("GetCategoryById/{id}", Order = 3)]
+        [HttpGet]
         [ProducesResponseType(typeof(CategoryContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult>GetCategoryByIdAsync(string id)
@@ -90,7 +99,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="categoryCreationContract"></param>
         /// <returns></returns>
-        [HttpPost("create")]
+        [Route("create", Order = 4)]
+        [HttpPost]
         [ProducesResponseType(typeof(CategoryCreationContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddCategoryAsync(CategoryCreationContract categoryCreationContract)
@@ -117,7 +127,8 @@ namespace Delivery.Api.Controllers
         /// <param name="id"></param>
         /// <param name="categoryCreationContract"></param>
         /// <returns></returns>
-        [HttpPut("update/{id}")]
+        [Route("update/{id}", Order = 5)]
+        [HttpPut]
         [ProducesResponseType(typeof(CategoryCreationContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PutCategoryAsync(string id, CategoryCreationContract categoryCreationContract)
@@ -143,7 +154,8 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("delete/{id}")]
+        [Route("delete/{id}", Order = 6)]
+        [HttpDelete]
         public async Task<IActionResult> DeleteCategoryAsync(int id)
         {
             if (id < 1)

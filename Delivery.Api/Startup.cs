@@ -2,6 +2,8 @@ using System;
 using System.Text;
 using AutoMapper;
 using Delivery.Api.Models;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Api.Utils.Configs;
 using Delivery.Azure.Library.Caching.Cache;
 using Delivery.Azure.Library.Caching.Cache.Extensions;
@@ -28,10 +30,12 @@ using Delivery.Azure.Library.Storage.Blob.Interfaces;
 using Delivery.Azure.Library.Storage.Cosmos.Connections;
 using Delivery.Azure.Library.Storage.Cosmos.Interfaces;
 using Delivery.Azure.Library.Storage.HostedServices;
+using Delivery.Azure.Library.WebApi.Conventions;
 using Delivery.Azure.Library.WebApi.Filters;
 using Delivery.Database.Models;
 using Delivery.Database.Seeding;
 using Delivery.Domain.Factories.Auth;
+using Delivery.Domain.HttpClients.Extensions;
 using Delivery.Domain.Models;
 using Delivery.Store.Domain.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -175,15 +179,10 @@ namespace Delivery.Api
             builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
             builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             
-            
             services.AddResponseCaching();
-
-            // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Delivery Api", Version = "v1" });
-                c.CustomSchemaIds(x => x.FullName);
-            });
+            
+            services.AddPlatformSwaggerServices<ApplicationSwaggerConfiguration>(PlatformHttpClientExtensions
+                .GetApiScopes<ApiCategory>());
 
             services.AddAutoMapper(typeof(Startup));
             services.Configure<AzureStorageConfig>(Configuration.GetSection("AzureStorageConfig"));
@@ -276,15 +275,7 @@ namespace Delivery.Api
             // Seeding identity roles
             identityData.Initialize();
             
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "RagiBull API V1");
-            });
+            app.UsePlatformSwaggerServices();
 
             app.UseEndpoints(endpoints =>
             {

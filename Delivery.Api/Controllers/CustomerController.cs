@@ -3,6 +3,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Delivery.Api.OpenApi;
+using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Customer.Domain.CommandHandlers;
 using Delivery.Customer.Domain.Contracts;
@@ -20,12 +22,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Delivery.Api.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    ///  Customer controller
+    /// </summary>
+    [Route("api/[controller]", Name = "4 - Customer")]
+    [PlatformSwaggerCategory(ApiCategory.Customer)]
     [ApiController]
     [Authorize]
     public class CustomerController : ControllerBase
     {
-        //private readonly IQueryHandler<CustomerByUsernameQuery, CustomerContract> queryCustomerByUsernameQuery;
         private readonly IServiceProvider serviceProvider;
 
         public CustomerController(IServiceProvider serviceProvider)
@@ -33,7 +38,12 @@ namespace Delivery.Api.Controllers
             this.serviceProvider = serviceProvider;
         }
 
-        [HttpGet("GetCustomer")]
+        /// <summary>
+        ///  Get customer
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetCustomer", Order = 1)]
+        [HttpGet]
         [Authorize]
         [ProducesResponseType(typeof(CustomerContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -52,7 +62,13 @@ namespace Delivery.Api.Controllers
             return Ok(customerContract);
         }
         
-        [HttpPut("Update-Customer")]
+        /// <summary>
+        ///  Update customer
+        /// </summary>
+        /// <param name="customerUpdateContract"></param>
+        /// <returns></returns>
+        [Route("Update-Customer", Order = 2)]
+        [HttpPut]
         [Authorize]
         [ProducesResponseType(typeof(CustomerUpdateStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]

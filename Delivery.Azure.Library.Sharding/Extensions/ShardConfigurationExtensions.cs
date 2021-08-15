@@ -15,7 +15,6 @@ namespace Delivery.Azure.Library.Sharding.Extensions
         /// <param name="serviceProvider">The kernel</param>
         /// <param name="configurationSettingName">The configuration setting key</param>
         /// <returns><c>True</c> if the setting is on</returns>
-        /// <example>JettyInsurance,JettyInsuranceAsia</example>
         public static bool IsShardConfigurationEnabled(this IShard shard, IServiceProvider serviceProvider, string configurationSettingName)
         {
             var shardKey = shard.Key.Replace(" ", "");
