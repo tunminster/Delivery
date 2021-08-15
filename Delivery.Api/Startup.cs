@@ -179,16 +179,8 @@ namespace Delivery.Api
             builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
             builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             
-            
             services.AddResponseCaching();
-
-            // Register the Swagger generator, defining 1 or more Swagger documents
-            // services.AddSwaggerGen(c =>
-            // {
-            //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Delivery Api", Version = "v1" });
-            //     c.CustomSchemaIds(x => x.FullName);
-            // });
-
+            
             services.AddPlatformSwaggerServices<ApplicationSwaggerConfiguration>(PlatformHttpClientExtensions
                 .GetApiScopes<ApiCategory>());
 
@@ -283,16 +275,6 @@ namespace Delivery.Api
             // Seeding identity roles
             identityData.Initialize();
             
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            //app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            // app.UseSwaggerUI(c =>
-            // {
-            //     c.SwaggerEndpoint("/swagger/v1/swagger.json", "RagiBull API V1");
-            // });
-
             app.UsePlatformSwaggerServices();
 
             app.UseEndpoints(endpoints =>
