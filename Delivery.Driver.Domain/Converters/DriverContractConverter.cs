@@ -19,7 +19,9 @@ namespace Delivery.Driver.Domain.Converters
                 RoutingNumber = driverCreationContract.RoutingNumber,
                 ImageUri = driverCreationStatusContract.ImageUri,
                 DrivingLicenseFrontUri = driverCreationStatusContract.DrivingLicenseFrontUri,
-                DrivingLicenseBackUri = driverCreationStatusContract.DrivingLicenseBackUri
+                DrivingLicenseBackUri = driverCreationStatusContract.DrivingLicenseBackUri,
+                Latitude = driverCreationContract.Latitude,
+                Longitude = driverCreationContract.Longitude
             };
 
             return driver;

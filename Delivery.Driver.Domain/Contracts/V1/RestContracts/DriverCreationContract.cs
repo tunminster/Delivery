@@ -57,6 +57,16 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
         ///  Driver's service area that he/she intends to work.
         /// </summary>
         public string ServiceArea { get; init; } = string.Empty;
+        
+        /// <summary>
+        ///  Service area latitude
+        /// </summary>
+        public double Latitude { get; set; }
+        
+        /// <summary>
+        ///  Service area longitude
+        /// </summary>
+        public double Longitude { get; set; }
 
         /// <summary>
         ///  Driver user account password
