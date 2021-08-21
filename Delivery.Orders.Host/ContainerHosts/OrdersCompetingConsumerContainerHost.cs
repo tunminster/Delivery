@@ -11,7 +11,9 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Metrics;
 using Delivery.Domain.Contracts.Enums;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
@@ -114,6 +116,13 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var driverCreationMessageHandler = new DriverCreationMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(driverCreationMessageContract.RequestContext));
                     await driverCreationMessageHandler.HandleMessageAsync(driverCreationMessageContract,
+                        processingState);
+                    break;
+                case nameof(DriverAssignmentMessageContract):
+                    var driverAssignmentMessageContract = message.Deserialize<DriverAssignmentMessageContract>();
+                    var driverAssignmentMessageHandler = new DriverAssignmentMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(driverAssignmentMessageContract.RequestContext));
+                    await driverAssignmentMessageHandler.HandleMessageAsync(driverAssignmentMessageContract,
                         processingState);
                     break;
                 default:
