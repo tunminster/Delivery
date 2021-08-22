@@ -34,6 +34,8 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
                     await new DriverCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(driverCreationCommand);
                     
+                    // todo indexing driver here.
+                    
                     processingStates |= OrderMessageProcessingStates.Processed;
                 }
                 
