@@ -30,13 +30,13 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
         /// <summary>
         ///  Vehicle type
         /// </summary>
-        public VehicleType VehicleType { get; set; }
+        public VehicleType VehicleType { get; init; }
 
         /// <summary>
         ///  Image uri
         /// </summary>
         /// <example>{{imageUri}}</example>
-        public string ImageUri { get; set; } = string.Empty;
+        public string ImageUri { get; init; } = string.Empty;
 
         /// <summary>
         ///  Latitude and longitude location
@@ -45,9 +45,14 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
         public GeoLocation? Location { get; set; }
         
         /// <summary>
+        ///  Radius that cover to work
+        /// </summary>
+        public int Radius { get; init; }
+        
+        /// <summary>
         ///  Is active
         /// </summary>
         /// <example>{{isActive}}</example>
-        public bool IsActive { get; set; }
+        public bool IsActive { get; init; }
     }
 }

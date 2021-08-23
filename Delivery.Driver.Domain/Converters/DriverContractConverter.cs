@@ -20,6 +20,7 @@ namespace Delivery.Driver.Domain.Converters
                 ImageUri = driverCreationStatusContract.ImageUri,
                 DrivingLicenseFrontUri = driverCreationStatusContract.DrivingLicenseFrontUri,
                 DrivingLicenseBackUri = driverCreationStatusContract.DrivingLicenseBackUri,
+                Radius = driverCreationContract.Radius,
                 Latitude = driverCreationContract.Latitude,
                 Longitude = driverCreationContract.Longitude
             };
