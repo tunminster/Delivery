@@ -59,6 +59,11 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
         public string ServiceArea { get; init; } = string.Empty;
         
         /// <summary>
+        ///  Radius that would cover to give delivery service
+        /// </summary>
+        public int Radius { get; init; }
+        
+        /// <summary>
         ///  Service area latitude
         /// </summary>
         public double Latitude { get; set; }
