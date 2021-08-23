@@ -44,6 +44,8 @@ namespace Delivery.Database.Entities
         
         [MaxLength(250)]
         public string ServiceArea { get; set; }
+
+        public int Radius { get; set; }
         
         public double Latitude { get; set; }
         
