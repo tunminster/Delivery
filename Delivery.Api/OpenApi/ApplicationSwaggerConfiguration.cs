@@ -21,7 +21,7 @@ namespace Delivery.Api.OpenApi
 			var environment = serviceProvider.GetRequiredService<IEnvironmentProvider>().GetCurrentEnvironment().ToString();
 			AddRouteWithCategoryFilter(ApiCategory.Management, ManagementApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.Management.ToString()));
 			AddRouteWithCategoryFilter(ApiCategory.Driver, DriverApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.Driver.ToString()));
-			AddRouteWithCategoryFilter(ApiCategory.StoreOwner, StoreOwnerApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.StoreOwner.ToString()));
+			AddRouteWithCategoryFilter(ApiCategory.ShopOwner, StoreOwnerApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.ShopOwner.ToString()));
 			AddRouteWithCategoryFilter(ApiCategory.Customer, CustomerApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.Customer.ToString()));
 		}
 
