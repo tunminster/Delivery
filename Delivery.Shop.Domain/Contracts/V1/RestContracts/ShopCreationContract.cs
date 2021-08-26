@@ -105,6 +105,11 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts
         public string ImageUri { get; set; } = string.Empty;
         
         /// <summary>
+        ///  payment account number from stripe payment
+        /// </summary>
+        public string PaymentAccountNumber { get; set; }
+        
+        /// <summary>
         ///  Store opening hours
         /// </summary>
         public List<StoreOpeningHourCreationContract> StoreOpeningHours { get; set; } = new();
