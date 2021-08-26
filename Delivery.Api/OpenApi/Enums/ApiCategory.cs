@@ -18,7 +18,7 @@ namespace Delivery.Api.OpenApi.Enums
         /// <summary>
         ///  Contains store owner apis which have store owner use-cases
         /// </summary>
-        StoreOwner,
+        ShopOwner,
         
         /// <summary>
         ///  Contains customer apis which have customer use-cases
