@@ -51,6 +51,16 @@ namespace Delivery.Database.Entities
         
         public double Longitude { get; set; }
         
+        public string AddressLine1 { get; set; }
+        
+        public string AddressLine2 { get; set; }
+        
+        public string City { get; set; }
+        
+        public string County { get; set; }
+        
+        public string Country { get; set; }
+        
         public bool Approved { get; set; }
         
         public bool IsActive { get; set; }

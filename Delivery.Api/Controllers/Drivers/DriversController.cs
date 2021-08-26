@@ -427,7 +427,7 @@ namespace Delivery.Api.Controllers.Drivers
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(user, "Driver");
-                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                var claim = new Claim(ClaimData.DriverApiAccess.ClaimType, ClaimData.DriverApiAccess.ClaimValue, ClaimValueTypes.String);
                 var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
                     ClaimValueTypes.String);
                 

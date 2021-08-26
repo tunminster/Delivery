@@ -162,6 +162,16 @@ namespace Delivery.Api
                     policy.RequireAuthenticatedUser()
                         .RequireAssertion(x => 
                             x.User.HasClaim(ClaimData.OrderPageAccess.ClaimType, ClaimData.OrderPageAccess.ClaimValue)));
+                
+                options.AddPolicy("ShopApiUser", policy =>
+                    policy.RequireAuthenticatedUser()
+                        .RequireAssertion(x =>
+                            x.User.HasClaim(ClaimData.ShopApiAccess.ClaimType, ClaimData.ShopApiAccess.ClaimValue)));
+                
+                options.AddPolicy("DriverApiUser", policy =>
+                    policy.RequireAuthenticatedUser()
+                        .RequireAssertion(x =>
+                            x.User.HasClaim(ClaimData.DriverApiAccess.ClaimType, ClaimData.DriverApiAccess.ClaimValue)));
                     //policy.RequireClaim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue));
             });
 
