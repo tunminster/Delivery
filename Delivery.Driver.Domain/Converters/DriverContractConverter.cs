@@ -25,7 +25,12 @@ namespace Delivery.Driver.Domain.Converters
                 DrivingLicenseBackUri = driverCreationStatusContract.DrivingLicenseBackUri,
                 Radius = driverCreationContract.Radius,
                 Latitude = driverCreationContract.Latitude,
-                Longitude = driverCreationContract.Longitude
+                Longitude = driverCreationContract.Longitude,
+                AddressLine1 = driverCreationContract.AddressLine1,
+                AddressLine2 = driverCreationContract.AddressLine2,
+                City = driverCreationContract.City,
+                County = driverCreationContract.County,
+                Country = driverCreationContract.Country
             };
 
             return driver;
