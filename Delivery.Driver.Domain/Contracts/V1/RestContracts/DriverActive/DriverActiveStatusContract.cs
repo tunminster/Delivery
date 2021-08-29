@@ -8,6 +8,12 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverActive
     public record DriverActiveStatusContract
     {
         /// <summary>
+        ///  Driver id
+        /// <example>{{driverId}}</example>
+        /// </summary>
+        public string DriverId { get; init; } = string.Empty;
+        
+        /// <summary>
         ///  Is active
         /// </summary>
         public bool IsActive { get; init; }

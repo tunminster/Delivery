@@ -8,6 +8,7 @@ using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Authentication.OpenIdConnect.Extensions;
 using Delivery.Azure.Library.Core.Extensions.Collections;
 using Delivery.Azure.Library.Core.Extensions.Json;
+using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
@@ -22,6 +23,7 @@ using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverCheckEmailVerification;
@@ -32,6 +34,7 @@ using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCheckResetPasswordVe
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverEmailVerification;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverResetPasswordVerification;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive;
 using Delivery.Driver.Domain.Services;
 using Delivery.Driver.Domain.Validators;
 using FluentValidation.Results;
@@ -141,6 +144,7 @@ namespace Delivery.Api.Controllers.Drivers
 
             var driverCreationStatusContract = new DriverCreationStatusContract
             {
+                DriverId = executingRequestContextAdapter.GetShard().GenerateExternalId(),
                 DateCreated = DateTimeOffset.UtcNow,
                 Message = "Driver application submitted successfully.",
                 ImageUri = driverImageCreationStatusContract.DriverImageUri,
@@ -383,12 +387,23 @@ namespace Delivery.Api.Controllers.Drivers
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
-            var driverActiveStatusContract =
-                await new DriverActiveCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new DriverActiveCommand(driverActiveCreationContract));
+            var driverActiveStatusContract = new DriverActiveStatusContract
+            {
+                IsActive = true,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+
+            var driverActiveMessageContract = new DriverActiveMessageContract
+            {
+                PayloadIn = driverActiveCreationContract,
+                PayloadOut = driverActiveStatusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+            
+            await new DriverActiveMessagePublisher(serviceProvider).PublishAsync(
+                driverActiveMessageContract);
 
             return Ok(driverActiveStatusContract);
-
         }
 
         private async Task ConfirmEmailAsync(DriverCheckEmailVerificationContract driverCheckEmailVerificationContract,

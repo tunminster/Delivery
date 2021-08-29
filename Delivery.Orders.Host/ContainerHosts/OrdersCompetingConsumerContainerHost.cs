@@ -11,8 +11,10 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Metrics;
 using Delivery.Domain.Contracts.Enums;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
@@ -126,6 +128,12 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(driverAssignmentMessageContract.RequestContext));
                     await driverAssignmentMessageHandler.HandleMessageAsync(driverAssignmentMessageContract,
                         processingState);
+                    break;
+                case nameof(DriverActiveMessageContract):
+                    var driverActiveMessageContract = message.Deserialize<DriverActiveMessageContract>();
+                    var driverActiveMessageHandler = new DriverActiveMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(driverActiveMessageContract.RequestContext));
+                    await driverActiveMessageHandler.HandleMessageAsync(driverActiveMessageContract, processingState);
                     break;
                 case nameof(ShopCreationMessageContract):
                     var shopCreationMessageContract = message.Deserialize<ShopCreationMessageContract>();

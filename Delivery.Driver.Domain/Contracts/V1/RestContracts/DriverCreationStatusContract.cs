@@ -4,6 +4,7 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
 {
     public record DriverCreationStatusContract
     {
+        public string DriverId { get; init; } = string.Empty;
         public DateTimeOffset DateCreated { get; init; }
 
         public string Message { get; init; } = string.Empty;
