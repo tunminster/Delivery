@@ -71,7 +71,8 @@ namespace Delivery.Driver.Domain.Converters
                 Location = new GeoLocation(driver.Latitude, driver.Longitude),
                 Radius = driver.Radius,
                 VehicleType = driver.VehicleType,
-                Approved = driver.Approved
+                Approved = driver.Approved,
+                IsOrderAssigned = driver.IsOrderAssigned
             };
 
             return driverContract;

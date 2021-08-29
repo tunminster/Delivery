@@ -63,6 +63,8 @@ namespace Delivery.Database.Entities
         
         public bool Approved { get; set; }
         
+        public bool IsOrderAssigned { get; set; }
+        
         public bool IsActive { get; set; }
         
         [MaxLength(50)]
