@@ -56,6 +56,12 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
         public bool IsActive { get; init; }
         
         /// <summary>
+        ///  Indicate an order has been assigned.
+        /// <example>{{isOrderAssigned}}</example>
+        /// </summary>
+        public bool IsOrderAssigned { get; init; }
+        
+        /// <summary>
         ///  Driver approved
         /// <example>{{approved}}</example>
         /// </summary>
