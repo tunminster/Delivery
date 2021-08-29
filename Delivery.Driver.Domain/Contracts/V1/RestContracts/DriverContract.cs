@@ -54,5 +54,11 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts
         /// </summary>
         /// <example>{{isActive}}</example>
         public bool IsActive { get; init; }
+        
+        /// <summary>
+        ///  Driver approved
+        /// <example>{{approved}}</example>
+        /// </summary>
+        public bool Approved { get; init; }
     }
 }

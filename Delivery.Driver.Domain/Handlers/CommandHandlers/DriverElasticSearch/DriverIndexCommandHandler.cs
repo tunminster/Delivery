@@ -1,17 +1,21 @@
 using System;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverElasticSearch;
+using Delivery.Driver.Domain.Converters;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
 
 namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch
 {
-    public record DriverIndexCommand(DriverContract DriverContract);
+    public record DriverIndexCommand(string DriverId);
     public class DriverIndexCommandHandler : ICommandHandler<DriverIndexCommand, DriverIndexStatusContract>
     {
         private readonly IServiceProvider serviceProvider;
@@ -27,8 +31,13 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch
         public async Task<DriverIndexStatusContract> Handle(DriverIndexCommand command)
         {
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
+            
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var driver = await databaseContext.Drivers.FirstOrDefaultAsync(x => x.ExternalId == command.DriverId) ??
+                         throw new InvalidOperationException($"Expected a driver by Id {command.DriverId}")
+                             .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
 
-            var driverContract = command.DriverContract;
+            var driverContract = driver.ConvertToDriverContract();
             
             var indexExist = await elasticClient.Indices.ExistsAsync($"drivers{executingRequestContextAdapter.GetShard().Key.ToLower()}");
 

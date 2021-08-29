@@ -41,7 +41,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverActive
             await databaseContext.SaveChangesAsync();
 
             return new DriverActiveStatusContract
-                {IsActive = command.DriverActiveCreationContract.IsActive, DateCreated = DateTimeOffset.UtcNow};
+                {DriverId = driver.ExternalId, IsActive = command.DriverActiveCreationContract.IsActive, DateCreated = DateTimeOffset.UtcNow};
         }
     }
 }

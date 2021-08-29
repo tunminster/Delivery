@@ -2,6 +2,7 @@ using System.Linq;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverProfile;
 using Microsoft.Graph;
+using Nest;
 
 namespace Delivery.Driver.Domain.Converters
 {
@@ -11,6 +12,7 @@ namespace Delivery.Driver.Domain.Converters
         {
             var driver = new Database.Entities.Driver
             {
+                ExternalId = driverCreationStatusContract.DriverId,
                 FullName = driverCreationContract.FullName,
                 EmailAddress = driverCreationContract.EmailAddress,
                 VehicleType = driverCreationContract.VehicleType,
@@ -55,6 +57,24 @@ namespace Delivery.Driver.Domain.Converters
             };
 
             return driverProfileContract;
+        }
+
+        public static DriverContract ConvertToDriverContract(this Database.Entities.Driver driver)
+        {
+            var driverContract = new DriverContract
+            {
+                DriverId = driver.ExternalId,
+                EmailAddress = driver.EmailAddress,
+                FullName = driver.FullName,
+                ImageUri = driver.ImageUri,
+                IsActive = driver.IsActive,
+                Location = new GeoLocation(driver.Latitude, driver.Longitude),
+                Radius = driver.Radius,
+                VehicleType = driver.VehicleType,
+                Approved = driver.Approved
+            };
+
+            return driverContract;
         }
     }
 }

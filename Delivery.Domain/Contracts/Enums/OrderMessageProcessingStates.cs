@@ -9,7 +9,8 @@ namespace Delivery.Domain.Contracts.Enums
     {
         [EnumMember] None = 0,
         [EnumMember] PersistOrder = 1,
-        [EnumMember] Processed = 2,
-        [EnumMember] Indexed = 4
+        [EnumMember] Persisted = 2,
+        [EnumMember] Indexed = 4,
+        [EnumMember] Processed = 8,
     }
 }

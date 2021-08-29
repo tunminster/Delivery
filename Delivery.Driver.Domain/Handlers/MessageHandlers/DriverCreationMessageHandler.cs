@@ -8,6 +8,7 @@ using Delivery.Domain.Contracts.Enums;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCreation;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Handlers.MessageHandlers
@@ -26,7 +27,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<DriverCreationContract, DriverCreationStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(OrderMessageProcessingStates.Persisted))
                 {
                     var driverCreationCommand =
                         new DriverCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -34,10 +35,24 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
                     await new DriverCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(driverCreationCommand);
                     
-                    // todo indexing driver here.
-                    
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= OrderMessageProcessingStates.Persisted;
                 }
+
+                if (processingStates.HasFlag(OrderMessageProcessingStates.Persisted) &&
+                    !processingStates.HasFlag(OrderMessageProcessingStates.Indexed))
+                {
+                    var driverIndexCommand =
+                        new DriverIndexCommand(messageAdapter.GetPayloadOut().DriverId);
+
+                    await new DriverIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                        .Handle(driverIndexCommand);
+                    
+                    processingStates |= OrderMessageProcessingStates.Indexed;
+                }
+                
+                // complete
+                processingStates |= OrderMessageProcessingStates.Processed;
+                
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Driver application persisted",
                     value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());
