@@ -17,6 +17,8 @@ using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
+using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
+using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreGeoUpdates;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreTypeCreations;
@@ -124,6 +126,12 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(driverAssignmentMessageContract.RequestContext));
                     await driverAssignmentMessageHandler.HandleMessageAsync(driverAssignmentMessageContract,
                         processingState);
+                    break;
+                case nameof(ShopCreationMessageContract):
+                    var shopCreationMessageContract = message.Deserialize<ShopCreationMessageContract>();
+                    var shopCreationMessageHandler = new ShopCreationMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(shopCreationMessageContract.RequestContext));
+                    await shopCreationMessageHandler.HandleMessageAsync(shopCreationMessageContract, processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");
