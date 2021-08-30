@@ -4,14 +4,16 @@ using Delivery.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delivery.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210830220923_StoreUser")]
+    partial class StoreUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -747,50 +749,6 @@ namespace Delivery.Database.Migrations
                     b.ToTable("StoreTypes");
                 });
 
-            modelBuilder.Entity("Delivery.Database.Entities.StoreUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<bool>("Approved")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ExternalId")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("NVARCHAR(40)");
-
-                    b.Property<string>("InsertedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("InsertionDateTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("StoreId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserStoreRole")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
-
-                    b.HasIndex("StoreId");
-
-                    b.ToTable("StoreUsers");
-                });
-
             modelBuilder.Entity("Delivery.Database.Entities.StripePayment", b =>
                 {
                     b.Property<int>("Id")
@@ -1296,17 +1254,6 @@ namespace Delivery.Database.Migrations
                     b.Navigation("StoreType");
                 });
 
-            modelBuilder.Entity("Delivery.Database.Entities.StoreUser", b =>
-                {
-                    b.HasOne("Delivery.Database.Entities.Store", "Store")
-                        .WithMany("StoreUsers")
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Store");
-                });
-
             modelBuilder.Entity("Delivery.Database.Entities.StripePayment", b =>
                 {
                     b.HasOne("Delivery.Database.Entities.Order", "Order")
@@ -1382,8 +1329,6 @@ namespace Delivery.Database.Migrations
             modelBuilder.Entity("Delivery.Database.Entities.Store", b =>
                 {
                     b.Navigation("OpeningHours");
-
-                    b.Navigation("StoreUsers");
                 });
 #pragma warning restore 612, 618
         }

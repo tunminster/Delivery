@@ -1,9 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Database.Context;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreImageCreations;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Shop.Domain.Services
 {
@@ -41,6 +44,19 @@ namespace Delivery.Shop.Domain.Services
             };
 
             return shopImageCreationStatusContract;
+        }
+        
+        public async Task<bool> IsShopOwnerApprovedAsync(string emailAddress)
+        {
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+            var storeUser = await databaseContext.StoreUsers.FirstOrDefaultAsync(x => x.Username == emailAddress && x.Approved);
+            if (storeUser is null)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

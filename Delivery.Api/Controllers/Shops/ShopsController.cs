@@ -13,12 +13,14 @@ using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Azure.Library.WebApi.ModelBinders;
 using Delivery.Database.Context;
 using Delivery.Database.Models;
+using Delivery.Domain.Factories;
 using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopEmailVerification;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopLogin;
 using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopEmailVerification;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
 using Delivery.Shop.Domain.Services;
@@ -30,6 +32,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Delivery.Api.Controllers.Shops
 {
@@ -202,6 +205,49 @@ namespace Delivery.Api.Controllers.Shops
             return Ok(shopEmailVerificationStatusContract);
         }
         
+        /// <summary>
+        ///  Shop owner login 
+        /// </summary>
+        /// <param name="shopLoginContract"></param>
+        /// <returns></returns>
+        [Route("login", Order = 2)]
+        [HttpPost]
+        public async Task<IActionResult> Post_LoginAsync([FromBody] ShopLoginContract shopLoginContract)
+        {
+            var validationResult = await new ShopLoginValidator().ValidateAsync(shopLoginContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter(); 
+            
+            var isApproved =
+                await new ShopService(serviceProvider, executingRequestContextAdapter).IsShopOwnerApprovedAsync(
+                    shopLoginContract.Username);
+
+            if (isApproved == false)
+            {
+                validationResult.Errors.Add(new ValidationFailure(nameof(ShopLoginContract), 
+                    "Your account application under review. we will send you email when the application is approved."));
+                
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var identity = await GetClaimsIdentityAsync(shopLoginContract.Username, shopLoginContract.Password, executingRequestContextAdapter);
+            
+            if (identity == null)
+            {
+                validationResult.Errors.Add(new ValidationFailure(nameof(ShopLoginContract), 
+                    "Invalid username or password."));
+                
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, shopLoginContract.Username, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
+            return new OkObjectResult(jwt);
+        }
+        
         private async Task ConfirmEmailAsync(ShopEmailVerificationCheckContract shopEmailVerificationCheckContract,
             IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
@@ -254,6 +300,34 @@ namespace Delivery.Api.Controllers.Shops
             }
             
             return false;
+        }
+        
+        private async Task<ClaimsIdentity?> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                return await Task.FromResult<ClaimsIdentity?>(null);
+            
+            await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
+
+            // get the user to verifty
+            var userToVerify = await userManager.FindByNameAsync(userName);
+
+            if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
+            
+            var claimList = await userManager.GetClaimsAsync(userToVerify);
+
+            // check the credentials
+            if (await userManager.CheckPasswordAsync(userToVerify, password))
+            {
+                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, claimList, executingRequestContextAdapter));
+            }
+
+            // Credentials are invalid, or account doesn't exist
+            return await Task.FromResult<ClaimsIdentity?>(null);
         }
     }
 }

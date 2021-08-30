@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
+using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
 using Delivery.Shop.Domain.Converters;
@@ -47,7 +48,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopCreation
                     Open = storeOpeningHour.Open,
                     Close = storeOpeningHour.Close,
                     IsDeleted = false,
-                    InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+                    InsertedBy = command.ShopCreationContract.EmailAddress,
                     InsertionDateTime = DateTimeOffset.UtcNow
                 });
             }
@@ -61,6 +62,15 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopCreation
                     IsDeleted = false
                 };
             }
+            
+            store.StoreUsers.Add(new StoreUser
+            {
+                Username = command.ShopCreationContract.EmailAddress,
+                UserStoreRole = UserStoreRole.Owner,
+                IsDeleted = false,
+                InsertedBy = command.ShopCreationContract.EmailAddress,
+                InsertionDateTime = DateTimeOffset.UtcNow
+            });
             
             await databaseContext.Stores.AddAsync(store);
             await databaseContext.SaveChangesAsync();

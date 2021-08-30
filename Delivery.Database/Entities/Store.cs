@@ -58,5 +58,7 @@ namespace Delivery.Database.Entities
         
         public virtual ICollection<OpeningHour> OpeningHours { get; set; }
         
+        public virtual ICollection<StoreUser> StoreUsers { get; set; }
+
     }
 }
