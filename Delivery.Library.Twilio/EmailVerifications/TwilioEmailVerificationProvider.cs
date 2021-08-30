@@ -58,8 +58,10 @@ namespace Delivery.Library.Twilio.EmailVerifications
                  {"substitutions", new Dictionary<string, object>
                  {
                      {"username", twilioEmailVerificationContract.Username},
-                     {"application-name", ""}
-                 }}
+                     {"verification_name", twilioEmailVerificationContract.VerificationName},
+                     {"subject", twilioEmailVerificationContract.Subject}
+                 }},
+                 {"from_name", twilioEmailVerificationContract.FromName}
              };
              
              var verificationResource = await new DependencyMeasurement(serviceProvider)

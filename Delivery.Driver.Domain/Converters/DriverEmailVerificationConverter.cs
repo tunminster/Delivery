@@ -1,3 +1,4 @@
+using Delivery.Driver.Domain.Constants;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverCheckEmailVerification;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverResetPasswordVerification;
@@ -13,7 +14,10 @@ namespace Delivery.Driver.Domain.Converters
             var twilioEmailVerificationContract = new TwilioEmailVerificationContract
             {
                 Username = driverStartEmailVerificationContract.FullName,
-                Email = driverStartEmailVerificationContract.Email
+                Email = driverStartEmailVerificationContract.Email,
+                FromName = DriverConstant.DriverFromName,
+                VerificationName = DriverConstant.DriverEmailVerification,
+                Subject = DriverConstant.DriverEmailVerification
             };
 
             return twilioEmailVerificationContract;
@@ -25,7 +29,8 @@ namespace Delivery.Driver.Domain.Converters
             var twilioEmailVerificationContract = new TwilioEmailVerificationContract
             {
                 Username = string.Empty,
-                Email = driverResetPasswordRequestContract.Email
+                Email = driverResetPasswordRequestContract.Email,
+                FromName = DriverConstant.DriverFromName
             };
 
             return twilioEmailVerificationContract;
