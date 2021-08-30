@@ -17,6 +17,8 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopEmailVerification;
+using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopEmailVerification;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
 using Delivery.Shop.Domain.Services;
 using Delivery.Shop.Domain.Validators;
@@ -138,6 +140,33 @@ namespace Delivery.Api.Controllers.Shops
             await new ShopCreationMessagePublisher(serviceProvider).PublishAsync(shopCreationMessage);
 
             return Ok(shopCreationStatusContract);
+        }
+        
+        /// <summary>
+        ///  Request email verification
+        /// </summary>
+        /// <param name="driverStartEmailVerificationContract"></param>
+        /// <returns></returns>
+        [Route("request-email-otp", Order = 3)]
+        [ProducesResponseType(typeof(ShopEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_RequestEmailOtpAsync(
+            [FromBody] ShopEmailVerificationContract shopEmailVerificationContract)
+        {
+            var validationResult = await new ShopEmailVerificationValidator().ValidateAsync(shopEmailVerificationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopEmailVerificationStatusContract =
+                await new ShopEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new ShopEmailVerificationCommand(shopEmailVerificationContract));
+
+            return Ok(shopEmailVerificationStatusContract);
         }
         
         private async Task<bool> CreateUserAsync(ShopCreationContract shopCreationContract, IExecutingRequestContextAdapter executingRequestContextAdapter, ValidationResult validationResult)

@@ -18,6 +18,21 @@ namespace Delivery.Library.Twilio.Contracts
         public string Email { get; init; } = string.Empty;
 
         /// <summary>
+        ///  From name
+        /// </summary>
+        public string FromName { get; init; } = string.Empty;
+        
+        /// <summary>
+        ///  domain specific verification name
+        /// </summary>
+        public string VerificationName { get; init; } = string.Empty;
+        
+        /// <summary>
+        ///  domain specific email subject
+        /// </summary>
+        public string Subject { get; init; } = string.Empty;
+
+        /// <summary>
         ///  Set User properties
         /// </summary>
         public IDictionary<string, object> UserProperties { get; internal set; } = new Dictionary<string, object>();
