@@ -34,5 +34,17 @@ namespace Delivery.Shop.Domain.Converters
 
             return shopEmailVerificationStatusContract;
         }
+        
+        public static TwilioCheckEmailVerificationContract ConvertToTwilio(
+            this ShopEmailVerificationCheckContract shopEmailVerificationCheckContract)
+        {
+            var twilioCheckEmailVerificationContract = new TwilioCheckEmailVerificationContract
+            {
+                Email = shopEmailVerificationCheckContract.Email,
+                Code = shopEmailVerificationCheckContract.Code
+            };
+
+            return twilioCheckEmailVerificationContract;
+        }
     }
 }
