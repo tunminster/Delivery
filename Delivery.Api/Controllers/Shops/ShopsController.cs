@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Database.Factories;
+using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
@@ -145,7 +146,7 @@ namespace Delivery.Api.Controllers.Shops
         /// <summary>
         ///  Request email verification
         /// </summary>
-        /// <param name="driverStartEmailVerificationContract"></param>
+        /// <param name="shopEmailVerificationContract"></param>
         /// <returns></returns>
         [Route("request-email-otp", Order = 3)]
         [ProducesResponseType(typeof(ShopEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
@@ -167,6 +168,60 @@ namespace Delivery.Api.Controllers.Shops
                     .Handle(new ShopEmailVerificationCommand(shopEmailVerificationContract));
 
             return Ok(shopEmailVerificationStatusContract);
+        }
+        
+        /// <summary>
+        ///  Request email verification
+        /// </summary>
+        /// <param name="shopEmailVerificationCheckContract"></param>
+        /// <returns></returns>
+        [Route("verify-email-otp", Order = 4)]
+        [ProducesResponseType(typeof(ShopEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_VerifyEmailOtpAsync(
+            [FromBody] ShopEmailVerificationCheckContract shopEmailVerificationCheckContract)
+        {
+            var validationResult = await new ShopEmailVerificationCheckValidator().ValidateAsync(shopEmailVerificationCheckContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopEmailVerificationStatusContract =
+                await new ShopEmailVerificationCheckCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new ShopEmailVerificationCheckCommand(shopEmailVerificationCheckContract));
+
+            if (shopEmailVerificationStatusContract.Status == "approved")
+            {
+                await ConfirmEmailAsync(shopEmailVerificationCheckContract, executingRequestContextAdapter);
+            }
+
+            return Ok(shopEmailVerificationStatusContract);
+        }
+        
+        private async Task ConfirmEmailAsync(ShopEmailVerificationCheckContract shopEmailVerificationCheckContract,
+            IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            await using var applicationDbContext =
+                await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider, logger);
+
+            var user = await userManager.FindByEmailAsync(shopEmailVerificationCheckContract.Email);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("Expected to be found user.").WithTelemetry(
+                    executingRequestContextAdapter.GetTelemetryProperties());
+            }
+
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            await userManager.ConfirmEmailAsync(user, token);
         }
         
         private async Task<bool> CreateUserAsync(ShopCreationContract shopCreationContract, IExecutingRequestContextAdapter executingRequestContextAdapter, ValidationResult validationResult)
