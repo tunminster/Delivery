@@ -39,7 +39,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                     OrderId = command.DriverAssignmentCreationContract.OrderId,
                     Status = DriverOrderStatus.None
                 };
-                
+
+                databaseContext.DriverOrders.Add(createDriverOrder);
                 await databaseContext.SaveChangesAsync();
             }
 

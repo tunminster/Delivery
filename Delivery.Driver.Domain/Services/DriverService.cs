@@ -75,7 +75,7 @@ namespace Delivery.Driver.Domain.Services
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
-            var driver = databaseContext.Drivers.FirstOrDefault(x => x.EmailAddress == emailAddress);
+            var driver = databaseContext.Drivers.FirstOrDefault(x => x.EmailAddress == emailAddress && x.Approved);
 
             if (driver is null)
             {
