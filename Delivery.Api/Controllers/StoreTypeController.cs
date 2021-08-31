@@ -79,6 +79,7 @@ namespace Delivery.Api.Controllers
         /// <returns></returns>
         [Route("GetAllStoreTypes")]
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(List<StoreTypeContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetStoreTypesAsync(CancellationToken cancellationToken = default)
