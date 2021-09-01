@@ -4,5 +4,8 @@ namespace Delivery.Shop.Domain.Constants
     {
         public const string ShopFromName = "Welcome Ragibull Shop";
         public const string ShopEmailVerification = "Ragibull Shop email verficaiton";
+        
+        public const string ShopResetPasswordName = "Ragibull Shop Reset Password";
+        public const string ShopResetPasswordVerification = "Ragibull Shop reset password verficaiton";
     }
 }
