@@ -21,7 +21,9 @@ using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopEmailVerification;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopLogin;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopResetPasswordVerification;
 using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopEmailVerification;
+using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopResetPasswordVerification;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
 using Delivery.Shop.Domain.Services;
 using Delivery.Shop.Domain.Validators;
@@ -246,6 +248,102 @@ namespace Delivery.Api.Controllers.Shops
             
             var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, shopLoginContract.Username, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
             return new OkObjectResult(jwt);
+        }
+        
+        /// <summary>
+        ///  Request reset password otp
+        /// </summary>
+        /// <param name="shopResetPasswordRequestContract"></param>
+        /// <returns></returns>
+        [Route("request-reset-password-otp", Order = 5)]
+        [ProducesResponseType(typeof(ShopResetPasswordStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_RequestResetPasswordAsync(
+            [FromBody] ShopResetPasswordRequestContract shopResetPasswordRequestContract)
+        {
+            var validationResult = await new ShopResetPasswordRequestValidator().ValidateAsync(shopResetPasswordRequestContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var shopResetPasswordStatusContract =
+                await new ShopResetPasswordVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new ShopResetPasswordVerificationCommand(shopResetPasswordRequestContract));
+
+            return Ok(shopResetPasswordStatusContract);
+        }
+        
+        /// <summary>
+        ///  Verify otp and reset password
+        /// </summary>
+        /// <param name="shopResetPasswordCreationContract"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        [Route("verify-reset-password", Order = 7)]
+        [ProducesResponseType(typeof(ShopResetPasswordStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_VerifyResetPasswordOtpAsync([FromBody] ShopResetPasswordCreationContract shopResetPasswordCreationContract)
+        {
+            var validationResult =
+                await new ShopResetPasswordVerificationCheckValidator().ValidateAsync(
+                    shopResetPasswordCreationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var driverResetPasswordStatusContract =
+                await new ShopResetPasswordVerificationCheckCommandHandler(serviceProvider,
+                        executingRequestContextAdapter)
+                    .Handle(new ShopResetPasswordVerificationCheckCommand(shopResetPasswordCreationContract));
+
+            if (driverResetPasswordStatusContract.Status == "approved")
+            {
+                await using var applicationDbContext =
+                    await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+                var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+                var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                    passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider, logger);
+
+                var user = await userManager.FindByEmailAsync(shopResetPasswordCreationContract.Email);
+
+                if (user == null)
+                {
+                    throw new InvalidOperationException($"Expected to be found {shopResetPasswordCreationContract.Email} user.").WithTelemetry(
+                        executingRequestContextAdapter.GetTelemetryProperties());
+                }
+                
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                var passwordResetResult = await userManager.ResetPasswordAsync(user, token, shopResetPasswordCreationContract.Password);
+
+                if (passwordResetResult.Succeeded)
+                {
+                    return Ok(driverResetPasswordStatusContract);
+                }
+
+                foreach (var error in passwordResetResult.Errors)
+                {
+                    validationResult.Errors.Add(new ValidationFailure(error.Code, error.Description));
+                }
+                
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var errorResult = driverResetPasswordStatusContract with
+            {
+                Status = "error",
+                Valid = false
+            };
+
+            return Ok(errorResult);
         }
         
         private async Task ConfirmEmailAsync(ShopEmailVerificationCheckContract shopEmailVerificationCheckContract,
