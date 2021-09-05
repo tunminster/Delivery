@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Database.Enums;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Enum;
@@ -65,7 +66,7 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeCaptu
             var stripeOrderUpdateContract = new StripeOrderUpdateContract
             {
                 OrderId = stripePaymentCreationContract.OrderId,
-                OrderStatus = OrderStatusEnum.Preparing,
+                OrderStatus = OrderStatus.Preparing,
                 PaymentStatus = stripePaymentCaptureCreationStatus.PaymentStatus,
                 PaymentIntentId = request.StripePaymentCaptureCreationContract.StripePaymentIntentId
             };
