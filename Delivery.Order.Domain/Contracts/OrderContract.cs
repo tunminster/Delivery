@@ -29,6 +29,9 @@ namespace Delivery.Order.Domain.Contracts
         public string ImageUri { get; set; }
         
         [DataMember]
+        public OrderStatus Status { get; set; }
+        
+        [DataMember]
         public string StoreName { get; set; }
         
         [DataMember]

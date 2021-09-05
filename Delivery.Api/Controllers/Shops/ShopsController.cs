@@ -39,7 +39,7 @@ using Newtonsoft.Json;
 namespace Delivery.Api.Controllers.Shops
 {
     /// <summary>
-    ///  Driver controller
+    ///  Shop controller
     /// </summary>
     [Route("api/v1/[controller]", Name = "1 - Shop owner")]
     [PlatformSwaggerCategory(ApiCategory.ShopOwner)]

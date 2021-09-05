@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
+using Delivery.Database.Enums;
 using Delivery.Order.Domain.Enum;
 
 namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate
@@ -14,7 +15,7 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate
         public string OrderId { get; set; }
         
         [DataMember]
-        public OrderStatusEnum OrderStatus { get; set; }
+        public OrderStatus OrderStatus { get; set; }
         
         [DataMember]
         public string PaymentStatus { get; set; }

@@ -6,6 +6,7 @@ using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
+using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Enum;
@@ -59,7 +60,8 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
                 PaymentIntentId = command.OrderCreationStatusContract.StripePaymentIntentId,
                 PaymentAccountNumber = command.OrderCreationStatusContract.PaymentAccountNumber,
-                OrderStatus = OrderStatusEnum.Preparing.ToString(),
+                OrderStatus = OrderStatus.Preparing.ToString(),
+                Status = OrderStatus.None,
                 Description = string.Empty,
                 OrderItems = orderItems,
                 DateCreated = DateTime.UtcNow,

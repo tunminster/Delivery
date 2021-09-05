@@ -27,6 +27,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdat
                 x.ExternalId == command.StripeUpdateOrderContract.OrderId);
 
             order.OrderStatus = command.StripeUpdateOrderContract.OrderStatus.ToString();
+            order.Status = command.StripeUpdateOrderContract.OrderStatus;
             
             await databaseContext.SaveChangesAsync();
 

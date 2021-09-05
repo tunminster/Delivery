@@ -43,6 +43,8 @@ namespace Delivery.Database.Entities
         
         public int? StoreId { get; set; }
         
+        public OrderStatus Status { get; set; }
+        
         [ForeignKey("StoreId")]
         public virtual Store Store { get; set; }
 
