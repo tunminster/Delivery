@@ -56,6 +56,8 @@ namespace Delivery.Database.Entities
         public DateTimeOffset InsertionDateTime { get; set; }
         public bool IsDeleted { get; set; }
         
+        public bool Approved { get; set; }
+        
         public virtual ICollection<OpeningHour> OpeningHours { get; set; }
         
         public virtual ICollection<StoreUser> StoreUsers { get; set; }
