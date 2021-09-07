@@ -371,7 +371,7 @@ namespace Delivery.Api.Controllers.Drivers
         [ProducesResponseType(typeof(DriverActiveStatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "DriverApiUser")]
         public async Task<IActionResult> Post_ActiveDriverAsync(
             [FromBody] DriverActiveCreationContract driverActiveCreationContract)
         {
