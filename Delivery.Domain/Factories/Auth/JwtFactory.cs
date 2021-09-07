@@ -27,26 +27,26 @@ namespace Delivery.Domain.Factories.Auth
         {
             var claimList = new List<Claim>();
             // Todo: refactor
-            var claims = new[]
-            {
-                 new Claim(JwtRegisteredClaimNames.Sub, userName),
-                 new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
-                 new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
-                 
-                 // default api_access claim
-                 //new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue),
-                 
-                 
-                 identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Role),
-                 identity.FindFirst("groups"),
-                 identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
-             };
+            // var claims = new[]
+            // {
+            //      new Claim(JwtRegisteredClaimNames.Sub, userName),
+            //      new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
+            //      new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
+            //      
+            //      // default api_access claim
+            //      new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue),
+            //      
+            //      
+            //      identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Role),
+            //      identity.FindFirst("groups"),
+            //      identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
+            //  };
 
-            // claimList.Add(new Claim(JwtRegisteredClaimNames.Sub, userName));
-            // claimList.Add(new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()));
-            // claimList.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64));
-            //
-            // claimList.AddRange(identity.Claims.Select(item => new Claim(item.Type, item.Value)));
+            claimList.Add(new Claim(JwtRegisteredClaimNames.Sub, userName));
+            claimList.Add(new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()));
+            claimList.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64));
+            
+            claimList.AddRange(identity.Claims.Select(item => new Claim(item.Type, item.Value)));
 
             //claimList.Add(identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Role));
             
@@ -54,7 +54,7 @@ namespace Delivery.Domain.Factories.Auth
             var jwt = new JwtSecurityToken(
                 issuer: _jwtOptions.Issuer,
                 audience: _jwtOptions.Audience,
-                claims: claims,
+                claims: claimList,
                 notBefore: _jwtOptions.NotBefore,
                 expires: _jwtOptions.Expiration,
                 signingCredentials: _jwtOptions.SigningCredentials);
