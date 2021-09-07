@@ -68,6 +68,8 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopCreation
                 };
             }
             
+            store.StoreUsers = new List<StoreUser>();
+            
             store.StoreUsers.Add(new StoreUser
             {
                 Username = command.ShopCreationContract.EmailAddress,
