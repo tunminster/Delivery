@@ -34,7 +34,7 @@ namespace Delivery.Domain.Factories.Auth
                  new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
                  
                  // default api_access claim
-                 new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue),
+                 //new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue),
                  
                  
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Role),
