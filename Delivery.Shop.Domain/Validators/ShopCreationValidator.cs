@@ -14,6 +14,7 @@ namespace Delivery.Shop.Domain.Validators
             RuleFor(x => x.Password).MinimumLength(6).WithMessage("Password must be at least 6 characters");
             RuleFor(x => x.ConfirmPassword).NotEmpty().NotNull().WithMessage("Confirm password must be provided");
             RuleFor(x => x.Password).Equal(x => x.ConfirmPassword).WithMessage("Passwords do not match.");
+            RuleFor(x => x.StoreTypeId).NotEmpty().NotNull().WithMessage("Store type id must be provided.");
         }
     }
 }
