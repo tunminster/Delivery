@@ -36,6 +36,11 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopCreation
             var storeType =
                 await databaseContext.StoreTypes.FirstOrDefaultAsync(x =>
                     x.ExternalId == command.ShopCreationContract.StoreTypeId);
+            if (storeType == null)
+            {
+                throw new InvalidOperationException(
+                    $"Empty store type returns for store type {command.ShopCreationContract.StoreTypeId}");
+            }
             
             store.StoreTypeId = storeType.Id;
             store.OpeningHours = new List<OpeningHour>();
