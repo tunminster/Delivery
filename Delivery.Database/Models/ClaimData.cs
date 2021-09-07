@@ -9,6 +9,7 @@ namespace Delivery.Database.Models
         public static readonly ClaimData BackEndUserAccess = new ("OrderUpdateAccess", "Allow");
         public static readonly ClaimData ShopApiAccess = new("ShopApiAccess", "shop_api_access");
         public static readonly ClaimData DriverApiAccess = new("DriverApiAccess", "driver_api_access");
+        public static readonly ClaimData CustomerApiAccess = new("CustomerApiAccess", "customer_api_access");
 
     }
 }
