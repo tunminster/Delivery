@@ -48,7 +48,7 @@ namespace Delivery.Domain.Factories.Auth
 
             claimList.AddRange(identity.Claims.Select(item => new Claim(item.Type, item.Value)));
 
-            claimList.Add(identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Role));
+            //claimList.Add(identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Role));
             
             // Create the JWT security token and encode it.
             var jwt = new JwtSecurityToken(
