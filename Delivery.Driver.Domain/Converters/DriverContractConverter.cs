@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverProfile;
 using Microsoft.Graph;
 using Nest;
@@ -76,6 +78,18 @@ namespace Delivery.Driver.Domain.Converters
             };
 
             return driverContract;
+        }
+        
+        public static DriverActiveStatusContract ConvertToDriverActiveStatusContract(this DriverContract driverContract)
+        {
+            var driverActiveStatusContract = new DriverActiveStatusContract
+            {
+                DriverId = driverContract.DriverId,
+                IsActive = driverContract.IsActive,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+
+            return driverActiveStatusContract;
         }
     }
 }
