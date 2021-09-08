@@ -9,7 +9,7 @@ using Delivery.Azure.Library.Core.Extensions.Collections;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Models;
 using Delivery.Domain.Models;
-using Microsoft.Extensions.Options;
+using ServiceStack;
 
 namespace Delivery.Domain.Factories.Auth
 {
@@ -17,7 +17,7 @@ namespace Delivery.Domain.Factories.Auth
     {
         private readonly JwtIssuerOptions _jwtOptions;
 
-        public JwtFactory(IOptions<JwtIssuerOptions> jwtOptions)
+        public JwtFactory(Microsoft.Extensions.Options.IOptions<JwtIssuerOptions> jwtOptions)
         {
             _jwtOptions = jwtOptions.Value;
             ThrowIfInvalidOptions(_jwtOptions);
@@ -46,7 +46,22 @@ namespace Delivery.Domain.Factories.Auth
             claimList.Add(new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()));
             claimList.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64));
             
-            claimList.AddRange(identity.Claims.Select(item => new Claim(item.Type, item.Value)));
+            claimList.AddRange(identity.Claims.Select(item => new Claim(item.Type.ToLower(), item.Value)));
+            
+            
+
+            // if (claimList.Any(x => string.Equals(x.Type.ToLower(), ClaimData.JwtClaimIdentifyClaim.ClaimType.ToLower(),
+            //     StringComparison.Ordinal)))
+            // {
+            //     claimList.Add(new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue));
+            // }
+            // else if (claimList.Any(x => string.Equals(x.Type.ToLower(),
+            //     ClaimData.DriverApiAccess.ClaimType.ToLower(),
+            //     StringComparison.Ordinal)))
+            // {
+            //     claimList.Add(new Claim(ClaimData.DriverApiAccess.ClaimType, ClaimData.DriverApiAccess.ClaimValue));
+            // }
+            
 
             //claimList.Add(identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Role));
             
@@ -64,22 +79,27 @@ namespace Delivery.Domain.Factories.Auth
             return encodedJwt;
         }
 
-        public ClaimsIdentity GenerateClaimsIdentity(string userName, string id, IList<Claim> claimList, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        public ClaimsIdentity GenerateClaimsIdentity(string userName, string id, IList<Claim> claimList, List<string> roles, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             claimList.Add(new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id));
 
-            var hasApiAccess = claimList.FirstOrDefault(x =>
-                x.Type.ToLower() == Helpers.Constants.Strings.JwtClaimIdentifiers.Role);
-
-            if (hasApiAccess?.Value == "api_access")
+            foreach (var item in roles)
             {
-                return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
-                {
-                    new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
-                    new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Role, Helpers.Constants.Strings.JwtClaims.ApiAccess),
-                    new Claim("groups", executingRequestContextAdapter.GetShard().Key)
-                });
+                claimList.Add(new Claim("role", item));
             }
+
+            // var hasApiAccess = claimList.FirstOrDefault(x =>
+            //     x.Type.ToLower() == Helpers.Constants.Strings.JwtClaimIdentifiers.Role);
+
+            // if (hasApiAccess?.Value == "api_access")
+            // {
+            //     return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
+            //     {
+            //         new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
+            //         new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Role, Helpers.Constants.Strings.JwtClaims.ApiAccess),
+            //         new Claim("groups", executingRequestContextAdapter.GetShard().Key)
+            //     });
+            // }
             // Todo: needs to return claim list 
             return new ClaimsIdentity(new GenericIdentity(userName, "Token"), claimList);
         }

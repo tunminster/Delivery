@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -417,11 +418,13 @@ namespace Delivery.Api.Controllers.Shops
             if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
             
             var claimList = await userManager.GetClaimsAsync(userToVerify);
+            
+            var roleList = await userManager.GetRolesAsync(userToVerify);
 
             // check the credentials
             if (await userManager.CheckPasswordAsync(userToVerify, password))
             {
-                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, claimList, executingRequestContextAdapter));
+                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, claimList, roleList.ToList(),executingRequestContextAdapter));
             }
 
             // Credentials are invalid, or account doesn't exist
