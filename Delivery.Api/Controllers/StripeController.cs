@@ -31,7 +31,7 @@ namespace Delivery.Api.Controllers
     /// </summary>
     [Route("api/v1/[controller]", Name="8 - Stripe apis")]
     [ApiController]
-    [Authorize(Policy = "ApiUser")]
+    [Authorize(Policy = "CustomerApiUser")]
     [PlatformSwaggerCategory(ApiCategory.Customer)]
     public class StripeController : Controller
     {

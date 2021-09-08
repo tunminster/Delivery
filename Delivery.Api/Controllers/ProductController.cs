@@ -30,7 +30,7 @@ namespace Delivery.Api.Controllers
     /// </summary>
     [Route("api/[controller]", Name = "3 - Product management")]
     [ApiController]
-    [Authorize(Policy = "ApiUser")]
+    [Authorize(Policy = "CustomerApiUser")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     public class ProductController : ControllerBase
     {

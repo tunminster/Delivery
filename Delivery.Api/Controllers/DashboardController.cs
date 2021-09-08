@@ -18,7 +18,7 @@ namespace Delivery.Api.Controllers
     /// <summary>
     ///  Dashboard apis
     /// </summary>
-    [Authorize(Policy = "ApiUser")]
+    [Authorize(Policy = "CustomerApiUser")]
     [Route("api/[controller]", Name = "5 - Dashboard")]
     [ApiController]
     [PlatformSwaggerCategory(ApiCategory.Customer)]

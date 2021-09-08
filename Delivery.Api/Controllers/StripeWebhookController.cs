@@ -11,7 +11,7 @@ namespace Delivery.Api.Controllers
     /// </summary>
     [Route("api/v1/[controller]", Name = "8 - Stripe webhook")]
     [ApiController]
-    [Authorize(Policy = "ApiUser")]
+    [Authorize(Policy = "CustomerApiUser")]
     [PlatformSwaggerCategory(ApiCategory.Customer)]
     public class StripeWebhookController : Controller
     {

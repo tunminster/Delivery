@@ -72,7 +72,7 @@ namespace Delivery.User.Domain.ApplicationServices
                     if (result.Succeeded)
                     {
                         result = await userManager.AddToRoleAsync(user, "Customer");
-                        var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                        var claim = new Claim(ClaimData.CustomerApiAccess.ClaimType, ClaimData.CustomerApiAccess.ClaimValue, ClaimValueTypes.String);
                         await userManager.AddClaimAsync(user, claim);
                     }
                 }
@@ -128,7 +128,7 @@ namespace Delivery.User.Domain.ApplicationServices
                             case true:
                             {
                                 await userManager.AddToRoleAsync(user, "Customer");
-                                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                                var claim = new Claim(ClaimData.CustomerApiAccess.ClaimType, ClaimData.CustomerApiAccess.ClaimValue, ClaimValueTypes.String);
                         
                                 var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
                                     ClaimValueTypes.String);
@@ -197,7 +197,7 @@ namespace Delivery.User.Domain.ApplicationServices
                             case true:
                             {
                                 await userManager.AddToRoleAsync(user, "Customer");
-                                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                                var claim = new Claim(ClaimData.CustomerApiAccess.ClaimType, ClaimData.CustomerApiAccess.ClaimValue, ClaimValueTypes.String);
                         
                                 var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
                                     ClaimValueTypes.String);
@@ -266,7 +266,7 @@ namespace Delivery.User.Domain.ApplicationServices
                             case true:
                             {
                                 await userManager.AddToRoleAsync(user, "Customer");
-                                var claim = new Claim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue, ClaimValueTypes.String);
+                                var claim = new Claim(ClaimData.CustomerApiAccess.ClaimType, ClaimData.CustomerApiAccess.ClaimValue, ClaimValueTypes.String);
                         
                                 var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
                                     ClaimValueTypes.String);
@@ -328,9 +328,11 @@ namespace Delivery.User.Domain.ApplicationServices
             if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
 
             var claimList = await userManager.GetClaimsAsync(userToVerify);
-
+            
+            var roleList = await userManager.GetRolesAsync(userToVerify);
+            
             // check the credentials
-            return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, claimList, executingRequestContextAdapter));
+            return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, claimList, roleList.ToList(),executingRequestContextAdapter));
 
         }
     }

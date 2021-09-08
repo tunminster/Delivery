@@ -41,7 +41,7 @@ namespace Delivery.Api.Controllers
     /// </summary>
     [Route("api/v1/[controller]", Name = "7 - Store apis")]
     [ApiController]
-    [Authorize(Policy = "ApiUser")]
+    [Authorize(Policy = "CustomerApiUser")]
     [PlatformSwaggerCategory(ApiCategory.Customer)]
     public class StoreController : Controller
     {

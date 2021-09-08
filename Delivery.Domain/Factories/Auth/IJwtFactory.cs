@@ -8,6 +8,6 @@ namespace Delivery.Domain.Factories.Auth
     public interface IJwtFactory
     {
         Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity);
-        ClaimsIdentity GenerateClaimsIdentity(string userName, string id, IList<Claim> claimList, IExecutingRequestContextAdapter executingRequestContextAdapter);
+        ClaimsIdentity GenerateClaimsIdentity(string userName, string id, IList<Claim> claimList, List<string> roles, IExecutingRequestContextAdapter executingRequestContextAdapter);
     }
 }
