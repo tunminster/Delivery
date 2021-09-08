@@ -390,7 +390,7 @@ namespace Delivery.Api.Controllers.Drivers
 
             var driverActiveStatusContract = new DriverActiveStatusContract
             {
-                IsActive = true,
+                IsActive = driverActiveCreationContract.IsActive,
                 DateCreated = DateTimeOffset.UtcNow
             };
 
