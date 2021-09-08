@@ -35,7 +35,7 @@ namespace Delivery.Api.Controllers.Shops
         ///  Get order by shop user
         /// </summary>
         [Route("get-order")]
-        [HttpGet]
+        [HttpPost]
         [ProducesResponseType(typeof(List<ShopOrderContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetShopOrdersAsync(ShopOrderQueryContract shopOrderQueryContract, CancellationToken cancellationToken = default)
