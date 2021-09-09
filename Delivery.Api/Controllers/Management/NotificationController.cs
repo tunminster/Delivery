@@ -24,7 +24,7 @@ namespace Delivery.Api.Controllers.Management
     [Route("api/[controller]" , Name = "1 - Notification management")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
-    [Authorize(Policy = "DriverApiUser")]
+    [Authorize(Roles = "Driver,ShopOwner")]
     public class NotificationController : ControllerBase
     {
         private readonly IServiceProvider serviceProvider;
