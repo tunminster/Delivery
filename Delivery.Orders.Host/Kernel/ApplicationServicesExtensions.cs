@@ -13,6 +13,8 @@ using Delivery.Azure.Library.Messaging.HostedServices;
 using Delivery.Azure.Library.Messaging.ServiceBus.Connections;
 using Delivery.Azure.Library.Messaging.ServiceBus.Connections.Interfaces;
 using Delivery.Azure.Library.Microservices.Hosting.HostedServices;
+using Delivery.Azure.Library.NotificationHub.Connections;
+using Delivery.Azure.Library.NotificationHub.Connections.Interfaces;
 using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
 using Delivery.Azure.Library.Sharding.Interfaces;
@@ -69,6 +71,7 @@ namespace Delivery.Orders.Host.Kernel
             
             serviceCollection.AddSingleton<IServiceBusReceiverConnectionManager, ServiceBusReceiverConnectionManager>();
             serviceCollection.AddSingleton<ICosmosDatabaseConnectionManager, CosmosDatabaseConnectionManager>();
+            serviceCollection.AddSingleton<INotificationHubSenderConnectionManager, NotificationHubSenderConnectionManager>();
             
             serviceCollection.AddElasticSearch(configuration);
             

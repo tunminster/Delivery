@@ -23,6 +23,8 @@ using Delivery.Azure.Library.Messaging.HostedServices;
 using Delivery.Azure.Library.Messaging.ServiceBus.Connections;
 using Delivery.Azure.Library.Messaging.ServiceBus.Connections.Interfaces;
 using Delivery.Azure.Library.Microservices.Hosting.HostedServices;
+using Delivery.Azure.Library.NotificationHub.Connections;
+using Delivery.Azure.Library.NotificationHub.Connections.Interfaces;
 using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
 using Delivery.Azure.Library.Storage.Blob.Connections;
@@ -177,6 +179,7 @@ namespace Delivery.Api
                     policy.RequireAuthenticatedUser()
                         .RequireAssertion(x =>
                             x.User.HasClaim(ClaimData.DriverApiAccess.ClaimType, ClaimData.DriverApiAccess.ClaimValue)));
+                
                     //policy.RequireClaim(ClaimData.JwtClaimIdentifyClaim.ClaimType, ClaimData.JwtClaimIdentifyClaim.ClaimValue));
             });
 
@@ -224,6 +227,7 @@ namespace Delivery.Api
             services.AddSingleton<ICosmosDatabaseConnectionManager, CosmosDatabaseConnectionManager>();
             services.AddSingleton<IServiceBusSenderConnectionManager, ServiceBusSenderConnectionManager>();
             services.AddSingleton<IBlobStorageConnectionManager, BlobStorageConnectionManager>();
+            services.AddSingleton<INotificationHubSenderConnectionManager, NotificationHubSenderConnectionManager>();
             
             var useInMemory = Configuration.GetValue<bool?>("Test_Use_In_Memory");
             if (useInMemory.GetValueOrDefault())
