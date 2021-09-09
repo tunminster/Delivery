@@ -28,6 +28,7 @@
       <ProjectReference Include="..\Delivery.Azure.Library.KeyVault\Delivery.Azure.Library.KeyVault.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Messaging\Delivery.Azure.Library.Messaging.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Microservices.Hosting\Delivery.Azure.Library.Microservices.Hosting.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.NotificationHub\Delivery.Azure.Library.NotificationHub.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Storage\Delivery.Azure.Library.Storage.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.WebApi\Delivery.Azure.Library.WebApi.csproj" />
       <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
