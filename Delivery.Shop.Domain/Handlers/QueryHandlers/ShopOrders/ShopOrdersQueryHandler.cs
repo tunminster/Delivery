@@ -42,7 +42,11 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
                     .ThenInclude(x => x.Product)
                     .ToListAsync();
 
-
+            if (orderList == null || orderList.Count == 0)
+            {
+                return new List<ShopOrderContract>();
+            }
+            
             var driverList = await databaseContext.DriverOrders
                 .Where(x => orderList.Select(o => o.Id).ToList().Contains(x.OrderId))
                 .Include(x => x.Driver)
