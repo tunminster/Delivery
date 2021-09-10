@@ -7,9 +7,15 @@ using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
+using Delivery.Azure.Library.WebApi.Extensions;
+using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
+using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
 using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders;
+using Delivery.Shop.Domain.Validators.OrderManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,6 +60,45 @@ namespace Delivery.Api.Controllers.Shops
                 .Handle(shopOrderQuery);
 
             return Ok(shopOrders);
+        }
+
+        /// <summary>
+        ///  Get order by shop user
+        /// </summary>
+        [Route("verify-order-status")]
+        [HttpPost]
+        [ProducesResponseType(typeof(List<StatusContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> VerifyOrderStatusAsync(ShopOrderStatusCreationContract shopOrderStatusCreationContract,
+            CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var validationResult =
+                await new ShopOrderStatusCreationValidator().ValidateAsync(
+                    shopOrderStatusCreationContract, cancellationToken);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+
+            var statusContract = new StatusContract
+            {
+                Status = true,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+            
+            var shopOrderStatusCreationMessage = new ShopOrderStatusMessageContract
+            {
+                PayloadIn = shopOrderStatusCreationContract,
+                PayloadOut = statusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+            
+            await new ShopOrderStatusMessagePublisher(serviceProvider).PublishAsync(shopOrderStatusCreationMessage);
+
+            return Ok(statusContract);
         }
     }
 }
