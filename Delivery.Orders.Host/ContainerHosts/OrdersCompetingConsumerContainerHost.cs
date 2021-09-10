@@ -20,7 +20,9 @@ using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
+using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
+using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreGeoUpdates;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreTypeCreations;
@@ -140,6 +142,12 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var shopCreationMessageHandler = new ShopCreationMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(shopCreationMessageContract.RequestContext));
                     await shopCreationMessageHandler.HandleMessageAsync(shopCreationMessageContract, processingState);
+                    break;
+                case nameof(ShopOrderStatusMessageContract):
+                    var shopOrderStatusMessageContract = message.Deserialize<ShopOrderStatusMessageContract>();
+                    var shopOrderStatusMessageHandler = new ShopOrderStatusMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(shopOrderStatusMessageContract.RequestContext));
+                    await shopOrderStatusMessageHandler.HandleMessageAsync(shopOrderStatusMessageContract, processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");

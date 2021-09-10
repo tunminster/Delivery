@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <NoWarn>1591;NU1608;NU5104</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,9 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts\V1" />
     <Folder Include="Extensions" />
-    <Folder Include="Services" />
   </ItemGroup>
 
   <ItemGroup>
