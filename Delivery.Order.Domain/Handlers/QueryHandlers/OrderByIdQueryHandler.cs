@@ -29,7 +29,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
             {
                 Id = order.ExternalId,
                 CustomerId = order.CustomerId,
-                OrderStatus = order.OrderStatus,
+                Status = order.Status,
                 TotalAmount = order.TotalAmount,
                 DateCreated = order.DateCreated,
                 OrderType = order.OrderType,

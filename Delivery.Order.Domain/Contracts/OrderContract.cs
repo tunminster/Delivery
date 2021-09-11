@@ -17,9 +17,6 @@ namespace Delivery.Order.Domain.Contracts
         public int CustomerId { get; set; }
         
         [DataMember]
-        public string OrderStatus { get; set; }
-        
-        [DataMember]
         public decimal TotalAmount { get; set; }
         
         [DataMember]
@@ -48,7 +45,7 @@ namespace Delivery.Order.Domain.Contracts
             return $"{GetType().Name}" +
                    $"{nameof(Id)}: {Id.Format()}," +
                    $"{nameof(CustomerId)}: {CustomerId.Format()}," +
-                   $"{nameof(OrderStatus)}: {OrderStatus.Format()}," +
+                   $"{nameof(Status)}: {Status.Format()}," +
                    $"{nameof(TotalAmount)}: {TotalAmount.Format()}," +
                    $"{nameof(OrderType)}: {OrderType.Format()}," +
                    $"{nameof(ImageUri)}: {ImageUri.Format()}," +

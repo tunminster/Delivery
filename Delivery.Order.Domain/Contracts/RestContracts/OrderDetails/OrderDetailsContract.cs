@@ -27,6 +27,9 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.OrderDetails
         public string OrderStatus { get; set; }
         
         [DataMember]
+        public OrderStatus Status { get; set; }
+        
+        [DataMember]
         public decimal TotalAmount { get; set; }
         
         [DataMember]

@@ -66,7 +66,7 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeCaptu
             var stripeOrderUpdateContract = new StripeOrderUpdateContract
             {
                 OrderId = stripePaymentCreationContract.OrderId,
-                OrderStatus = OrderStatus.Preparing,
+                OrderStatus = OrderStatus.None,
                 PaymentStatus = stripePaymentCaptureCreationStatus.PaymentStatus,
                 PaymentIntentId = request.StripePaymentCaptureCreationContract.StripePaymentIntentId
             };

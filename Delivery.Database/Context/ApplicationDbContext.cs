@@ -85,7 +85,6 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<Order>().Property(p => p.CurrencyCode).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.PaymentType).HasMaxLength(15);
             modelBuilder.Entity<Order>().Property(p => p.PaymentStatus).HasMaxLength(15);
-            modelBuilder.Entity<Order>().Property(p => p.OrderStatus).HasMaxLength(15);
             
             modelBuilder.Entity<Report>().Property(p => p.Subject).HasMaxLength(250);
             modelBuilder.Entity<Report>().Property(p => p.ContactNumber).HasMaxLength(20);
