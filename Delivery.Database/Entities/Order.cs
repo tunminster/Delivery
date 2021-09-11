@@ -32,8 +32,8 @@ namespace Delivery.Database.Entities
         public string PaymentAccountNumber { get; set; }
 
         public int CustomerId { get; set; }
-
-        public DateTime DateCreated { get; set; }
+        
+        public int? PreparationTime { get; set; }
 
         public int? AddressId { get; set; }
         
@@ -55,6 +55,10 @@ namespace Delivery.Database.Entities
         public string InsertedBy { get; set; }
         
         public DateTimeOffset InsertionDateTime { get; set; }
+        
+        public DateTimeOffset DateUpdated { get; set; }
+        
+        public DateTimeOffset? OrderReadyDateTime { get; set; }
         
         public OrderType OrderType { get; set; }
         public bool IsDeleted { get; set; }

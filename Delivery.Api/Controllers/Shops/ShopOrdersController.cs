@@ -63,7 +63,7 @@ namespace Delivery.Api.Controllers.Shops
         }
 
         /// <summary>
-        ///  Get order by shop user
+        ///  Verify order status
         /// </summary>
         [Route("verify-order-status")]
         [HttpPost]
