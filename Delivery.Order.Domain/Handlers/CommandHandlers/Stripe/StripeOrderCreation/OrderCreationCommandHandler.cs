@@ -63,7 +63,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 Status = OrderStatus.None,
                 Description = string.Empty,
                 OrderItems = orderItems,
-                DateCreated = DateTime.UtcNow,
+                DateUpdated = DateTime.UtcNow,
                 CustomerId = command.StripeOrderCreationContract.CustomerId,
                 AddressId = command.StripeOrderCreationContract.ShippingAddressId,
                 OrderType = command.StripeOrderCreationContract.OrderType,

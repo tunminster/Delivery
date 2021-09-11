@@ -32,7 +32,7 @@ namespace Delivery.Order.Domain.Contracts
         public string StoreName { get; set; }
         
         [DataMember]
-        public DateTime DateCreated { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
         
         [DataMember]
         public string DeliveryAddress { get; set; }

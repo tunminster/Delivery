@@ -30,7 +30,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 .Include(x => x.Address)
                 .Include(x => x.OrderItems)
                 .ThenInclude(x => x.Product)
-                .OrderByDescending(x => x.DateCreated)
+                .OrderByDescending(x => x.InsertionDateTime)
                 .Skip(query.PageSize * (query.Page - 1))
                 .Take(query.PageSize)
                 .ToListAsync();
@@ -46,7 +46,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 CustomerId = x.CustomerId,
                 Status = x.Status,
                 TotalAmount = x.TotalAmount,
-                DateCreated = x.DateCreated,
+                DateCreated = x.InsertionDateTime,
                 StoreName = x.Store?.StoreName,
                 DeliveryAddress = x.Address != null ? x.Address.AddressLine + ", " + x.Address.City + ", " + x.Address.PostCode : "",
                 ImageUri = x.OrderItems.FirstOrDefault()?.Product.ProductImageUrl,
