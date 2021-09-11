@@ -22,13 +22,9 @@ namespace Delivery.Database.Entities
         [MaxLength(15)]
         public string PaymentType { get; set; }
         
-
         [MaxLength(15)]
         public string PaymentStatus { get; set; }
-
-        [MaxLength(15)]
-        public string OrderStatus { get; set; }
-
+        
         [MaxLength(50)]
         public string PaymentIntentId { get; set; }
         

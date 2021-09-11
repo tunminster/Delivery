@@ -44,7 +44,6 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
             {
                 Id = x.ExternalId,
                 CustomerId = x.CustomerId,
-                OrderStatus = x.OrderStatus,
                 Status = x.Status,
                 TotalAmount = x.TotalAmount,
                 DateCreated = x.DateCreated,

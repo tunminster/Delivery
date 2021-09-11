@@ -60,7 +60,6 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
                 PaymentIntentId = command.OrderCreationStatusContract.StripePaymentIntentId,
                 PaymentAccountNumber = command.OrderCreationStatusContract.PaymentAccountNumber,
-                OrderStatus = OrderStatus.Preparing.ToString(),
                 Status = OrderStatus.None,
                 Description = string.Empty,
                 OrderItems = orderItems,

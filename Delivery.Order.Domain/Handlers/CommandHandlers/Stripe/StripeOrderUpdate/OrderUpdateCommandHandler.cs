@@ -28,7 +28,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdat
 
             order.PaymentIntentId = command.StripeOrderUpdateContract.PaymentIntentId;
             order.PaymentStatus = command.StripeOrderUpdateContract.PaymentStatus;
-            order.OrderStatus = command.StripeOrderUpdateContract.OrderStatus.ToString();
+            order.Status = command.StripeOrderUpdateContract.OrderStatus;
 
             await databaseContext.SaveChangesAsync();
 
