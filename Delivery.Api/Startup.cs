@@ -253,12 +253,10 @@ namespace Delivery.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IdentityData identityData)
         {
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            
             
             app.UseHttpsRedirection();
 
@@ -273,6 +271,7 @@ namespace Delivery.Api
             
             app.UseMiddleware<RequestBufferingMiddleware>();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<ApiLoggingMiddleware>();
             
             app.UseAuthentication();
             app.UseAuthorization();

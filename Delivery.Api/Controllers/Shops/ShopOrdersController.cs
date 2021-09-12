@@ -100,5 +100,18 @@ namespace Delivery.Api.Controllers.Shops
 
             return Ok(statusContract);
         }
+
+        /// <summary>
+        ///  Get order by shop user
+        /// </summary>
+        [Route("get-order-details")]
+        [HttpGet]
+        [ProducesResponseType(typeof(List<ShopOrderDetailsContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetShopOrdersAsync(string orderId)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            return Ok();
+        }
     }
 }

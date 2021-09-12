@@ -16,6 +16,7 @@ namespace Delivery.Shop.Domain.Converters
                     StoreId = item.Store.ExternalId,
                     OrderId = item.ExternalId,
                     OrderType = item.OrderType,
+                    TotalAmount = item.TotalAmount,
                     ShopOrderItems = ConvertToShopOrderItem(item.OrderItems.ToList()),
                     ShopOrderDriver = driverOrders.Count > 0 ? ConvertToShopOrderDriver(driverOrders.FirstOrDefault(x => x.OrderId == item.Id)) : new ShopOrderDriverContract()
                 })

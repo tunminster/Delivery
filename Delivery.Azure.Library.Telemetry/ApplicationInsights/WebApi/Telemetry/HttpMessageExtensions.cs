@@ -96,5 +96,17 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Telemetry
 
 			return usedCorrelationId;
 		}
+
+		/// <summary>
+		///  Set user email header
+		/// </summary>
+		/// <param name="httpRequest"></param>
+		/// <returns></returns>
+		public static string SetUserEmail(this HttpRequest httpRequest)
+		{
+			var userEmail = httpRequest.GetUserEmail();
+			httpRequest.Headers[HttpHeaders.UserEmail] = userEmail;
+			return userEmail;
+		}
 	}
 }

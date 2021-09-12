@@ -34,9 +34,10 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         
         /// <summary>
         ///  Total price
+        ///  It's two decimal
         ///  <example>{{totalPrice}}</example>
         /// </summary>
-        public double TotalPrice { get; init; }
+        public int TotalAmount { get; init; }
         
         /// <summary>
         ///  Shop order driver
