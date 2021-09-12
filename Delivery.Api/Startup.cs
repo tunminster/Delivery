@@ -27,6 +27,8 @@ using Delivery.Azure.Library.NotificationHub.Connections;
 using Delivery.Azure.Library.NotificationHub.Connections.Interfaces;
 using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
+using Delivery.Azure.Library.Sharding.Interfaces;
+using Delivery.Azure.Library.Sharding.Metadata;
 using Delivery.Azure.Library.Storage.Blob.Connections;
 using Delivery.Azure.Library.Storage.Blob.Interfaces;
 using Delivery.Azure.Library.Storage.Cosmos.Connections;
@@ -228,6 +230,7 @@ namespace Delivery.Api
             services.AddSingleton<IServiceBusSenderConnectionManager, ServiceBusSenderConnectionManager>();
             services.AddSingleton<IBlobStorageConnectionManager, BlobStorageConnectionManager>();
             services.AddSingleton<INotificationHubSenderConnectionManager, NotificationHubSenderConnectionManager>();
+            services.AddSingleton<IShardMetadataManager, ShardMetadataManager>();
             
             var useInMemory = Configuration.GetValue<bool?>("Test_Use_In_Memory");
             if (useInMemory.GetValueOrDefault())

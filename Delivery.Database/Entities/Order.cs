@@ -39,6 +39,16 @@ namespace Delivery.Database.Entities
         
         public int? StoreId { get; set; }
         
+        public int SubTotal { get; init; }
+        
+        public int BusinessServiceFees { get; init; }
+        
+        public int PlatformServiceFees { get; init; }
+        
+        public int DeliveryFees { get; init; }
+        
+        public int TaxFees { get; init; }
+        
         public OrderStatus Status { get; set; }
         
         [ForeignKey("StoreId")]

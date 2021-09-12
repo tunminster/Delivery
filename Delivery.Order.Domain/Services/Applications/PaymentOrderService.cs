@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azure.Core;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Sharding.Contracts.V1;
+using Delivery.Azure.Library.Sharding.Interfaces;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
@@ -45,17 +47,28 @@ namespace Delivery.Order.Domain.Services.Applications
             var orderCreationStatus =
                 await new StripeOrderTotalAmountCreationCommandHandler(serviceProvider, executingRequestContextAdapter,
                     cacheKey).Handle(stripeOrderTotalAmountCreationCommand);
+
+            //todo: find out store business rate
+            var applicationFeeAmount = StripeApplicationFeesAmount.CalculateStripeApplicationFeeAmount(
+                orderCreationStatus.SubtotalAmount,
+                ApplicationFeeGenerator.GeneratorFees(orderCreationStatus.SubtotalAmount),
+                ApplicationFeeGenerator.GenerateDeliveryFees(orderCreationStatus.SubtotalAmount),
+                5);
+            
+            var shardMetadataManager = serviceProvider.GetRequiredService<IShardMetadataManager>();
+            var shardInformation = shardMetadataManager.GetShardInformation<ShardInformation>().FirstOrDefault(x =>
+                x.Key!.ToLower() == executingRequestContextAdapter.GetShard().Key.ToLower());
             
             
             var paymentIntentCreationContract = new PaymentIntentCreationContract
             {
                 PaymentMethod = "card",
                 Amount = orderCreationStatus.TotalAmount,
-                ApplicationFeeAmount = ApplicationFeeGenerator.GeneratorFees(orderCreationStatus.TotalAmount),
+                ApplicationFeeAmount = applicationFeeAmount,
                 //ConnectedStripeAccountId = "acct_1IZcqVRDUSzIiY6T",
                 ConnectedStripeAccountId = orderCreationStatus.PaymentAccountNumber,
                 OrderId = orderCreationStatus.OrderId,
-                Currency = "gbp"
+                Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "gbp"
             };
 
             var paymentIntentCreationCommand = new PaymentIntentCreationCommand(paymentIntentCreationContract);

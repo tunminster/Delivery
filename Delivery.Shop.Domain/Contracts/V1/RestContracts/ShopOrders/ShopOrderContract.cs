@@ -40,6 +40,24 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         public int TotalAmount { get; init; }
         
         /// <summary>
+        ///  Platform fees to customer
+        ///  <example>{{platformServiceFees}}</example>
+        /// </summary>
+        public int PlatformServiceFees { get; init; }
+        
+        /// <summary>
+        ///  Delivery Fees
+        ///  <example>{{deliveryFees}}</example>
+        /// </summary>
+        public int DeliveryFees { get; init; }
+        
+        /// <summary>
+        ///  Tax fees
+        /// <example>{{taxFees}}</example>
+        /// </summary>
+        public int TaxFees { get; init; }
+        
+        /// <summary>
         ///  Shop order driver
         ///  <example>{{shopOrderDriver}}</example>
         /// </summary>

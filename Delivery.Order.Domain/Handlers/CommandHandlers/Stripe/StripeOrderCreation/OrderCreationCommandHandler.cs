@@ -10,6 +10,7 @@ using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Enum;
+using Delivery.Order.Domain.Factories;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreation
 {
@@ -51,10 +52,17 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 });
             }
 
+            var businessServiceFee =
+                ApplicationFeeGenerator.BusinessServiceFees(command.OrderCreationStatusContract.SubtotalAmount, 5);
             var orderEntity = new Database.Entities.Order
             {
                 ExternalId = command.OrderCreationStatusContract.OrderId,
+                SubTotal = command.OrderCreationStatusContract.SubtotalAmount,
                 TotalAmount = command.OrderCreationStatusContract.TotalAmount,
+                PlatformServiceFees = command.OrderCreationStatusContract.ApplicationFee,
+                DeliveryFees = command.OrderCreationStatusContract.DeliveryFee,
+                BusinessServiceFees = businessServiceFee,
+                TaxFees = command.OrderCreationStatusContract.TaxFee,
                 CurrencyCode = command.OrderCreationStatusContract.CurrencyCode,
                 PaymentType = "Card",
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
