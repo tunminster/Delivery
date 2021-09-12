@@ -39,6 +39,15 @@ resource "azurerm_cosmosdb_sql_container" "connect-accounts" {
   partition_key_version = 1
 }
 
+resource "azurerm_cosmosdb_sql_container" "country-taxes" {
+  name                = "country-taxes"
+  resource_group_name = azurerm_cosmosdb_account.hn-platform-cosmos-db.resource_group_name
+  account_name        = azurerm_cosmosdb_account.hn-platform-cosmos-db.name
+  database_name       = azurerm_cosmosdb_sql_database.db.name
+  partition_key_path    = "/partitionKey"
+  partition_key_version = 1
+}
+
 resource "azurerm_key_vault_secret" "hn-platform-cosmos-db" {
   name         = "CosmosDatabase-Hn-Platform-ConnectionString"
   value        = "AccountEndpoint=https://${azurerm_cosmosdb_account.hn-platform-cosmos-db.name}.documents.azure.com:443/;AccountKey=${azurerm_cosmosdb_account.hn-platform-cosmos-db.primary_master_key};"
