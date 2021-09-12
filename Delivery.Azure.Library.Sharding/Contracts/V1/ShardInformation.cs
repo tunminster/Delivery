@@ -15,6 +15,9 @@ namespace Delivery.Azure.Library.Sharding.Contracts.V1
 
         [DataMember]
         public int? Ring { get; set; }
+        
+        [DataMember]
+        public string? Currency { get; set; }
 
         public override string ToString()
         {

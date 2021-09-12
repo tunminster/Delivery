@@ -11,7 +11,19 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrder
         public string OrderId { get; set; }
         
         [DataMember]
+        public int SubtotalAmount { get; set; }
+        
+        [DataMember]
         public int TotalAmount { get; set; }
+        
+        [DataMember]
+        public int ApplicationFee { get; set; }
+        
+        [DataMember]
+        public int DeliveryFee { get; set; }
+        
+        [DataMember]
+        public int TaxFee { get; set; }
         
         [DataMember]
         public string CurrencyCode { get; set; }

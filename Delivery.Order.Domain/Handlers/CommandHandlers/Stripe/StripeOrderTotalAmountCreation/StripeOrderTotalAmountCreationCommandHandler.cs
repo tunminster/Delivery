@@ -8,6 +8,7 @@ using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Factories;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
+using Delivery.Order.Domain.Factories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotalAmountCreation
@@ -43,7 +44,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                 async () => await databaseContext.Stores.Include(x => x.StorePaymentAccount)
                     .FirstOrDefaultAsync(x => x.ExternalId == command.StripeOrderCreationContract.StoreId));
             
-            var totalAmount = 0;
+            var subtotalAmount = 0;
 
             if (products != null)
             {
@@ -54,15 +55,26 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
 
                     if (product == null) continue;
                     var unitPrice = product.UnitPrice;
-                    totalAmount += unitPrice * item.Count;
+                    subtotalAmount += unitPrice * item.Count;
                 }
             }
+
+            var applicationFee = ApplicationFeeGenerator.GeneratorFees(subtotalAmount);
+            var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(subtotalAmount);
+            
+            // todo: calculate tax rate
+            var taxFee = TaxFeeGenerator.GenerateTaxFees(subtotalAmount, 5);
+            var totalAmount = subtotalAmount + applicationFee + deliveryFee + taxFee;
             
             var orderCreationStatus =
                 new OrderCreationStatusContract
                 {
                     OrderId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()), 
                     CurrencyCode = command.OrderCreationStatusContract.CurrencyCode, 
+                    SubtotalAmount = subtotalAmount,
+                    ApplicationFee = applicationFee,
+                    TaxFee = taxFee,
+                    DeliveryFee = deliveryFee,
                     TotalAmount = totalAmount, 
                     CreatedDateTime = DateTimeOffset.UtcNow,
                     PaymentAccountNumber = store?.StorePaymentAccount?.AccountNumber ?? throw new InvalidOperationException($" {command.StripeOrderCreationContract.StoreId} doesn't have payment account number.")

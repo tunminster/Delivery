@@ -5,16 +5,20 @@ using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
+using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Order.Domain.Contracts;
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
+using Delivery.Order.Domain.Contracts.RestContracts.ApplicationFees;
 using Delivery.Order.Domain.Contracts.RestContracts.OrderDetails;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
+using Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderStatusUpdates;
 using Delivery.Order.Domain.Handlers.QueryHandlers;
 using Delivery.Order.Domain.Services.Applications;
+using Delivery.Order.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -142,6 +146,33 @@ namespace Delivery.Api.Controllers
                 await new OrderDetailsQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(query);
 
             return Ok(orderDetailsContract);
+        }
+
+        /// <summary>
+        ///  Get Order details
+        /// </summary>
+        /// <returns></returns>
+        [Route("get-application-fees", Order = 4)]
+        [HttpPost]
+        [ProducesResponseType(typeof(ApplicationFeesContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetApplicationFeesAsync(ApplicationFeesCreationContract applicationFeesCreationContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var validationResult =
+                await new ApplicationFeesCreationValidator().ValidateAsync(
+                    applicationFeesCreationContract);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+
+            var applicationFeesContract =
+                await new ApplicationFeesCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new ApplicationFeesCreationCommand(applicationFeesCreationContract));
+
+            return Ok(applicationFeesContract);
         }
     }
 }

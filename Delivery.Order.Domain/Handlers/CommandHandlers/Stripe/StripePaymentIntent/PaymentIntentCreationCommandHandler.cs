@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Sharding.Contracts.V1;
+using Delivery.Azure.Library.Sharding.Interfaces;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +27,10 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentInt
         public async Task<PaymentIntentCreationStatusContract> Handle(PaymentIntentCreationCommand command)
         {
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
+            var shardMetadataManager = serviceProvider.GetRequiredService<IShardMetadataManager>();
+            var shardInformation = shardMetadataManager.GetShardInformation<ShardInformation>().FirstOrDefault(x =>
+                x.Key!.ToLower() == executingRequestContextAdapter.GetShard().Key.ToLower());
+            
             StripeConfiguration.ApiKey = stripeApiKey;
             
             var service = new PaymentIntentService();
@@ -36,7 +43,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentInt
                     "card",
                 },
                 Amount = command.PaymentIntentCreationContract.Amount,
-                Currency = "gbp",
+                Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "gbp",
                 ApplicationFeeAmount = command.PaymentIntentCreationContract.ApplicationFeeAmount,
                 Metadata = new Dictionary<string, string>
                 {
