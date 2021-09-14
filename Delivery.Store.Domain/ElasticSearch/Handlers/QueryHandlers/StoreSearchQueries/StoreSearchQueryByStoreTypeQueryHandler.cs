@@ -28,7 +28,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
             var currentLocation = new GeoLocation(query.Latitude, query.Longitude);
             
             var searchResponse = await elasticClient.SearchAsync<StoreContract>(s => s
-                .AllIndices()
+                .Index($"stores{executingRequestContextAdapter.GetShard().Key.ToLower()}")
                 .Query(q => 
                     q.Match(m => 
                         m.Field(f => 

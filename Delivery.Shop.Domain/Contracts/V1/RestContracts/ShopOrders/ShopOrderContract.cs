@@ -33,6 +33,12 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         public List<ShopOrderItemContract> ShopOrderItems { get; init; } = new();
         
         /// <summary>
+        ///  Subtotal without any additional charges
+        /// <example>{{subtotal}}</example>
+        /// </summary>
+        public int Subtotal { get; init; }
+        
+        /// <summary>
         ///  Total price
         ///  It's two decimal
         ///  <example>{{totalPrice}}</example>
@@ -41,22 +47,28 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         
         /// <summary>
         ///  Platform fees to customer
-        ///  <example>{{platformServiceFees}}</example>
+        ///  <example>{{platformServiceFee}}</example>
         /// </summary>
-        public int PlatformServiceFees { get; init; }
+        public int PlatformServiceFee { get; init; }
         
         /// <summary>
         ///  Delivery Fees
-        ///  <example>{{deliveryFees}}</example>
+        ///  <example>{{deliveryFee}}</example>
         /// </summary>
-        public int DeliveryFees { get; init; }
+        public int DeliveryFee { get; init; }
         
         /// <summary>
         ///  Tax fees
-        /// <example>{{taxFees}}</example>
+        /// <example>{{tax}}</example>
         /// </summary>
-        public int TaxFees { get; init; }
+        public int Tax { get; init; }
         
+        /// <summary>
+        ///  Business service fee
+        /// <example>{{businessServiceFee</example>
+        /// </summary>
+        public int BusinessServiceFee { get; init; }
+
         /// <summary>
         ///  Shop order driver
         ///  <example>{{shopOrderDriver}}</example>
