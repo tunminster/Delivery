@@ -16,6 +16,7 @@ using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
 using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders;
 using Delivery.Shop.Domain.Validators.OrderManagement;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -106,12 +107,30 @@ namespace Delivery.Api.Controllers.Shops
         /// </summary>
         [Route("get-order-details")]
         [HttpGet]
-        [ProducesResponseType(typeof(List<ShopOrderDetailsContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ShopOrderContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetShopOrdersAsync(string orderId)
         {
+            if (string.IsNullOrEmpty(orderId))
+            {
+                const string validationMessage = "Order id must be provided.";
+                return validationMessage.ConvertToBadRequest();
+            }
+            
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-            return Ok();
+            var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected authenticated user.")
+                .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+
+            var shopOrderDetailsQuery = new ShopOrderDetailsQuery
+            {
+                Email = userEmail,
+                OrderId = orderId
+            };
+
+            var shopOrderContract = await new ShopOrderDetailsQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(shopOrderDetailsQuery);
+            
+            return Ok(shopOrderContract);
         }
     }
 }

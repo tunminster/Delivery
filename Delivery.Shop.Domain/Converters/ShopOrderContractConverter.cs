@@ -16,11 +16,35 @@ namespace Delivery.Shop.Domain.Converters
                     StoreId = item.Store.ExternalId,
                     OrderId = item.ExternalId,
                     OrderType = item.OrderType,
+                    Subtotal = item.SubTotal,
+                    PlatformServiceFee = item.PlatformServiceFees,
+                    DeliveryFee = item.DeliveryFees,
+                    Tax = item.TaxFees,
                     TotalAmount = item.TotalAmount,
                     ShopOrderItems = ConvertToShopOrderItem(item.OrderItems.ToList()),
                     ShopOrderDriver = driverOrders.Count > 0 ? ConvertToShopOrderDriver(driverOrders.FirstOrDefault(x => x.OrderId == item.Id)) : new ShopOrderDriverContract()
                 })
                 .ToList();
+        }
+
+        public static ShopOrderContract ConvertToContract(Order order, DriverOrder? driverOrder)
+        {
+            var shopOrderContract = new ShopOrderContract
+            {
+                StoreId = order.Store.ExternalId,
+                OrderId = order.ExternalId,
+                OrderType = order.OrderType,
+                Subtotal = order.SubTotal,
+                PlatformServiceFee = order.PlatformServiceFees,
+                DeliveryFee = order.DeliveryFees,
+                Tax = order.TaxFees,
+                BusinessServiceFee = order.BusinessServiceFees,
+                TotalAmount = order.TotalAmount,
+                ShopOrderItems = ConvertToShopOrderItem(order.OrderItems.ToList()),
+                ShopOrderDriver = driverOrder != null ? ConvertToShopOrderDriver(driverOrder) : new ShopOrderDriverContract()
+            };
+
+            return shopOrderContract;
         }
 
         private static ShopOrderDriverContract? ConvertToShopOrderDriver(DriverOrder? driverOrder)
