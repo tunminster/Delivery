@@ -27,6 +27,12 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         public OrderType OrderType { get; init; }
         
         /// <summary>
+        /// Order status
+        /// <example>{{status}}</example>
+        /// </summary>
+        public OrderStatus Status { get; init; }
+        
+        /// <summary>
         ///  Shop order items
         ///  <example>{{shopOrderItems}}</example>
         /// </summary>
