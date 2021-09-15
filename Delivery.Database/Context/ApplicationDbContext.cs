@@ -62,6 +62,7 @@ namespace Delivery.Database.Context
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<DriverOrder> DriverOrders { get; set; }
         public DbSet<StoreUser> StoreUsers { get; set; }
+        public DbSet<NotificationDevice> NotificationDevices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -95,6 +96,10 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<OpeningHour>().Property(p => p.Open).HasMaxLength(10);
             modelBuilder.Entity<OpeningHour>().Property(p => p.Close).HasMaxLength(10);
             modelBuilder.Entity<OpeningHour>().Property(p => p.TimeZone).HasMaxLength(10);
+            
+            modelBuilder.Entity<NotificationDevice>().Property(p => p.RegistrationId).HasMaxLength(500);
+            modelBuilder.Entity<NotificationDevice>().Property(p => p.Platform).HasMaxLength(250);
+            modelBuilder.Entity<NotificationDevice>().Property(p => p.Tag).HasMaxLength(250);
 
             ConfigureIndexes(modelBuilder);
         }
