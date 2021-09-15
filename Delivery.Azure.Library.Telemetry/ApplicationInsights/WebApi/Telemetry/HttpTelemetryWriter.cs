@@ -122,7 +122,7 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Telemetry
 			{
 				return Maybe<string>.NotPresent;
 			}
-
+			
 			if (!httpRequest.Body.CanRead)
 			{
 				return Maybe<string>.NotPresent;
@@ -154,7 +154,7 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Telemetry
 		{
 			try
 			{
-				var propsToMask = new HashSet<string>(new[] {"password"});
+				var propsToMask = new HashSet<string>(new[] {"password", "confirmPassword"});
 
 				var jsonObject = JObject.Parse(body);
 

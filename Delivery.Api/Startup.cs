@@ -274,7 +274,7 @@ namespace Delivery.Api
             
             app.UseMiddleware<RequestBufferingMiddleware>();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-            app.UseMiddleware<ApiLoggingMiddleware>();
+            //app.UseMiddleware<ApiLoggingMiddleware>();
             
             app.UseAuthentication();
             app.UseAuthorization();
