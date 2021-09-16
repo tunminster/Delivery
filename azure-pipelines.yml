@@ -164,7 +164,7 @@ stages:
             displayName: 'Plan terraform'
             inputs:
               targetType: 'inline'
-              script: 'terraform plan -var-file=$(tfvarfile) -input=false -refresh=false'
+              script: 'terraform plan -var-file=$(tfvarfile) -input=false -refresh-only'
               workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions' 
             env:
               ARM_CLIENT_ID: $(app-dev-client-id)
@@ -181,17 +181,17 @@ stages:
           #     commandOptions: '-var-file=$(tfvarfile) -input=false'
               allowTelemetryCollection: true
 
-          # - task: Bash@3
-          #   displayName: 'Apply terraform'
-          #   inputs:
-          #     targetType: inline
-          #     script: 'terraform apply -var-file=$(tfvarfile) -input=false -refresh=false -auto-approve'
-          #     workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions' 
-          #   env:
-          #     ARM_CLIENT_ID: $(app-dev-client-id)
-          #     ARM_CLIENT_SECRET: $(app-dev-secret)
-          #     ARM_SUBSCRIPTION_ID: $(app-dev-subscription-id)
-          #     ARM_TENANT_ID: $(app-dev-tenant-id)
+          - task: Bash@3
+            displayName: 'Apply terraform'
+            inputs:
+              targetType: inline
+              script: 'terraform apply -var-file=$(tfvarfile) -input=false -refresh-only -auto-approve'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions' 
+            env:
+              ARM_CLIENT_ID: $(app-dev-client-id)
+              ARM_CLIENT_SECRET: $(app-dev-secret)
+              ARM_SUBSCRIPTION_ID: $(app-dev-subscription-id)
+              ARM_TENANT_ID: $(app-dev-tenant-id)
 
          
 
