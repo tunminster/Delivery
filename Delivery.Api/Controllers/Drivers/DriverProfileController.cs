@@ -88,7 +88,7 @@ namespace Delivery.Api.Controllers.Drivers
         /// </summary>
         /// <returns></returns>
         [Route("index-driver")]
-        [HttpGet]
+        [HttpPost]
         [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> IndexDriverAsync(DriverIndexCreationContract driverIndexCreationContract, CancellationToken cancellationToken = default)
