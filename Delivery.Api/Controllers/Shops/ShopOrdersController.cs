@@ -75,14 +75,14 @@ namespace Delivery.Api.Controllers.Shops
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var validationResult =
-                await new ShopOrderStatusCreationValidator().ValidateAsync(
-                    shopOrderStatusCreationContract, cancellationToken);
+            // var validationResult =
+            //     await new ShopOrderStatusCreationValidator().ValidateAsync(
+            //         shopOrderStatusCreationContract, cancellationToken);
             
-            if (!validationResult.IsValid)
-            {
-                return validationResult.ConvertToBadRequest();
-            }
+            // if (!validationResult.IsValid)
+            // {
+            //     return validationResult.ConvertToBadRequest();
+            // }
 
             var statusContract = new StatusContract
             {
