@@ -6,9 +6,12 @@ using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
+using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverActive;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverProfile;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverStatus;
 using Microsoft.AspNetCore.Authorization;
@@ -59,7 +62,7 @@ namespace Delivery.Api.Controllers.Drivers
         }
 
         /// <summary>
-        ///  Get store type
+        ///  Get driver status
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -78,6 +81,32 @@ namespace Delivery.Api.Controllers.Drivers
                 .Handle(driverStatusQuery);
 
             return Ok(driverActiveStatusContract);
+        }
+        
+        /// <summary>
+        ///  Index driver
+        /// </summary>
+        /// <returns></returns>
+        [Route("index-driver")]
+        [HttpGet]
+        [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> IndexDriverAsync(DriverIndexCreationContract driverIndexCreationContract, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected authenticated user.")
+                .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+
+            var driverIndexCommand = new DriverIndexCommand(driverIndexCreationContract.DriverId);
+            var driverIndexStatusContract = await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(driverIndexCommand);
+            var statusContract = new StatusContract
+            {
+                Status = driverIndexStatusContract.Status,
+                DateCreated = driverIndexStatusContract.DateCreated
+            };
+            
+            return Ok(statusContract);
         }
     }
 }
