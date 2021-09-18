@@ -1,3 +1,4 @@
+using System;
 using Delivery.Database.Enums;
 
 namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement
@@ -18,6 +19,12 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement
         /// </summary>
         /// <example>{{preparationTime}}</example>
         public int PreparationTime { get; init; }
+        
+        /// <summary>
+        ///  Pickup time
+        ///  <example>{{pickupTime}}</example>
+        /// </summary>
+        public DateTimeOffset? PickupTime { get; init; }
         
         /// <summary>
         ///  Order status

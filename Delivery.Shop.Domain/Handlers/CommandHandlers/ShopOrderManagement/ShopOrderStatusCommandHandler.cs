@@ -39,6 +39,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
 
             order.Status = statusCommand.ShopOrderStatusCreationContract.OrderStatus;
             order.PreparationTime = statusCommand.ShopOrderStatusCreationContract.PreparationTime;
+            order.PickupTime = statusCommand.ShopOrderStatusCreationContract.PickupTime;
             order.DateUpdated = DateTimeOffset.UtcNow;
 
             await databaseContext.SaveChangesAsync();
