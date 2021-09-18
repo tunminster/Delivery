@@ -8,7 +8,9 @@ using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
+using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder;
 using Delivery.Driver.Domain.Validators;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,6 +65,26 @@ namespace Delivery.Api.Controllers.Drivers
             await new DriverAssignmentMessagePublisher(serviceProvider).PublishAsync(driverAssignmentCreationMessage);
             
             return Ok(driverAssignmentStatusContract);
+        }
+
+        /// <summary>
+        ///  Get order details for driver
+        /// </summary>
+        /// <returns></returns>
+        [Route("get-order-details", Order = 1)]
+        [ProducesResponseType(typeof(DriverOrderDetailsContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Get_Order_DetailsAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var driverOrderQuery = new DriverOrderQuery();
+            var driverOrderDetailsContract =
+                await new DriverOrderQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(driverOrderQuery);
+
+            return Ok(driverOrderDetailsContract);
         }
     }
 }

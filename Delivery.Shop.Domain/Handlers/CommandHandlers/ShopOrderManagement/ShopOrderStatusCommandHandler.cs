@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.Constants;
 using Delivery.Domain.Contracts.V1.RestContracts;
+using Delivery.Shop.Domain.Constants;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +41,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
 
             order.Status = statusCommand.ShopOrderStatusCreationContract.OrderStatus;
             order.PreparationTime = statusCommand.ShopOrderStatusCreationContract.PreparationTime;
+            order.PickupTime = statusCommand.ShopOrderStatusCreationContract.PickupTime ?? DateTimeOffset.UtcNow.AddMinutes(statusCommand.ShopOrderStatusCreationContract.PreparationTime + ShopConstant.DefaultPickupMinutes);
             order.DateUpdated = DateTimeOffset.UtcNow;
 
             await databaseContext.SaveChangesAsync();

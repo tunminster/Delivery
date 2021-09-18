@@ -381,6 +381,8 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights
 					return "Web Service";
 				case MeasuredDependencyType.Redis:
 					return "Redis";
+				case MeasuredDependencyType.ElasticSearch:
+					return "ElasticSearch";
 				case MeasuredDependencyType.Other:
 					return "Http";
 				default:

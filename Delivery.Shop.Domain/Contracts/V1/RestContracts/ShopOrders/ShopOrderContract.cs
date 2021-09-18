@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Delivery.Database.Enums;
 
@@ -74,6 +75,18 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         /// <example>{{businessServiceFee</example>
         /// </summary>
         public int BusinessServiceFee { get; init; }
+        
+        /// <summary>
+        ///  Preparation time
+        /// <example>{{preparationTime}}</example>
+        /// </summary>
+        public int PreparationTime { get; init; }
+        
+        /// <summary>
+        ///  Pickup time
+        /// <example>{{pickupTime}}</example>
+        /// </summary>
+        public DateTimeOffset PickupTime { get; init; }
 
         /// <summary>
         ///  Shop order driver

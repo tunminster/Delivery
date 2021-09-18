@@ -10,6 +10,7 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Shop.Domain.Constants;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
@@ -75,14 +76,14 @@ namespace Delivery.Api.Controllers.Shops
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            // var validationResult =
-            //     await new ShopOrderStatusCreationValidator().ValidateAsync(
-            //         shopOrderStatusCreationContract, cancellationToken);
+            var validationResult =
+                await new ShopOrderStatusCreationValidator().ValidateAsync(
+                    shopOrderStatusCreationContract, cancellationToken);
             
-            // if (!validationResult.IsValid)
-            // {
-            //     return validationResult.ConvertToBadRequest();
-            // }
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
 
             var statusContract = new StatusContract
             {

@@ -19,6 +19,7 @@ namespace Delivery.Azure.Library.Telemetry.ApplicationInsights.Enums
         [EnumMember] Http,
         [EnumMember] WebService,
         [EnumMember] Redis,
+        [EnumMember] ElasticSearch,
         [EnumMember] Other
     }
 }
