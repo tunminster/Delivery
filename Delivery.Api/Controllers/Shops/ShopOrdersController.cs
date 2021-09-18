@@ -75,15 +75,6 @@ namespace Delivery.Api.Controllers.Shops
             CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-
-            if (shopOrderStatusCreationContract.PickupTime == null)
-            {
-                shopOrderStatusCreationContract = shopOrderStatusCreationContract with
-                {
-                    PickupTime = DateTimeOffset.UtcNow.AddMinutes(shopOrderStatusCreationContract.PreparationTime +
-                                                                  ShopConstant.DefaultPickupMinutes)
-                };
-            }
             
             var validationResult =
                 await new ShopOrderStatusCreationValidator().ValidateAsync(

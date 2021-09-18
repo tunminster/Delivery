@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Delivery.Azure.Library.Core.Extensions.Collections;
 using Delivery.Database.Entities;
+using Delivery.Shop.Domain.Constants;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
 using Microsoft.Graph;
 
@@ -22,6 +24,8 @@ namespace Delivery.Shop.Domain.Converters
                     DeliveryFee = item.DeliveryFees,
                     Tax = item.TaxFees,
                     TotalAmount = item.TotalAmount,
+                    PreparationTime = item.PreparationTime ?? ShopConstant.DefaultPreparationTime,
+                    PickupTime = item.PickupTime ?? DateTimeOffset.UtcNow.AddMinutes(ShopConstant.DefaultPreparationTime + ShopConstant.DefaultPickupMinutes),
                     ShopOrderItems = ConvertToShopOrderItem(item.OrderItems.ToList()),
                     ShopOrderDriver = driverOrders.Count > 0 ? ConvertToShopOrderDriver(driverOrders.FirstOrDefault(x => x.OrderId == item.Id)) : new ShopOrderDriverContract()
                 })
