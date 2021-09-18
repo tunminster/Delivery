@@ -4,7 +4,6 @@ resource "azurerm_key_vault" "hnkeyvault" {
   location            = azurerm_resource_group.hn-platform-data-persistent.location
   sku_name            = "standard"
   tenant_id           = var.tenant_id
-  soft_delete_enabled = true
   soft_delete_retention_days  = 7
   tags = local.common_tags
 }

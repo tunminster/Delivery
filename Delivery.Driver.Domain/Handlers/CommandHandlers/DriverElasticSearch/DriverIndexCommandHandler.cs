@@ -5,6 +5,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.Constants;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverElasticSearch;
 using Delivery.Driver.Domain.Converters;
@@ -39,11 +40,11 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch
 
             var driverContract = driver.ConvertToDriverContract();
             
-            var indexExist = await elasticClient.Indices.ExistsAsync($"drivers{executingRequestContextAdapter.GetShard().Key.ToLower()}");
+            var indexExist = await elasticClient.Indices.ExistsAsync($"{ElasticSearchIndexConstants.DriversIndex}{executingRequestContextAdapter.GetShard().Key.ToLower()}");
 
             if (!indexExist.Exists)
             {
-                var createIndexResponse = await elasticClient.Indices.CreateAsync($"drivers{executingRequestContextAdapter.GetShard().Key.ToLower()}", c => c
+                var createIndexResponse = await elasticClient.Indices.CreateAsync($"{ElasticSearchIndexConstants.DriversIndex}{executingRequestContextAdapter.GetShard().Key.ToLower()}", c => c
                     .Map<DriverContract>(m => m.AutoMap()
                         .Properties(p => p
                             .GeoPoint(d => d
@@ -63,7 +64,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch
             if (getResponse.Found)
             {
                 var updateResponse = await elasticClient.UpdateAsync<DriverContract>(driverContract.DriverId,
-                    descriptor => descriptor.Index($"drivers{executingRequestContextAdapter.GetShard().Key.ToLower()}").Doc(driverContract));
+                    descriptor => descriptor.Index($"{ElasticSearchIndexConstants.DriversIndex}{executingRequestContextAdapter.GetShard().Key.ToLower()}").Doc(driverContract));
                 
                 if (updateResponse.IsValid)
                 {
@@ -76,7 +77,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch
             {
                 var createResponse = await elasticClient.CreateAsync(driverContract,
                     i => i
-                        .Index($"drivers{executingRequestContextAdapter.GetShard().Key.ToLower()}")
+                        .Index($"{ElasticSearchIndexConstants.DriversIndex}{executingRequestContextAdapter.GetShard().Key.ToLower()}")
                         .Id(driverContract.DriverId)
                 );
                 

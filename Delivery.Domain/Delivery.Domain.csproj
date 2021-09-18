@@ -20,10 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Delivery.Azure.Library.Authentication\Delivery.Azure.Library.Authentication.csproj" />
     <ProjectReference Include="..\Delivery.Azure.Library.Sharding\Delivery.Azure.Library.Sharding.csproj" />
     <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj" />
