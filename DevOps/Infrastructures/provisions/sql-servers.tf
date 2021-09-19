@@ -12,12 +12,6 @@ resource "azurerm_mssql_server" "hn-platform-sql-server" {
     object_id      = "0321b94f-e554-45ce-94ae-6d82c3368c37"
   }
 
-  extended_auditing_policy {
-    storage_endpoint                        = azurerm_storage_account.hn-platform-storage.primary_blob_endpoint
-    storage_account_access_key              = azurerm_storage_account.hn-platform-storage.primary_access_key
-    storage_account_access_key_is_secondary = true
-    retention_in_days                       = 6
-  }
 
   tags = local.common_tags
 }
