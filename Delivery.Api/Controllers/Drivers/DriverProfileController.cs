@@ -22,7 +22,7 @@ namespace Delivery.Api.Controllers.Drivers
     /// <summary>
     ///  Driver controller
     /// </summary>
-    [Route("api/v1/driver-profile", Name = "1 - Driver Profile")]
+    [Route("api/v1/driver-profile", Name = "2 - Driver Profile")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [ApiController]
     [Authorize(Policy = "DriverApiUser")]

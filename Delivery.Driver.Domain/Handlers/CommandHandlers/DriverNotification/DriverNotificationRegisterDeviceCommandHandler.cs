@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.NotificationHub.Clients;
 using Delivery.Azure.Library.NotificationHub.Models;
@@ -13,25 +12,24 @@ using Delivery.Notifications.Contracts.V1.RestContracts;
 using Delivery.Notifications.Helpers;
 using Delivery.Notifications.Model;
 
-namespace Delivery.Notifications.Handlers.CommandHandlers.RegisterDevice
+namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
 {
-    public record RegisterDeviceCommand(RegisterDeviceModel RegisterDeviceModel);
-    
-    public class RegisterDeviceCommandHandler : ICommandHandler<RegisterDeviceCommand,DeviceRegistrationResponseContract>
+    public record DriverNotificationRegisterDeviceCommand(RegisterDeviceModel RegisterDeviceModel);
+    public class DriverNotificationRegisterDeviceCommandHandler : ICommandHandler<DriverNotificationRegisterDeviceCommand,DeviceRegistrationResponseContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public RegisterDeviceCommandHandler(IServiceProvider serviceProvider,
+        public DriverNotificationRegisterDeviceCommandHandler(IServiceProvider serviceProvider,
             IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DeviceRegistrationResponseContract> Handle(RegisterDeviceCommand command)
+        public async Task<DeviceRegistrationResponseContract> Handle(DriverNotificationRegisterDeviceCommand command)
         {
-            var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationHubName, NotificationHubConstants.NotificationHubConnectionStringName);
+            var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationDriverHubName, NotificationHubConstants.NotificationDriverHubConnectionStringName);
 
             var deviceRegistrationCreateModel = new DeviceRegistrationCreateModel
             {
@@ -70,6 +68,5 @@ namespace Delivery.Notifications.Handlers.CommandHandlers.RegisterDevice
 
             return deviceRegistrationResponseContract;
         }
-        
     }
 }
