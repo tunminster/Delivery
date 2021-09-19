@@ -20,6 +20,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Delivery.Driver.Domain\Delivery.Driver.Domain.csproj" />
       <ProjectReference Include="..\Delivery.Library.Twilio\Delivery.Library.Twilio.csproj" />
       <ProjectReference Include="..\Delivery.Store.Domain\Delivery.Store.Domain.csproj" />
     </ItemGroup>

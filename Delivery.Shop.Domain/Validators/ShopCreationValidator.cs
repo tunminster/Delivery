@@ -1,3 +1,4 @@
+using System.Linq;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
 using FluentValidation;
 
@@ -15,6 +16,10 @@ namespace Delivery.Shop.Domain.Validators
             RuleFor(x => x.ConfirmPassword).NotEmpty().NotNull().WithMessage("Confirm password must be provided");
             RuleFor(x => x.Password).Equal(x => x.ConfirmPassword).WithMessage("Passwords do not match.");
             RuleFor(x => x.StoreTypeId).NotEmpty().NotNull().WithMessage("Store type id must be provided.");
+            RuleFor(x => x.StoreOpeningHours.Count).NotNull().GreaterThanOrEqualTo(7)
+                .WithMessage("Store opening hours must be defined for 7 days");
+            RuleFor(x => x.StoreOpeningHours.Count(x => !string.IsNullOrEmpty(x.TimeZone))).Equal(7)
+                .WithMessage("Timezone must t be defined.");
         }
     }
 }

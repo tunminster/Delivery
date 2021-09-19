@@ -13,7 +13,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
 {
     public record ShopOrderStatusCommand(ShopOrderStatusCreationContract ShopOrderStatusCreationContract);
     
-    public class ShopOrderStatusCommandHandler : ICommandHandler<ShopOrderStatusCommand, StatusContract>
+    public class ShopOrderStatusCommandHandler : ICommandHandler<ShopOrderStatusCommand, ShopOrderStatusContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
@@ -25,7 +25,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StatusContract> Handle(ShopOrderStatusCommand statusCommand)
+        public async Task<ShopOrderStatusContract> Handle(ShopOrderStatusCommand statusCommand)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
@@ -46,7 +46,13 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
 
             await databaseContext.SaveChangesAsync();
 
-            return new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow };
+            return new ShopOrderStatusContract
+            {
+                OrderId = order.ExternalId,
+                OrderStatus = statusCommand.ShopOrderStatusCreationContract.OrderStatus,
+                Status = true,
+                DateCreated = DateTimeOffset.UtcNow
+            };
         }
     }
 }

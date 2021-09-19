@@ -6,7 +6,7 @@ using Delivery.Database.Enums;
 
 namespace Delivery.Database.Entities
 {
-    public class DriverOrder : Entity, IAuditableEntity, ISoftDeleteEntity
+    public class  DriverOrder : Entity, IAuditableEntity, ISoftDeleteEntity
     {
         public int OrderId { get; set; }
         
