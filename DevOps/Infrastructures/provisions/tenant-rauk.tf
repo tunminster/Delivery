@@ -6,14 +6,6 @@ resource "azurerm_mssql_database" "rauk" {
   sku_name       = "S0"
 
 
-  extended_auditing_policy {
-    storage_endpoint                        = azurerm_storage_account.hn-platform-storage.primary_blob_endpoint
-    storage_account_access_key              = azurerm_storage_account.hn-platform-storage.primary_access_key
-    storage_account_access_key_is_secondary = true
-    retention_in_days                       = 6
-  }
-
-
   tags = local.common_tags
 
 }
