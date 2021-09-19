@@ -4,6 +4,7 @@ using Delivery.Azure.Library.Messaging.Adapters;
 using Delivery.Azure.Library.Microservices.Hosting.MessageHandlers;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Database.Enums;
 using Delivery.Domain.Contracts.Enums;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
@@ -32,9 +33,30 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                 {
                     var shopOrderStatusCommand =
                         new ShopOrderStatusCommand(messageAdapter.GetPayloadIn());
-                    
-                    await new ShopOrderStatusCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(shopOrderStatusCommand);
+
+                    var shopOrderStatusContract = new ShopOrderStatusContract();
+                    if (!processingStates.HasFlag(OrderMessageProcessingStates.Persisted))
+                    {
+                        shopOrderStatusContract = await new ShopOrderStatusCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                            .Handle(shopOrderStatusCommand);
+                        
+                        processingStates |= OrderMessageProcessingStates.Persisted;
+                    }
+
+                    if (shopOrderStatusContract.Status &&
+                        shopOrderStatusContract.OrderStatus == OrderStatus.Accepted)
+                    {
+                        var shopOrderDriverRequestCommand = new ShopOrderDriverRequestCommand
+                        (
+                            new ShopOrderDriverRequestContract
+                            {
+                                OrderId = shopOrderStatusContract.OrderId
+                            }
+                        );
+
+                        await new ShopOrderDriverRequestCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                            .Handle(shopOrderDriverRequestCommand);
+                    }
                     
                     processingStates |= OrderMessageProcessingStates.Processed;
                 }

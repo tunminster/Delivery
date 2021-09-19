@@ -71,7 +71,7 @@ namespace Delivery.Api.Controllers.Drivers
         ///  Get order details for driver
         /// </summary>
         /// <returns></returns>
-        [Route("get-order-details", Order = 1)]
+        [Route("get-order-details", Order = 2)]
         [ProducesResponseType(typeof(DriverOrderDetailsContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpPost]
