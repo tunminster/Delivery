@@ -6,26 +6,21 @@ using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.NotificationHub.Contracts.V1;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification;
 using Delivery.Notifications.Contracts.V1.Enums;
 using Delivery.Notifications.Contracts.V1.RestContracts;
-using Delivery.Notifications.Handlers.CommandHandlers.CreateRegistrationId;
-using Delivery.Notifications.Handlers.CommandHandlers.DeleteRegisterDevice;
-using Delivery.Notifications.Handlers.CommandHandlers.RegisterDevice;
-using Delivery.Notifications.Handlers.CommandHandlers.SendNotificationToUser;
 using Delivery.Notifications.Model;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Delivery.Api.Controllers.Management
+namespace Delivery.Api.Controllers.Drivers
 {
     /// <summary>
-    ///  Notification controller
+    ///  Driver notification controller
     /// </summary>
-    [Route("api/v1/[controller]" , Name = "1 - Notification management")]
+    [Route("api/v1/driver-notification", Name = "4 - Driver Notification")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [ApiController]
-    [Authorize(Roles = "Driver,ShopOwner")]
-    public class NotificationController : ControllerBase
+    public class DriverNotificationController : Controller
     {
         private readonly IServiceProvider serviceProvider;
 
@@ -33,12 +28,12 @@ namespace Delivery.Api.Controllers.Management
         ///  Notification controller
         /// </summary>
         /// <param name="serviceProvider"></param>
-        public NotificationController(
+        public DriverNotificationController(
             IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
-
+        
         /// <summary>
         ///  Create Registration id
         /// </summary>
@@ -52,14 +47,14 @@ namespace Delivery.Api.Controllers.Management
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
-            var command = new CreateRegistrationIdCommand(handle);
+            var command = new DriverNotificationRegistrationIdCommand(handle);
 
             var registrationId =
-               await  new CreateRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+                await  new DriverNotificationRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
             
             return Ok(new DeviceRegistrationResponseContract{Id = registrationId});
         }
-
+        
         /// <summary>
         ///  Register Device
         /// </summary>
@@ -80,36 +75,12 @@ namespace Delivery.Api.Controllers.Management
                 DeviceRegistration = deviceRegistrationContract
             };
 
-            var command = new RegisterDeviceCommand(registerDeviceModel);
+            var command = new DriverNotificationRegisterDeviceCommand(registerDeviceModel);
             var deviceRegistrationResponseContract =
-                await new RegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+                await new DriverNotificationRegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
             return Ok(deviceRegistrationResponseContract);
         }
-
-        /// <summary>
-        ///  Delete registration
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [Route("register", Order = 3)]
-        [HttpDelete]
-        [ProducesResponseType(typeof(DeviceRegistrationResponseContract), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> DeleteRegistrationAsync(string id)
-        {
-            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-
-            var command = new DeleteRegisterCommand(id);
-            var registrationId = await new DeleteRegisterCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
-
-            var deviceRegistrationResponseContract = new DeviceRegistrationResponseContract
-            {
-                Id = registrationId
-            };
-            
-            return Ok(deviceRegistrationResponseContract);
-        }
-
+        
         /// <summary>
         ///  Send push notification
         /// </summary>
@@ -123,9 +94,9 @@ namespace Delivery.Api.Controllers.Management
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
-            var command = new SendNotificationToUserCommand(notificationRequestContract);
+            var command = new DriverSendNotificationToUserCommand(notificationRequestContract);
 
-            await new SendNotificationToUserCommandHandler(serviceProvider, executingRequestContextAdapter)
+            await new DriverSendNotificationToUserCommandHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(command);
 
             var notificationResponseContract = new NotificationResponseContract
@@ -136,6 +107,5 @@ namespace Delivery.Api.Controllers.Management
 
             return Ok(notificationResponseContract);
         }
-        
     }
 }
