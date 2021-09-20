@@ -40,7 +40,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             {
                 RegistrationId = command.RegisterDeviceModel.RegistrationId,
                 Username = NotificationTagHelper.GetTag(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!),
-                Tag = $"{executingRequestContextAdapter.GetShard().GenerateExternalId(6).Replace("-", "")}{NotificationTagHelper.GetTag(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!)}",
+                Tag = $"{executingRequestContextAdapter.GetShard().Key}driver{NotificationTagHelper.GetTag(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!)}",
                 DeviceRegistration = command.RegisterDeviceModel.DeviceRegistration,
                 CorrelationId = executingRequestContextAdapter.GetCorrelationId(),
                 ShardKey = executingRequestContextAdapter.GetShard().Key,

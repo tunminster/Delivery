@@ -37,12 +37,13 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopProfile
         /// <example>{{zipCode}}</example>
         /// </summary>
         public string ZipCode { get; init; } = string.Empty;
-
+        
         /// <summary>
         ///  Country
-        /// <example>{{country}}</example>
+        /// <example>{{county}}</example>
         /// </summary>
-        public string Country { get; init; } = string.Empty;
+        public string County { get; init; } = string.Empty;
+        
         
         /// <summary>
         ///  Radius that covers for delivery

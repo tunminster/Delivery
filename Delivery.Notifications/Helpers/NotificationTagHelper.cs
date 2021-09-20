@@ -9,7 +9,8 @@ namespace Delivery.Notifications.Helpers
             Regex rgx = new Regex("[^a-zA-Z0-9 -]");
             var name = username.Split('@');
             var tag = rgx.Replace(name[0], "");
-            return tag;
+            var emailDomain = name[1].Replace(".", "");
+            return $"{tag}{emailDomain}";
         }
     }
 }
