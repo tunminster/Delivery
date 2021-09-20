@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Core.Extensions.Json;
+using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.NotificationHub.Clients;
 using Delivery.Azure.Library.NotificationHub.Models;
 using Delivery.Azure.Library.Sharding.Adapters;
@@ -39,6 +40,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             {
                 RegistrationId = command.RegisterDeviceModel.RegistrationId,
                 Username = NotificationTagHelper.GetTag(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!),
+                Tag = $"{executingRequestContextAdapter.GetShard().GenerateExternalId(5)}{NotificationTagHelper.GetTag(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!)}",
                 DeviceRegistration = command.RegisterDeviceModel.DeviceRegistration,
                 CorrelationId = executingRequestContextAdapter.GetCorrelationId(),
                 ShardKey = executingRequestContextAdapter.GetShard().Key,
@@ -47,9 +49,12 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
+            // var notificationDevice = databaseContext.NotificationDevices.FirstOrDefault(x =>
+            //     x.RegistrationId == deviceRegistrationCreateModel.RegistrationId &&
+            //     x.Tag == deviceRegistrationCreateModel.Username);
+            
             var notificationDevice = databaseContext.NotificationDevices.FirstOrDefault(x =>
-                x.RegistrationId == deviceRegistrationCreateModel.RegistrationId &&
-                x.Tag == deviceRegistrationCreateModel.Username);
+                x.RegistrationId == deviceRegistrationCreateModel.RegistrationId);
 
             if (notificationDevice == null)
             {
@@ -57,10 +62,17 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
                 {
                     RegistrationId = deviceRegistrationCreateModel.RegistrationId,
                     Platform = command.RegisterDeviceModel.DeviceRegistration.Platform,
-                    Tag = deviceRegistrationCreateModel.Username
+                    UserEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+                    Tag = deviceRegistrationCreateModel.Tag
                 };
 
                 await databaseContext.NotificationDevices.AddAsync(notificationDevice);
+                await databaseContext.SaveChangesAsync();
+            }
+            else
+            {
+                notificationDevice.Tag = deviceRegistrationCreateModel.Tag;
+                notificationDevice.UserEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail;
                 await databaseContext.SaveChangesAsync();
             }
             

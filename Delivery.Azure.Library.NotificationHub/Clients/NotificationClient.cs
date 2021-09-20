@@ -234,15 +234,18 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                     break;
                 case "fcm":
                     // Android
-                    var notif = "{ \"data\" : {\"message\":\"" + "From " + user + ": " + notificationSendModel.Message + "\"}}";
+                    //var notif = "{ \"data\" : {\"message\":\"" + "From " + user + ": " + notificationSendModel.Message + "\"}}";
+                    var notif = new GcmMessageContract{ Notification = new NotificationTitle { Title = "RagiBull Notification", Body =notificationSendModel.Message},
+                        Data = new NotificationData{ PropertyOne = "test 1", PropertyTwo = "test 2"}};
+                    
                     outcome = await new DependencyMeasurement(serviceProvider)
                         .ForDependency(dependencyName.ToString(), MeasuredDependencyType.AzureNotificationHub,
                             dependencyData.ConvertToJson(), dependencyTarget)
                         .WithContextualInformation(telemetryContextProperties)
-                        .TrackAsync(async () => await hub.SendFcmNativeNotificationAsync(notif, userTag));
+                        .TrackAsync(async () => await hub.SendFcmNativeNotificationAsync(notif.ConvertToJson(), userTag));
                     break;
                 case "gcm":
-                    var gcmMessage= new GcmMessageContract{ Notification = new NotificationTitle { Title = "Hey Notificaiton", Body ="This is a test."},
+                    var gcmMessage= new GcmMessageContract{ Notification = new NotificationTitle { Title = "RagiBull Notification", Body =notificationSendModel.Message},
                     Data = new NotificationData{ PropertyOne = "test 1", PropertyTwo = "test 2"}};
                     await hub.SendFcmNativeNotificationAsync(gcmMessage.ConvertToJson(), userTag);
                     break;

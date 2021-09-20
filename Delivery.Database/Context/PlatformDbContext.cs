@@ -97,6 +97,7 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<NotificationDevice>().Property(p => p.RegistrationId).HasMaxLength(500);
             modelBuilder.Entity<NotificationDevice>().Property(p => p.Platform).HasMaxLength(250);
             modelBuilder.Entity<NotificationDevice>().Property(p => p.Tag).HasMaxLength(250);
+            modelBuilder.Entity<NotificationDevice>().Property(p => p.UserEmail).HasMaxLength(250);
             
             ConfigureIndexes(modelBuilder);
 

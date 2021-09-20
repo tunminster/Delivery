@@ -11,6 +11,8 @@ namespace Delivery.Database.Entities
         public string Platform { get; set; }
         
         public string Tag { get; set; }
+        
+        public string UserEmail { get; set; }
         public string InsertedBy { get; set; }
         public DateTimeOffset InsertionDateTime { get; set; }
         public bool IsDeleted { get; set; }
