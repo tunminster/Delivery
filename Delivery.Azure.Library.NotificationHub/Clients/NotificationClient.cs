@@ -203,9 +203,8 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
             };
             
             var user = notificationSendModel.Username;
-            string[] userTag = new string[2];
-            userTag[0] = "username:" + notificationSendModel.ToTag;
-            userTag[1] = "from:" + user;
+            string[] userTag = new string[1];
+            userTag[0] = notificationSendModel.ToTag;
             
             NotificationOutcome outcome = null;
             HttpStatusCode httpStatusCode = HttpStatusCode.InternalServerError;
