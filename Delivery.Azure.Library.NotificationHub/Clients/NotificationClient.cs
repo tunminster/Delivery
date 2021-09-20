@@ -121,7 +121,10 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                 {CustomProperties.Ring, deviceRegistrationCreateModel.RingKey}
             };
             
-            var deviceUpdate = deviceRegistrationCreateModel.DeviceRegistration;
+            var deviceUpdate = deviceRegistrationCreateModel.DeviceRegistration with
+            {
+                Tags = new []{ deviceRegistrationCreateModel.Username}
+            };
             switch (deviceUpdate.Platform)
             {
                 case "mpns":
@@ -143,7 +146,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
             registration.RegistrationId = deviceRegistrationCreateModel.RegistrationId;
 
             registration.Tags = new HashSet<string>(deviceUpdate.Tags);
-            registration.Tags.Add($"username:{deviceRegistrationCreateModel.Username}");
+            //registration.Tags.Add($"{deviceRegistrationCreateModel.Username}");
 
             try
             {

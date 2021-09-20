@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.NotificationHub.Clients;
 using Delivery.Azure.Library.NotificationHub.Models;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
@@ -11,6 +13,8 @@ using Delivery.Notifications.Constants;
 using Delivery.Notifications.Contracts.V1.RestContracts;
 using Delivery.Notifications.Helpers;
 using Delivery.Notifications.Model;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
 {
