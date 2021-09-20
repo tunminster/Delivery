@@ -5,7 +5,7 @@ namespace Delivery.Notifications.Constants
         public const string NotificationHubConnectionStringName = "Notification-Hub-DefaultFullSharedAccessSignature";
         public const string NotificationHubName = "hn-platform-notification-hub-dev";
         
-        public const string NotificationDriverHubConnectionStringName = "Notification-Hub-DefaultFullSharedAccessSignature";
-        public const string NotificationDriverHubName = "hn-platform-notification-hub-driver-dev";
+        public const string NotificationDriverHubConnectionStringName = "Notification-Driver-Hub-DefaultFullSharedAccessSignature";
+        public const string NotificationDriverHubName = "hn-platform-notification-driver-hub-dev";
     }
 }
