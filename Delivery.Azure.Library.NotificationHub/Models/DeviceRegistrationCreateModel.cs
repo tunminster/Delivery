@@ -8,6 +8,11 @@ namespace Delivery.Azure.Library.NotificationHub.Models
         ///  Unique registration id from Notification hub.
         /// </summary>
         public string RegistrationId { get; init; } = string.Empty;
+
+        /// <summary>
+        ///  System generated unique tag
+        /// </summary>
+        public string Tag { get; init; } = string.Empty;
         
         /// <summary>
         ///  Device registration contract
