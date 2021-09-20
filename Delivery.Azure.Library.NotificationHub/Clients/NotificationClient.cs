@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.NotificationHubs.Messaging;
+using Delivery.Azure.Library.NotificationHub.Contracts.V1;
 
 namespace Delivery.Azure.Library.NotificationHub.Clients
 {
@@ -204,7 +205,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
             
             var user = notificationSendModel.Username;
             string[] userTag = new string[1];
-            userTag[0] = notificationSendModel.ToTag;
+            userTag[0] = notificationSendModel.ToTag.ToLower();
             
             NotificationOutcome outcome = null;
             HttpStatusCode httpStatusCode = HttpStatusCode.InternalServerError;
@@ -239,6 +240,11 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                             dependencyData.ConvertToJson(), dependencyTarget)
                         .WithContextualInformation(telemetryContextProperties)
                         .TrackAsync(async () => await hub.SendFcmNativeNotificationAsync(notif, userTag));
+                    break;
+                case "gcm":
+                    var gcmMessage= new GcmMessageContract{ Notification = new NotificationTitle { Title = "Hey Notificaiton", Body ="This is a test."},
+                    Data = new NotificationData{ PropertyOne = "test 1", PropertyTwo = "test 2"}};
+                    await hub.SendFcmNativeNotificationAsync(gcmMessage.ConvertToJson(), userTag);
                     break;
             }
             
