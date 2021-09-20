@@ -124,7 +124,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
             
             var deviceUpdate = deviceRegistrationCreateModel.DeviceRegistration with
             {
-                Tags = new []{ deviceRegistrationCreateModel.Username}
+                Tags = new []{ deviceRegistrationCreateModel.Tag}
             };
             switch (deviceUpdate.Platform)
             {
