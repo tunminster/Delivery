@@ -42,7 +42,7 @@ namespace Delivery.Api.Controllers.Shops
         /// <summary>
         ///  Get order by shop user
         /// </summary>
-        [Route("get-order")]
+        [Route("get-order", Order = 1)]
         [HttpPost]
         [ProducesResponseType(typeof(List<ShopOrderContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -67,7 +67,7 @@ namespace Delivery.Api.Controllers.Shops
         /// <summary>
         ///  Verify order status
         /// </summary>
-        [Route("verify-order-status")]
+        [Route("verify-order-status", Order = 2)]
         [HttpPost]
         [ProducesResponseType(typeof(List<StatusContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -106,7 +106,7 @@ namespace Delivery.Api.Controllers.Shops
         /// <summary>
         ///  Get order by shop user
         /// </summary>
-        [Route("get-order-details")]
+        [Route("get-order-details", Order = 3)]
         [HttpGet]
         [ProducesResponseType(typeof(ShopOrderContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]

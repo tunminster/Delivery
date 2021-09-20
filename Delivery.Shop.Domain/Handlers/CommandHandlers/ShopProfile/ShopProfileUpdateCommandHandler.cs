@@ -43,20 +43,20 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile
             store.City = command.ShopProfileCreationContract.City;
             store.County = command.ShopProfileCreationContract.County;
             
-            store.OpeningHours = new List<OpeningHour>();
+            //store.OpeningHours = new List<OpeningHour>();
             
-            foreach (var storeOpeningHour in command.ShopProfileCreationContract.StoreOpeningHours)
-            {
-                store.OpeningHours.Add(new OpeningHour
-                {
-                    DayOfWeek = storeOpeningHour.DayOfWeek,
-                    Open = storeOpeningHour.Open,
-                    Close = storeOpeningHour.Close,
-                    IsDeleted = false,
-                    InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
-                    InsertionDateTime = DateTimeOffset.UtcNow
-                });
-            }
+            // foreach (var storeOpeningHour in command.ShopProfileCreationContract.StoreOpeningHours)
+            // {
+            //     store.OpeningHours.Add(new OpeningHour
+            //     {
+            //         DayOfWeek = storeOpeningHour.DayOfWeek,
+            //         Open = storeOpeningHour.Open,
+            //         Close = storeOpeningHour.Close,
+            //         IsDeleted = false,
+            //         InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+            //         InsertionDateTime = DateTimeOffset.UtcNow
+            //     });
+            // }
             
             await databaseContext.SaveChangesAsync();
 
