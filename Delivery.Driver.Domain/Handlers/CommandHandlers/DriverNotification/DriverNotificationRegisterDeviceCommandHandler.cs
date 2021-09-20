@@ -41,30 +41,34 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
                 RingKey = executingRequestContextAdapter.GetRing().ToString()
             };
             
-            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            // await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
-            var notificationDevice = databaseContext.NotificationDevices.FirstOrDefault(x =>
-                x.RegistrationId == deviceRegistrationCreateModel.RegistrationId &&
-                x.Tag == deviceRegistrationCreateModel.Username);
+            // var notificationDevice = databaseContext.NotificationDevices.FirstOrDefault(x =>
+            //     x.RegistrationId == deviceRegistrationCreateModel.RegistrationId &&
+            //     x.Tag == deviceRegistrationCreateModel.Username);
 
-            if (notificationDevice == null)
-            {
-                notificationDevice = new NotificationDevice
-                {
-                    RegistrationId = deviceRegistrationCreateModel.RegistrationId,
-                    Platform = command.RegisterDeviceModel.DeviceRegistration.Platform,
-                    Tag = deviceRegistrationCreateModel.Username
-                };
+            // if (notificationDevice == null)
+            // {
+            //     notificationDevice = new NotificationDevice
+            //     {
+            //         RegistrationId = deviceRegistrationCreateModel.RegistrationId,
+            //         Platform = command.RegisterDeviceModel.DeviceRegistration.Platform,
+            //         Tag = deviceRegistrationCreateModel.Username
+            //     };
 
-                await databaseContext.NotificationDevices.AddAsync(notificationDevice);
-                await databaseContext.SaveChangesAsync();
-            }
+            //     await databaseContext.NotificationDevices.AddAsync(notificationDevice);
+            //     await databaseContext.SaveChangesAsync();
+            // }
             
             var registrationDescription = await notificationClient.RegisterDeviceAsync(deviceRegistrationCreateModel);
             var deviceRegistrationResponseContract = new DeviceRegistrationResponseContract
             {
                 Id = registrationDescription.RegistrationId
             };
+
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                    .TrackTrace($"{nameof(NotificationClient)} set the device : {deviceRegistrationCreateModel.ConvertToJson()}", 
+                        SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
 
             return deviceRegistrationResponseContract;
         }
