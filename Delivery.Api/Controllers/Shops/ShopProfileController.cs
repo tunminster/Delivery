@@ -8,10 +8,14 @@ using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopProfile;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopProfile;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopProfile;
+using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopProfile;
+using Delivery.Shop.Domain.Services;
 using Delivery.Shop.Domain.Validators.ShopProfile;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers.Shops
@@ -65,6 +69,57 @@ namespace Delivery.Api.Controllers.Shops
             await new ShopProfileUpdateMessagePublisher(serviceProvider).PublishAsync(shopProfileMessage);
 
             return Ok(statusContract);
+        }
+
+        /// <summary>
+        ///  Shop profile update
+        /// </summary>
+        [Route("update-image", Order = 2)]
+        [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [HttpPut]
+        public async Task<IActionResult> Post_UpdateStoreImageAsync(
+            IFormFile? shopImage)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopProfileContract =
+                await new ShopProfileQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    new ShopProfileQuery{Email = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!});
+            if (shopImage != null)
+            {
+                var shopImageCreationContract = new ShopImageCreationContract
+                {
+                    StoreId = shopProfileContract.StoreId,
+                    StoreName = shopProfileContract.StoreName,
+                    ShopImage = shopImage
+                };
+                
+                var storeImageCreationStatusContract =
+                    await new ShopService(serviceProvider, executingRequestContextAdapter)
+                        .UploadShopImageAsync(shopImageCreationContract);
+                
+            }
+            // todo: save image uri
+            return Ok(new StatusContract{Status = true, DateCreated = DateTimeOffset.UtcNow});
+        }
+        
+        /// <summary>
+        ///  Shop profile update
+        /// </summary>
+        [Route("get-profile", Order = 3)]
+        [ProducesResponseType(typeof(ShopProfileContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [HttpGet]
+        public async Task<IActionResult> Get_StoreProfileAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopProfileContract =
+                await new ShopProfileQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    new ShopProfileQuery{Email = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!});
+            
+            return Ok(shopProfileContract);
         }
     }
 }
