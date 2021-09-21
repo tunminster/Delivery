@@ -164,6 +164,13 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(shopProfileMessageContract.RequestContext));
                     await shopProfileMessageHandler.HandleMessageAsync(shopProfileMessageContract, processingState);
                     break;
+                case nameof(DriverOrderActionMessageContract):
+                    var driverOrderActionMessageContract = message.Deserialize<DriverOrderActionMessageContract>();
+                    var driverOrderActionMessageHandler = new DriverOrderActionMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(driverOrderActionMessageContract.RequestContext));
+                    await driverOrderActionMessageHandler.HandleMessageAsync(driverOrderActionMessageContract,
+                        processingState);
+                    break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");
             }

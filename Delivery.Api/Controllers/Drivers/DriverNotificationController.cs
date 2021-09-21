@@ -10,6 +10,7 @@ using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification;
 using Delivery.Notifications.Contracts.V1.Enums;
 using Delivery.Notifications.Contracts.V1.RestContracts;
 using Delivery.Notifications.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers.Drivers
@@ -20,6 +21,7 @@ namespace Delivery.Api.Controllers.Drivers
     [Route("api/v1/driver-notification", Name = "4 - Driver Notification")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [ApiController]
+    [Authorize(Policy = "DriverApiUser")]
     public class DriverNotificationController : Controller
     {
         private readonly IServiceProvider serviceProvider;
