@@ -14,7 +14,7 @@ namespace Delivery.Shop.Domain.Converters.ShopProfile
             {
                 StoreId = store.ExternalId,
                 StoreName = store.StoreName,
-                StoreTypeId = store.StoreTypeId,
+                StoreTypeId = store.StoreType.ExternalId,
                 AddressLine1 = store.AddressLine1,
                 AddressLine2 = store.AddressLine2,
                 City = store.City,

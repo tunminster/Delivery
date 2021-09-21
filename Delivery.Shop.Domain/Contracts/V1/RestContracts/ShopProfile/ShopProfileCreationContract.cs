@@ -12,7 +12,7 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopProfile
         /// <summary>
         ///  Store type id
         /// </summary>
-        public int StoreTypeId { get; init; }
+        public string StoreTypeId { get; init; } = string.Empty;
         
         /// <summary>
         ///  Business address line 1
