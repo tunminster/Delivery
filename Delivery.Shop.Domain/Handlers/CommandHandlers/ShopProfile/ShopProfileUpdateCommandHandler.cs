@@ -36,8 +36,9 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile
                     x => x.Username == executingRequestContextAdapter.GetAuthenticatedUser().UserEmail);
 
             var store = await databaseContext.Stores.SingleOrDefaultAsync(x => x.Id == storeUser.StoreId);
+            var storeType = await databaseContext.StoreTypes.SingleOrDefaultAsync(x => x.ExternalId == command.ShopProfileCreationContract.StoreTypeId);
 
-            store.StoreTypeId = command.ShopProfileCreationContract.StoreTypeId;
+            store.StoreTypeId = storeType.Id;
             store.AddressLine1 = command.ShopProfileCreationContract.AddressLine1;
             store.AddressLine2 = command.ShopProfileCreationContract.AddressLine2;
             store.City = command.ShopProfileCreationContract.City;

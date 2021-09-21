@@ -32,6 +32,7 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopProfile
 
             var store = await databaseContext.Stores
                 .Include(x => x.OpeningHours)
+                .Include(x => x.StoreType)
                 .SingleOrDefaultAsync(x => x.Id == storeUser.StoreId);
 
             var shopProfileContract = store.ConvertToContract();
