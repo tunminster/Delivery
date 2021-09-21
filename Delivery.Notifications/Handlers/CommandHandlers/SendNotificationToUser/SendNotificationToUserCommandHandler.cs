@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.NotificationHub.Clients;
+using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Models;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Domain.CommandHandlers;
@@ -30,10 +31,11 @@ namespace Delivery.Notifications.Handlers.CommandHandlers.SendNotificationToUser
 
             var notificationRequestContract = command.NotificationRequestContract;
 
-            var notificationSendModel = new NotificationSendModel
+            var notificationSendModel = new NotificationSendModel<IDataContract>
             {
                 Pns = notificationRequestContract.Pns,
                 Message = notificationRequestContract.Message,
+                Data = new UserDataContract(),
                 ToTag = notificationRequestContract.ToTag,
                 Username = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
                 CorrelationId = executingRequestContextAdapter.GetCorrelationId(),

@@ -1,9 +1,9 @@
 namespace Delivery.Azure.Library.NotificationHub.Contracts.V1
 {
-    public record GcmMessageContract
+    public record GcmMessageContract<T>
     {
         public NotificationTitle Notification {get; init;}
-        public NotificationData Data {get; init;}
+        public T Data {get; init;}
     }
 
     public record NotificationTitle

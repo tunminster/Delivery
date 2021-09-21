@@ -9,6 +9,7 @@ using Delivery.Database.Entities;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
+using Delivery.Domain.Helpers;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Microsoft.EntityFrameworkCore;
@@ -68,9 +69,39 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             
             databaseContext.DriverOrders.Add(new DriverOrder
                 { DriverId = driver.Id, OrderId = order.Id, Status = DriverOrderStatus.None });
+            
+            // push notification to driver
+            var shopOrderDriverRequestPushNotificationContract = new ShopOrderDriverRequestPushNotificationContract
+            {
+                OrderId = order.ExternalId,
+                StoreName = order.Store.StoreName,
+                StoreImageUri = order.Store.ImageUri,
+                StoreAddress = order.Store.FormattedAddress!,
+                DeliveryAddress = FormatAddressLinesHelper.FormatAddress(order.Address.AddressLine,
+                    string.Empty, order.Address.City, string.Empty,
+                    order.Address.Country, order.Address.PostCode),
+                DeliveryFee = order.DeliveryFees,
+                DeliveryTips = 0
+            };
 
-            return new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow };
+            var statusContract = await SendPushNotificationAsync(shopOrderDriverRequestPushNotificationContract, driver.Id);
 
+            return statusContract;
+
+        }
+
+        private async Task<StatusContract> SendPushNotificationAsync(ShopOrderDriverRequestPushNotificationContract shopOrderDriverRequestPushNotificationContract, int driverId)
+        {
+            var shopOrderDriverRequestPushNotificationCommand =
+                new ShopOrderDriverRequestPushNotificationCommand(shopOrderDriverRequestPushNotificationContract,
+                    driverId);
+
+            var statusContract =
+                await new ShopOrderDriverRequestPushNotificationCommandHandler(serviceProvider,
+                        executingRequestContextAdapter)
+                    .Handle(shopOrderDriverRequestPushNotificationCommand);
+            
+            return statusContract;
         }
     }
 }
