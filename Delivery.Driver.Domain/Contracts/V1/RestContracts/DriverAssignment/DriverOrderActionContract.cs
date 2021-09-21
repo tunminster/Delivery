@@ -16,5 +16,10 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment
         ///  Order id
         /// </summary>
         public string OrderId { get; init; } = string.Empty;
+
+        /// <summary>
+        ///  Reason
+        /// </summary>
+        public string Reason { get; init; } = string.Empty;
     }
 }

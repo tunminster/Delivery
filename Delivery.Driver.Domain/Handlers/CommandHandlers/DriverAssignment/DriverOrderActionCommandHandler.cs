@@ -47,6 +47,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             }
             
             driverOrder.Status = command.DriverOrderActionContract.DriverOrderStatus;
+            driverOrder.Reason = command.DriverOrderActionContract.Reason;
 
             await databaseContext.SaveChangesAsync();
 
