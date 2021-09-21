@@ -11,7 +11,7 @@ namespace Delivery.Notifications.Contracts.V1.RestContracts
         ///  Notification message
         /// </summary>
         public string Message { get; init; } = string.Empty;
-
+        
         /// <summary>
         ///  To set username
         /// </summary>

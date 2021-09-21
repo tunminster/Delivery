@@ -188,7 +188,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                 .TrackAsync(async () => await hub.DeleteRegistrationAsync(registrationDeleteModel.RegistrationId));
         }
 
-        public async Task<HttpStatusCode> SendNotificationToUser(NotificationSendModel notificationSendModel)
+        public async Task<HttpStatusCode> SendNotificationToUser(NotificationSendModel<IDataContract> notificationSendModel)
         {
             var hub = NotificationHubSenderConnection.Hub;
             
@@ -215,7 +215,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                 case "wns":
                     // Windows 8.1 / Windows Phone 8.1
                     var toast = @"<toast><visual><binding template=""ToastText01""><text id=""1"">" + 
-                                "From " + user + ": " + notificationSendModel.Message + "</text></binding></visual></toast>";
+                                 notificationSendModel.Message + "</text></binding></visual></toast>";
                     
                     outcome = await new DependencyMeasurement(serviceProvider)
                         .ForDependency(dependencyName.ToString(), MeasuredDependencyType.AzureNotificationHub,
@@ -225,28 +225,29 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                     break;
                 case "apns":
                     // iOS
-                    var alert = "{\"aps\":{\"alert\":\"" + "From " + user + ": " + notificationSendModel.Message + "\"}}";
+                    //var alert = "{\"aps\":{\"alert\":\"" + "From " + user + ": " + notificationSendModel.Message + "\"}}";
+                    var apsMessageContract = new ApsMessageContract<IDataContract>
+                        { Aps = new Aps{ Alert = notificationSendModel.Title}, Message = new ApsNotificationMessage {Message = notificationSendModel.Message},Data = notificationSendModel.Data };
                     outcome = await new DependencyMeasurement(serviceProvider)
                         .ForDependency(dependencyName.ToString(), MeasuredDependencyType.AzureNotificationHub,
                             dependencyData.ConvertToJson(), dependencyTarget)
                         .WithContextualInformation(telemetryContextProperties)
-                        .TrackAsync(async () => await hub.SendAppleNativeNotificationAsync(alert, userTag));
+                        .TrackAsync(async () => await hub.SendAppleNativeNotificationAsync(apsMessageContract.ConvertToJson(), userTag));
                     break;
                 case "fcm":
                     // Android
-                    //var notif = "{ \"data\" : {\"message\":\"" + "From " + user + ": " + notificationSendModel.Message + "\"}}";
-                    var notif = new GcmMessageContract{ Notification = new NotificationTitle { Title = "RagiBull Notification", Body =notificationSendModel.Message},
-                        Data = new NotificationData{ PropertyOne = "test 1", PropertyTwo = "test 2"}};
+                    var gcmMessageContract = new GcmMessageContract<IDataContract>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
+                        Data = notificationSendModel.Data};
                     
                     outcome = await new DependencyMeasurement(serviceProvider)
                         .ForDependency(dependencyName.ToString(), MeasuredDependencyType.AzureNotificationHub,
                             dependencyData.ConvertToJson(), dependencyTarget)
                         .WithContextualInformation(telemetryContextProperties)
-                        .TrackAsync(async () => await hub.SendFcmNativeNotificationAsync(notif.ConvertToJson(), userTag));
+                        .TrackAsync(async () => await hub.SendFcmNativeNotificationAsync(gcmMessageContract.ConvertToJson(), userTag));
                     break;
                 case "gcm":
-                    var gcmMessage= new GcmMessageContract{ Notification = new NotificationTitle { Title = "RagiBull Notification", Body =notificationSendModel.Message},
-                    Data = new NotificationData{ PropertyOne = "test 1", PropertyTwo = "test 2"}};
+                    var gcmMessage= new GcmMessageContract<IDataContract>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
+                    Data = notificationSendModel.Data};
                     await hub.SendFcmNativeNotificationAsync(gcmMessage.ConvertToJson(), userTag);
                     break;
             }
@@ -276,17 +277,4 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
             throw e;
         }
     }
-    
-    // public class NotificationClient
-    // {
-    //     public static NotificationClient Instance = new();
-    //     
-    //     public NotificationHubClient Hub { get; set; }
-    //
-    //     private NotificationClient()
-    //     {
-    //         Hub = NotificationHubClient.CreateClientFromConnectionString("<your hub's DefaultFullSharedAccessSignature>",
-    //             "<hub name>");
-    //     }
-    // }
 }
