@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
@@ -43,21 +44,35 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile
             store.AddressLine2 = command.ShopProfileCreationContract.AddressLine2;
             store.City = command.ShopProfileCreationContract.City;
             store.County = command.ShopProfileCreationContract.County;
+
+            if (store.OpeningHours == null)
+            {
+                store.OpeningHours = new List<OpeningHour>();
+            }
             
-            //store.OpeningHours = new List<OpeningHour>();
             
-            // foreach (var storeOpeningHour in command.ShopProfileCreationContract.StoreOpeningHours)
-            // {
-            //     store.OpeningHours.Add(new OpeningHour
-            //     {
-            //         DayOfWeek = storeOpeningHour.DayOfWeek,
-            //         Open = storeOpeningHour.Open,
-            //         Close = storeOpeningHour.Close,
-            //         IsDeleted = false,
-            //         InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
-            //         InsertionDateTime = DateTimeOffset.UtcNow
-            //     });
-            // }
+            foreach (var storeOpeningHour in command.ShopProfileCreationContract.StoreOpeningHours)
+            {
+                var openingHour = store.OpeningHours.FirstOrDefault(x => x.DayOfWeek == storeOpeningHour.DayOfWeek);
+                if (openingHour != null)
+                {
+                    openingHour.Open = storeOpeningHour.Open;
+                    openingHour.Close = storeOpeningHour.Close;
+                    openingHour.TimeZone = storeOpeningHour.TimeZone;
+                }
+                else
+                {
+                    store.OpeningHours.Add(new OpeningHour
+                    {
+                        DayOfWeek = storeOpeningHour.DayOfWeek,
+                        Open = storeOpeningHour.Open,
+                        Close = storeOpeningHour.Close,
+                        IsDeleted = false,
+                        InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+                        InsertionDateTime = DateTimeOffset.UtcNow
+                    });
+                }
+            }
             
             await databaseContext.SaveChangesAsync();
 
