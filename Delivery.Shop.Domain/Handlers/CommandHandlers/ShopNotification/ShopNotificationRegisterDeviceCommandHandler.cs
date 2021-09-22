@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Core.Extensions.Json;
-using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.NotificationHub.Clients;
 using Delivery.Azure.Library.NotificationHub.Models;
 using Delivery.Azure.Library.Sharding.Adapters;
@@ -17,30 +16,31 @@ using Delivery.Notifications.Model;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
+namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopNotification
 {
-    public record DriverNotificationRegisterDeviceCommand(RegisterDeviceModel RegisterDeviceModel);
-    public class DriverNotificationRegisterDeviceCommandHandler : ICommandHandler<DriverNotificationRegisterDeviceCommand,DeviceRegistrationResponseContract>
+    public record ShopNotificationRegisterDeviceCommand(RegisterDeviceModel RegisterDeviceModel);
+    
+    public class ShopNotificationRegisterDeviceCommandHandler : ICommandHandler<ShopNotificationRegisterDeviceCommand,DeviceRegistrationResponseContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public DriverNotificationRegisterDeviceCommandHandler(IServiceProvider serviceProvider,
+        public ShopNotificationRegisterDeviceCommandHandler(IServiceProvider serviceProvider,
             IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DeviceRegistrationResponseContract> Handle(DriverNotificationRegisterDeviceCommand command)
+        public async Task<DeviceRegistrationResponseContract> Handle(ShopNotificationRegisterDeviceCommand command)
         {
-            var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationDriverHubName, NotificationHubConstants.NotificationDriverHubConnectionStringName);
-
+            var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationShopHubName, NotificationHubConstants.NotificationShopHubConnectionStringName);
+            
             var deviceRegistrationCreateModel = new DeviceRegistrationCreateModel
             {
                 RegistrationId = command.RegisterDeviceModel.RegistrationId,
                 Username = NotificationTagHelper.GetTag(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!),
-                Tag = $"{executingRequestContextAdapter.GetShard().Key}driver{NotificationTagHelper.GetTag(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!)}",
+                Tag = $"{executingRequestContextAdapter.GetShard().Key}shop{NotificationTagHelper.GetTag(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!)}",
                 DeviceRegistration = command.RegisterDeviceModel.DeviceRegistration,
                 CorrelationId = executingRequestContextAdapter.GetCorrelationId(),
                 ShardKey = executingRequestContextAdapter.GetShard().Key,
@@ -51,7 +51,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             
             var notificationDevice = databaseContext.NotificationDevices.FirstOrDefault(x =>
                 x.UserEmail == executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!);
-
+            
             if (notificationDevice == null)
             {
                 notificationDevice = new NotificationDevice
@@ -70,7 +70,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
                 // delete old registration here
                 await notificationClient.DeleteRegistration(new RegistrationDeleteModel
                     { RegistrationId = notificationDevice.RegistrationId });
-                
+
                 notificationDevice.RegistrationId = deviceRegistrationCreateModel.RegistrationId;
                 notificationDevice.Platform = command.RegisterDeviceModel.DeviceRegistration.Platform;
                 notificationDevice.Tag = deviceRegistrationCreateModel.Tag;
@@ -79,14 +79,15 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             }
             
             var registrationDescription = await notificationClient.RegisterDeviceAsync(deviceRegistrationCreateModel);
+            
             var deviceRegistrationResponseContract = new DeviceRegistrationResponseContract
             {
                 Id = registrationDescription.RegistrationId
             };
 
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-                    .TrackTrace($"{nameof(NotificationClient)} set the device : {deviceRegistrationCreateModel.ConvertToJson()}", 
-                        SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
+                .TrackTrace($"{nameof(NotificationClient)} set the device : {deviceRegistrationCreateModel.ConvertToJson()}", 
+                    SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
 
             return deviceRegistrationResponseContract;
         }
