@@ -42,6 +42,8 @@ namespace Delivery.Database.Entities
         
         public int StoreTypeId { get; set; }
         
+        public int? Radius { get; set; }
+        
         [ForeignKey("StoreTypeId")]
         public virtual StoreType StoreType { get; set; }
         

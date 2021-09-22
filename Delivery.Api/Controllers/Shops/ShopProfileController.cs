@@ -10,6 +10,7 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopProfile;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopProfile;
+using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopProfile;
 using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopProfile;
 using Delivery.Shop.Domain.Services;
@@ -98,10 +99,20 @@ namespace Delivery.Api.Controllers.Shops
                 var storeImageCreationStatusContract =
                     await new ShopService(serviceProvider, executingRequestContextAdapter)
                         .UploadShopImageAsync(shopImageCreationContract);
-                
+
+                var shopProfileImageCreationContract = new ShopProfileImageCreationContract
+                {
+                    ImageUri = storeImageCreationStatusContract.ShopImageUri,
+                    StoreId = shopProfileContract.StoreId
+                };
+
+                var statusContract =
+                    await new ShopProfileImageUpdateCommandHandler(serviceProvider, executingRequestContextAdapter)
+                        .Handle(new ShopProfileImageUpdateCommand(shopProfileImageCreationContract));
+
+                return Ok(statusContract);
             }
-            // todo: save image uri
-            return Ok(new StatusContract{Status = true, DateCreated = DateTimeOffset.UtcNow});
+            return Ok(new StatusContract{Status = false, DateCreated = DateTimeOffset.UtcNow});
         }
         
         /// <summary>
