@@ -17,7 +17,8 @@ namespace Delivery.Shop.Domain.Converters
                 City = shopCreationContract.City,
                 County = string.Empty,
                 Country = shopCreationContract.Country,
-                PostalCode = shopCreationContract.ZipCode
+                PostalCode = shopCreationContract.ZipCode,
+                Radius = shopCreationContract.Radius
             };
 
             return store;

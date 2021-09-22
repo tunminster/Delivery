@@ -44,6 +44,8 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile
             store.AddressLine2 = command.ShopProfileCreationContract.AddressLine2;
             store.City = command.ShopProfileCreationContract.City;
             store.County = command.ShopProfileCreationContract.County;
+            store.PostalCode = command.ShopProfileCreationContract.ZipCode;
+            store.Radius = command.ShopProfileCreationContract.Radius;
 
             if (store.OpeningHours == null)
             {
