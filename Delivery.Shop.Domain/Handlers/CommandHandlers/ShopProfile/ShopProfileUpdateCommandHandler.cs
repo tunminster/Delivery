@@ -53,7 +53,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile
             
             foreach (var storeOpeningHour in command.ShopProfileCreationContract.StoreOpeningHours)
             {
-                var openingHour = store.OpeningHours.FirstOrDefault(x => x.DayOfWeek == storeOpeningHour.DayOfWeek);
+                var openingHour = store.OpeningHours.FirstOrDefault(x => x.DayOfWeek == storeOpeningHour.DayOfWeek && x.StoreId == store.Id);
                 if (openingHour != null)
                 {
                     openingHour.Open = storeOpeningHour.Open;
@@ -67,6 +67,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile
                         DayOfWeek = storeOpeningHour.DayOfWeek,
                         Open = storeOpeningHour.Open,
                         Close = storeOpeningHour.Close,
+                        TimeZone = storeOpeningHour.TimeZone,
                         IsDeleted = false,
                         InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
                         InsertionDateTime = DateTimeOffset.UtcNow
