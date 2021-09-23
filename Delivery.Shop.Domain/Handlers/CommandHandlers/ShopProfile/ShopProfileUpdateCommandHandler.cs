@@ -36,7 +36,9 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile
                 .SingleOrDefaultAsync(
                     x => x.Username == executingRequestContextAdapter.GetAuthenticatedUser().UserEmail);
 
-            var store = await databaseContext.Stores.SingleOrDefaultAsync(x => x.Id == storeUser.StoreId);
+            var store = await databaseContext.Stores
+                            .Include(x => x.OpeningHours)
+                            .SingleOrDefaultAsync(x => x.Id == storeUser.StoreId);
             var storeType = await databaseContext.StoreTypes.SingleOrDefaultAsync(x => x.ExternalId == command.ShopProfileCreationContract.StoreTypeId);
 
             store.StoreTypeId = storeType.Id;
