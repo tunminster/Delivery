@@ -23,4 +23,5 @@ resource "azurerm_key_vault_secret" "sql-database-rauk-connection-string" {
   key_vault_id = azurerm_key_vault.hnkeyvault.id
 
   tags = local.common_tags
+
 }
