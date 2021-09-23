@@ -8,6 +8,13 @@ resource "azurerm_mssql_database" "rauk" {
 
   tags = local.common_tags
 
+   lifecycle {
+    ignore_changes = [
+      tags,
+      license_type
+    ]
+  }
+
 }
 
 resource "azurerm_key_vault_secret" "sql-database-rauk-connection-string" {
