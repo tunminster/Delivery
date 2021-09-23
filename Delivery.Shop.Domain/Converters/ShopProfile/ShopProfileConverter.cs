@@ -20,7 +20,7 @@ namespace Delivery.Shop.Domain.Converters.ShopProfile
                 City = store.City,
                 County = store.County,
                 ImageUri = store.ImageUri,
-                Radius = store.Radius,
+                Radius = store.Radius ?? 5,
                 StoreOpeningHours = store.OpeningHours.Where(x => x.IsDeleted == false).ToList().ConvertToOpeningHours()
             };
 
