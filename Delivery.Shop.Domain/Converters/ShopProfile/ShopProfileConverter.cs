@@ -21,6 +21,7 @@ namespace Delivery.Shop.Domain.Converters.ShopProfile
                 County = store.County,
                 ImageUri = store.ImageUri,
                 Radius = store.Radius ?? 5,
+                ZipCode = store.PostalCode,
                 StoreOpeningHours = store.OpeningHours.Where(x => x.IsDeleted == false).ToList().ConvertToOpeningHours()
             };
 
