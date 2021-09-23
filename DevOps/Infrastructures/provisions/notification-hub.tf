@@ -21,7 +21,6 @@ resource "azurerm_notification_hub" "hn-notification-driver-hub" {
   location            = azurerm_resource_group.hn-platform-data-persistent.location
   lifecycle {
     ignore_changes = [
-      parameters,
       tags,
       gcm_credential
     ]
