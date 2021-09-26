@@ -43,6 +43,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopCreation
             }
             
             store.StoreTypeId = storeType.Id;
+            store.IsActive = true;
             store.OpeningHours = new List<OpeningHour>();
             
             foreach (var storeOpeningHour in command.ShopCreationContract.StoreOpeningHours)

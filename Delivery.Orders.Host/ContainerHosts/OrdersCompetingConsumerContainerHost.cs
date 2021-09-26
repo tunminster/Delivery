@@ -20,9 +20,11 @@ using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
+using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopMenu;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopProfile;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
+using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopMenu;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopProfile;
 using Delivery.Store.Domain.Contracts.V1.MessageContracts.StoreCreations;
@@ -169,6 +171,13 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var driverOrderActionMessageHandler = new DriverOrderActionMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(driverOrderActionMessageContract.RequestContext));
                     await driverOrderActionMessageHandler.HandleMessageAsync(driverOrderActionMessageContract,
+                        processingState);
+                    break;
+                case nameof(ShopMenuStatusMessageContract):
+                    var shopMenuStatusMessageContract = message.Deserialize<ShopMenuStatusMessageContract>();
+                    var shopMenuStatusMessageHandler = new ShopMenuStatusMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(shopMenuStatusMessageContract.RequestContext));
+                    await shopMenuStatusMessageHandler.HandleMessageAsync(shopMenuStatusMessageContract,
                         processingState);
                     break;
                 default:
