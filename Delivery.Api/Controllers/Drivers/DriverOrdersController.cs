@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
@@ -9,8 +11,11 @@ using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
+using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder;
 using Delivery.Driver.Domain.Validators;
+using Delivery.Driver.Domain.Validators.DriverOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +41,7 @@ namespace Delivery.Api.Controllers.Drivers
         ///  Driver assignment
         /// </summary>
         /// <returns></returns>
-        [Route("action", Order = 1)]
+        [Route("order-assign", Order = 1)]
         [ProducesResponseType(typeof(StatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpPost]
@@ -67,6 +72,33 @@ namespace Delivery.Api.Controllers.Drivers
             await new DriverOrderActionMessagePublisher(serviceProvider).PublishAsync(driverOrderActionMessage);
             
             return Ok(statusContract);
+        }
+
+        [Route("get-driver-orders-status", Order = 2)]
+        [ProducesResponseType(typeof(List<DriverOrderDetailsContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Get_DriverOrdersStatus_Async(DriverOrderStatusRequestContract driverOrderStatusRequestContract, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var validationResult = await new DriverOrderStatusRequestContractValidator().ValidateAsync(driverOrderStatusRequestContract, cancellationToken);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var driverOrderStatusQuery = new DriverOrderStatusQuery
+            {
+                DriverOrderStatusRequestContract = driverOrderStatusRequestContract
+            };
+
+            var driverOrderDetails =
+                await new DriverOrderStatusQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(driverOrderStatusQuery);
+
+            return Ok(driverOrderDetails);
+
         }
     }
 }

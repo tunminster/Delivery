@@ -7,6 +7,8 @@ namespace Delivery.Database.Enums
     {
         [EnumMember] None = 0,
         [EnumMember] Accepted= 1,
-        [EnumMember] Rejected = 2
+        [EnumMember] Rejected = 2,
+        [EnumMember] InProgress = 3,
+        [EnumMember] Complete = 4
     }
 }
