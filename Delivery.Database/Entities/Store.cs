@@ -60,6 +60,8 @@ namespace Delivery.Database.Entities
         
         public bool Approved { get; set; }
         
+        public bool IsActive { get; set; }
+        
         public virtual ICollection<OpeningHour> OpeningHours { get; set; }
         
         public virtual ICollection<StoreUser> StoreUsers { get; set; }

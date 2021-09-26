@@ -7,6 +7,13 @@ resource "azurerm_mssql_database" "raus" {
 
   tags = local.common_tags
 
+   lifecycle {
+    ignore_changes = [
+      tags,
+      license_type
+    ]
+  }
+
 }
 
 resource "azurerm_key_vault_secret" "sql-database-raus-connection-string" {

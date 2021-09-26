@@ -19,6 +19,12 @@ resource "azurerm_notification_hub" "hn-notification-driver-hub" {
   namespace_name      = azurerm_notification_hub_namespace.hn-notification-hub-namespace.name
   resource_group_name = azurerm_resource_group.hn-platform-data-persistent.name
   location            = azurerm_resource_group.hn-platform-data-persistent.location
+  lifecycle {
+    ignore_changes = [
+      tags,
+      gcm_credential
+    ]
+  }
 }
 
 resource "azurerm_notification_hub" "hn-notification-shop-hub" {

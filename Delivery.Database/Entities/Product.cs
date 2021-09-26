@@ -19,6 +19,8 @@ namespace Delivery.Database.Entities
         
         public int UnitPrice { get; set; }
         
+        public bool IsActive { get; set; }
+        
         [MaxLength(50)]
         public string Currency { get; set; }
         [MaxLength(20)]

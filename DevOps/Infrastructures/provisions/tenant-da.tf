@@ -7,6 +7,13 @@ resource "azurerm_mssql_database" "da" {
 
   tags = local.common_tags
 
+  lifecycle {
+    ignore_changes = [
+      tags,
+      license_type
+    ]
+  }
+
 }
 
 resource "azurerm_key_vault_secret" "sql-database-da-connection-string" {
@@ -15,4 +22,11 @@ resource "azurerm_key_vault_secret" "sql-database-da-connection-string" {
   key_vault_id = azurerm_key_vault.hnkeyvault.id
 
   tags = local.common_tags
+
+   lifecycle {
+    ignore_changes = [
+      tags,
+      value
+    ]
+  }
 }
