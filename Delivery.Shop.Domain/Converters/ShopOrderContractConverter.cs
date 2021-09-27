@@ -27,6 +27,9 @@ namespace Delivery.Shop.Domain.Converters
                     PreparationTime = item.PreparationTime ?? ShopConstant.DefaultPreparationTime,
                     PickupTime = item.PickupTime ?? DateTimeOffset.UtcNow.AddMinutes(ShopConstant.DefaultPreparationTime + ShopConstant.DefaultPickupMinutes),
                     ShopOrderItems = ConvertToShopOrderItem(item.OrderItems.ToList()),
+                    IsPreparationCompleted = DateTimeOffset.UtcNow > item.InsertionDateTime.AddMinutes(double.Parse(item.PreparationTime.ToString()!)),
+                    DateCreated = item.InsertionDateTime,
+                    
                     ShopOrderDriver = driverOrders.Count > 0 ? ConvertToShopOrderDriver(driverOrders.FirstOrDefault(x => x.OrderId == item.Id)) : new ShopOrderDriverContract()
                 })
                 .ToList();
