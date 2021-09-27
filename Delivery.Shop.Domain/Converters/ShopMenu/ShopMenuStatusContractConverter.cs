@@ -12,6 +12,7 @@ namespace Delivery.Shop.Domain.Converters.ShopMenu
             {
                 ProductId = x.ExternalId,
                 ProductName = x.ProductName,
+                ProductImage = x.ProductImageUrl,
                 UnitPrice = x.UnitPrice,
                 Status = x.IsActive
             }).ToList();

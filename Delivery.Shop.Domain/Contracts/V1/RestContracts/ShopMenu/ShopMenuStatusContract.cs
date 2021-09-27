@@ -14,6 +14,11 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopMenu
         ///  Product name
         /// </summary>
         public string ProductName { get; init; } = string.Empty;
+        
+        /// <summary>
+        ///  Product image
+        /// </summary>
+        public string ProductImage { get; init; } = string.Empty;
 
         /// <summary>
         ///  Price
