@@ -68,8 +68,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             else
             {
                 // delete old registration here
-                await notificationClient.DeleteRegistration(new RegistrationDeleteModel
-                    { RegistrationId = notificationDevice.RegistrationId });
+                await DeleteRegistrationAsync(notificationClient, notificationDevice);
                 
                 notificationDevice.RegistrationId = deviceRegistrationCreateModel.RegistrationId;
                 notificationDevice.Platform = command.RegisterDeviceModel.DeviceRegistration.Platform;
@@ -89,6 +88,20 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
                         SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
 
             return deviceRegistrationResponseContract;
+        }
+        
+        private async Task DeleteRegistrationAsync(NotificationClient notificationClient,
+            NotificationDevice? notificationDevice)
+        {
+            try
+            {
+                await notificationClient.DeleteRegistration(new RegistrationDeleteModel
+                    { RegistrationId = notificationDevice!.RegistrationId });
+            }
+            catch (Exception ex)
+            {
+                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackException(ex, executingRequestContextAdapter.GetTelemetryProperties());
+            }
         }
     }
 }

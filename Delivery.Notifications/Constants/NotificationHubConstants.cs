@@ -10,5 +10,6 @@ namespace Delivery.Notifications.Constants
         
         public const string NotificationShopHubConnectionStringName = "Notification-Shop-Hub-DefaultFullSharedAccessSignature";
         public const string NotificationShopHubName = "hn-platform-notification-shop-hub-dev";
+
     }
 }
