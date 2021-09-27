@@ -87,6 +87,16 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         /// <example>{{pickupTime}}</example>
         /// </summary>
         public DateTimeOffset PickupTime { get; init; }
+        
+        /// <summary>
+        ///  Order created date
+        /// </summary>
+        public DateTimeOffset DateCreated { get; init; }
+        
+        /// <summary>
+        ///  Is order preparation completed
+        /// </summary>
+        public bool IsPreparationCompleted { get; init; }
 
         /// <summary>
         ///  Shop order driver
