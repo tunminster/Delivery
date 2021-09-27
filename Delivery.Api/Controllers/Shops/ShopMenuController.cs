@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopMenu;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopMenu;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopMenu;
+using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopMenu;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -61,6 +63,25 @@ namespace Delivery.Api.Controllers.Shops
             await new ShopMenuStatusMessagePublisher(serviceProvider).PublishAsync(shopMenuStatusMessageContract);
 
             return Ok(statusContract);
+        }
+        
+        /// <summary>
+        ///  Get menu list
+        /// </summary>
+        [Route("get-menu-status", Order = 2)]
+        [HttpGet]
+        [ProducesResponseType(typeof(List<ShopMenuStatusContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Get_ShopMenu_Async(
+            CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopMenuQuery = new ShopMenuQuery();
+            
+            var shopMenuList =await new ShopMenuQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(shopMenuQuery);
+
+            return Ok(shopMenuList);
         }
     }
 }
