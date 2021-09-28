@@ -32,6 +32,7 @@ namespace Delivery.Driver.Domain.Converters
                 Longitude = driverCreationContract.Longitude,
                 AddressLine1 = driverCreationContract.AddressLine1,
                 AddressLine2 = driverCreationContract.AddressLine2,
+                ServiceArea = driverCreationContract.ServiceArea,
                 City = driverCreationContract.City,
                 County = driverCreationContract.County,
                 Country = driverCreationContract.Country
