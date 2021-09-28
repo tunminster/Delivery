@@ -12,6 +12,7 @@ using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder;
 using Delivery.Driver.Domain.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers.Drivers
@@ -21,6 +22,7 @@ namespace Delivery.Api.Controllers.Drivers
     /// </summary>
     [Route("api/v1/driver-assignment", Name = "3 - Driver Assignment")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
+    [Authorize(Policy = "DriverApiUser")]
     [ApiController]
     public class DriverAssignmentController : ControllerBase
     {
