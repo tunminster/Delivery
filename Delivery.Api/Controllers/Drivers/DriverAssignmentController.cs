@@ -74,7 +74,7 @@ namespace Delivery.Api.Controllers.Drivers
         [Route("get-order-details", Order = 2)]
         [ProducesResponseType(typeof(DriverOrderDetailsContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Get_Order_DetailsAsync()
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
