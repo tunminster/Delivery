@@ -15,9 +15,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
 {
-    public record DriverOrderQuery : IQuery<DriverOrderDetailsContract>;
+    public record DriverOrderQuery : IQuery<DriverOrderDetailsContract?>;
         
-    public class DriverOrderQueryHandler : IQueryHandler<DriverOrderQuery, DriverOrderDetailsContract>
+    public class DriverOrderQueryHandler : IQueryHandler<DriverOrderQuery, DriverOrderDetailsContract?>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
@@ -28,7 +28,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DriverOrderDetailsContract> Handle(DriverOrderQuery query)
+        public async Task<DriverOrderDetailsContract?> Handle(DriverOrderQuery query)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected an authenticated user.");
@@ -64,7 +64,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
 
             if (driverOrders == null)
             {
-                return new DriverOrderDetailsContract();
+                return null;
             }
             
             var driverOrderDetailsContract = driverOrders.ConvertToDriverOrderDetailsContract();
