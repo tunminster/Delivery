@@ -33,7 +33,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected an authenticated user.");
 
-            var cacheKey = $"Database-{executingRequestContextAdapter.GetShard().Key.ToLower()}-{userEmail.ToLower()}";
+            var cacheKey = $"Database-{executingRequestContextAdapter.GetShard().Key}-{userEmail.ToLower()}";
             var cache = await serviceProvider.GetInvalidationEnabledCacheAsync();
             var driverId = 0;
             if (cache != null)
