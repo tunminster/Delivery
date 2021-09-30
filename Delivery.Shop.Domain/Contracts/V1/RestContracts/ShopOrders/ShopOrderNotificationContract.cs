@@ -1,4 +1,5 @@
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
+using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
 namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
 {
@@ -16,5 +17,10 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         ///  Order id
         /// </summary>
         public string OrderId { get; init; } = string.Empty;
+
+        /// <summary>
+        ///  Push notification type
+        /// </summary>
+        public PushNotificationType PushNotificationType { get; init; }
     }
 }

@@ -1,11 +1,9 @@
-using System;
-
-namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement
+namespace Delivery.Order.Domain.Contracts.RestContracts.PushNotification
 {
     /// <summary>
-    ///  Driver request contract for an order 
+    ///  New order request push notification contract
     /// </summary>
-    public record ShopOrderDriverRequestContract
+    public record OrderCreatedPushNotificationRequestContract
     {
         /// <summary>
         ///  Order id

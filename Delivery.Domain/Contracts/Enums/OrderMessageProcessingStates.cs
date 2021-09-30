@@ -11,6 +11,6 @@ namespace Delivery.Domain.Contracts.Enums
         [EnumMember] PersistOrder = 1,
         [EnumMember] Persisted = 2,
         [EnumMember] Indexed = 4,
-        [EnumMember] Processed = 8,
+        [EnumMember] Processed = 8
     }
 }

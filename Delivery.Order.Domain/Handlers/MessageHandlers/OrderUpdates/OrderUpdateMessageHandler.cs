@@ -5,9 +5,14 @@ using Delivery.Azure.Library.Microservices.Hosting.MessageHandlers;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Domain.Contracts.Enums;
+using Delivery.Domain.Contracts.V1.RestContracts;
+using Delivery.Order.Domain.Contracts.RestContracts.PushNotification;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
+using Delivery.Order.Domain.Contracts.V1.MessageContracts.PushNotification;
+using Delivery.Order.Domain.Enum;
 using Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdate;
+using Delivery.Order.Domain.Handlers.MessageHandlers.PushNotification;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
@@ -25,7 +30,8 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<StripeOrderUpdateContract, StripeOrderUpdateStatusContract>(message);
-
+                var orderId = string.Empty;
+                var paymentStatusEnum = PaymentStatusEnum.None;
                 if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
                 {
                     var orderUpdateCommand =
@@ -33,9 +39,24 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                     
                     var orderUpdateCommandHandler =
                         new OrderUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter);
-                    await orderUpdateCommandHandler.Handle(orderUpdateCommand);
-                    
+                    var stripeOrderUpdateStatusContract = await orderUpdateCommandHandler.Handle(orderUpdateCommand);
+                    orderId = stripeOrderUpdateStatusContract.OrderId;
+                    paymentStatusEnum = stripeOrderUpdateStatusContract.PaymentStatusEnum;
                     processingStates |= OrderMessageProcessingStates.PersistOrder;
+                }
+
+                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed) && !string.IsNullOrEmpty(orderId) && paymentStatusEnum == PaymentStatusEnum.Success)
+                {
+                    var orderCreatedPushNotificationMessageContract = new OrderCreatedPushNotificationMessageContract
+                    {
+                        PayloadIn = new OrderCreatedPushNotificationRequestContract { OrderId = orderId },
+                        PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow },
+                        RequestContext = message.RequestContext
+                    };
+
+                    await new OrderCreatedPushNotificationMessagePublisher(ServiceProvider).PublishAsync(orderCreatedPushNotificationMessageContract);
+                    
+                    processingStates |= OrderMessageProcessingStates.Processed;
                 }
                 
                 // complete
