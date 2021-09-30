@@ -4,6 +4,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
+using Delivery.Order.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdate
@@ -35,7 +36,8 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdat
             var stripeOrderUpdateStatusContract = new StripeOrderUpdateStatusContract
             {
                 OrderId = order.ExternalId,
-                UpdatedDateTime = DateTimeOffset.UtcNow
+                UpdatedDateTime = DateTimeOffset.UtcNow,
+                PaymentStatusEnum = string.Equals(command.StripeOrderUpdateContract.PaymentStatus, PaymentStatusEnum.Success.ToString(), StringComparison.CurrentCultureIgnoreCase) ? PaymentStatusEnum.Success : PaymentStatusEnum.Failed 
             };
 
             return stripeOrderUpdateStatusContract;

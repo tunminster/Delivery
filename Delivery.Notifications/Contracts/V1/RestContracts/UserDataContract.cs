@@ -1,4 +1,5 @@
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
+using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
 namespace Delivery.Notifications.Contracts.V1.RestContracts
 {
@@ -11,5 +12,10 @@ namespace Delivery.Notifications.Contracts.V1.RestContracts
         ///  Message
         /// </summary>
         public string Message { get; init; } = string.Empty;
+
+        /// <summary>
+        ///  Push notification type
+        /// </summary>
+        public PushNotificationType PushNotificationType { get; init; }
     }
 }

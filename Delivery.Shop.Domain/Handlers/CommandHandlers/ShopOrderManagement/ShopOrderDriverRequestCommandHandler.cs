@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Core.Extensions.Json;
+using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
@@ -81,6 +82,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                     string.Empty, order.Address.City, string.Empty,
                     order.Address.Country, order.Address.PostCode),
                 DeliveryFee = order.DeliveryFees,
+                PushNotificationType = PushNotificationType.DeliveryRequest,
                 DeliveryTips = 0
             };
 

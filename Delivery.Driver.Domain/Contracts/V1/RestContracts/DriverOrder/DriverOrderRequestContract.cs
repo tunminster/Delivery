@@ -1,4 +1,5 @@
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
+using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
 namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
 {
@@ -48,5 +49,11 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
         /// <example>{{tips}}</example>
         /// </summary>
         public int Tips { get; init; }
+
+        /// <summary>
+        ///  Push notification type
+        /// <example>{{pushNotificationType}}</example>
+        /// </summary>
+        public PushNotificationType PushNotificationType { get; init; }
     }
 }
