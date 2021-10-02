@@ -29,7 +29,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment
         /// <summary>
         ///  Distance 
         /// </summary>
-        public string Distance { get; init; } = "5";
+        public string Distance { get; init; } = "10";
         
         /// <summary>
         ///  Current page
