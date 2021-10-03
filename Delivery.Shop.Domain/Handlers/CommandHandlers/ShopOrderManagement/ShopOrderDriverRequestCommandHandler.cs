@@ -65,6 +65,8 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Expected to find a driver: instead {driverContract.ConvertToJson()}");
                 return new StatusContract { Status = false, DateCreated = DateTimeOffset.UtcNow };
             }
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Found a driver {driverContract.ConvertToJson()}");
 
             var driver = databaseContext.Drivers.SingleOrDefault(x => x.ExternalId == driverContract.DriverId);
 
@@ -89,6 +91,8 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             };
 
             var statusContract = await SendPushNotificationAsync(shopOrderDriverRequestPushNotificationContract, driver.Id);
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Sent order push notification for driver: {driverContract.ConvertToJson()}");
 
             return statusContract;
 
