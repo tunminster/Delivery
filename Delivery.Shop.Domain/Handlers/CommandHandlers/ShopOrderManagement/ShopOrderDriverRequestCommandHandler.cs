@@ -74,6 +74,8 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             
             databaseContext.DriverOrders.Add(new DriverOrder
                 { DriverId = driver.Id, OrderId = order.Id, Status = DriverOrderStatus.None });
+
+            await databaseContext.SaveChangesAsync();
             
             // push notification to driver
             var shopOrderDriverRequestPushNotificationContract = new ShopOrderDriverRequestPushNotificationContract
