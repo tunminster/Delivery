@@ -94,6 +94,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 DeliveryAddress = address != null ? $"{address.AddressLine}{address.City}, {address.PostCode}" : "",
                 OrderStatus = order.Status.ToString(),
                 Status = order.Status,
+                SubtotalAmount = order.SubTotal,
                 TotalAmount = order.TotalAmount,
                 DeliveryFees = order.DeliveryFees,
                 ApplicationFees = order.PlatformServiceFees,
