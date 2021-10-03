@@ -30,6 +30,9 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.OrderDetails
         public OrderStatus Status { get; set; }
         
         [DataMember]
+        public int SubtotalAmount { get; set; }
+        
+        [DataMember]
         public int TotalAmount { get; set; }
         
         [DataMember]
