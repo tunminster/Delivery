@@ -8,7 +8,7 @@ namespace Delivery.Order.Domain.Factories
             {
                 return 100;
             }
-            return (int)(5.00 % 100 * subTotalAmount);
+            return (int)(5.00 / 100 * subTotalAmount);
         }
 
         public static int GenerateDeliveryFees(int radius)
@@ -27,7 +27,7 @@ namespace Delivery.Order.Domain.Factories
         
         public static int BusinessServiceFees(int subTotalAmount, int serviceRate)
         {
-            return (serviceRate % 100 * subTotalAmount);
+            return (serviceRate / 100 * subTotalAmount);
         }
     }
 }
