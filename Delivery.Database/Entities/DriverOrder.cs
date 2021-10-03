@@ -14,6 +14,12 @@ namespace Delivery.Database.Entities
         
         public string Reason { get; set; }
         
+        public DriverPaymentStatus DriverPaymentStatus { get; set; }
+        
+        public DateTimeOffset? DriverPaymentDate { get; set; }
+        
+        public int? DriverPaymentId { get; set; }
+        
         public DriverOrderStatus Status { get; set; }
         public string InsertedBy { get; set; }
         public DateTimeOffset InsertionDateTime { get; set; }

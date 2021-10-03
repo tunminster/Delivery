@@ -63,6 +63,7 @@ namespace Delivery.Database.Context
         public DbSet<DriverOrder> DriverOrders { get; set; }
         public DbSet<StoreUser> StoreUsers { get; set; }
         public DbSet<NotificationDevice> NotificationDevices { get; set; }
+        public DbSet<DriverPayment> DriverPayments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -101,7 +102,7 @@ namespace Delivery.Database.Context
             modelBuilder.Entity<NotificationDevice>().Property(p => p.Platform).HasMaxLength(250);
             modelBuilder.Entity<NotificationDevice>().Property(p => p.Tag).HasMaxLength(250);
             modelBuilder.Entity<NotificationDevice>().Property(p => p.UserEmail).HasMaxLength(250);
-
+            
             ConfigureIndexes(modelBuilder);
         }
         
