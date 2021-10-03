@@ -95,6 +95,9 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 OrderStatus = order.Status.ToString(),
                 Status = order.Status,
                 TotalAmount = order.TotalAmount,
+                DeliveryFees = order.DeliveryFees,
+                ApplicationFees = order.PlatformServiceFees,
+                TaxFees = order.TaxFees,
                 OrderType = order.OrderType,
                 ImageUri = order.OrderItems.FirstOrDefault()?.Product.ProductImageUrl,
                 OrderItems = order.OrderItems.Select(oi => new OrderItemContract
