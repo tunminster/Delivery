@@ -19,8 +19,10 @@ using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
+using Delivery.Order.Domain.Contracts.V1.MessageContracts.PushNotification;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
+using Delivery.Order.Domain.Handlers.MessageHandlers.PushNotification;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopMenu;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
@@ -190,6 +192,15 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(shopMenuStatusMessageContract.RequestContext));
                     await shopMenuStatusMessageHandler.HandleMessageAsync(shopMenuStatusMessageContract,
                         processingState);
+                    break;
+                case nameof(OrderCreatedPushNotificationMessageContract):
+                    var orderCreatedPushNotificationMessageContract =
+                        message.Deserialize<OrderCreatedPushNotificationMessageContract>();
+                    var orderCreatedPushNotificationMessageHandler = new OrderCreatedPushNotificationMessageHandler(
+                        ServiceProvider,
+                        new ExecutingRequestContextAdapter(orderCreatedPushNotificationMessageContract.RequestContext));
+                    await orderCreatedPushNotificationMessageHandler.HandleMessageAsync(
+                        orderCreatedPushNotificationMessageContract, processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");
