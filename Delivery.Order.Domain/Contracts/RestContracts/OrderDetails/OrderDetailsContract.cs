@@ -30,7 +30,16 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.OrderDetails
         public OrderStatus Status { get; set; }
         
         [DataMember]
-        public decimal TotalAmount { get; set; }
+        public int TotalAmount { get; set; }
+        
+        [DataMember]
+        public int DeliveryFees { get; set; }
+        
+        [DataMember]
+        public int TaxFees { get; set; }
+        
+        [DataMember]
+        public int ApplicationFees { get; set; }
         
         [DataMember]
         public string ImageUri { get; set; }
