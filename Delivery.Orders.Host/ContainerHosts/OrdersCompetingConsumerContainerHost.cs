@@ -13,9 +13,11 @@ using Delivery.Domain.Contracts.Enums;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverProfile;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
@@ -171,6 +173,15 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var driverOrderActionMessageHandler = new DriverOrderActionMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(driverOrderActionMessageContract.RequestContext));
                     await driverOrderActionMessageHandler.HandleMessageAsync(driverOrderActionMessageContract,
+                        processingState);
+                    break;
+                case nameof(DriverServiceAreaUpdateMessageContract):
+                    var driverServiceAreaMessageContract =
+                        message.Deserialize<DriverServiceAreaUpdateMessageContract>();
+                    var driverServiceAreaUpdateMessageHandler = new DriverServiceAreaUpdateMessageHandler(
+                        ServiceProvider,
+                        new ExecutingRequestContextAdapter(driverServiceAreaMessageContract.RequestContext));
+                    await driverServiceAreaUpdateMessageHandler.HandleMessageAsync(driverServiceAreaMessageContract,
                         processingState);
                     break;
                 case nameof(ShopMenuStatusMessageContract):
