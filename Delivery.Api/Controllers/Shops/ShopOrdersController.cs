@@ -63,6 +63,31 @@ namespace Delivery.Api.Controllers.Shops
 
             return Ok(shopOrders);
         }
+        
+        /// <summary>
+        ///  Get order history by shop user
+        /// </summary>
+        [Route("get-order-history", Order = 1)]
+        [HttpPost]
+        [ProducesResponseType(typeof(List<ShopOrderContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetShopOrdersHistoryAsync(ShopOrderQueryContract shopOrderQueryContract, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected authenticated user.")
+                .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+
+            var shopOrderHistoryQuery = new ShopOrderHistoryQuery
+            {
+                Email = userEmail, 
+                Status = shopOrderQueryContract.OrderStatus
+            };
+
+            var shopOrders = await new ShopOrderHistoryQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(shopOrderHistoryQuery);
+
+            return Ok(shopOrders);
+        }
 
         /// <summary>
         ///  Verify order status
