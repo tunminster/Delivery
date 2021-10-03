@@ -32,35 +32,14 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected an authenticated user.");
-
-            var cacheKey = $"Database-{executingRequestContextAdapter.GetShard().Key}-{userEmail.ToLower()}";
-            var cache = await serviceProvider.GetInvalidationEnabledCacheAsync();
-            var driverId = 0;
-            if (cache != null)
-            {
-                var existingCachedItems = await cache.GetAsync<Database.Entities.Driver>(cacheKey, databaseContext.GlobalDatabaseCacheRegion);
-                if (existingCachedItems.IsPresent)
-                {
-                    var customProperties = new Dictionary<string, string>
-                    {
-                        {CustomProperties.CorrelationId, databaseContext.ExecutingRequestContextAdapter.GetCorrelationId()}
-                    };
-
-                    serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Database Query Cache Hit", value: 1.0, customProperties);
-                    driverId = existingCachedItems.Value.Id;
-                }
-                else
-                {
-                    var driver = await databaseContext.Drivers.SingleOrDefaultAsync(x => x.EmailAddress == userEmail);
-                    driverId = driver.Id;
-                }
-            }
+            
+            var driver = await databaseContext.Drivers.SingleOrDefaultAsync(x => x.EmailAddress == userEmail);
             
             var driverOrders = await databaseContext.DriverOrders
                 .Include(x => x.Order.Store)
                 .Include(x => x.Order)
                 .ThenInclude(x => x.Address)
-                .FirstOrDefaultAsync(x => x.DriverId == driverId && x.Status == DriverOrderStatus.None);
+                .FirstOrDefaultAsync(x => x.DriverId == driver.Id && x.Status == DriverOrderStatus.None);
 
             if (driverOrders == null)
             {
@@ -68,7 +47,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
             }
             
             var driverOrderDetailsContract = driverOrders.ConvertToDriverOrderDetailsContract();
-
+            
             return driverOrderDetailsContract;
         }
     }

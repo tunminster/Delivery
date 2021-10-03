@@ -29,7 +29,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment
         /// <summary>
         ///  Distance 
         /// </summary>
-        public string Distance { get; init; } = "10";
+        public string Distance { get; init; } = "10km";
         
         /// <summary>
         ///  Current page
@@ -60,7 +60,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment
             var storeLocation = new GeoLocation(query.Latitude, query.Longitude);
             
             var driverContactList = await new DependencyMeasurement(serviceProvider)
-                .ForDependency($"Index-{nameof(DriverContract)}", MeasuredDependencyType.ElasticSearch, query.ConvertToJson(), "http://localhost:9002")
+                .ForDependency($"Index-{nameof(DriverContract)}", MeasuredDependencyType.ElasticSearch, query.ConvertToJson(), "http://localhost:9200")
                 .TrackAsync(async () =>
                 {
                     var driverSearchResult = await elasticClient.SearchAsync<DriverContract>(x =>
@@ -79,9 +79,14 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment
                                                 .Field(p => p.Location)
                                                 .DistanceType(GeoDistanceType.Arc)
                                                 .Location(storeLocation)
-                                                .Distance(query.Distance)
-                                                .ValidationMethod(GeoValidationMethod.IgnoreMalformed)))))
+                                                .Distance(query.Distance) // eg: 20km
+                                                .ValidationMethod(GeoValidationMethod.IgnoreMalformed))))
+                                )
                             .Source()
+                            .ScriptFields(sf => sf
+                                .ScriptField("distance", descriptor => descriptor
+                                    .Source(script:$"doc[\u0027location\u0027].arcDistance({query.Latitude}, {query.Longitude}) * 0.001")
+                                ))
                             .From((query.Page - 1) * query.PageSize)
                             .Size(query.PageSize));
                     

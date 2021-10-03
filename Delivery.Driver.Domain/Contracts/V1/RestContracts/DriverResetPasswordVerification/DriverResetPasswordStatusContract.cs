@@ -7,7 +7,7 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverResetPasswordV
     /// </summary>
     public record DriverResetPasswordStatusContract
     {
-        // <summary>
+        /// <summary>
         ///  Email address
         /// </summary>
         public string Email { get; init; } = string.Empty;

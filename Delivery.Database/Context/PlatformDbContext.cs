@@ -61,6 +61,8 @@ namespace Delivery.Database.Context
         
         public DbSet<NotificationDevice> NotificationDevices { get; set; }
         
+        public DbSet<DriverPayment> DriverPayments { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

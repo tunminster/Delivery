@@ -49,6 +49,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             {
                 Latitude = latitude,
                 Longitude = longitude,
+                Distance = order.Store.Radius != null ? $"{order.Store.Radius}km" : "20km",
                 Page = 1,
                 PageSize = 10
             };

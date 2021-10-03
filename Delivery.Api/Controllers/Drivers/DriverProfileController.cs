@@ -82,6 +82,28 @@ namespace Delivery.Api.Controllers.Drivers
 
             return Ok(driverActiveStatusContract);
         }
+
+        [Route("get-total-earnings-details")]
+        [HttpGet]
+        [ProducesResponseType(typeof(DriverTotalEarningsContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Get_Total_Earnings_Async(CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected authenticated user.")
+                .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+
+            var driverTotalEarningsQuery = new DriverTotalEarningsQuery
+            {
+                UserEmail = userEmail
+            };
+
+            var driverTotalEarningsContract =
+                await new DriverTotalEarningsQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(driverTotalEarningsQuery);
+
+            return Ok(driverTotalEarningsContract);
+        }
         
         /// <summary>
         ///  Index driver
