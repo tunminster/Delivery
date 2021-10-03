@@ -38,6 +38,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
 
             var order = await databaseContext.Orders
                             .Include(x => x.Store)
+                            .Include(x => x.Address)
                             .SingleOrDefaultAsync(x => x.ExternalId == command.ShopOrderDriverRequestContract.OrderId) ??
                          throw new InvalidOperationException($"Expected order by {command.ShopOrderDriverRequestContract.OrderId}.");
 
