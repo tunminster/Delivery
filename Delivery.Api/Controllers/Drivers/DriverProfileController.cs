@@ -6,14 +6,18 @@ using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
+using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverProfile;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverProfile;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverStatus;
+using Delivery.Driver.Domain.Validators.DriverProfile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -81,6 +85,42 @@ namespace Delivery.Api.Controllers.Drivers
                 .Handle(driverStatusQuery);
 
             return Ok(driverActiveStatusContract);
+        }
+
+        [Route("update-service-area")]
+        [HttpPut]
+        [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateDriverServiceAreaAsync(
+            DriverServiceAreaUpdateContract driverServiceAreaUpdateContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected authenticated user.")
+                .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+
+            var validationResult = await new DriverServiceAreaValidator().ValidateAsync(driverServiceAreaUpdateContract);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var statusContract = new StatusContract
+            {
+                Status = true,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+            
+            var driverServiceAreaUpdateMessage = new DriverServiceAreaUpdateMessageContract
+            {
+                PayloadIn = driverServiceAreaUpdateContract,
+                PayloadOut = statusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+            
+            await new DriverServiceAreaUpdateMessagePublisher(serviceProvider).PublishAsync(driverServiceAreaUpdateMessage);
+
+            return Ok(statusContract);
         }
 
         [Route("get-total-earnings-details")]
