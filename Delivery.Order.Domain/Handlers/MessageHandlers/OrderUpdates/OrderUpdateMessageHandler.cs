@@ -46,7 +46,8 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                     paymentStatusEnum = stripeOrderUpdateStatusContract.PaymentStatusEnum;
                     processingStates |= OrderMessageProcessingStates.PersistOrder;
                 }
-
+                
+                
                 if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed) && !string.IsNullOrEmpty(orderId) && paymentStatusEnum == PaymentStatusEnum.Success)
                 {
                     var orderCreatedPushNotificationMessageContract = new OrderCreatedPushNotificationMessageContract
@@ -61,6 +62,12 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                     ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Sent {nameof(OrderCreatedPushNotificationMessagePublisher)} - {orderCreatedPushNotificationMessageContract.ConvertToJson()}", SeverityLevel.Information, ExecutingRequestContextAdapter.GetTelemetryProperties());
                     
                     processingStates |= OrderMessageProcessingStates.Processed;
+                }
+                else
+                {
+                    ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace(
+                        $"{nameof(OrderCreatedPushNotificationMessagePublisher)} didn't send for orderId:{orderId} and payment status:{paymentStatusEnum}",
+                        SeverityLevel.Critical, ExecutingRequestContextAdapter.GetTelemetryProperties());
                 }
                 
                 // complete
