@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
+using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
 using Delivery.Order.Domain.Enum;
@@ -29,6 +30,9 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdat
 
             order.PaymentIntentId = command.StripeOrderUpdateContract.PaymentIntentId;
             order.PaymentStatus = command.StripeOrderUpdateContract.PaymentStatus;
+            order.PaymentStatusCode = command.StripeOrderUpdateContract.PaymentStatus == "succeeded"
+                ? OrderPaymentStatus.Succeed
+                : OrderPaymentStatus.Failed;
             order.Status = command.StripeOrderUpdateContract.OrderStatus;
 
             await databaseContext.SaveChangesAsync();
@@ -37,7 +41,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdat
             {
                 OrderId = order.ExternalId,
                 UpdatedDateTime = DateTimeOffset.UtcNow,
-                PaymentStatusEnum = string.Equals(command.StripeOrderUpdateContract.PaymentStatus, PaymentStatusEnum.Success.ToString(), StringComparison.CurrentCultureIgnoreCase) ? PaymentStatusEnum.Success : PaymentStatusEnum.Failed 
+                PaymentStatusEnum = string.Equals(command.StripeOrderUpdateContract.PaymentStatus, "succeeded", StringComparison.CurrentCultureIgnoreCase) ? OrderPaymentStatus.Succeed : OrderPaymentStatus.Failed 
             };
 
             return stripeOrderUpdateStatusContract;

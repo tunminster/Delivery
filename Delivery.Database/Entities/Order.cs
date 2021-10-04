@@ -35,6 +35,8 @@ namespace Delivery.Database.Entities
         
         public int? PreparationTime { get; set; }
         
+        public OrderPaymentStatus PaymentStatusCode { get; set; }
+        
         public DateTimeOffset? PickupTime { get; set; }
 
         public int? AddressId { get; set; }

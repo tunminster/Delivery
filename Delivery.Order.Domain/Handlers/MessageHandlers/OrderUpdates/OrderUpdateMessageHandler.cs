@@ -5,6 +5,7 @@ using Delivery.Azure.Library.Messaging.Adapters;
 using Delivery.Azure.Library.Microservices.Hosting.MessageHandlers;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Database.Enums;
 using Delivery.Domain.Contracts.Enums;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Order.Domain.Contracts.RestContracts.PushNotification;
@@ -33,7 +34,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<StripeOrderUpdateContract, StripeOrderUpdateStatusContract>(message);
                 var orderId = string.Empty;
-                var paymentStatusEnum = PaymentStatusEnum.None;
+                var orderPaymentStatus = OrderPaymentStatus.None;
                 if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
                 {
                     var orderUpdateCommand =
@@ -43,12 +44,12 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                         new OrderUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter);
                     var stripeOrderUpdateStatusContract = await orderUpdateCommandHandler.Handle(orderUpdateCommand);
                     orderId = stripeOrderUpdateStatusContract.OrderId;
-                    paymentStatusEnum = stripeOrderUpdateStatusContract.PaymentStatusEnum;
+                    orderPaymentStatus = stripeOrderUpdateStatusContract.PaymentStatusEnum;
                     processingStates |= OrderMessageProcessingStates.PersistOrder;
                 }
                 
                 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed) && !string.IsNullOrEmpty(orderId) && paymentStatusEnum == PaymentStatusEnum.Success)
+                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed) && !string.IsNullOrEmpty(orderId) && orderPaymentStatus == OrderPaymentStatus.Succeed)
                 {
                     var orderCreatedPushNotificationMessageContract = new OrderCreatedPushNotificationMessageContract
                     {
@@ -66,7 +67,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                 else
                 {
                     ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace(
-                        $"{nameof(OrderCreatedPushNotificationMessagePublisher)} didn't send for orderId:{orderId} and payment status:{paymentStatusEnum}",
+                        $"{nameof(OrderCreatedPushNotificationMessagePublisher)} didn't send for orderId:{orderId} and payment status:{orderPaymentStatus}",
                         SeverityLevel.Critical, ExecutingRequestContextAdapter.GetTelemetryProperties());
                 }
                 
