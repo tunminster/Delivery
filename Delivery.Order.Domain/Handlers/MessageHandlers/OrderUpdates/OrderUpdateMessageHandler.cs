@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Messaging.Adapters;
 using Delivery.Azure.Library.Microservices.Hosting.MessageHandlers;
 using Delivery.Azure.Library.Sharding.Adapters;
@@ -13,6 +14,7 @@ using Delivery.Order.Domain.Contracts.V1.MessageContracts.PushNotification;
 using Delivery.Order.Domain.Enum;
 using Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdate;
 using Delivery.Order.Domain.Handlers.MessageHandlers.PushNotification;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
@@ -55,6 +57,8 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                     };
 
                     await new OrderCreatedPushNotificationMessagePublisher(ServiceProvider).PublishAsync(orderCreatedPushNotificationMessageContract);
+                    
+                    ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Sent {nameof(OrderCreatedPushNotificationMessagePublisher)} - {orderCreatedPushNotificationMessageContract.ConvertToJson()}", SeverityLevel.Information, ExecutingRequestContextAdapter.GetTelemetryProperties());
                     
                     processingStates |= OrderMessageProcessingStates.Processed;
                 }
