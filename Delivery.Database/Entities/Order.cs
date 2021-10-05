@@ -74,6 +74,8 @@ namespace Delivery.Database.Entities
         
         public DateTimeOffset? OrderReadyDateTime { get; set; }
         
+        public int DeliveryRequested { get; set; }
+        
         public OrderType OrderType { get; set; }
         public bool IsDeleted { get; set; }
     }

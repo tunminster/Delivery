@@ -489,6 +489,9 @@ namespace Delivery.Database.Migrations
                     b.Property<int>("DeliveryFees")
                         .HasColumnType("int");
 
+                    b.Property<int>("DeliveryRequested")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
