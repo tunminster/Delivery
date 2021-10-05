@@ -158,5 +158,42 @@ namespace Delivery.Api.Controllers.Shops
             
             return Ok(shopOrderContract);
         }
+
+        /// <summary>
+        ///  Request delivery driver
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        [Route("request-delivery-driver", Order = 4)]
+        [HttpGet]
+        [ProducesResponseType(typeof(ShopOrderContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> DeliveryDriverRequest_Async(string orderId)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            if (string.IsNullOrEmpty(orderId))
+            {
+                var errorMessage = $"{nameof(orderId)} must be provided.";
+                return errorMessage.ConvertToBadRequest();
+            }
+            
+            var statusContract = new StatusContract
+            {
+                Status = true,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+            
+            var shopOrderDriverRequestMessageContract = new ShopOrderDriverRequestMessageContract
+            {
+                PayloadIn = new ShopOrderDriverRequestContract { OrderId = orderId},
+                PayloadOut = statusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+            
+            await new ShopOrderDriverRequestMessagePublisher(serviceProvider).PublishAsync(shopOrderDriverRequestMessageContract);
+
+            return Ok(statusContract);
+        }
     }
 }
