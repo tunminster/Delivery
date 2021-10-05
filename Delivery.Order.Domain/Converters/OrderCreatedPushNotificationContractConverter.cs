@@ -15,6 +15,7 @@ namespace Delivery.Order.Domain.Converters
             {
                 OrderId = order.ExternalId,
                 StoreId = order.Store.ExternalId,
+                StoreName = order.Store.StoreName,
                 PushNotificationType = PushNotificationType.ShopNewOrder,
                 OrderType = order.OrderType,
                 Status = order.Status,

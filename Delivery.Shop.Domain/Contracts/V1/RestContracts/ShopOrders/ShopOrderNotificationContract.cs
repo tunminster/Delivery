@@ -12,6 +12,11 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         ///  Store id
         /// </summary>
         public string StoreId { get; init; } = string.Empty;
+        
+        /// <summary>
+        ///  Store name
+        /// </summary>
+        public string StoreName { get; init; } = string.Empty;
 
         /// <summary>
         ///  Order id
