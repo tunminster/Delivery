@@ -40,6 +40,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.PushNotification
 
             var order = await databaseContext.Orders
                 .Include(x => x.Store)
+                .Include(x => x.Address)
                 .Include(x => x.OrderItems)
                 .ThenInclude(x => x.Product)
                 .SingleOrDefaultAsync(x =>

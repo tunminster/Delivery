@@ -30,7 +30,8 @@ namespace Delivery.Order.Domain.Converters
                                                               OrderConstant.DefaultPickupMinutes),
                 IsPreparationCompleted = DateTimeOffset.UtcNow >
                                          order.InsertionDateTime.AddMinutes(OrderConstant.DefaultPreparationTime),
-                DateCreated = order.InsertionDateTime
+                DateCreated = order.InsertionDateTime,
+                ShopOrderDeliveryAddress = order.Address != null ? new OrderDeliveryAddressContract { AddressLine1 = order.Address.AddressLine ?? string.Empty, City = order.Address.City, PostalCode = order.Address.PostCode, Latitude = order.Address.Lat, Longitude = order.Address.Lng} : null,
             };
             return orderCreatedPushNotificationContract;
         }
