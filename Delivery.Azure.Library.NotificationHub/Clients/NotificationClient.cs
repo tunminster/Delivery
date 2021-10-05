@@ -192,7 +192,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
         }
 
         public async Task<HttpStatusCode> SendNotificationToUser<T>(NotificationSendModel<T> notificationSendModel)
-        where T : IDataContract
+        where T : class,IDataContract
         {
             var hub = NotificationHubSenderConnection.Hub;
             
