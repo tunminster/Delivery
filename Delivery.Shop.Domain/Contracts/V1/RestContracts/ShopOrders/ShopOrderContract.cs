@@ -103,5 +103,10 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         ///  <example>{{shopOrderDriver}}</example>
         /// </summary>
         public ShopOrderDriverContract? ShopOrderDriver { get; init; }
+
+        /// <summary>
+        ///  Shop order delivery address
+        /// </summary>
+        public ShopOrderDeliveryAddress ShopOrderDeliveryAddress { get; init; } = new();
     }
 }

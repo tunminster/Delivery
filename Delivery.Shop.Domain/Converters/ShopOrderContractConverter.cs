@@ -29,7 +29,7 @@ namespace Delivery.Shop.Domain.Converters
                     ShopOrderItems = ConvertToShopOrderItem(item.OrderItems.ToList()),
                     IsPreparationCompleted = DateTimeOffset.UtcNow > item.InsertionDateTime.AddMinutes(ShopConstant.DefaultPreparationTime),
                     DateCreated = item.InsertionDateTime,
-                    
+                    ShopOrderDeliveryAddress = new ShopOrderDeliveryAddress { AddressLine1 = item.Address.AddressLine, City = item.Address.City, PostalCode = item.Address.PostCode, Latitude = item.Address.Lat, Longitude = item.Address.Lng},
                     ShopOrderDriver = driverOrders.Count > 0 ? ConvertToShopOrderDriver(driverOrders.FirstOrDefault(x => x.OrderId == item.Id)) : new ShopOrderDriverContract()
                 })
                 .ToList();

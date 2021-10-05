@@ -34,6 +34,7 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
             var order =
                 await databaseContext.Orders.Where(x => x.ExternalId == query.OrderId && x.StoreId == storeUser.StoreId)
                     .Include(x => x.Store)
+                    .Include(x => x.Address)
                     .Include(x => x.OrderItems)
                     .ThenInclude(x => x.Product)
                     .SingleOrDefaultAsync();
