@@ -84,9 +84,9 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                 StoreName = order.Store.StoreName,
                 StoreImageUri = order.Store.ImageUri,
                 StoreAddress = order.Store.FormattedAddress!,
-                DeliveryAddress = FormatAddressLinesHelper.FormatAddress(order.Address.AddressLine,
+                DeliveryAddress = order.Address != null ? FormatAddressLinesHelper.FormatAddress(order.Address.AddressLine,
                     string.Empty, order.Address.City, string.Empty,
-                    order.Address.Country, order.Address.PostCode),
+                    order.Address.Country, order.Address.PostCode) : string.Empty,
                 DeliveryFee = order.DeliveryFees,
                 PushNotificationType = PushNotificationType.DeliveryRequest,
                 DeliveryTips = 0
