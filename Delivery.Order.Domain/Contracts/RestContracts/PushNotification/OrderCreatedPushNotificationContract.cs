@@ -96,5 +96,10 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.PushNotification
         ///  Is order preparation completed
         /// </summary>
         public bool IsPreparationCompleted { get; init; }
+        
+        /// <summary>
+        ///  Order delivery address
+        /// </summary>
+        public OrderDeliveryAddressContract ShopOrderDeliveryAddress { get; init; }
     }
 }
