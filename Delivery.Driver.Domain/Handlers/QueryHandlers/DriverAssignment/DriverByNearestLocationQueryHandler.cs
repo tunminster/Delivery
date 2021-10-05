@@ -101,7 +101,8 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment
                             Location = s.Location,
                             Radius = s.Radius,
                             IsActive = s.IsActive,
-                            IsOrderAssigned = s.IsOrderAssigned
+                            IsOrderAssigned = s.IsOrderAssigned, 
+                            Approved = s.Approved
                         }).ToList();
                     
                     return driverContracts;
