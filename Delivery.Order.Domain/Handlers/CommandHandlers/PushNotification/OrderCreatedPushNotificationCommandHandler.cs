@@ -56,7 +56,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.PushNotification
                 databaseContext.NotificationDevices.FirstOrDefault(x => x.UserEmail == showOwnerUser.Username) ??
                 throw new InvalidOperationException($"Shop owner - {showOwnerUser.Username} hasn't registered notification feature");
             
-            var notificationSendModel = new NotificationSendModel<IDataContract>
+            var notificationSendModel = new NotificationSendModel<OrderCreatedPushNotificationContract>
             {
                 Pns = shoOwnerDevice.Platform,
                 Message = "New order",

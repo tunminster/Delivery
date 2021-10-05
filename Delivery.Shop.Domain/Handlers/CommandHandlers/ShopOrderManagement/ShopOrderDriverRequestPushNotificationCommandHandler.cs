@@ -43,7 +43,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                 throw new InvalidOperationException($"Driver - {driver.EmailAddress} hasn't registered notification feature");
             
             
-            var notificationSendModel = new NotificationSendModel<IDataContract>
+            var notificationSendModel = new NotificationSendModel<ShopOrderDriverRequestPushNotificationContract>
             {
                 Pns = driverDevice.Platform,
                 Message = "Request food delivery",
