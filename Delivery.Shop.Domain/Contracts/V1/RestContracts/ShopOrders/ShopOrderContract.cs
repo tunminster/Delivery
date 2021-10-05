@@ -107,6 +107,6 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         /// <summary>
         ///  Shop order delivery address
         /// </summary>
-        public ShopOrderDeliveryAddress ShopOrderDeliveryAddress { get; init; } = new();
+        public ShopOrderDeliveryAddress? ShopOrderDeliveryAddress { get; init; } = new();
     }
 }
