@@ -20,6 +20,9 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.NotificationHubs.Messaging;
 using Delivery.Azure.Library.NotificationHub.Contracts.V1;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Azure.Library.NotificationHub.Clients
 {
@@ -261,6 +264,9 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                     httpStatusCode = HttpStatusCode.OK;
                 }
             }
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace( $"{nameof(NotificationClient)} sent push notification payload {notificationSendModel.ConvertToJson()} to user {notificationSendModel.ToTag.ToLower()}",
+                SeverityLevel.Information, telemetryContextProperties);
 
             return httpStatusCode;
         }
