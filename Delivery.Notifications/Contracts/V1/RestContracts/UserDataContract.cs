@@ -14,6 +14,11 @@ namespace Delivery.Notifications.Contracts.V1.RestContracts
         public string Message { get; init; } = string.Empty;
 
         /// <summary>
+        ///  Store name
+        /// </summary>
+        public string StoreName { get; init; } = string.Empty;
+
+        /// <summary>
         ///  Push notification type
         /// </summary>
         public PushNotificationType PushNotificationType { get; init; }
