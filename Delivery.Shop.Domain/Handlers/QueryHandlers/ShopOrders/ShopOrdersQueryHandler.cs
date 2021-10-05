@@ -39,6 +39,7 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
             var orderList =
                 await databaseContext.Orders.Where(x => x.Status == query.Status && x.StoreId == storeUser.StoreId)
                     .Include(x => x.Store)
+                    .Include(x => x.Address)
                     .Include(x => x.OrderItems)
                     .ThenInclude(x => x.Product)
                     .ToListAsync();
