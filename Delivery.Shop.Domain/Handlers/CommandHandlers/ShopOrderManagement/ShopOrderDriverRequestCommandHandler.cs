@@ -42,6 +42,9 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                             .SingleOrDefaultAsync(x => x.ExternalId == command.ShopOrderDriverRequestContract.OrderId) ??
                          throw new InvalidOperationException($"Expected order by {command.ShopOrderDriverRequestContract.OrderId}.");
 
+            order.DeliveryRequested += 1;
+            await databaseContext.SaveChangesAsync();
+            
             var latitude = order.Store.Latitude ??
                            throw new InvalidOperationException($"Expected latitude: instead {order.ConvertToJson()}");
             var longitude = order.Store.Longitude ??
