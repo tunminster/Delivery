@@ -31,5 +31,11 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement
         /// </summary>
         /// <example>{{orderStatus}}</example>
         public OrderStatus OrderStatus { get; init; }
+
+        /// <summary>
+        ///  Reason
+        /// </summary>
+        /// <example>{{reason}}</example>
+        public string Reason { get; init; } = string.Empty;
     }
 }

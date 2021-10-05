@@ -58,7 +58,14 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             var driverList = await new DriverByNearestLocationQueryHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(driverByNearestLocationQuery);
 
-            var driverContract = driverList.FirstOrDefault();
+            var orderRequestedDrivers = databaseContext.DriverOrders
+                .Include(x => x.Driver)
+                .Where(x => x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted);
+
+            var requestedDriverIds = orderRequestedDrivers.Select(x => x.Driver.ExternalId).ToList();
+
+            var driverContract = driverList
+                .FirstOrDefault(x => !requestedDriverIds.Contains(x.DriverId));
 
             if (driverContract == null)
             {
