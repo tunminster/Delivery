@@ -188,7 +188,8 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                 .TrackAsync(async () => await hub.DeleteRegistrationAsync(registrationDeleteModel.RegistrationId));
         }
 
-        public async Task<HttpStatusCode> SendNotificationToUser(NotificationSendModel<IDataContract> notificationSendModel)
+        public async Task<HttpStatusCode> SendNotificationToUser<T>(NotificationSendModel<T> notificationSendModel)
+        where T : IDataContract
         {
             var hub = NotificationHubSenderConnection.Hub;
             
