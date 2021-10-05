@@ -29,11 +29,11 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive
                 {
                     var driverActiveCommand = new DriverActiveCommand(messageAdapter.GetPayloadIn());
 
-                    await new DriverActiveCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                    var driverActiveStatusContract = await new DriverActiveCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(driverActiveCommand);
                     
                     var driverIndexCommand =
-                        new DriverIndexCommand(messageAdapter.GetPayloadOut().DriverId);
+                        new DriverIndexCommand(driverActiveStatusContract.DriverId);
 
                     await new DriverIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(driverIndexCommand);
