@@ -42,6 +42,12 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                             .SingleOrDefaultAsync(x => x.ExternalId == command.ShopOrderDriverRequestContract.OrderId) ??
                          throw new InvalidOperationException($"Expected order by {command.ShopOrderDriverRequestContract.OrderId}.");
 
+            if (order.OrderType == OrderType.PickupAt)
+            {
+                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"No required to find {nameof(OrderType)} - {order.OrderType.ToString()} order.");
+                return new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow };
+            }
+            
             order.DeliveryRequested += 1;
             await databaseContext.SaveChangesAsync();
             
