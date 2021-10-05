@@ -15,6 +15,12 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement
         public string OrderId { get; init; } = string.Empty;
         
         /// <summary>
+        ///  Store id
+        /// </summary>
+        /// <example>{{storeId}}</example>
+        public string StoreId { get; init; } = string.Empty;
+        
+        /// <summary>
         ///  Store name
         /// </summary>
         /// <example>{{storeName}}</example>

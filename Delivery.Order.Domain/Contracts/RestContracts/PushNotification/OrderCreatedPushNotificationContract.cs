@@ -81,6 +81,18 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.PushNotification
         public int Tax { get; init; }
         
         /// <summary>
+        ///  Store address
+        /// </summary>
+        /// <example>{{storeAddress}}</example>
+        public string StoreAddress { get; init; } = string.Empty;
+        
+        /// <summary>
+        ///  Delivery address
+        /// <example>{{deliveryAddress}}</example>
+        /// </summary>
+        public string DeliveryAddress { get; init; } = string.Empty;
+        
+        /// <summary>
         ///  Preparation time
         /// <example>{{preparationTime}}</example>
         /// </summary>
