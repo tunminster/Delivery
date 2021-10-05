@@ -1,6 +1,9 @@
+using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
+
 namespace Delivery.Azure.Library.NotificationHub.Models
 {
     public record NotificationSendModel<T> : NotificationBaseModel
+    where T: IDataContract
     {
         /// <summary>
         ///  Platform notification system

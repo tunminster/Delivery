@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
+using Delivery.Domain.Helpers;
 using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.RestContracts.PushNotification;
 
@@ -32,6 +33,10 @@ namespace Delivery.Order.Domain.Converters
                 IsPreparationCompleted = DateTimeOffset.UtcNow >
                                          order.InsertionDateTime.AddMinutes(OrderConstant.DefaultPreparationTime),
                 DateCreated = order.InsertionDateTime,
+                StoreAddress = order.Store.FormattedAddress,
+                DeliveryAddress = order.Address != null ? FormatAddressLinesHelper.FormatAddress(order.Address.AddressLine,
+                    string.Empty, order.Address.City, string.Empty,
+                    order.Address.Country, order.Address.PostCode) : string.Empty,
                 ShopOrderDeliveryAddress = order.Address != null ? new OrderDeliveryAddressContract { AddressLine1 = order.Address.AddressLine ?? string.Empty, City = order.Address.City, PostalCode = order.Address.PostCode, Latitude = order.Address.Lat, Longitude = order.Address.Lng} : null,
             };
             return orderCreatedPushNotificationContract;

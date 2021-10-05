@@ -82,6 +82,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             {
                 OrderId = order.ExternalId,
                 StoreName = order.Store.StoreName,
+                StoreId = order.Store.ExternalId,
                 StoreImageUri = order.Store.ImageUri,
                 StoreAddress = order.Store.FormattedAddress!,
                 DeliveryAddress = order.Address != null ? FormatAddressLinesHelper.FormatAddress(order.Address.AddressLine,
