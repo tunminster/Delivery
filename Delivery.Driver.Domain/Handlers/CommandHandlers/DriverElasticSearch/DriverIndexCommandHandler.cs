@@ -59,7 +59,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch
                         SeverityLevel.Warning, executingRequestContextAdapter.GetTelemetryProperties());
             }
             
-            var getResponse = await elasticClient.GetAsync<DriverContract>(driverContract.DriverId, d => d.Index($"drivers{executingRequestContextAdapter.GetShard().Key.ToLower()}"));
+            var getResponse = await elasticClient.GetAsync<DriverContract>(driverContract.DriverId, d => d.Index($"{ElasticSearchIndexConstants.DriversIndex}{executingRequestContextAdapter.GetShard().Key.ToLower()}"));
 
             if (getResponse.Found)
             {

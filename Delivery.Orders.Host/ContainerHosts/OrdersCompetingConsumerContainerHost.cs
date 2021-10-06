@@ -10,6 +10,7 @@ using Delivery.Azure.Library.Microservices.Hosting.Hosts;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Measurements.Metrics;
 using Delivery.Domain.Contracts.Enums;
+using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
@@ -27,6 +28,7 @@ using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopMenu;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopProfile;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopMenu;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
@@ -201,6 +203,27 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(orderCreatedPushNotificationMessageContract.RequestContext));
                     await orderCreatedPushNotificationMessageHandler.HandleMessageAsync(
                         orderCreatedPushNotificationMessageContract, processingState);
+                    break;
+                case nameof(OrderIndexMessageContract):
+                    var orderIndexMessageContract = message.Deserialize<OrderIndexMessageContract>();
+                    var shopOrderIndexMessageContract = new ShopOrderIndexMessageContract
+                    {
+                        PayloadIn = new ShopOrderIndexCreationContract
+                            { OrderId = orderIndexMessageContract.PayloadIn?.Id ?? string.Empty },
+                        PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow },
+                        RequestContext = orderIndexMessageContract.RequestContext
+                    };
+                    var shopOrderIndexMessageHandler = new ShopOrderIndexMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(shopOrderIndexMessageContract.RequestContext));
+                    await shopOrderIndexMessageHandler.HandleMessageAsync(shopOrderIndexMessageContract,
+                        processingState);
+                    break;
+                case nameof(ShopOrderIndexMessageContract):
+                    var shopOrderIndexMessage = message.Deserialize<ShopOrderIndexMessageContract>();
+                    var shopOrderIndexHandler = new ShopOrderIndexMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(shopOrderIndexMessage.RequestContext));
+                    await shopOrderIndexHandler.HandleMessageAsync(shopOrderIndexMessage,
+                        processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");

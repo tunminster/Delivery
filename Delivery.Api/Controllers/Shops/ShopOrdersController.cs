@@ -14,8 +14,10 @@ using Delivery.Shop.Domain.Constants;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderSearch;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
 using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders;
+using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrderSearch;
 using Delivery.Shop.Domain.Validators.OrderManagement;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
@@ -160,7 +162,7 @@ namespace Delivery.Api.Controllers.Shops
         }
 
         /// <summary>
-        ///  Request delivery driver
+        ///  Request delivery driver for the order.
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
@@ -194,6 +196,32 @@ namespace Delivery.Api.Controllers.Shops
             await new ShopOrderDriverRequestMessagePublisher(serviceProvider).PublishAsync(shopOrderDriverRequestMessageContract);
 
             return Ok(statusContract);
+        }
+
+        /// <summary>
+        ///  Search order endpoint
+        /// </summary>
+        /// <remarks>Order can be searched by order id, status</remarks>
+        [Route("search-orders", Order = 5)]
+        [HttpPost]
+        [ProducesResponseType(typeof(List<ShopOrderContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> SearchOrder_Async(SearchOrderQueryContract searchOrderQueryContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopOrderSearchQuery = new ShopOrderSearchQuery
+            {
+                Email = executingRequestContextAdapter.GetAuthenticatedUser()?.UserEmail ??
+                        throw new InvalidOperationException($"Expected authenticated user."),
+                SearchOrderQueryContract = searchOrderQueryContract
+            };
+
+            var shopOrderList =
+                await new ShopOrderSearchQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    shopOrderSearchQuery);
+
+            return Ok(shopOrderList);
         }
     }
 }
