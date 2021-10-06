@@ -4,5 +4,6 @@ namespace Delivery.Domain.Constants
     {
         public const string StoresIndex = "stores";
         public const string DriversIndex = "drivers";
+        public const string ShopOrdersIndex = "shoporders";
     }
 }

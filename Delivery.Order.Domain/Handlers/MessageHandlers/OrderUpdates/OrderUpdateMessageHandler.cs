@@ -14,6 +14,7 @@ using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts.PushNotification;
 using Delivery.Order.Domain.Enum;
 using Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdate;
+using Delivery.Order.Domain.Handlers.MessageHandlers.OrderIndexing;
 using Delivery.Order.Domain.Handlers.MessageHandlers.PushNotification;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,6 +60,15 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                     };
 
                     await new OrderCreatedPushNotificationMessagePublisher(ServiceProvider).PublishAsync(orderCreatedPushNotificationMessageContract);
+                    
+                    // Indexing order
+                    await new OrderIndexMessagePublisher(ServiceProvider).PublishAsync(
+                        new OrderIndexMessageContract
+                        {
+                            PayloadIn = new IndexCreationContract { Id = orderId },
+                            PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow },
+                            RequestContext = message.RequestContext
+                        });
                     
                     ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Sent {nameof(OrderCreatedPushNotificationMessagePublisher)} - {orderCreatedPushNotificationMessageContract.ConvertToJson()}", SeverityLevel.Information, ExecutingRequestContextAdapter.GetTelemetryProperties());
                     

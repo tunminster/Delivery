@@ -45,6 +45,11 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             order.DateUpdated = DateTimeOffset.UtcNow;
 
             await databaseContext.SaveChangesAsync();
+            
+            // re-index shop order
+            var shopOrderIndexCommand = new ShopOrderIndexCommand(order.ExternalId);
+            await new ShopOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                shopOrderIndexCommand);
 
             return new ShopOrderStatusContract
             {
