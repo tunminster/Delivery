@@ -12,6 +12,7 @@ using Delivery.Domain.QueryHandlers;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderSearch;
+using Elasticsearch.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
@@ -52,19 +53,24 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrderSearch
                         x.Index(
                                 $"{ElasticSearchIndexConstants.ShopOrdersIndex}{executingRequestContextAdapter.GetShard().Key.ToLower()}")
                             .Query(q =>
-                                q.Bool(bl => 
-                                    bl.Filter(fl => 
-                                        fl.Terms(tm => 
-                                            tm.Field(fd => fd.StoreId).Terms(storeUser.Store.ExternalId))))
-                                && q.QueryString(queryString => 
-                                    queryString.Query($"{query.SearchOrderQueryContract.FreeTextSearch} {query.SearchOrderQueryContract.Filters}")
-                                        .Fields(fs => 
-                                            fs.Fields(f1 => f1.OrderId, 
-                                                f2 => f2.Status, 
-                                                f3 => f3.OrderType,
-                                                f4 => f4.ShopOrderDriver)))
-                                
-                                )
+                                  q.Match(m => 
+                                    m.Field(fl => 
+                                        fl.StoreId)
+                                        .Query(storeUser.Store.ExternalId)
+                                        .Operator(Operator.And)
+                                        .ZeroTermsQuery(ZeroTermsQuery.All))
+                                  && 
+                                  q.QueryString(queryString => 
+                                      queryString
+                                          .Boost(1.1)
+                                          .Fields(fs => 
+                                          fs.Field(f1 => f1.OrderId)
+                                          ).Query(query.SearchOrderQueryContract.FreeTextSearch)
+                                          .DefaultOperator(Operator.Or)
+                                          .AllowLeadingWildcard()
+                                          .Escape())
+                                  
+                            )
                             .Source()
                             .From((query.SearchOrderQueryContract.Page - 1) * query.SearchOrderQueryContract.PageSize)
                             .Size(query.SearchOrderQueryContract.PageSize));
