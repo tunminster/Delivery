@@ -37,7 +37,6 @@ namespace Delivery.Database.Entities
         
         public OrderPaymentStatus PaymentStatusCode { get; set; }
         
-        public DateTimeOffset? PickupTime { get; set; }
 
         public int? AddressId { get; set; }
         
@@ -74,6 +73,12 @@ namespace Delivery.Database.Entities
         
         public DateTimeOffset? OrderReadyDateTime { get; set; }
         
+        public DateTimeOffset? PickupTime { get; set; }
+        
+        public DateTimeOffset? OrderAcceptedDateTime { get; set; }
+        
+        public DateTimeOffset? DeliveryEstimatedDateTime { get; set; }
+
         public int DeliveryRequested { get; set; }
         
         public OrderType OrderType { get; set; }

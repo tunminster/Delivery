@@ -43,6 +43,9 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             order.PreparationTime = statusCommand.ShopOrderStatusCreationContract.PreparationTime;
             order.PickupTime = statusCommand.ShopOrderStatusCreationContract.PickupTime ?? DateTimeOffset.UtcNow.AddMinutes(statusCommand.ShopOrderStatusCreationContract.PreparationTime + ShopConstant.DefaultPickupMinutes);
             order.DateUpdated = DateTimeOffset.UtcNow;
+            order.OrderAcceptedDateTime = DateTimeOffset.UtcNow;
+            order.DeliveryEstimatedDateTime = DateTimeOffset.UtcNow.AddMinutes(
+                statusCommand.ShopOrderStatusCreationContract.PreparationTime + ShopConstant.DefaultPickupMinutes);
 
             await databaseContext.SaveChangesAsync();
             

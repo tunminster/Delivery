@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
+using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
@@ -48,6 +49,14 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             
             driverOrder.Status = command.DriverOrderActionContract.DriverOrderStatus;
             driverOrder.Reason = command.DriverOrderActionContract.Reason;
+
+            if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Complete)
+            {
+                // 1. push notification to store owner
+                // 2. remove shop order index
+                // 3. update order status
+                
+            }
 
             await databaseContext.SaveChangesAsync();
 
