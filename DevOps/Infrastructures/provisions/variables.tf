@@ -45,6 +45,18 @@ variable "aks_sp_app_secret"{
     
 }
 
+variable "gateway_sku_name" {
+  description = "Api Management SKU"
+}
+
+variable "gateway_publisher_name" {
+  description = "Api Management publisher name"
+}
+
+variable "gateway_publisher_email" {
+  description = "Api Management publisher email"
+}
+
 locals {
     common_tags = {
         environment = var.environment_prefix

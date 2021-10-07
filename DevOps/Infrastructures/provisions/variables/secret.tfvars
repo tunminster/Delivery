@@ -23,5 +23,9 @@ aks_node_os_disk_size = "#{aks_node_os_disk_size}#"
 aks_sp_app_id = "#{app-dev-client-id}#"
 aks_sp_app_secret = "#{apphn}#"
 
+gateway_sku_name = "#{gateway_sku_name}#"
+gateway_publisher_name = "#{gateway_publisher_name}#"
+gateway_publisher_email = "#{gateway_publisher_email}#"
+
 
 
