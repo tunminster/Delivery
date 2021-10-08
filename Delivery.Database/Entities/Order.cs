@@ -78,6 +78,8 @@ namespace Delivery.Database.Entities
         public DateTimeOffset? OrderAcceptedDateTime { get; set; }
         
         public DateTimeOffset? DeliveryEstimatedDateTime { get; set; }
+        
+        public DateTimeOffset? DeliveredDateTime { get; set; }
 
         public int DeliveryRequested { get; set; }
         

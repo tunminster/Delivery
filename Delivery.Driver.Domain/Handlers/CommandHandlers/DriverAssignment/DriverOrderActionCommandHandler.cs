@@ -6,7 +6,9 @@ using Delivery.Database.Context;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
@@ -52,10 +54,16 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
 
             if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Complete)
             {
-                // 1. push notification to store owner
-                // 2. remove shop order index
-                // 3. update order status
-                
+                // send message order update
+                var driverOrderCompleteMessageContract = new DriverOrderCompleteMessageContract
+                {
+                    PayloadIn = new EntityUpdateContract { Id = command.DriverOrderActionContract.OrderId },
+                    PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow },
+                    RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+                };
+
+                await new DriverOrderCompleteMessagePublisher(serviceProvider).PublishAsync(
+                    driverOrderCompleteMessageContract);
             }
 
             await databaseContext.SaveChangesAsync();

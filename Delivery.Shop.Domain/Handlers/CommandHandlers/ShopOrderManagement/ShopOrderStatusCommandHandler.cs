@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
+using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Constants;
 using Delivery.Domain.Contracts.V1.RestContracts;
@@ -40,19 +41,36 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             }
 
             order.Status = statusCommand.ShopOrderStatusCreationContract.OrderStatus;
-            order.PreparationTime = statusCommand.ShopOrderStatusCreationContract.PreparationTime;
-            order.PickupTime = statusCommand.ShopOrderStatusCreationContract.PickupTime ?? DateTimeOffset.UtcNow.AddMinutes(statusCommand.ShopOrderStatusCreationContract.PreparationTime + ShopConstant.DefaultPickupMinutes);
+            order.PreparationTime ??= statusCommand.ShopOrderStatusCreationContract.PreparationTime;
+
+            order.PickupTime ??= statusCommand.ShopOrderStatusCreationContract.PickupTime ??
+                                 DateTimeOffset.UtcNow.AddMinutes(statusCommand.ShopOrderStatusCreationContract.PreparationTime +
+                                                                  ShopConstant.DefaultPickupMinutes);
+            
             order.DateUpdated = DateTimeOffset.UtcNow;
-            order.OrderAcceptedDateTime = DateTimeOffset.UtcNow;
-            order.DeliveryEstimatedDateTime = DateTimeOffset.UtcNow.AddMinutes(
+
+            order.OrderAcceptedDateTime ??= DateTimeOffset.UtcNow;
+
+            order.DeliveryEstimatedDateTime ??= DateTimeOffset.UtcNow.AddMinutes(
                 statusCommand.ShopOrderStatusCreationContract.PreparationTime + ShopConstant.DefaultPickupMinutes);
+            
 
             await databaseContext.SaveChangesAsync();
+
+            if (statusCommand.ShopOrderStatusCreationContract.OrderStatus is OrderStatus.Completed or OrderStatus.Rejected)
+                return new ShopOrderStatusContract
+                {
+                    OrderId = order.ExternalId,
+                    OrderStatus = statusCommand.ShopOrderStatusCreationContract.OrderStatus,
+                    Status = true,
+                    DateCreated = DateTimeOffset.UtcNow
+                };
             
             // re-index shop order
             var shopOrderIndexCommand = new ShopOrderIndexCommand(order.ExternalId);
             await new ShopOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
                 shopOrderIndexCommand);
+
 
             return new ShopOrderStatusContract
             {
