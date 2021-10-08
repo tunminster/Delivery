@@ -188,6 +188,19 @@ namespace Delivery.Orders.Host.ContainerHosts
                     await driverServiceAreaUpdateMessageHandler.HandleMessageAsync(driverServiceAreaMessageContract,
                         processingState);
                     break;
+                case nameof(DriverOrderCompleteMessageContract):
+                    var driverOrderCompleteMessageContract = message.Deserialize<DriverOrderCompleteMessageContract>();
+                    var shopOrderCompleteMessageContract = new ShopOrderCompleteMessageContract
+                    {
+                        PayloadIn = driverOrderCompleteMessageContract.PayloadIn,
+                        PayloadOut = driverOrderCompleteMessageContract.PayloadOut,
+                        RequestContext = driverOrderCompleteMessageContract.RequestContext
+                    };
+                    var shopOrderCompleteMessageHandler = new ShopOrderCompleteMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(shopOrderCompleteMessageContract.RequestContext));
+                    await shopOrderCompleteMessageHandler.HandleMessageAsync(shopOrderCompleteMessageContract,
+                        processingState);
+                    break;
                 case nameof(ShopMenuStatusMessageContract):
                     var shopMenuStatusMessageContract = message.Deserialize<ShopMenuStatusMessageContract>();
                     var shopMenuStatusMessageHandler = new ShopMenuStatusMessageHandler(ServiceProvider,

@@ -108,5 +108,15 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         ///  Shop order delivery address
         /// </summary>
         public ShopOrderDeliveryAddress? ShopOrderDeliveryAddress { get; init; } = new();
+        
+        /// <summary>
+        ///  Order accepted date time
+        /// </summary>
+        public DateTimeOffset? OrderAcceptedDateTime { get; set; }
+        
+        /// <summary>
+        ///  Delivery estimated date time
+        /// </summary>
+        public DateTimeOffset? DeliveryEstimatedDateTime { get; set; }
     }
 }

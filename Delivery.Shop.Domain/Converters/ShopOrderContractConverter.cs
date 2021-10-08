@@ -29,6 +29,8 @@ namespace Delivery.Shop.Domain.Converters
                     ShopOrderItems = ConvertToShopOrderItem(item.OrderItems.ToList()),
                     IsPreparationCompleted = DateTimeOffset.UtcNow > item.InsertionDateTime.AddMinutes(ShopConstant.DefaultPreparationTime),
                     DateCreated = item.InsertionDateTime,
+                    OrderAcceptedDateTime = item.OrderAcceptedDateTime,
+                    DeliveryEstimatedDateTime = item.DeliveryEstimatedDateTime,
                     ShopOrderDeliveryAddress = item.Address != null ? new ShopOrderDeliveryAddress { AddressLine1 = item.Address.AddressLine ?? string.Empty, City = item.Address.City, PostalCode = item.Address.PostCode, Latitude = item.Address.Lat, Longitude = item.Address.Lng} : null,
                     ShopOrderDriver = driverOrders.Count > 0 ? ConvertToShopOrderDriver(driverOrders.FirstOrDefault(x => x.OrderId == item.Id)) : new ShopOrderDriverContract()
                 })
@@ -50,6 +52,8 @@ namespace Delivery.Shop.Domain.Converters
                 BusinessServiceFee = order.BusinessServiceFees,
                 TotalAmount = order.TotalAmount,
                 ShopOrderItems = ConvertToShopOrderItem(order.OrderItems.ToList()),
+                OrderAcceptedDateTime = order.OrderAcceptedDateTime,
+                DeliveryEstimatedDateTime = order.DeliveryEstimatedDateTime,
                 ShopOrderDriver = driverOrder != null ? ConvertToShopOrderDriver(driverOrder) : new ShopOrderDriverContract()
             };
 

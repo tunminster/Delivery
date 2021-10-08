@@ -7,6 +7,7 @@ namespace Delivery.Azure.Library.NotificationHub.Contracts.Enums
     {
         [EnumMember] None = 0,
         [EnumMember] DeliveryRequest = 1,
-        [EnumMember] ShopNewOrder = 2
+        [EnumMember] ShopNewOrder = 2,
+        [EnumMember] OrderCompleted = 3
     }
 }
