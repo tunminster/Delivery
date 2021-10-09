@@ -36,5 +36,8 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrder
         
         [DataMember]
         public DateTimeOffset CreatedDateTime { get; set; }
+        
+        [DataMember]
+        public int BusinessApplicationFee { get; set; }
     }
 }

@@ -53,27 +53,12 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             // clone payment method to the connect account
             //var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, order.PaymentAccountNumber);
             
-            // var confirmPaymentMethodId =
-            //     ConfirmPaymentMethod(command.StripePaymentCaptureCreationContract.StripePaymentMethodId);
             // To create a PaymentIntent for confirmation, see our guide at: https://stripe.com/docs/payments/payment-intents/creating-payment-intents#creating-for-automatic
             // var options = new PaymentIntentConfirmOptions
             // {
             //     PaymentMethod = clonePaymentMethodId
             // };
             
-            // update payment method
-            var paymentMethodOptions = new PaymentMethodUpdateOptions
-            {
-                Metadata = new Dictionary<string, string>
-                {
-                    { "order_id", order.ExternalId },
-                },
-            };
-            // var paymentMethodService = new PaymentMethodService();
-            // var paymentMethodResult = await paymentMethodService.UpdateAsync(
-            //     command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
-            //     paymentMethodOptions
-            // );
             
             var options = new PaymentIntentConfirmOptions
             {
@@ -131,7 +116,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
                 stripePaymentCaptureCreationStatusContract.ReceiptUrl =
                     paymentIntentResponse.Charges.FirstOrDefault()?.ReceiptUrl ?? string.Empty;
                 stripePaymentCaptureCreationStatusContract.LiveMode = paymentIntentResponse.Livemode;
-                
+                stripePaymentCaptureCreationStatusContract.StoreOwnerConnectedAccountId = order.PaymentAccountNumber;
                 stripePaymentCaptureCreationStatusContract.OrderId = paymentIntentResponse.Metadata.FirstOrDefault(x => x.Key == "order_id").Value ?? string.Empty;
             }
             else if (paymentIntentResponse.Status == "requires_action")
@@ -176,19 +161,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             return paymentMethod.Id;
         }
         
-        private string ConfirmPaymentMethod(string stripePaymentMethodId)
-        {
-            var options = new PaymentMethodCreateOptions
-            {
-                Customer = null,
-                PaymentMethod = stripePaymentMethodId,
-            };
-            
-            
-            var service = new PaymentMethodService();
-            var paymentMethod = service.Create(options);
-            return paymentMethod.Id;
-        }
+        
         
         
     }

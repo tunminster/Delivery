@@ -238,6 +238,12 @@ namespace Delivery.Orders.Host.ContainerHosts
                     await shopOrderIndexHandler.HandleMessageAsync(shopOrderIndexMessage,
                         processingState);
                     break;
+                case nameof(SplitPaymentCreationMessageContract):
+                    var splitPaymentCreationMessage = message.Deserialize<SplitPaymentCreationMessageContract>();
+                    var splitPaymentsMessageHandler = new SplitPaymentsMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(splitPaymentCreationMessage.RequestContext));
+                    await splitPaymentsMessageHandler.HandleMessageAsync(splitPaymentCreationMessage, processingState);
+                    break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");
             }
