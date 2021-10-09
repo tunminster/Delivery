@@ -6,6 +6,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Sharding.Contracts.V1;
 using Delivery.Azure.Library.Sharding.Interfaces;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
@@ -49,11 +50,17 @@ namespace Delivery.Order.Domain.Services.Applications
                     cacheKey).Handle(stripeOrderTotalAmountCreationCommand);
 
             //todo: find out store business rate
+            var businessApplicationFee = ApplicationFeeGenerator.BusinessServiceFees(orderCreationStatus.SubtotalAmount,
+                OrderConstant.BusinessApplicationServiceRate);
+
+            var customerApplicationFee = orderCreationStatus.CustomerApplicationFee;
+            var deliveryFee = orderCreationStatus.DeliveryFee;
+            
             var applicationFeeAmount = StripeApplicationFeesAmount.CalculateStripeApplicationFeeAmount(
                 orderCreationStatus.SubtotalAmount,
-                ApplicationFeeGenerator.GeneratorFees(orderCreationStatus.SubtotalAmount),
-                ApplicationFeeGenerator.GenerateDeliveryFees(orderCreationStatus.SubtotalAmount),
-                5);
+                orderCreationStatus.CustomerApplicationFee,
+                orderCreationStatus.DeliveryFee,
+                OrderConstant.BusinessApplicationServiceRate);
             
             var shardMetadataManager = serviceProvider.GetRequiredService<IShardMetadataManager>();
             var shardInformation = shardMetadataManager.GetShardInformation<ShardInformation>().FirstOrDefault(x =>
@@ -65,10 +72,15 @@ namespace Delivery.Order.Domain.Services.Applications
                 PaymentMethod = "card",
                 Amount = orderCreationStatus.TotalAmount,
                 ApplicationFeeAmount = applicationFeeAmount,
-                //ConnectedStripeAccountId = "acct_1IZcqVRDUSzIiY6T",
-                ConnectedStripeAccountId = orderCreationStatus.PaymentAccountNumber,
+                StoreConnectedStripeAccountId = orderCreationStatus.PaymentAccountNumber,
                 OrderId = orderCreationStatus.OrderId,
-                Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "gbp"
+                Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "gbp",
+                BusinessFeeAmount = businessApplicationFee,
+                DriverConnectedStripeAccountId = "",
+                DeliveryFeeAmount = deliveryFee,
+                CustomerApplicationFeeAmount = customerApplicationFee,
+                TaxFeeAmount = orderCreationStatus.TaxFee,
+                Subtotal = orderCreationStatus.SubtotalAmount
             };
 
             var paymentIntentCreationCommand = new PaymentIntentCreationCommand(paymentIntentCreationContract);

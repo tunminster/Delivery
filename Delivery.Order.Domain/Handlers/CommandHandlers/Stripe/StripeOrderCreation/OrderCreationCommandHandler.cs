@@ -59,7 +59,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 ExternalId = command.OrderCreationStatusContract.OrderId,
                 SubTotal = command.OrderCreationStatusContract.SubtotalAmount,
                 TotalAmount = command.OrderCreationStatusContract.TotalAmount,
-                PlatformServiceFees = command.OrderCreationStatusContract.ApplicationFee,
+                PlatformServiceFees = command.OrderCreationStatusContract.CustomerApplicationFee,
                 DeliveryFees = command.OrderCreationStatusContract.DeliveryFee,
                 BusinessServiceFees = businessServiceFee,
                 TaxFees = command.OrderCreationStatusContract.TaxFee,
