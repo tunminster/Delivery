@@ -51,9 +51,10 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             }
             
             // clone payment method to the connect account
-            var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, order.PaymentAccountNumber);
-            var confirmPaymentMethodId =
-                ConfirmPaymentMethod(command.StripePaymentCaptureCreationContract.StripePaymentMethodId);
+            //var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, order.PaymentAccountNumber);
+            
+            // var confirmPaymentMethodId =
+            //     ConfirmPaymentMethod(command.StripePaymentCaptureCreationContract.StripePaymentMethodId);
             // To create a PaymentIntent for confirmation, see our guide at: https://stripe.com/docs/payments/payment-intents/creating-payment-intents#creating-for-automatic
             // var options = new PaymentIntentConfirmOptions
             // {
@@ -68,11 +69,11 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
                     { "order_id", order.ExternalId },
                 },
             };
-            var paymentMethodService = new PaymentMethodService();
-            var paymentMethodResult = await paymentMethodService.UpdateAsync(
-                command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
-                paymentMethodOptions
-            );
+            // var paymentMethodService = new PaymentMethodService();
+            // var paymentMethodResult = await paymentMethodService.UpdateAsync(
+            //     command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
+            //     paymentMethodOptions
+            // );
             
             var options = new PaymentIntentConfirmOptions
             {
