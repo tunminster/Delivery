@@ -74,11 +74,9 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
                 paymentMethodOptions
             );
             
-            
-            
             var options = new PaymentIntentConfirmOptions
             {
-                PaymentMethod = paymentMethodResult.Id
+                PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId
             };
             
 
