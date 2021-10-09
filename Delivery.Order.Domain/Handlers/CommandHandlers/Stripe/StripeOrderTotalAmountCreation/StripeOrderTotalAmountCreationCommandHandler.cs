@@ -59,12 +59,12 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                 }
             }
 
-            var applicationFee = ApplicationFeeGenerator.GeneratorFees(subtotalAmount);
+            var customerApplicationFee = ApplicationFeeGenerator.GeneratorFees(subtotalAmount);
             var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(subtotalAmount);
             
             // todo: calculate tax rate
             var taxFee = TaxFeeGenerator.GenerateTaxFees(subtotalAmount, 5);
-            var totalAmount = subtotalAmount + applicationFee + deliveryFee + taxFee;
+            var totalAmount = subtotalAmount + customerApplicationFee + deliveryFee + taxFee;
             
             var orderCreationStatus =
                 new OrderCreationStatusContract
@@ -72,7 +72,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     OrderId = UniqueIdFactory.UniqueExternalId(executingRequestContextAdapter.GetShard().Key.ToLowerInvariant()), 
                     CurrencyCode = command.OrderCreationStatusContract.CurrencyCode, 
                     SubtotalAmount = subtotalAmount,
-                    ApplicationFee = applicationFee,
+                    CustomerApplicationFee = customerApplicationFee,
                     TaxFee = taxFee,
                     DeliveryFee = deliveryFee,
                     TotalAmount = totalAmount, 

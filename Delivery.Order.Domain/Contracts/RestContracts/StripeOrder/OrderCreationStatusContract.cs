@@ -17,7 +17,7 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.StripeOrder
         public int TotalAmount { get; set; }
         
         [DataMember]
-        public int ApplicationFee { get; set; }
+        public int CustomerApplicationFee { get; set; }
         
         [DataMember]
         public int DeliveryFee { get; set; }

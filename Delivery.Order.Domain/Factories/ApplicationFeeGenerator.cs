@@ -1,3 +1,5 @@
+using Delivery.Order.Domain.Constants;
+
 namespace Delivery.Order.Domain.Factories
 {
     public static class ApplicationFeeGenerator
@@ -8,7 +10,7 @@ namespace Delivery.Order.Domain.Factories
             {
                 return 100;
             }
-            return (int)(5.00 / 100 * subTotalAmount);
+            return (int)(OrderConstant.CustomerApplicationServiceRate / 100 * subTotalAmount);
         }
 
         public static int GenerateDeliveryFees(int radius)

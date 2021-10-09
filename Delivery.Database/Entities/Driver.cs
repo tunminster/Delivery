@@ -67,6 +67,9 @@ namespace Delivery.Database.Entities
         
         public bool IsActive { get; set; }
         
+        [MaxLength(250)]
+        public string PaymentAccountId { get; set; }
+        
         [MaxLength(50)]
         public string InsertedBy { get; set; }
         public DateTimeOffset InsertionDateTime { get; set; }
