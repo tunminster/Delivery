@@ -51,7 +51,8 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             
             // clone payment method to the connect account
             var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, order.PaymentAccountNumber);
-            
+            var confirmPaymentMethodId =
+                ConfirmPaymentMethod(command.StripePaymentCaptureCreationContract.StripePaymentMethodId);
             // To create a PaymentIntent for confirmation, see our guide at: https://stripe.com/docs/payments/payment-intents/creating-payment-intents#creating-for-automatic
             // var options = new PaymentIntentConfirmOptions
             // {
@@ -60,7 +61,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             
             var options = new PaymentIntentConfirmOptions
             {
-                PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId
+                PaymentMethod = confirmPaymentMethodId
             };
             
 
@@ -156,6 +157,20 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             
             var service = new PaymentMethodService();
             var paymentMethod = service.Create(options, requestOptions);
+            return paymentMethod.Id;
+        }
+        
+        private string ConfirmPaymentMethod(string stripePaymentMethodId)
+        {
+            var options = new PaymentMethodCreateOptions
+            {
+                Customer = null,
+                PaymentMethod = stripePaymentMethodId,
+            };
+            
+            
+            var service = new PaymentMethodService();
+            var paymentMethod = service.Create(options);
             return paymentMethod.Id;
         }
         
