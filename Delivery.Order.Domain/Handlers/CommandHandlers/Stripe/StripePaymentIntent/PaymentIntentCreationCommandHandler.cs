@@ -49,16 +49,16 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentInt
             var driverFeeAmount = command.PaymentIntentCreationContract.DeliveryFeeAmount;
             
             // Transfer payment to store connected account
-            var shopOwnerTransferOptions = new TransferCreateOptions
-            {
-                Amount = storeOwnerAmount,
-                Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "usd",
-                Destination = command.PaymentIntentCreationContract.StoreConnectedStripeAccountId,
-                TransferGroup = command.PaymentIntentCreationContract.OrderId
-            };
-
-            var transferService = new TransferService();
-            var transfer = await transferService.CreateAsync(shopOwnerTransferOptions);
+            // var shopOwnerTransferOptions = new TransferCreateOptions
+            // {
+            //     Amount = storeOwnerAmount,
+            //     Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "usd",
+            //     Destination = command.PaymentIntentCreationContract.StoreConnectedStripeAccountId,
+            //     TransferGroup = command.PaymentIntentCreationContract.OrderId
+            // };
+            //
+            // var transferService = new TransferService();
+            // var transfer = await transferService.CreateAsync(shopOwnerTransferOptions);
 
             // Transfer payment to driver
             // var secondTransferOptions = new TransferCreateOptions
@@ -72,7 +72,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentInt
             
             
             var paymentIntentCreationStatusContract =
-                new PaymentIntentCreationStatusContract(paymentIntent.Id, paymentIntent.ClientSecret, command.PaymentIntentCreationContract.OrderId, transfer.Id);
+                new PaymentIntentCreationStatusContract(paymentIntent.Id, paymentIntent.ClientSecret, command.PaymentIntentCreationContract.OrderId, string.Empty);
 
             return paymentIntentCreationStatusContract;
 
