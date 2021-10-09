@@ -83,6 +83,12 @@ namespace Delivery.Database.Entities
 
         public int DeliveryRequested { get; set; }
         
+        public int StoreOwnerPaymentAmount { get; set; }
+        
+        public string ShopOwnerTransferredId { get; set; }
+        
+        public string DriverTransferredId { get; set; }
+        
         public OrderType OrderType { get; set; }
         public bool IsDeleted { get; set; }
     }

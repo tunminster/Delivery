@@ -4,11 +4,13 @@ using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Enums;
+using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Enum;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
 using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
+using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.SplitPayments;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.StripePayments;
 using Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.PaymentIntentConfirmation;
 using Delivery.StripePayment.Domain.Handlers.MessageHandlers;
@@ -38,6 +40,24 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeCaptu
             var stripePaymentCaptureCreationStatus =
                 await new PaymentIntentConfirmationCommandHandler(serviceProvider, executingRequestContextAdapter)
                     .Handle(paymentIntentConfirmationCommand);
+
+            // pay split payment
+            if (stripePaymentCaptureCreationStatus.Captured)
+            {
+                var splitPaymentMessageContract = new SplitPaymentCreationMessageContract
+                {
+                    PayloadIn = new SplitPaymentCreationContract
+                    {
+                        OrderId = stripePaymentCaptureCreationStatus.OrderId,
+                        StoreOwnerConnectedAccountId = stripePaymentCaptureCreationStatus.StoreOwnerConnectedAccountId,
+                        DriverConnectedAccountId = string.Empty
+                    },
+                    PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow },
+                    RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+                };
+
+                await new SplitPaymentsMessagePublisher(serviceProvider).PublishAsync(splitPaymentMessageContract);
+            }
             
             // publish stripe payment message
             var stripePaymentCreationContract = new StripePaymentCreationContract

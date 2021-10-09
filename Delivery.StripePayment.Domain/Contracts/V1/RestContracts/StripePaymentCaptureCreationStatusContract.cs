@@ -68,6 +68,9 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
         public string OrderId { get; set; }
         
         [DataMember]
+        public string StoreOwnerConnectedAccountId { get; set; }
+        
+        [DataMember]
         public DateTimeOffset Created { get; set; }
         
         [DataMember]

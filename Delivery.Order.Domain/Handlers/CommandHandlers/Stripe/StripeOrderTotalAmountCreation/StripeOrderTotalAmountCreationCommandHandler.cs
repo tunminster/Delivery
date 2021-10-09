@@ -7,6 +7,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Factories;
+using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Factories;
 using Microsoft.EntityFrameworkCore;
@@ -66,6 +67,9 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             var taxFee = TaxFeeGenerator.GenerateTaxFees(subtotalAmount, 5);
             var totalAmount = subtotalAmount + customerApplicationFee + deliveryFee + taxFee;
             
+            var businessApplicationFee = ApplicationFeeGenerator.BusinessServiceFees(subtotalAmount,
+                OrderConstant.BusinessApplicationServiceRate);
+            
             var orderCreationStatus =
                 new OrderCreationStatusContract
                 {
@@ -77,6 +81,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     DeliveryFee = deliveryFee,
                     TotalAmount = totalAmount, 
                     CreatedDateTime = DateTimeOffset.UtcNow,
+                    BusinessApplicationFee = businessApplicationFee,
                     PaymentAccountNumber = store?.StorePaymentAccount?.AccountNumber ?? throw new InvalidOperationException($" {command.StripeOrderCreationContract.StoreId} doesn't have payment account number.")
                         .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties())
                 };
