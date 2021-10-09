@@ -53,9 +53,14 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             var clonePaymentMethodId = ClonePaymentMethodToConnectedAccount(command.StripePaymentCaptureCreationContract.StripePaymentMethodId, order.PaymentAccountNumber);
             
             // To create a PaymentIntent for confirmation, see our guide at: https://stripe.com/docs/payments/payment-intents/creating-payment-intents#creating-for-automatic
+            // var options = new PaymentIntentConfirmOptions
+            // {
+            //     PaymentMethod = clonePaymentMethodId
+            // };
+            
             var options = new PaymentIntentConfirmOptions
             {
-                PaymentMethod = clonePaymentMethodId
+                PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId
             };
 
             // var requestOptions = new RequestOptions
