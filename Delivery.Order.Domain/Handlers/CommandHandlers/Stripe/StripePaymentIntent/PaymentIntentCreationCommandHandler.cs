@@ -34,43 +34,12 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentInt
             StripeConfiguration.ApiKey = stripeApiKey;
             
             var paymentIntentService = new PaymentIntentService();
-
-
-            var createOptions = CreatePaymentIntentCreateOptions(true, command, shardInformation);
+            
+            var createOptions = CreatePaymentIntentCreateOptions(false, command, shardInformation);
             
             var requestOptions = new RequestOptions {StripeAccount = command.PaymentIntentCreationContract.StoreConnectedStripeAccountId};
-            //var paymentIntent = await paymentIntentService.CreateAsync(createOptions, requestOptions);
-            var paymentIntent = await paymentIntentService.CreateAsync(createOptions);
-            
-
-            var storeOwnerAmount =
-                (command.PaymentIntentCreationContract.Subtotal + command.PaymentIntentCreationContract.TaxFeeAmount) -
-                command.PaymentIntentCreationContract.BusinessFeeAmount;
-
-            var driverFeeAmount = command.PaymentIntentCreationContract.DeliveryFeeAmount;
-            
-            // Transfer payment to store connected account
-            // var shopOwnerTransferOptions = new TransferCreateOptions
-            // {
-            //     Amount = storeOwnerAmount,
-            //     Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "usd",
-            //     Destination = command.PaymentIntentCreationContract.StoreConnectedStripeAccountId,
-            //     TransferGroup = command.PaymentIntentCreationContract.OrderId
-            // };
-            //
-            // var transferService = new TransferService();
-            // var transfer = await transferService.CreateAsync(shopOwnerTransferOptions);
-
-            // Transfer payment to driver
-            // var secondTransferOptions = new TransferCreateOptions
-            // {
-            //     Amount = driverFeeAmount,
-            //     Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "usd",
-            //     Destination = command.PaymentIntentCreationContract.DriverConnectedStripeAccountId,
-            //     TransferGroup = command.PaymentIntentCreationContract.OrderId
-            // };
-            // var secondTransfer = await transferService.CreateAsync(secondTransferOptions);
-            
+            var paymentIntent = await paymentIntentService.CreateAsync(createOptions, requestOptions);
+            //var paymentIntent = await paymentIntentService.CreateAsync(createOptions);
             
             var paymentIntentCreationStatusContract =
                 new PaymentIntentCreationStatusContract(paymentIntent.Id, paymentIntent.ClientSecret, command.PaymentIntentCreationContract.OrderId, string.Empty);
