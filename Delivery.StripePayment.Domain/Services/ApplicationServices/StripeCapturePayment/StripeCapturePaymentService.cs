@@ -42,22 +42,22 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeCaptu
                     .Handle(paymentIntentConfirmationCommand);
 
             // pay split payment
-            if (stripePaymentCaptureCreationStatus.Captured)
-            {
-                var splitPaymentMessageContract = new SplitPaymentCreationMessageContract
-                {
-                    PayloadIn = new SplitPaymentCreationContract
-                    {
-                        OrderId = stripePaymentCaptureCreationStatus.OrderId,
-                        StoreOwnerConnectedAccountId = stripePaymentCaptureCreationStatus.StoreOwnerConnectedAccountId,
-                        DriverConnectedAccountId = string.Empty
-                    },
-                    PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow },
-                    RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
-                };
-
-                await new SplitPaymentsMessagePublisher(serviceProvider).PublishAsync(splitPaymentMessageContract);
-            }
+            // if (stripePaymentCaptureCreationStatus.Captured)
+            // {
+            //     var splitPaymentMessageContract = new SplitPaymentCreationMessageContract
+            //     {
+            //         PayloadIn = new SplitPaymentCreationContract
+            //         {
+            //             OrderId = stripePaymentCaptureCreationStatus.OrderId,
+            //             StoreOwnerConnectedAccountId = stripePaymentCaptureCreationStatus.StoreOwnerConnectedAccountId,
+            //             DriverConnectedAccountId = string.Empty
+            //         },
+            //         PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow },
+            //         RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            //     };
+            //
+            //     await new SplitPaymentsMessagePublisher(serviceProvider).PublishAsync(splitPaymentMessageContract);
+            // }
             
             // publish stripe payment message
             var stripePaymentCreationContract = new StripePaymentCreationContract
