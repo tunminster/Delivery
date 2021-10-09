@@ -55,21 +55,24 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             // To create a PaymentIntent for confirmation, see our guide at: https://stripe.com/docs/payments/payment-intents/creating-payment-intents#creating-for-automatic
             var options = new PaymentIntentConfirmOptions
             {
-                //PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
                 PaymentMethod = clonePaymentMethodId
             };
 
-            var requestOptions = new RequestOptions
-            {
-                StripeAccount = order?.PaymentAccountNumber ?? throw new InvalidOperationException($"{command.StripePaymentCaptureCreationContract.StripePaymentIntentId} is not existed.")
-                    .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties())
-            };
+            // var requestOptions = new RequestOptions
+            // {
+            //     StripeAccount = order.PaymentAccountNumber ?? throw new InvalidOperationException($"{command.StripePaymentCaptureCreationContract.StripePaymentIntentId} is not existed.")
+            //         .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties())
+            // };
             var service = new PaymentIntentService();
+            // var paymentIntentResponse = await service.ConfirmAsync(
+            //     command.StripePaymentCaptureCreationContract.StripePaymentIntentId,
+            //     options,
+            //     requestOptions
+            //     
+            // );
             var paymentIntentResponse = await service.ConfirmAsync(
                 command.StripePaymentCaptureCreationContract.StripePaymentIntentId,
-                options,
-                requestOptions
-                
+                options
             );
 
             var stripePaymentCaptureCreationStatusContract = new StripePaymentCaptureCreationStatusContract();
