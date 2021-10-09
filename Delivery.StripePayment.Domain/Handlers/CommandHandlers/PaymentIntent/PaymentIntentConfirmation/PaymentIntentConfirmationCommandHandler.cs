@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
@@ -59,9 +60,25 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.PaymentIntent.P
             //     PaymentMethod = clonePaymentMethodId
             // };
             
+            // update payment method
+            var paymentMethodOptions = new PaymentMethodUpdateOptions
+            {
+                Metadata = new Dictionary<string, string>
+                {
+                    { "order_id", order.ExternalId },
+                },
+            };
+            var paymentMethodService = new PaymentMethodService();
+            var paymentMethodResult = await paymentMethodService.UpdateAsync(
+                command.StripePaymentCaptureCreationContract.StripePaymentMethodId,
+                paymentMethodOptions
+            );
+            
+            
+            
             var options = new PaymentIntentConfirmOptions
             {
-                PaymentMethod = command.StripePaymentCaptureCreationContract.StripePaymentMethodId
+                PaymentMethod = paymentMethodResult.Id
             };
             
 
