@@ -14,6 +14,7 @@ using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverPayments;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverProfile;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive;
@@ -44,6 +45,7 @@ using Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreTypeCreations;
 using Delivery.Store.Domain.Handlers.MessageHandlers.StoreUpdate;
 using Delivery.StripePayment.Domain.Contracts.V1.MessageContracts;
+using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.SplitPayments;
 using Delivery.StripePayment.Domain.Handlers.MessageHandlers;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
@@ -243,6 +245,22 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var splitPaymentsMessageHandler = new SplitPaymentsMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(splitPaymentCreationMessage.RequestContext));
                     await splitPaymentsMessageHandler.HandleMessageAsync(splitPaymentCreationMessage, processingState);
+                    break;
+                case nameof(DriverPaymentCreationMessageContract):
+                    var driverPaymentCreationMessage = message.Deserialize<DriverPaymentCreationMessageContract>();
+                    var splitPaymentMessage = new SplitPaymentCreationMessageContract
+                    {
+                        PayloadIn = new SplitPaymentCreationContract
+                        {
+                            OrderId = driverPaymentCreationMessage.PayloadIn!.OrderId,
+                            DriverConnectedAccountId = driverPaymentCreationMessage.PayloadIn!.DriverConnectAccountId
+                        },
+                        PayloadOut = driverPaymentCreationMessage.PayloadOut,
+                        RequestContext = driverPaymentCreationMessage.RequestContext
+                    };
+                    var splitPMessageHandler = new SplitPaymentsMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(splitPaymentMessage.RequestContext));
+                    await splitPMessageHandler.HandleMessageAsync(splitPaymentMessage, processingState);
                     break;
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");

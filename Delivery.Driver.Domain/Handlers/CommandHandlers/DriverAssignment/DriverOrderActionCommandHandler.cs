@@ -7,8 +7,11 @@ using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverPayments;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverPayments;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverPayments;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
@@ -64,6 +67,23 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
 
                 await new DriverOrderCompleteMessagePublisher(serviceProvider).PublishAsync(
                     driverOrderCompleteMessageContract);
+                
+                // split payment request
+
+                if (!string.IsNullOrEmpty(driver.PaymentAccountId))
+                {
+                    var driverPaymentCreationMessageContract = new DriverPaymentCreationMessageContract
+                    {
+                        PayloadIn = new DriverPaymentCreationContract
+                            { DriverConnectAccountId = driver.PaymentAccountId, OrderId = order.ExternalId },
+                        PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow },
+                        RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+                    };
+                
+                    await new DriverPaymentCreationMessagePublisher(serviceProvider).PublishAsync(
+                        driverPaymentCreationMessageContract);
+                }
+                
             }
 
             await databaseContext.SaveChangesAsync();

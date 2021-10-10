@@ -39,30 +39,6 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.SplitPayments
             
             
             var transferService = new TransferService();
-
-            if (!string.IsNullOrEmpty(command.SplitPaymentCreationContract.StoreOwnerConnectedAccountId))
-            {
-                var order = databaseContext.Orders.Single(x =>
-                    x.ExternalId == command.SplitPaymentCreationContract.OrderId);
-                
-                var storeOwnerPaymentTotalAmount = 
-                    (order.SubTotal + order.TaxFees) -
-                    order.BusinessServiceFees;
-                // Transfer payment to store connected account
-                var shopOwnerTransferOptions = new TransferCreateOptions
-                {
-                    Amount = storeOwnerPaymentTotalAmount,
-                    Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "usd",
-                    Destination = command.SplitPaymentCreationContract.StoreOwnerConnectedAccountId,
-                    TransferGroup = command.SplitPaymentCreationContract.OrderId
-                };
-                
-                var shopOwnerTransferResult = await transferService.CreateAsync(shopOwnerTransferOptions);
-                
-                order.StoreOwnerPaymentAmount = storeOwnerPaymentTotalAmount;
-                order.ShopOwnerTransferredId = shopOwnerTransferResult.Id;
-                await databaseContext.SaveChangesAsync();
-            }
             
             // Transfer payment to driver
             if (!string.IsNullOrEmpty(command.SplitPaymentCreationContract.DriverConnectedAccountId))
