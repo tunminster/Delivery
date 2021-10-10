@@ -41,7 +41,7 @@ namespace Delivery.Api.Controllers.Drivers
         ///  Driver assignment
         /// </summary>
         /// <returns></returns>
-        [Route("order-assign", Order = 1)]
+        [Route("update-delivery-order-status", Order = 1)]
         [ProducesResponseType(typeof(StatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpPost]

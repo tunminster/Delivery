@@ -72,7 +72,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.PushNotification
             
             if (statusCode is HttpStatusCode.Accepted or HttpStatusCode.Created or HttpStatusCode.OK)
             {
-                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace( $"Order completee push notification sent to {showOwnerUser.Username}",
+                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace( $"Order complete push notification sent to {showOwnerUser.Username}",
                     SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             }
             else
