@@ -1,3 +1,5 @@
+using Delivery.Database.Enums;
+
 namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderSearch
 {
     /// <summary>
@@ -13,8 +15,7 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderSearch
         /// <summary>
         ///  Filter property
         /// </summary>
-        /// <example>Status:Accepted</example>
-        public string Filters { get; init; } = string.Empty;
+        public OrderStatus Status { get; init; }
 
         /// <summary>
         ///  Page number

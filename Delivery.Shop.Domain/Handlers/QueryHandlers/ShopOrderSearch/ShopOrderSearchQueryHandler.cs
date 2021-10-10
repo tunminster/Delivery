@@ -59,6 +59,11 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrderSearch
                                         .Query(storeUser.Store.ExternalId)
                                         .Operator(Operator.And)
                                         .ZeroTermsQuery(ZeroTermsQuery.All))
+                                  &&
+                                    q.Bool(b => 
+                                        b.Filter(ft => 
+                                            ft.Terms( tms => 
+                                                tms.Field(fld => fld.Status).Terms(query.SearchOrderQueryContract.Status))))
                                   && 
                                   q.QueryString(queryString => 
                                       queryString
