@@ -203,6 +203,20 @@ namespace Delivery.Orders.Host.ContainerHosts
                     await shopOrderCompleteMessageHandler.HandleMessageAsync(shopOrderCompleteMessageContract,
                         processingState);
                     break;
+                case nameof(DriverOrderInProgressMessageContract):
+                    var driverOrderInProgressMessageContract =
+                        message.Deserialize<DriverOrderInProgressMessageContract>();
+                    var shopOrderDeliverOnWayMessageContract = new ShopOrderDeliverOnWayMessageContract
+                    {
+                        PayloadIn = driverOrderInProgressMessageContract.PayloadIn,
+                        PayloadOut = driverOrderInProgressMessageContract.PayloadOut,
+                        RequestContext = driverOrderInProgressMessageContract.RequestContext
+                    };
+                    var shopOrderDeliverOnWayMessageHandler = new ShopOrderDeliverOnWayMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(shopOrderDeliverOnWayMessageContract.RequestContext));
+                    await shopOrderDeliverOnWayMessageHandler.HandleMessageAsync(shopOrderDeliverOnWayMessageContract,
+                        processingState);
+                    break;
                 case nameof(ShopMenuStatusMessageContract):
                     var shopMenuStatusMessageContract = message.Deserialize<ShopMenuStatusMessageContract>();
                     var shopMenuStatusMessageHandler = new ShopMenuStatusMessageHandler(ServiceProvider,

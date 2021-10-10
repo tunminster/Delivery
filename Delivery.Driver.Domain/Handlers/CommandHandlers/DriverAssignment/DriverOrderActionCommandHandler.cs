@@ -55,6 +55,19 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             driverOrder.Status = command.DriverOrderActionContract.DriverOrderStatus;
             driverOrder.Reason = command.DriverOrderActionContract.Reason;
 
+            if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.InProgress)
+            {
+                var driverOrderInProgressMessageContract = new DriverOrderInProgressMessageContract
+                {
+                    PayloadIn = new EntityUpdateContract { Id = command.DriverOrderActionContract.OrderId },
+                    PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow },
+                    RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+                };
+                await new DriverOrderInProgressMessagePublisher(serviceProvider).PublishAsync(
+                    driverOrderInProgressMessageContract);
+                
+            }
+
             if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Complete)
             {
                 // send message order update

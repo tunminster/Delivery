@@ -65,11 +65,15 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                     Status = true,
                     DateCreated = DateTimeOffset.UtcNow
                 };
-            
-            // re-index shop order
-            var shopOrderIndexCommand = new ShopOrderIndexCommand(order.ExternalId);
-            await new ShopOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
-                shopOrderIndexCommand);
+
+            // if order is complete, removed from the indexing.
+            if (statusCommand.ShopOrderStatusCreationContract.OrderStatus != OrderStatus.Completed)
+            {
+                // re-index shop order
+                var shopOrderIndexCommand = new ShopOrderIndexCommand(order.ExternalId);
+                await new ShopOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    shopOrderIndexCommand);
+            }
 
 
             return new ShopOrderStatusContract
