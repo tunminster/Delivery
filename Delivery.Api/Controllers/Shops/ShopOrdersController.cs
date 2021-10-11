@@ -167,16 +167,16 @@ namespace Delivery.Api.Controllers.Shops
         /// <param name="orderId"></param>
         /// <returns></returns>
         [Route("request-delivery-driver", Order = 4)]
-        [HttpGet]
+        [HttpPost]
         [ProducesResponseType(typeof(ShopOrderContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> DeliveryDriverRequest_Async(string orderId)
+        public async Task<IActionResult> DeliveryDriverRequest_Async(ShopOrderDriverRequestContract shopOrderDriverRequestContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
-            if (string.IsNullOrEmpty(orderId))
+            if (string.IsNullOrEmpty(shopOrderDriverRequestContract.OrderId))
             {
-                var errorMessage = $"{nameof(orderId)} must be provided.";
+                var errorMessage = $"{nameof(shopOrderDriverRequestContract.OrderId)} must be provided.";
                 return errorMessage.ConvertToBadRequest();
             }
             
@@ -188,7 +188,7 @@ namespace Delivery.Api.Controllers.Shops
             
             var shopOrderDriverRequestMessageContract = new ShopOrderDriverRequestMessageContract
             {
-                PayloadIn = new ShopOrderDriverRequestContract { OrderId = orderId},
+                PayloadIn = shopOrderDriverRequestContract,
                 PayloadOut = statusContract,
                 RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
             };
