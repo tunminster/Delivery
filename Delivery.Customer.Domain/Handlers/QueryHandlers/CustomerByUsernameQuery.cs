@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using Delivery.Customer.Domain.Contracts;
 using Delivery.Domain.QueryHandlers;
 
-namespace Delivery.Customer.Domain.QueryHandlers
+namespace Delivery.Customer.Domain.Handlers.QueryHandlers
 {
     public class CustomerByUsernameQuery : IQuery<CustomerContract>
     {

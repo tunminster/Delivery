@@ -15,8 +15,6 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Azure.Library.WebApi.ModelBinders;
-using Delivery.Customer.Domain.CommandHandlers;
-using Delivery.Customer.Domain.Contracts.RestContracts;
 using Delivery.Database.Context;
 using Delivery.Database.Models;
 using Delivery.Domain.Factories;
@@ -325,6 +323,14 @@ namespace Delivery.Api.Controllers.Drivers
             {
                 await using var applicationDbContext =
                     await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+                var driver = applicationDbContext.Drivers.FirstOrDefault(x =>
+                    x.EmailAddress.ToLower() == driverResetPasswordCreationContract.Email);
+                if (driver == null)
+                {
+                    return Ok(new DriverResetPasswordStatusContract { Status = "error", Valid = false });
+                }
+                
                 var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
 
                 var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,

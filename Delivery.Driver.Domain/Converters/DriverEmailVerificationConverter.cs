@@ -30,7 +30,9 @@ namespace Delivery.Driver.Domain.Converters
             {
                 Username = string.Empty,
                 Email = driverResetPasswordRequestContract.Email,
-                FromName = DriverConstant.DriverFromName
+                FromName = DriverConstant.DriverResetPasswordName,
+                VerificationName = DriverConstant.DriverResetPasswordVerification,
+                Subject = DriverConstant.DriverResetPasswordVerification
             };
 
             return twilioEmailVerificationContract;

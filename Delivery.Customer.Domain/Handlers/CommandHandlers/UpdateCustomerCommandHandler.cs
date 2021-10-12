@@ -1,12 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
-using Delivery.Customer.Domain.Contracts.RestContracts;
+using Delivery.Customer.Domain.Contracts.V1.RestContracts;
+using Delivery.Customer.Domain.Handlers.CommandHandlers;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.Customer.Domain.CommandHandlers
+namespace Delivery.Customer.Domain.Handlers.CommandHandlers
 {
     public class UpdateCustomerCommandHandler: ICommandHandler<UpdateCustomerCommand, CustomerUpdateStatusContract>
     {

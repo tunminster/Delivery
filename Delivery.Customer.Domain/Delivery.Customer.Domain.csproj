@@ -2,6 +2,11 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <Platforms>AnyCPU</Platforms>
+        <NoWarn>1591;NU1608;NU5104</NoWarn>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -10,10 +15,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Delivery.Address.Domain\Delivery.Address.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.Library.Twilio\Delivery.Library.Twilio.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Contracts\V1" />
+      <Folder Include="Handlers\MessageHandlers" />
     </ItemGroup>
 
 </Project>

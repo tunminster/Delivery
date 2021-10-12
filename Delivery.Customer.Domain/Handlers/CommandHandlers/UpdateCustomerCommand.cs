@@ -1,6 +1,6 @@
-using Delivery.Customer.Domain.Contracts.RestContracts;
+using Delivery.Customer.Domain.Contracts.V1.RestContracts;
 
-namespace Delivery.Customer.Domain.CommandHandlers
+namespace Delivery.Customer.Domain.Handlers.CommandHandlers
 {
     public class UpdateCustomerCommand
     {

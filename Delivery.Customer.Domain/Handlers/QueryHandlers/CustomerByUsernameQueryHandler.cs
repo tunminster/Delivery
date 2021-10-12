@@ -6,11 +6,12 @@ using AutoMapper;
 using Delivery.Address.Domain.Contracts;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Customer.Domain.Contracts;
+using Delivery.Customer.Domain.Handlers.QueryHandlers;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Delivery.Customer.Domain.QueryHandlers
+namespace Delivery.Customer.Domain.Handlers.QueryHandlers
 {
     public class CustomerByUsernameQueryHandler : IQueryHandler<CustomerByUsernameQuery, CustomerContract>
     {
