@@ -7,5 +7,7 @@ namespace Delivery.Customer.Domain.Constants
         
         public const string CustomerResetPasswordName = "Ragibull Reset Password";
         public const string CustomerResetPasswordVerification = "Ragibull reset password verficaiton";
+
+        public const string NotificationPrefix = "customer";
     }
 }

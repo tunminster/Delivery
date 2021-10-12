@@ -15,7 +15,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Delivery.Address.Domain\Delivery.Address.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.Azure.Library.NotificationHub\Delivery.Azure.Library.NotificationHub.csproj" />
       <ProjectReference Include="..\Delivery.Library.Twilio\Delivery.Library.Twilio.csproj" />
+      <ProjectReference Include="..\Delivery.Notifications\Delivery.Notifications.csproj" />
     </ItemGroup>
 
     <ItemGroup>
