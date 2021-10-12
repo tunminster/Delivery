@@ -247,7 +247,7 @@ namespace Delivery.Api.Controllers
 
             if (customerEmailVerificationStatusContract.Status == "approved")
             {
-                await ConfirmEmailAsync(customerEmailVerificationContract, executingRequestContextAdapter);
+                //await ConfirmEmailAsync(customerEmailVerificationContract, executingRequestContextAdapter);
             }
 
             return Ok(customerEmailVerificationStatusContract);
