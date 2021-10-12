@@ -1,19 +1,17 @@
 using System;
-using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
 
-namespace Delivery.Customer.Domain.Contracts.RestContracts
+namespace Delivery.Customer.Domain.Contracts.V1.RestContracts
 {
-    [DataContract]
-    public class CustomerUpdateStatusContract
+    /// <summary>
+    ///  Customer update status contract
+    /// </summary>
+    public record CustomerUpdateStatusContract
     {
-        [DataMember]
         public int CustomerId { get; set; }
+
+        public string Message { get; set; } = string.Empty;
         
-        [DataMember]
-        public string Message { get; set; }
-        
-        [DataMember]
         public DateTimeOffset UpdateDate { get; set; }
         
         public override string ToString()

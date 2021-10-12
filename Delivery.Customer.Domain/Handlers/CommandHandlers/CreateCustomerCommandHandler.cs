@@ -4,7 +4,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 
-namespace Delivery.Customer.Domain.CommandHandlers
+namespace Delivery.Customer.Domain.Handlers.CommandHandlers
 {
     public class CreateCustomerCommandHandler : ICommandHandler<CreateCustomerCommand, bool>
     {
