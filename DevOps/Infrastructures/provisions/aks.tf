@@ -31,4 +31,12 @@ resource "azurerm_kubernetes_cluster" "hn-platform-aks" {
     }
 
   tags = local.common_tags
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = [
+      tags
+    ]
+  }
+
 }
