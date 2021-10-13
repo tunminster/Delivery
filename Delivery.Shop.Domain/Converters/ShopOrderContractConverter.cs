@@ -52,6 +52,7 @@ namespace Delivery.Shop.Domain.Converters
                 BusinessServiceFee = order.BusinessServiceFees,
                 TotalAmount = order.TotalAmount,
                 ShopOrderItems = ConvertToShopOrderItem(order.OrderItems.ToList()),
+                PreparationTime = order.PreparationTime ?? ShopConstant.DefaultPreparationTime,
                 OrderAcceptedDateTime = order.OrderAcceptedDateTime,
                 DeliveryEstimatedDateTime = order.DeliveryEstimatedDateTime,
                 ShopOrderDriver = driverOrder != null ? ConvertToShopOrderDriver(driverOrder) : new ShopOrderDriverContract()
