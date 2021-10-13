@@ -15,7 +15,8 @@ resource "azurerm_notification_hub" "hn-notification-hub" {
   lifecycle {
     ignore_changes = [
       tags,
-      gcm_credential
+      gcm_credential,
+      apns_credential
     ]
   }
 }
@@ -28,7 +29,8 @@ resource "azurerm_notification_hub" "hn-notification-driver-hub" {
   lifecycle {
     ignore_changes = [
       tags,
-      gcm_credential
+      gcm_credential,
+      apns_credential
     ]
   }
 }
@@ -41,7 +43,8 @@ resource "azurerm_notification_hub" "hn-notification-shop-hub" {
   lifecycle {
     ignore_changes = [
       tags,
-      gcm_credential
+      gcm_credential,
+      apns_credential
     ]
   }
 }
