@@ -1,9 +1,10 @@
+using Delivery.Azure.Library.NotificationHub.Clients.Contracts;
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
 namespace Delivery.Customer.Domain.Contracts.V1.RestContracts.PushNotification
 {
-    public record CustomerOrderNotificationContract : IDataContract
+    public record CustomerOrderNotificationContract : NotificationDataContract
     {
         /// <summary>
         ///  Store id

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Connection.Managers.Interfaces;
 using Delivery.Azure.Library.Core.Extensions.Json;
+using Delivery.Azure.Library.NotificationHub.Clients.Contracts;
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Connections;
 using Delivery.Azure.Library.NotificationHub.Contracts;
@@ -192,7 +193,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
         }
 
         public async Task<HttpStatusCode> SendNotificationToUser<T>(NotificationSendModel<T> notificationSendModel)
-        where T : IDataContract
+        where T : NotificationDataContract
         {
             var hub = NotificationHubSenderConnection.Hub;
             
@@ -230,7 +231,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                 case "apns":
                     // iOS
                     //var alert = "{\"aps\":{\"alert\":\"" + "From " + user + ": " + notificationSendModel.Message + "\"}}";
-                    var apsMessageContract = new ApsMessageContract<IDataContract>
+                    var apsMessageContract = new ApsMessageContract<T>
                         { Aps = new Aps{ Alert = notificationSendModel.Title}, Message = new ApsNotificationMessage {Message = notificationSendModel.Message},Data = notificationSendModel.Data };
                     outcome = await new DependencyMeasurement(serviceProvider)
                         .ForDependency(dependencyName.ToString(), MeasuredDependencyType.AzureNotificationHub,
@@ -240,7 +241,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                     break;
                 case "fcm":
                     // Android
-                    var gcmMessageContract = new GcmMessageContract<IDataContract>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
+                    var gcmMessageContract = new GcmMessageContract<T>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
                         Data = notificationSendModel.Data};
                     
                     outcome = await new DependencyMeasurement(serviceProvider)
@@ -250,7 +251,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                         .TrackAsync(async () => await hub.SendFcmNativeNotificationAsync(gcmMessageContract.ConvertToJson(), userTag));
                     break;
                 case "gcm":
-                    var gcmMessage= new GcmMessageContract<IDataContract>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
+                    var gcmMessage= new GcmMessageContract<T>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
                     Data = notificationSendModel.Data};
                     await hub.SendFcmNativeNotificationAsync(gcmMessage.ConvertToJson(), userTag);
                     break;

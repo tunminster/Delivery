@@ -30,7 +30,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopNotification
             
             var notificationRequestContract = command.NotificationRequestContract;
             
-            var notificationSendModel = new NotificationSendModel<IDataContract>
+            var notificationSendModel = new NotificationSendModel<ShopOrderNotificationContract>
             {
                 Pns = notificationRequestContract.Pns,
                 Message = notificationRequestContract.Message,

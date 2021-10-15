@@ -31,7 +31,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             
             var notificationRequestContract = command.NotificationRequestContract;
 
-            var notificationSendModel = new NotificationSendModel<IDataContract>
+            var notificationSendModel = new NotificationSendModel<DriverOrderRequestContract>
             {
                 Pns = notificationRequestContract.Pns,
                 Message = notificationRequestContract.Message,

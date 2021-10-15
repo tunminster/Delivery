@@ -24,4 +24,11 @@ resource "azurerm_key_vault_secret" "sql-database-rauk-connection-string" {
 
   tags = local.common_tags
 
+  lifecycle {
+    ignore_changes = [
+      tags,
+      value
+    ]
+  }
+
 }

@@ -1,3 +1,4 @@
+using Delivery.Azure.Library.NotificationHub.Clients.Contracts;
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
@@ -6,26 +7,8 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement
     /// <summary>
     ///  Contract send to push message to driver
     /// </summary>
-    public record ShopOrderDriverRequestPushNotificationContract : IDataContract
+    public record ShopOrderDriverRequestPushNotificationContract : NotificationDataContract
     {
-        /// <summary>
-        ///  Order id
-        /// <example>{{orderId}}</example>
-        /// </summary>
-        public string OrderId { get; init; } = string.Empty;
-        
-        /// <summary>
-        ///  Store id
-        /// </summary>
-        /// <example>{{storeId}}</example>
-        public string StoreId { get; init; } = string.Empty;
-        
-        /// <summary>
-        ///  Store name
-        /// </summary>
-        /// <example>{{storeName}}</example>
-        public string StoreName { get; init; } = string.Empty;
-        
         /// <summary>
         ///  Store image uri
         /// </summary>
@@ -55,10 +38,5 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement
         /// <example>{{deliveryTips}}</example>
         /// </summary>
         public int DeliveryTips { get; init; }
-        
-        /// <summary>
-        ///  Push notification type
-        /// </summary>
-        public PushNotificationType PushNotificationType { get; init; }
     }
 }
