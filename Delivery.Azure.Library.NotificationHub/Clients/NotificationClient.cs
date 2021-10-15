@@ -231,7 +231,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                 case "apns":
                     // iOS
                     //var alert = "{\"aps\":{\"alert\":\"" + "From " + user + ": " + notificationSendModel.Message + "\"}}";
-                    var apsMessageContract = new ApsMessageContract<T>
+                    var apsMessageContract = new ApsMessageContract<IDataContract>
                         { Aps = new Aps{ Alert = notificationSendModel.Title}, Message = new ApsNotificationMessage {Message = notificationSendModel.Message},Data = notificationSendModel.Data };
                     outcome = await new DependencyMeasurement(serviceProvider)
                         .ForDependency(dependencyName.ToString(), MeasuredDependencyType.AzureNotificationHub,
@@ -241,7 +241,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                     break;
                 case "fcm":
                     // Android
-                    var gcmMessageContract = new GcmMessageContract<T>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
+                    var gcmMessageContract = new GcmMessageContract<IDataContract>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
                         Data = notificationSendModel.Data};
                     
                     outcome = await new DependencyMeasurement(serviceProvider)
@@ -251,7 +251,7 @@ namespace Delivery.Azure.Library.NotificationHub.Clients
                         .TrackAsync(async () => await hub.SendFcmNativeNotificationAsync(gcmMessageContract.ConvertToJson(), userTag));
                     break;
                 case "gcm":
-                    var gcmMessage= new GcmMessageContract<T>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
+                    var gcmMessage= new GcmMessageContract<IDataContract>{ Notification = new NotificationTitle { Title = notificationSendModel.Title, Body =notificationSendModel.Message},
                     Data = notificationSendModel.Data};
                     await hub.SendFcmNativeNotificationAsync(gcmMessage.ConvertToJson(), userTag);
                     break;
