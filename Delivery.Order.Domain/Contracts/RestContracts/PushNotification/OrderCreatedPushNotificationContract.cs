@@ -10,7 +10,7 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.PushNotification
     /// <summary>
     ///  A contract to send a push notification to shop owner
     /// </summary>
-    public record OrderCreatedPushNotificationContract : IDataContract
+    public record OrderCreatedPushNotificationContract : NotificationDataContract
     {
         /// <summary>
         /// Order type

@@ -31,7 +31,7 @@ namespace Delivery.Notifications.Handlers.CommandHandlers.SendNotificationToUser
 
             var notificationRequestContract = command.NotificationRequestContract;
 
-            var notificationSendModel = new NotificationSendModel<IDataContract>
+            var notificationSendModel = new NotificationSendModel<UserDataContract>
             {
                 Pns = notificationRequestContract.Pns,
                 Message = notificationRequestContract.Message,

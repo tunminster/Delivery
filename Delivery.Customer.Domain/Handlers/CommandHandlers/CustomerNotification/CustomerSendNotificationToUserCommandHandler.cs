@@ -31,7 +31,7 @@ namespace Delivery.Customer.Domain.Handlers.CommandHandlers.CustomerNotification
             
             var notificationRequestContract = command.NotificationRequestContract;
 
-            var notificationSendModel = new NotificationSendModel<IDataContract>
+            var notificationSendModel = new NotificationSendModel<CustomerOrderNotificationContract>
             {
                 Pns = notificationRequestContract.Pns,
                 Message = notificationRequestContract.Message,
