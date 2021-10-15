@@ -7,8 +7,13 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
     /// <summary>
     ///  Shop order notification contract
     /// </summary>
-    public record ShopOrderNotificationContract : NotificationDataContract
+    public record ShopOrderNotificationContract : IDataContract
     {
+        public PushNotificationType PushNotificationType { get; init; }
+        public string StoreName { get; init; }
+        public string StoreId { get; init; }
+        public string OrderId { get; init; }
+
         /// <summary>
         ///  Store address
         /// </summary>

@@ -10,7 +10,7 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.PushNotification
     /// <summary>
     ///  A contract to send a push notification to shop owner
     /// </summary>
-    public record OrderCreatedPushNotificationContract : NotificationDataContract
+    public record OrderCreatedPushNotificationContract : IDataContract
     {
         /// <summary>
         /// Order type
@@ -60,7 +60,12 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.PushNotification
         /// <example>{{tax}}</example>
         /// </summary>
         public int Tax { get; init; }
-        
+
+        public PushNotificationType PushNotificationType { get; init; }
+        public string StoreName { get; init; }
+        public string StoreId { get; init; }
+        public string OrderId { get; init; }
+
         /// <summary>
         ///  Store address
         /// </summary>

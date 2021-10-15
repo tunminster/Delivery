@@ -7,14 +7,19 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement
     /// <summary>
     ///  Contract send to push message to driver
     /// </summary>
-    public record ShopOrderDriverRequestPushNotificationContract : NotificationDataContract
+    public record ShopOrderDriverRequestPushNotificationContract : IDataContract
     {
         /// <summary>
         ///  Store image uri
         /// </summary>
         /// <example>{{storeImageUri}}</example>
         public string StoreImageUri { get; init; } = string.Empty;
-        
+
+        public PushNotificationType PushNotificationType { get; init; }
+        public string StoreName { get; init; }
+        public string StoreId { get; init; }
+        public string OrderId { get; init; }
+
         /// <summary>
         ///  Store address
         /// </summary>

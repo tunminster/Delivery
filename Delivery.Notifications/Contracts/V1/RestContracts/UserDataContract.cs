@@ -7,13 +7,18 @@ namespace Delivery.Notifications.Contracts.V1.RestContracts
     /// <summary>
     ///  User data contract
     /// </summary>
-    public record UserDataContract : NotificationDataContract
+    public record UserDataContract : IDataContract
     {
         /// <summary>
         ///  Message
         /// </summary>
         public string Message { get; init; } = string.Empty;
-        
+
+        public PushNotificationType PushNotificationType { get; init; }
+        public string StoreName { get; init; }
+        public string StoreId { get; init; }
+        public string OrderId { get; init; }
+
         /// <summary>
         ///  Store address
         /// </summary>

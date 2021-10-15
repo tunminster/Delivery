@@ -4,9 +4,10 @@ using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
 namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.PushNotification
 {
-    public record ShopOrderCompletePushNotificationContract : NotificationDataContract
+    public record ShopOrderCompletePushNotificationContract : IDataContract
     {
-        
+        public PushNotificationType PushNotificationType { get; init; }
+
         /// <summary>
         ///  Store name
         /// </summary>

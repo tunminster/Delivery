@@ -40,6 +40,6 @@ namespace Delivery.Azure.Library.NotificationHub.Clients.Interfaces
         /// </summary>
         /// <param name="notificationSendModel"></param>
         /// <returns></returns>
-        Task<HttpStatusCode> SendNotificationToUser<T>(NotificationSendModel<T> notificationSendModel) where T : NotificationDataContract;
+        Task<HttpStatusCode> SendNotificationToUser<T>(NotificationSendModel<T> notificationSendModel) where T : IDataContract;
     }
 }
