@@ -4,7 +4,7 @@ using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
 namespace Delivery.Customer.Domain.Contracts.V1.RestContracts.PushNotification
 {
-    public record CustomerOrderNotificationContract : NotificationDataContract
+    public record CustomerOrderArrivedNotificationContract : NotificationDataContract
     {
         /// <summary>
         ///  Store address

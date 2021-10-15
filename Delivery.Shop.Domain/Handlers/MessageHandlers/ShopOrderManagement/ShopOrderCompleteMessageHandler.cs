@@ -4,6 +4,7 @@ using Delivery.Azure.Library.Messaging.Adapters;
 using Delivery.Azure.Library.Microservices.Hosting.MessageHandlers;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Customer.Domain.Handlers.CommandHandlers.PushNotifications;
 using Delivery.Database.Enums;
 using Delivery.Domain.Contracts.Enums;
 using Delivery.Domain.Contracts.V1.RestContracts;
@@ -51,13 +52,21 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                     await new ShopOrderStatusCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
                         shopOrderStatusCommand);
                     
-                    // push notification to user and shop owner
+                    // push notification to shop owner
                     var orderCompletePushNotificationCommand = new OrderCompletePushNotificationCommand(
                         new ShopOrderCompletePushNotificationCreationContract
                             { OrderId = messageAdapter.GetPayloadIn().Id });
                     await new OrderCompletePushNotificationCommandHandler(ServiceProvider,
                             ExecutingRequestContextAdapter)
                         .Handle(orderCompletePushNotificationCommand);
+                    
+                    // push notification to customer
+                    var customerOrderArrivedPushNotificationCommand =
+                        new CustomerOrderArrivedPushNotificationCommand(messageAdapter.GetPayloadIn().Id);
+
+                    await new CustomerOrderArrivedPushNotificationCommandHandler(ServiceProvider,
+                            ExecutingRequestContextAdapter)
+                        .Handle(customerOrderArrivedPushNotificationCommand);
                         
                     processingStates |= OrderMessageProcessingStates.Processed;
                 }

@@ -5,7 +5,9 @@ using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.NotificationHub.Contracts.V1;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
+using Delivery.Customer.Domain.Contracts.V1.RestContracts.PushNotification;
 using Delivery.Customer.Domain.Handlers.CommandHandlers.CustomerNotification;
+using Delivery.Customer.Domain.Handlers.CommandHandlers.PushNotifications;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Notifications.Contracts.V1.Enums;
 using Delivery.Notifications.Contracts.V1.RestContracts;
@@ -99,6 +101,32 @@ namespace Delivery.Api.Controllers
             var command = new CustomerSendNotificationToUserCommand(notificationRequestContract);
 
             await new CustomerSendNotificationToUserCommandHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(command);
+
+            var notificationResponseContract = new NotificationResponseContract
+            {
+                Status = NotificationStatus.Created,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+
+            return Ok(notificationResponseContract);
+        }
+        
+        /// <summary>
+        ///  Send push notification
+        /// </summary>
+        /// <returns></returns>
+        [Route("send/order-message", Order = 4)]
+        [HttpPost]
+        [ProducesResponseType(typeof(NotificationResponseContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> SendOrderArrivedPushNotificationAsync(CustomerOrderArrivedNotificationRequestContract customerOrderArrivedNotificationRequestContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var command = new CustomerOrderArrivedPushNotificationCommand(customerOrderArrivedNotificationRequestContract.OrderId);
+
+            await new CustomerOrderArrivedPushNotificationCommandHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(command);
 
             var notificationResponseContract = new NotificationResponseContract
