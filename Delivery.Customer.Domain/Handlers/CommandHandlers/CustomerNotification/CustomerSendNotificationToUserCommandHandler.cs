@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.NotificationHub.Clients;
+using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Models;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Customer.Domain.Contracts.V1.RestContracts.PushNotification;
@@ -30,7 +31,7 @@ namespace Delivery.Customer.Domain.Handlers.CommandHandlers.CustomerNotification
             
             var notificationRequestContract = command.NotificationRequestContract;
 
-            var notificationSendModel = new NotificationSendModel<CustomerOrderNotificationContract>
+            var notificationSendModel = new NotificationSendModel<IDataContract>
             {
                 Pns = notificationRequestContract.Pns,
                 Message = notificationRequestContract.Message,

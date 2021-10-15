@@ -7,8 +7,13 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
     /// <summary>
     ///  Driver order request contract
     /// </summary>
-    public record DriverOrderRequestContract : NotificationDataContract
+    public record DriverOrderRequestContract : IDataContract
     {
+        public PushNotificationType PushNotificationType { get; init; }
+        public string StoreName { get; init; }
+        public string StoreId { get; init; }
+        public string OrderId { get; init; }
+
         /// <summary>
         ///  Store address
         /// <example>{{storeAddress}}</example>
