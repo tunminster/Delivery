@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Delivery.Azure.Library.NotificationHub.Clients.Contracts;
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 using Delivery.Database.Enums;
@@ -9,28 +10,8 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.PushNotification
     /// <summary>
     ///  A contract to send a push notification to shop owner
     /// </summary>
-    public class OrderCreatedPushNotificationContract : IDataContract
+    public record OrderCreatedPushNotificationContract : NotificationDataContract
     {
-        /// <summary>
-        ///  Store id
-        /// </summary>
-        public string StoreId { get; init; } = string.Empty;
-        
-        /// <summary>
-        ///  Store name
-        /// </summary>
-        public string StoreName { get; init; } = string.Empty;
-
-        /// <summary>
-        ///  Order id
-        /// </summary>
-        public string OrderId { get; init; } = string.Empty;
-
-        /// <summary>
-        ///  Push notification type
-        /// </summary>
-        public PushNotificationType PushNotificationType { get; init; }
-        
         /// <summary>
         /// Order type
         /// <example>{{orderType}}</example>

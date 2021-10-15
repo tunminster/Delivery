@@ -1,15 +1,12 @@
+using Delivery.Azure.Library.NotificationHub.Clients.Contracts;
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
 namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.PushNotification
 {
-    public class ShopOrderCompletePushNotificationContract : IDataContract
+    public record ShopOrderCompletePushNotificationContract : NotificationDataContract
     {
-        /// <summary>
-        ///  Push notification type
-        /// </summary>
-        public PushNotificationType PushNotificationType { get; init; }
-
+        
         /// <summary>
         ///  Store name
         /// </summary>

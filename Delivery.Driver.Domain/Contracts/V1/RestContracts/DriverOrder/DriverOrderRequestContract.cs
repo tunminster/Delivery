@@ -1,3 +1,4 @@
+using Delivery.Azure.Library.NotificationHub.Clients.Contracts;
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
@@ -6,26 +7,8 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
     /// <summary>
     ///  Driver order request contract
     /// </summary>
-    public record DriverOrderRequestContract : IDataContract
+    public record DriverOrderRequestContract : NotificationDataContract
     {
-        /// <summary>
-        ///  Order id
-        /// <example>{{orderId}}</example>
-        /// </summary>
-        public string OrderId { get; init; } = string.Empty;
-
-        /// <summary>
-        ///  Store id
-        /// <example>{{storeId}}</example>
-        /// </summary>
-        public string StoreId { get; init; } = string.Empty;
-
-        /// <summary>
-        ///  Store name
-        ///  <example>{{storeName}}</example>
-        /// </summary>
-        public string StoreName { get; init; } = string.Empty;
-
         /// <summary>
         ///  Store address
         /// <example>{{storeAddress}}</example>
@@ -49,11 +32,5 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
         /// <example>{{tips}}</example>
         /// </summary>
         public int Tips { get; init; }
-
-        /// <summary>
-        ///  Push notification type
-        /// <example>{{pushNotificationType}}</example>
-        /// </summary>
-        public PushNotificationType PushNotificationType { get; init; }
     }
 }

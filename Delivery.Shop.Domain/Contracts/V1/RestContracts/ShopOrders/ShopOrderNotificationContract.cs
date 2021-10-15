@@ -1,3 +1,4 @@
+using Delivery.Azure.Library.NotificationHub.Clients.Contracts;
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 
@@ -6,18 +7,8 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
     /// <summary>
     ///  Shop order notification contract
     /// </summary>
-    public record ShopOrderNotificationContract : IDataContract
+    public record ShopOrderNotificationContract : NotificationDataContract
     {
-        /// <summary>
-        ///  Store id
-        /// </summary>
-        public string StoreId { get; init; } = string.Empty;
-        
-        /// <summary>
-        ///  Store name
-        /// </summary>
-        public string StoreName { get; init; } = string.Empty;
-
         /// <summary>
         ///  Store address
         /// </summary>
@@ -34,15 +25,6 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders
         /// <example>{{deliveryFee}}</example>
         /// </summary>
         public int DeliveryFee { get; init; }
-
-        /// <summary>
-        ///  Order id
-        /// </summary>
-        public string OrderId { get; init; } = string.Empty;
-
-        /// <summary>
-        ///  Push notification type
-        /// </summary>
-        public PushNotificationType PushNotificationType { get; init; }
+        
     }
 }

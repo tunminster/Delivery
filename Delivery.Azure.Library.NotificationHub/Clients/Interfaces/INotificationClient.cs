@@ -1,6 +1,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Connection.Managers.Interfaces;
+using Delivery.Azure.Library.NotificationHub.Clients.Contracts;
 using Delivery.Azure.Library.NotificationHub.Connections.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Models;
 using Microsoft.Azure.NotificationHubs;
@@ -39,6 +40,6 @@ namespace Delivery.Azure.Library.NotificationHub.Clients.Interfaces
         /// </summary>
         /// <param name="notificationSendModel"></param>
         /// <returns></returns>
-        Task<HttpStatusCode> SendNotificationToUser<T>(NotificationSendModel<T> notificationSendModel) where T : IDataContract;
+        Task<HttpStatusCode> SendNotificationToUser<T>(NotificationSendModel<T> notificationSendModel) where T : NotificationDataContract;
     }
 }
