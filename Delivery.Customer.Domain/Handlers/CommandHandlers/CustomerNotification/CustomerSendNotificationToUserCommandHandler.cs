@@ -31,11 +31,11 @@ namespace Delivery.Customer.Domain.Handlers.CommandHandlers.CustomerNotification
             
             var notificationRequestContract = command.NotificationRequestContract;
 
-            var notificationSendModel = new NotificationSendModel<CustomerOrderNotificationContract>
+            var notificationSendModel = new NotificationSendModel<CustomerOrderArrivedNotificationContract>
             {
                 Pns = notificationRequestContract.Pns,
                 Message = notificationRequestContract.Message,
-                Data = new CustomerOrderNotificationContract(),
+                Data = new CustomerOrderArrivedNotificationContract(),
                 ToTag = notificationRequestContract.ToTag,
                 Username = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
                 CorrelationId = executingRequestContextAdapter.GetCorrelationId(),

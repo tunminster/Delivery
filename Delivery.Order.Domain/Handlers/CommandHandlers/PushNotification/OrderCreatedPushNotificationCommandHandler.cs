@@ -51,18 +51,18 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.PushNotification
 
             var orderCreatedPushNotificationContract = order.ConvertToContract();
 
-            var showOwnerUser = databaseContext.StoreUsers.FirstOrDefault(x => x.StoreId == order.Store.Id) ?? throw new InvalidOperationException($"Expected store user for the store id {order.Store.ExternalId}");
+            var shopOwnerUser = databaseContext.StoreUsers.FirstOrDefault(x => x.StoreId == order.Store.Id) ?? throw new InvalidOperationException($"Expected store user for the store id {order.Store.ExternalId}");
             
-            var shoOwnerDevice =
-                databaseContext.NotificationDevices.FirstOrDefault(x => x.UserEmail == showOwnerUser.Username) ??
-                throw new InvalidOperationException($"Shop owner - {showOwnerUser.Username} hasn't registered notification feature");
+            var shopOwnerDevice =
+                databaseContext.NotificationDevices.FirstOrDefault(x => x.UserEmail == shopOwnerUser.Username) ??
+                throw new InvalidOperationException($"Shop owner - {shopOwnerUser.Username} hasn't registered notification feature");
             
             var notificationSendModel = new NotificationSendModel<OrderCreatedPushNotificationContract>
             {
-                Pns = shoOwnerDevice.Platform,
+                Pns = shopOwnerDevice.Platform,
                 Message = "New order",
                 Data = orderCreatedPushNotificationContract,
-                ToTag = shoOwnerDevice.Tag,
+                ToTag = shopOwnerDevice.Tag,
                 Username = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
                 CorrelationId = executingRequestContextAdapter.GetCorrelationId(),
                 ShardKey = executingRequestContextAdapter.GetShard().Key,
@@ -75,12 +75,12 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.PushNotification
             
             if (statusCode is HttpStatusCode.Accepted or HttpStatusCode.Created or HttpStatusCode.OK)
             {
-                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace( $"New order push notification sent to {showOwnerUser.Username}",
+                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace( $"New order push notification sent to {shopOwnerUser.Username}",
                     SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             }
             else
             {
-                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackException(new InvalidOperationException($"A new order request push notification failed - Shop owner name {showOwnerUser.Username} and Order id {command.OrderCreatedPushNotificationRequestContract.OrderId}"),
+                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackException(new InvalidOperationException($"A new order request push notification failed - Shop owner name {shopOwnerUser.Username} and Order id {command.OrderCreatedPushNotificationRequestContract.OrderId}"),
                     executingRequestContextAdapter.GetTelemetryProperties());
             }
             
