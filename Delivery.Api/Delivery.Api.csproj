@@ -74,6 +74,7 @@
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
     <ProjectReference Include="..\Delivery.Driver.Domain\Delivery.Driver.Domain.csproj" />
+    <ProjectReference Include="..\Delivery.Managements.Domain\Delivery.Managements.Domain.csproj" />
     <ProjectReference Include="..\Delivery.Notifications\Delivery.Notifications.csproj" />
     <ProjectReference Include="..\Delivery.Order.Domain\Delivery.Order.Domain.csproj" />
     <ProjectReference Include="..\Delivery.Product.Domain\Delivery.Product.Domain.csproj" />
