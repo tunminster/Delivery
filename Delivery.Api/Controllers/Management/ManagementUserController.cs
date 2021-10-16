@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Delivery.Database.Constants;
 using Delivery.Database.Context;
 using Delivery.Database.Models;
 using Delivery.Domain.Contracts.V1.RestContracts;
+using Delivery.Domain.Factories;
 using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
@@ -29,6 +31,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Delivery.Api.Controllers.Management
 {
@@ -52,13 +55,8 @@ namespace Delivery.Api.Controllers.Management
         private readonly ILogger<UserManager<Database.Models.ApplicationUser>> logger;
         
         /// <summary>
-        ///  Driver controller
+        ///  Management user controller
         /// </summary>
-        /// <param name="serviceProvider"></param>
-        /// <param name="optionsAccessor"></param>
-        /// <param name="passwordHasher"></param>
-        /// <param name="userValidators"></param>
-        /// <param name="passwordValidators"></param>
         public ManagementUserController(IServiceProvider serviceProvider, 
             IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<Database.Models.ApplicationUser> passwordHasher,
@@ -140,7 +138,7 @@ namespace Delivery.Api.Controllers.Management
             await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
 
-            using var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+            using var userManager = new UserManager<ApplicationUser>(store, optionsAccessor,
                 passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
 
 
@@ -213,6 +211,58 @@ namespace Delivery.Api.Controllers.Management
             }
 
             return Ok(managementUserEmailVerificationStatusContract);
+        }
+        
+        /// <summary>
+        ///  User login 
+        /// </summary>
+        [Route("login", Order = 5)]
+        [HttpPost]
+        public async Task<IActionResult> Post_LoginAsync([FromBody] ManagementUserLoginContract driverLoginContract)
+        {
+            var validationResult = await new ManagementUserLoginValidator().ValidateAsync(driverLoginContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter(); 
+            
+            
+            var identity = await GetClaimsIdentityAsync(driverLoginContract.Username, driverLoginContract.Password, executingRequestContextAdapter);
+            
+            
+            var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, driverLoginContract.Username, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
+            return new OkObjectResult(jwt);
+        }
+        
+        private async Task<ClaimsIdentity?> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                return await Task.FromResult<ClaimsIdentity?>(null);
+            
+            await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
+
+            // get the user to verifty
+            var userToVerify = await userManager.FindByNameAsync(userName);
+
+            if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
+            
+            var claimList = await userManager.GetClaimsAsync(userToVerify);
+            var roleList = await userManager.GetRolesAsync(userToVerify);
+
+            // check the credentials
+            if (await userManager.CheckPasswordAsync(userToVerify, password))
+            {
+                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, claimList, roleList.ToList(), executingRequestContextAdapter));
+            }
+
+            // Credentials are invalid, or account doesn't exist
+            return await Task.FromResult<ClaimsIdentity?>(null);
         }
         
         private async Task ConfirmEmailAsync(ManagementUserEmailVerificationContract managementUserEmailVerificationContract,
