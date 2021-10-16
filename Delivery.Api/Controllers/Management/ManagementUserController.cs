@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
+using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
@@ -12,12 +14,15 @@ using Delivery.Database.Constants;
 using Delivery.Database.Context;
 using Delivery.Database.Models;
 using Delivery.Domain.Contracts.V1.RestContracts;
+using Delivery.Domain.Factories;
 using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts;
+using Delivery.Managements.Domain.Handlers.CommandHandlers;
+using Delivery.Managements.Domain.Validators.EmailVerification;
 using Delivery.Managements.Domain.Validators.ManagementUserCreation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
@@ -26,6 +31,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Delivery.Api.Controllers.Management
 {
@@ -49,13 +55,8 @@ namespace Delivery.Api.Controllers.Management
         private readonly ILogger<UserManager<Database.Models.ApplicationUser>> logger;
         
         /// <summary>
-        ///  Driver controller
+        ///  Management user controller
         /// </summary>
-        /// <param name="serviceProvider"></param>
-        /// <param name="optionsAccessor"></param>
-        /// <param name="passwordHasher"></param>
-        /// <param name="userValidators"></param>
-        /// <param name="passwordValidators"></param>
         public ManagementUserController(IServiceProvider serviceProvider, 
             IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<Database.Models.ApplicationUser> passwordHasher,
@@ -137,7 +138,7 @@ namespace Delivery.Api.Controllers.Management
             await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
 
-            using var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+            using var userManager = new UserManager<ApplicationUser>(store, optionsAccessor,
                 passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
 
 
@@ -154,6 +155,136 @@ namespace Delivery.Api.Controllers.Management
             };
             
             return Ok(statusContract);
+        }
+        
+        /// <summary>
+        ///  Request email verification
+        /// </summary>
+        [Route("request-email-otp", Order = 3)]
+        [ProducesResponseType(typeof(ManagementUserEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_RequestEmailOtpAsync(
+            [FromBody] ManagementUserEmailVerificationRequestContract managementUserEmailVerificationRequestContract)
+        {
+            var validationResult = await new ManagementUserEmailVerificationRequestValidator().ValidateAsync(managementUserEmailVerificationRequestContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var managementUserEmailVerificationStatusContract =
+                await new ManagementUserEmailVerificationRequestCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new ManagementUserEmailVerificationRequestCommand(managementUserEmailVerificationRequestContract));
+
+            return Ok(managementUserEmailVerificationStatusContract);
+        }
+        
+        /// <summary>
+        ///  Verify email verification 
+        /// </summary>
+        /// <returns></returns>
+        [Route("verify-email-otp", Order = 4)]
+        [ProducesResponseType(typeof(ManagementUserEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_VerifyEmailOtpAsync(
+            [FromBody] ManagementUserEmailVerificationContract managementUserEmailVerificationContract)
+        {
+            var validationResult = await new ManagementUserEmailVerificationValidator().ValidateAsync(managementUserEmailVerificationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var managementUserEmailVerificationStatusContract =
+                await new ManagementUserEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new ManagementUserEmailVerificationCommand(managementUserEmailVerificationContract));
+
+            if (managementUserEmailVerificationStatusContract.Status == "approved")
+            {
+                await ConfirmEmailAsync(managementUserEmailVerificationContract, executingRequestContextAdapter);
+            }
+
+            return Ok(managementUserEmailVerificationStatusContract);
+        }
+        
+        /// <summary>
+        ///  User login 
+        /// </summary>
+        [Route("login", Order = 5)]
+        [HttpPost]
+        public async Task<IActionResult> Post_LoginAsync([FromBody] ManagementUserLoginContract driverLoginContract)
+        {
+            var validationResult = await new ManagementUserLoginValidator().ValidateAsync(driverLoginContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter(); 
+            
+            
+            var identity = await GetClaimsIdentityAsync(driverLoginContract.Username, driverLoginContract.Password, executingRequestContextAdapter);
+            
+            
+            var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, driverLoginContract.Username, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
+            return new OkObjectResult(jwt);
+        }
+        
+        private async Task<ClaimsIdentity?> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                return await Task.FromResult<ClaimsIdentity?>(null);
+            
+            await using var applicationDbContext = await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
+
+            // get the user to verifty
+            var userToVerify = await userManager.FindByNameAsync(userName);
+
+            if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
+            
+            var claimList = await userManager.GetClaimsAsync(userToVerify);
+            var roleList = await userManager.GetRolesAsync(userToVerify);
+
+            // check the credentials
+            if (await userManager.CheckPasswordAsync(userToVerify, password))
+            {
+                return await Task.FromResult(jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id, claimList, roleList.ToList(), executingRequestContextAdapter));
+            }
+
+            // Credentials are invalid, or account doesn't exist
+            return await Task.FromResult<ClaimsIdentity?>(null);
+        }
+        
+        private async Task ConfirmEmailAsync(ManagementUserEmailVerificationContract managementUserEmailVerificationContract,
+            IExecutingRequestContextAdapter executingRequestContextAdapter)
+        {
+            await using var applicationDbContext =
+                await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider, logger);
+
+            var user = await userManager.FindByEmailAsync(managementUserEmailVerificationContract.Email);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("Expected to be found user.").WithTelemetry(
+                    executingRequestContextAdapter.GetTelemetryProperties());
+            }
+
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            await userManager.ConfirmEmailAsync(user, token);
         }
         
         
