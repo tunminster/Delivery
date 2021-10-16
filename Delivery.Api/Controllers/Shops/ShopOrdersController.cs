@@ -15,6 +15,7 @@ using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderSearch;
+using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
 using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders;
 using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrderSearch;
@@ -222,6 +223,27 @@ namespace Delivery.Api.Controllers.Shops
                     shopOrderSearchQuery);
 
             return Ok(shopOrderList);
+        }
+        
+        /// <summary>
+        ///  Search order endpoint
+        /// </summary>
+        /// <remarks>Order can be searched by order id, status</remarks>
+        [Route("index-orders", Order = 6)]
+        [HttpPost]
+        [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> IndexOrders_Async(ShopOrderIndexRequestContract shopOrderIndexRequestContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopOrderIndexAllCommand =
+                new ShopOrderIndexAllCommand(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected an authenticated user"));
+
+            await new ShopOrderIndexAllCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                shopOrderIndexAllCommand);
+            
+            return Ok(new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow});
         }
     }
 }

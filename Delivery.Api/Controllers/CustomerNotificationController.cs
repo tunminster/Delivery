@@ -116,7 +116,7 @@ namespace Delivery.Api.Controllers
         ///  Send push notification
         /// </summary>
         /// <returns></returns>
-        [Route("send/order-message", Order = 4)]
+        [Route("send/order-message", Order = 5)]
         [HttpPost]
         [ProducesResponseType(typeof(NotificationResponseContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
