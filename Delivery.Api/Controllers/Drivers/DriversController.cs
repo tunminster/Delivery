@@ -234,9 +234,8 @@ namespace Delivery.Api.Controllers.Drivers
         }
         
         /// <summary>
-        ///  Request email verification
+        ///  Verify email verification 
         /// </summary>
-        /// <param name="driverCheckEmailVerificationContract"></param>
         /// <returns></returns>
         [Route("verify-email-otp", Order = 4)]
         [ProducesResponseType(typeof(DriverEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
