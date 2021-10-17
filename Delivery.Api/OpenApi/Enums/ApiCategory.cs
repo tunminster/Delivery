@@ -23,6 +23,12 @@ namespace Delivery.Api.OpenApi.Enums
         /// <summary>
         ///  Contains customer apis which have customer use-cases
         /// </summary>
-        Customer
+        Customer,
+        
+        /// <summary>
+        ///  Contains front end apis
+        /// </summary>
+        WebApp
+        
     }
 }
