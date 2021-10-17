@@ -30,7 +30,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentInt
             var shardMetadataManager = serviceProvider.GetRequiredService<IShardMetadataManager>();
             var shardInformation = shardMetadataManager.GetShardInformation<ShardInformation>().FirstOrDefault(x =>
                 x.Key!.ToLower() == executingRequestContextAdapter.GetShard().Key.ToLower());
-            
+
             StripeConfiguration.ApiKey = stripeApiKey;
             
             var paymentIntentService = new PaymentIntentService();

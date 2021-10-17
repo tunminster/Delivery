@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts.RestContracts.ApplicationFees;
 using Delivery.Order.Domain.Factories;
@@ -29,10 +30,16 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
 
             var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(random.Next(1, 4));
 
-            var totalAmount = command.ApplicationFeesCreationContract.SubTotal + platformFee + deliveryFee;
+            var totalAmount = command.ApplicationFeesCreationContract.SubTotal + platformFee;
+
+            if (command.ApplicationFeesCreationContract.OrderType == OrderType.DeliverTo)
+            {
+                totalAmount += deliveryFee;
+            }
+            
             var applicationFeesContract = new ApplicationFeesContract
             {
-                PlatformFee = platformFee,
+                PlatformFee = command.ApplicationFeesCreationContract.OrderType == OrderType.DeliverTo ? 0 :platformFee,
                 DeliveryFee = deliveryFee,
                 TotalAmount = totalAmount
             };

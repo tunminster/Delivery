@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
+using Delivery.Azure.Library.Sharding.Contracts.V1;
+using Delivery.Azure.Library.Sharding.Interfaces;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
@@ -21,6 +24,7 @@ using Delivery.Order.Domain.Services.Applications;
 using Delivery.Order.Domain.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace Delivery.Api.Controllers
@@ -57,8 +61,12 @@ namespace Delivery.Api.Controllers
             }
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var shardMetadataManager = serviceProvider.GetRequiredService<IShardMetadataManager>();
+            var shardInformation = shardMetadataManager.GetShardInformation<ShardInformation>().FirstOrDefault(x =>
+                x.Key!.ToLower() == executingRequestContextAdapter.GetShard().Key.ToLower());
 
-            var paymentOrderServiceRequest = new PaymentOrderServiceRequest(stripeOrderCreationContract, "gbp");
+            var paymentOrderServiceRequest = new PaymentOrderServiceRequest(stripeOrderCreationContract, shardInformation!.Currency);
             var paymentIntentCreationStatusContract =
                 await new PaymentOrderService(serviceProvider, executingRequestContextAdapter)
                     .ExecuteStripePaymentIntentWorkflow(paymentOrderServiceRequest);
