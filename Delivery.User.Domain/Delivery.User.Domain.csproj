@@ -14,11 +14,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Providers" />
-      <Folder Include="QueryHandlers" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Delivery.Azure.Library.Configuration\Delivery.Azure.Library.Configuration.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Core\Delivery.Azure.Library.Core.csproj" />
       <ProjectReference Include="..\Delivery.Customer.Domain\Delivery.Customer.Domain.csproj" />
@@ -36,6 +31,11 @@
       <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
         <HintPath>..\..\..\..\..\usr\local\share\dotnet\packs\Microsoft.AspNetCore.App.Ref\5.0.0\ref\net5.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Contracts\V1\Enums" />
+      <Folder Include="Contracts\V1\RestContracts" />
     </ItemGroup>
 
 </Project>
