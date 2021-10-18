@@ -104,8 +104,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         /// Create product with image upload
         /// </summary>
-        /// <param name="productCreationContract"></param>
-        /// <param name="file"></param>
         /// <returns></returns>
         [Route("CreateProduct", Order = 4)]
         [HttpPost]

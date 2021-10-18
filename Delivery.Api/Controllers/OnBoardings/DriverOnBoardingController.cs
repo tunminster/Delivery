@@ -4,9 +4,11 @@ using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
+using Delivery.Azure.Library.WebApi.ModelBinders;
 using Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings;
 using Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings.Driver;
 using Delivery.User.Domain.Validators.OnBoardings;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers.OnBoardings
@@ -20,12 +22,17 @@ namespace Delivery.Api.Controllers.OnBoardings
         [HttpPost]
         [ProducesResponseType(typeof(DriverOnBoardingStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Post_OnBoardingDriverAsync(DriverOnBoardingCreationContract driverOnBoardingCreationContract, string id)
+        public async Task<IActionResult> Post_OnBoardingDriverAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] DriverOnBoardingCreationContract driverOnBoardingCreationContract, string id, IFormFile identityFile)
         {
             var validationResult = await new DriverOnBoardingCreationValidator().ValidateAsync(driverOnBoardingCreationContract);
             if (!validationResult.IsValid)
             {
                 return validationResult.ConvertToBadRequest();
+            }
+            
+            if (identityFile.Length < 1)
+            {
+                return "Identity file should be attached".ConvertToBadRequest();
             }
             
             return Ok(new DriverOnBoardingStatusContract { AccountNumber = "acct_1JlVEQRTb0JcIyR1"});
