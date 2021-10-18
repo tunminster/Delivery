@@ -4,8 +4,10 @@ using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
+using Delivery.Azure.Library.WebApi.ModelBinders;
 using Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings.ShopOwner;
 using Delivery.User.Domain.Validators.OnBoardings;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers.OnBoardings
@@ -19,12 +21,17 @@ namespace Delivery.Api.Controllers.OnBoardings
         [HttpPost]
         [ProducesResponseType(typeof(ShopOwnerOnBoardingStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Post_OnBoardingShopOwnerAsync(ShopOwnerOnBoardingCreationContract shopOwnerOnBoardingCreationContract, string id)
+        public async Task<IActionResult> Post_OnBoardingShopOwnerAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] ShopOwnerOnBoardingCreationContract shopOwnerOnBoardingCreationContract, string id, IFormFile identityFile)
         {
             var validationResult = await new ShopOwnerOnBoardingCreationValidator().ValidateAsync(shopOwnerOnBoardingCreationContract);
             if (!validationResult.IsValid)
             {
                 return validationResult.ConvertToBadRequest();
+            }
+
+            if (identityFile.Length < 1)
+            {
+                return "Identity file should be attached".ConvertToBadRequest();
             }
             
             return Ok(new ShopOwnerOnBoardingStatusContract { AccountNumber = "acct_1JlVEQRTb0JcIyR1"});
