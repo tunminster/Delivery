@@ -5,12 +5,13 @@ using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings;
+using Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings.Driver;
 using Delivery.User.Domain.Validators.OnBoardings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers.OnBoardings
 {
-    [Route("api/v1/on-boarding" , Name = "1 - OnBoarding api")]
+    [Route("api/v1/on-boarding" , Name = "1 - Driver OnBoarding api")]
     [PlatformSwaggerCategory(ApiCategory.WebApp)]
     [ApiController]
     public class DriverOnBoardingController : ControllerBase

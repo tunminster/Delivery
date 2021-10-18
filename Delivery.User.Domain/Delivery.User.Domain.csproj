@@ -34,7 +34,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Contracts\V1\Enums" />
       <Folder Include="Contracts\V1\RestContracts" />
     </ItemGroup>
 

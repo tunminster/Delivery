@@ -1,18 +1,17 @@
-using Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings;
-using Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings.Driver;
+using Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings.ShopOwner;
 using FluentValidation;
 
 namespace Delivery.User.Domain.Validators.OnBoardings
 {
-    public class DriverOnBoardingCreationValidator : AbstractValidator<DriverOnBoardingCreationContract>
+    public class ShopOwnerOnBoardingCreationValidator : AbstractValidator<ShopOwnerOnBoardingCreationContract>
     {
-        public DriverOnBoardingCreationValidator()
+        public ShopOwnerOnBoardingCreationValidator()
         {
             RuleFor(x => x.FirstName).NotNull().NotEmpty().WithMessage("First name must be provided.");
             RuleFor(x => x.LastName).NotNull().NotEmpty().WithMessage("Last name must be provided.");
             RuleFor(x => x.Email).NotNull().NotEmpty().WithMessage("Email must be provided.");
-            RuleFor(x => x.JobTitle).NotNull().NotEmpty().WithMessage("Job title must be provided.");
-            RuleFor(x => x.DateOfBirth).NotNull().NotEmpty().WithMessage("Dob must be provided.");
+            RuleFor(x => x.Dob).NotNull().NotEmpty().WithMessage("Dob must be provided.");
+            RuleFor(x => x.PhoneNumber).NotNull().NotEmpty().WithMessage("Phone number must be provided.");
             RuleFor(x => x.SocialSecurityNumber).NotNull().NotEmpty().WithMessage("Social security number must be provided.");
             
             RuleFor(x => x.Address.AddressLine1).NotNull().NotEmpty().WithMessage("AddressLine1 must be provided.");
