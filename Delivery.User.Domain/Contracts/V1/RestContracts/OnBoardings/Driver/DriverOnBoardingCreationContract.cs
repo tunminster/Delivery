@@ -1,6 +1,6 @@
 using Delivery.Database.Enums;
 
-namespace Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings
+namespace Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings.Driver
 {
     public record DriverOnBoardingCreationContract
     {
