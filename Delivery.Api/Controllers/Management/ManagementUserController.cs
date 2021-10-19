@@ -21,9 +21,12 @@ using Delivery.Domain.Models;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts;
+using Delivery.Managements.Domain.Contracts.V1.RestContracts.ResetPassword;
 using Delivery.Managements.Domain.Handlers.CommandHandlers;
+using Delivery.Managements.Domain.Handlers.CommandHandlers.ResetPassword;
 using Delivery.Managements.Domain.Validators.EmailVerification;
 using Delivery.Managements.Domain.Validators.ManagementUserCreation;
+using Delivery.Managements.Domain.Validators.ResetPassword;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -116,7 +119,7 @@ namespace Delivery.Api.Controllers.Management
         }
         
         /// <summary>
-        ///  Create a new admin user
+        ///  Add admin role
         /// </summary>
         /// <remarks>Register a new user with user role.</remarks>
         [Route("add-admin-role", Order = 1)]
@@ -211,6 +214,100 @@ namespace Delivery.Api.Controllers.Management
             }
 
             return Ok(managementUserEmailVerificationStatusContract);
+        }
+        
+        /// <summary>
+        ///  Request reset password otp
+        /// </summary>
+        /// <returns></returns>
+        [Route("request-reset-password-otp", Order = 5)]
+        [ProducesResponseType(typeof(UserManagementResetPasswordStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_RequestResetPasswordAsync(
+            [FromBody] UserManagementResetPasswordRequestContract userManagementResetPasswordRequestContract)
+        {
+            var validationResult = await new UserManagementResetPasswordRequestValidator().ValidateAsync(userManagementResetPasswordRequestContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var userManagementResetPasswordStatusContract =
+                await new UserManagementResetPasswordVerificationRequestCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new UserManagementResetPasswordVerificationRequestCommand(userManagementResetPasswordRequestContract));
+
+            return Ok(userManagementResetPasswordStatusContract);
+        }
+        
+        /// <summary>
+        ///  Verify otp and reset password
+        /// </summary>
+        [Route("verify-reset-password", Order = 7)]
+        [ProducesResponseType(typeof(UserManagementResetPasswordStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_VerifyResetPasswordOtpAsync([FromBody] UserManagementResetPasswordCreationContract userManagementResetPasswordCreationContract)
+        {
+            var validationResult =
+                await new UserManagementResetPasswordVerificationValidator().ValidateAsync(
+                    userManagementResetPasswordCreationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var driverResetPasswordStatusContract =
+                await new UserManagementResetPasswordVerificationCommandHandler(serviceProvider,
+                        executingRequestContextAdapter)
+                    .Handle(new UserManagementResetPasswordVerificationCommand(userManagementResetPasswordCreationContract));
+
+            if (driverResetPasswordStatusContract.Status == "approved")
+            {
+                await using var applicationDbContext =
+                    await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+                
+                
+                var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+                var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                    passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider, logger);
+
+                var user = await userManager.FindByEmailAsync(userManagementResetPasswordCreationContract.Email);
+
+                if (user == null)
+                {
+                    throw new InvalidOperationException($"Expected to be found {userManagementResetPasswordCreationContract.Email} user.").WithTelemetry(
+                        executingRequestContextAdapter.GetTelemetryProperties());
+                }
+                
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                var passwordResetResult = await userManager.ResetPasswordAsync(user, token, userManagementResetPasswordCreationContract.Password);
+
+                if (passwordResetResult.Succeeded)
+                {
+                    return Ok(driverResetPasswordStatusContract);
+                }
+
+                foreach (var error in passwordResetResult.Errors)
+                {
+                    validationResult.Errors.Add(new ValidationFailure(error.Code, error.Description));
+                }
+                
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var errorResult = driverResetPasswordStatusContract with
+            {
+                Status = "error",
+                Valid = false
+            };
+
+            return Ok(errorResult);
         }
         
         /// <summary>
