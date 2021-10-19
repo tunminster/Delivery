@@ -13,7 +13,9 @@ namespace Delivery.Shop.Domain.Converters
             {
                 Username = string.Empty,
                 Email = shopResetPasswordRequestContract.Email,
-                FromName = ShopConstant.ShopResetPasswordName
+                FromName = ShopConstant.ShopResetPasswordName,
+                VerificationName = ShopConstant.ShopResetPasswordVerification,
+                Subject = ShopConstant.ShopResetPasswordVerification
             };
 
             return twilioEmailVerificationContract;
