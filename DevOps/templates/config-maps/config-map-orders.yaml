@@ -13,6 +13,7 @@ data:
     Service_Name: "Orders"
     Stripe-Api-Key: "#{Stripe-Api-Key}#"
     Geo-Api-Uri: "#{Geo-Api-Uri}#"
+    Distance-Api-Uri: "#{Distance-Api-Uri}#"
     Elastic-Search-Index: "#{Elastic-Search-Index}#"
     Elastic-Search-Url: "#{Elastic-Search-Url}#"
     Ring: "#{Ring}#"
