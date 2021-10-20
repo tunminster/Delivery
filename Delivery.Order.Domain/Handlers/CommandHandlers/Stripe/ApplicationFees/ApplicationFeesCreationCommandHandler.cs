@@ -9,6 +9,7 @@ using Delivery.Domain.Contracts.V1.RestContracts.DistanceMatrix;
 using Delivery.Domain.Services;
 using Delivery.Order.Domain.Contracts.RestContracts.ApplicationFees;
 using Delivery.Order.Domain.Factories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
 {
@@ -28,19 +29,52 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
         public async Task<ApplicationFeesContract> Handle(ApplicationFeesCreationCommand command)
         {
             var platformFee = ApplicationFeeGenerator.GeneratorFees(command.ApplicationFeesCreationContract.SubTotal);
-            
-            var distanceMatrixContract = await new DistanceMatrixService(serviceProvider, executingRequestContextAdapter)
-                .GetDistanceAsync(new DistanceMatrixRequestContract
-                {
-                    DestinationLatitude = command.ApplicationFeesCreationContract.CustomerLatitude,
-                    DestinationLongitude = command.ApplicationFeesCreationContract.CustomerLongitude,
-                    SourceLatitude = command.ApplicationFeesCreationContract.StoreLatitude,
-                    SourceLongitude = command.ApplicationFeesCreationContract.StoreLongitude
-                });
 
-            var distance = distanceMatrixContract.Status == "OK"
-                ? distanceMatrixContract.Rows.First()
-                    .Elements.First().Distance.Value : 1000;
+
+            int distance = 0;
+            if (command.ApplicationFeesCreationContract.CustomerLatitude == null)
+            {
+                await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+                var store = await databaseContext.Stores.SingleOrDefaultAsync(x =>
+                    x.ExternalId == command.ApplicationFeesCreationContract.StoreId);
+
+                var customer = await databaseContext.Customers.Where(x =>
+                    x.ExternalId == command.ApplicationFeesCreationContract.CustomerId)
+                    .Include(x => x.Addresses)
+                    .SingleOrDefaultAsync();
+                var address = customer.Addresses.FirstOrDefault(x => x.Disabled == false);
+                var distanceMatrix = await new DistanceMatrixService(serviceProvider, executingRequestContextAdapter)
+                    .GetDistanceAsync(new DistanceMatrixRequestContract
+                    {
+                        DestinationLatitude = address?.Lat ?? 0,
+                        DestinationLongitude = address?.Lng ?? 0,
+                        SourceLatitude = store?.Latitude ?? 0,
+                        SourceLongitude = store?.Longitude ?? 0
+                    });
+                
+                distance = distanceMatrix.Status == "OK"
+                    ? distanceMatrix.Rows.First()
+                        .Elements.First().Distance.Value : 1000;
+
+            }
+            else
+            {
+                var distanceMatrixContract = await new DistanceMatrixService(serviceProvider, executingRequestContextAdapter)
+                    .GetDistanceAsync(new DistanceMatrixRequestContract
+                    {
+                        DestinationLatitude = command.ApplicationFeesCreationContract.CustomerLatitude ?? 0,
+                        DestinationLongitude = command.ApplicationFeesCreationContract.CustomerLongitude ?? 0,
+                        SourceLatitude = command.ApplicationFeesCreationContract.StoreLatitude ?? 0,
+                        SourceLongitude = command.ApplicationFeesCreationContract.StoreLongitude ?? 0
+                    });
+
+                distance = distanceMatrixContract.Status == "OK"
+                    ? distanceMatrixContract.Rows.First()
+                        .Elements.First().Distance.Value : 1000;
+            }
+            
+            
             
             var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
 
