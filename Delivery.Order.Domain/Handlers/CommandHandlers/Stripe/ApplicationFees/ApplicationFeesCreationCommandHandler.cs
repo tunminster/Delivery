@@ -1,8 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Database.Context;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.Contracts.V1.RestContracts.DistanceMatrix;
+using Delivery.Domain.Services;
 using Delivery.Order.Domain.Contracts.RestContracts.ApplicationFees;
 using Delivery.Order.Domain.Factories;
 
@@ -25,10 +29,20 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
         {
             var platformFee = ApplicationFeeGenerator.GeneratorFees(command.ApplicationFeesCreationContract.SubTotal);
             
-            // todo: refactor with calculation radius with store and customer address
-            var random = new Random();
+            var distanceMatrixContract = await new DistanceMatrixService(serviceProvider, executingRequestContextAdapter)
+                .GetDistanceAsync(new DistanceMatrixRequestContract
+                {
+                    DestinationLatitude = command.ApplicationFeesCreationContract.CustomerLatitude,
+                    DestinationLongitude = command.ApplicationFeesCreationContract.CustomerLongitude,
+                    SourceLatitude = command.ApplicationFeesCreationContract.StoreLatitude,
+                    SourceLongitude = command.ApplicationFeesCreationContract.StoreLongitude
+                });
 
-            var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(random.Next(1, 4));
+            var distance = distanceMatrixContract.Status == "OK"
+                ? distanceMatrixContract.Rows.First()
+                    .Elements.First().Distance.Value : 1000;
+            
+            var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
 
             var totalAmount = command.ApplicationFeesCreationContract.SubTotal + platformFee;
 

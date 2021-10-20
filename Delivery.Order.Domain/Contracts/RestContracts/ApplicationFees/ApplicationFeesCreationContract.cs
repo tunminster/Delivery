@@ -29,5 +29,29 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.ApplicationFees
         /// </summary>
         /// <example>{{storeId}}</example>
         public string StoreId { get; init; }
+        
+        /// <summary>
+        ///  Customer latitude to be delivered
+        /// </summary>
+        /// <example>{{customerLatitude}}</example>
+        public double CustomerLatitude { get; init; }
+        
+        /// <summary>
+        ///  Customer longitude to be delivered
+        /// </summary>
+        /// <example>{{customerLongitude}}</example>
+        public double CustomerLongitude { get; init; }
+        
+        /// <summary>
+        ///  Restaurant latitude 
+        /// </summary>
+        /// <example>{{storeLatitude}}</example>
+        public double StoreLatitude { get; init; }
+        
+        /// <summary>
+        ///  Store longitude
+        /// </summary>
+        /// <example>{{storeLongitude}}</example>
+        public double StoreLongitude { get; init; }
     }
 }
