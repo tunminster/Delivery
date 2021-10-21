@@ -8,10 +8,8 @@ using Delivery.Product.Domain.Contracts.V1.ModelContracts;
 
 namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
 {
-    [DataContract]
-    public class StoreCategoriesContract : CategoryContract
+    public record StoreCategoriesContract : CategoryContract
     {
-        [DataMember]
         public List<ProductContract> Products { get; set; }
         
         public override string ToString()

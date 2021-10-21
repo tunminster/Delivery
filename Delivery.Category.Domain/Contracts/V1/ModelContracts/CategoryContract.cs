@@ -4,8 +4,7 @@ using Delivery.Category.Domain.Contracts.V1.RestContracts;
 
 namespace Delivery.Category.Domain.Contracts.V1.ModelContracts
 {
-    [DataContract]
-    public class CategoryContract : CategoryCreationContract
+    public record CategoryContract : CategoryCreationContract
     {
         public override string ToString()
         {
