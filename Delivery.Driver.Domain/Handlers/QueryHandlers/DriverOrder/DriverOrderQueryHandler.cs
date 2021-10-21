@@ -37,6 +37,9 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
             
             var driverOrders = await databaseContext.DriverOrders
                 .Include(x => x.Order.Store)
+                .Include(x => x.Order.OrderItems)
+                .ThenInclude(x => x.Product)
+                .Include(x => x.Order.Customer)
                 .Include(x => x.Order)
                 .ThenInclude(x => x.Address)
                 .FirstOrDefaultAsync(x => x.DriverId == driver.Id && x.Status == DriverOrderStatus.None);
