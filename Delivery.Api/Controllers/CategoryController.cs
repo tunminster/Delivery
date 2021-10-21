@@ -133,14 +133,9 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PutCategoryAsync(string id, CategoryCreationContract categoryCreationContract)
         {
-            if (id != categoryCreationContract.Id)
-            {
-                return BadRequest();
-            }
-            
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var categoryUpdateCommand = new CategoryUpdateCommand(categoryCreationContract);
+            var categoryUpdateCommand = new CategoryUpdateCommand(categoryCreationContract, id);
             var categoryUpdateCommandHandler =
                 new CategoryUpdateCommandHandler(serviceProvider, executingRequestContextAdapter);
             
@@ -156,13 +151,8 @@ namespace Delivery.Api.Controllers
         /// <returns></returns>
         [Route("delete/{id}", Order = 6)]
         [HttpDelete]
-        public async Task<IActionResult> DeleteCategoryAsync(int id)
+        public async Task<IActionResult> DeleteCategoryAsync(string id)
         {
-            if (id < 1)
-            {
-                return BadRequest();
-            }
-            
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
             var categoryDeleteCommand = new CategoryDeleteCommand(id);

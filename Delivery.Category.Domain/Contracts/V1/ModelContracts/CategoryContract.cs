@@ -6,6 +6,9 @@ namespace Delivery.Category.Domain.Contracts.V1.ModelContracts
 {
     public record CategoryContract : CategoryCreationContract
     {
+        public string Id { get; init; } = string.Empty;
+        public string StoreId { get; init; } = string.Empty;
+        
         public override string ToString()
         {
             return $"{GetType().Name}" +
