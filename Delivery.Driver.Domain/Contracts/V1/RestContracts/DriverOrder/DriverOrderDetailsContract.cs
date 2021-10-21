@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
 {
     /// <summary>
@@ -28,24 +30,42 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
         /// <example>{{storeAddress}}</example>
         /// </summary>
         public string StoreAddress { get; init; } = string.Empty;
-
+        
         /// <summary>
         ///  Delivery Address
         /// <example>{{deliveryAddress}}</example>
         /// </summary>
         public string DeliveryAddress { get; init; } = string.Empty;
-        
+
         /// <summary>
         ///  Delivery Fee
         ///  <example>{{deliveryFee}}</example>
         /// </summary>
         public int DeliveryFee { get; init; }
-        
+
         /// <summary>
         ///  Tips
         /// <example>{{tips}}</example>
         /// </summary>
         public int Tips { get; init; }
 
+        /// <summary>
+        ///  Total fee
+        /// </summary>
+        /// <example>{{totalFee}}</example>
+        public int TotalAmount { get; init; }
+
+        /// <summary>
+        ///  Order items
+        /// </summary>
+        public List<OrderItemContract> OrderItems { get; init; } = new();
+
+    }
+
+    public record OrderItemContract
+    {
+        public string Name { get; init; } = string.Empty;
+        
+        public int ItemPrice { get; init; }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using Delivery.Database.Entities;
 using Delivery.Domain.Helpers;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder;
+using Microsoft.AspNetCore.Razor.Hosting;
 
 namespace Delivery.Driver.Domain.Converters
 {
@@ -20,10 +21,21 @@ namespace Delivery.Driver.Domain.Converters
                     string.Empty, driverOrder.Order.Address.City, string.Empty,
                     driverOrder.Order.Address.Country, driverOrder.Order.Address.PostCode),
                 DeliveryFee = driverOrder.Order.DeliveryFees,
-                Tips = 0
+                Tips = 0,
+                TotalAmount = driverOrder.Order.TotalAmount,
+                OrderItems = ConvertToOrderItemContract(driverOrder.Order.OrderItems.ToList())
             };
 
             return driverOrderDetailsContract;
+        }
+
+        private static List<OrderItemContract> ConvertToOrderItemContract(this List<OrderItem> orderItems)
+        {
+            return orderItems.Select(item => new OrderItemContract
+            {
+                Name = item.Product.ProductName,
+                ItemPrice = item.Product.UnitPrice
+            }).ToList();
         }
 
         public static List<DriverOrderDetailsContract> ConvertToDriverOrderDetailsContract(
@@ -37,7 +49,9 @@ namespace Delivery.Driver.Domain.Converters
                     StoreAddress = item.Order.Store.FormattedAddress ?? string.Empty,
                     DeliveryAddress = FormatAddressLinesHelper.FormatAddress(item.Order.Address.AddressLine, string.Empty, item.Order.Address.City, string.Empty, item.Order.Address.Country, item.Order.Address.PostCode),
                     DeliveryFee = item.Order.DeliveryFees,
-                    Tips = 0
+                    Tips = 0,
+                    TotalAmount = item.Order.TotalAmount,
+                    OrderItems = ConvertToOrderItemContract(item.Order.OrderItems.ToList())
                 })
                 .ToList();
         }
