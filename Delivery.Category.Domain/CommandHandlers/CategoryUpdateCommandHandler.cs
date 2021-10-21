@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Category.Domain.Contracts;
@@ -22,8 +23,11 @@ namespace Delivery.Category.Domain.CommandHandlers
         public async Task<CategoryUpdateStatusContract> Handle(CategoryUpdateCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            var user = executingRequestContextAdapter.GetAuthenticatedUser();
+
+            var storeUser = await databaseContext.StoreUsers.SingleAsync(x => x.Username == user.UserEmail);
             
-            var category = await databaseContext.Categories.FirstAsync(x => x.ExternalId == command.CategoryCreationContract.Id);
+            var category = await databaseContext.Categories.FirstAsync(x => x.ExternalId == command.Id && x.StoreId == storeUser.StoreId);
 
             var categoryUpdateStatusContract = new CategoryUpdateStatusContract();
             if (category == null)

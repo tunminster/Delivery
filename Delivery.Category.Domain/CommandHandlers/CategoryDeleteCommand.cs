@@ -2,10 +2,10 @@ namespace Delivery.Category.Domain.CommandHandlers
 {
     public class CategoryDeleteCommand
     {
-        public CategoryDeleteCommand(int categoryId)
+        public CategoryDeleteCommand(string categoryId)
         {
             CategoryId = categoryId;
         }
-        public int CategoryId { get; }
+        public string CategoryId { get; }
     }
 }

@@ -5,6 +5,7 @@ using Delivery.Category.Domain.Contracts;
 using Delivery.Category.Domain.Contracts.V1.RestContracts;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Category.Domain.CommandHandlers
 {
@@ -21,8 +22,11 @@ namespace Delivery.Category.Domain.CommandHandlers
         public async Task<CategoryUpdateStatusContract> Handle(CategoryDeleteCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+            var user = executingRequestContextAdapter.GetAuthenticatedUser();
+            var storeUser = await databaseContext.StoreUsers.SingleAsync(x => x.Username == user.UserEmail);
             
-            var category = await databaseContext.Categories.FindAsync(command.CategoryId);
+            var category = await databaseContext.Categories.SingleAsync(x => x.ExternalId == command.CategoryId && x.StoreId == storeUser.StoreId);
             var categoryUpdateStatusContract = new CategoryUpdateStatusContract();
             
             if (category == null)

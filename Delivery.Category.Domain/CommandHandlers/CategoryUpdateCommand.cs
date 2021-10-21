@@ -5,10 +5,12 @@ namespace Delivery.Category.Domain.CommandHandlers
 {
     public class CategoryUpdateCommand
     {
-        public CategoryUpdateCommand(CategoryCreationContract categoryCreationContract)
+        public CategoryUpdateCommand(CategoryCreationContract categoryCreationContract, string id)
         {
             CategoryCreationContract = categoryCreationContract;
         }
         public CategoryCreationContract CategoryCreationContract { get; } 
+        
+        public string Id { get; }
     }
 }

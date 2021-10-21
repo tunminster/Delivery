@@ -23,12 +23,13 @@ namespace Delivery.Category.Domain.CommandHandlers
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
-            var store = await databaseContext.Stores.FirstOrDefaultAsync(x =>
-                x.ExternalId == command.CategoryCreationContract.StoreId);
+            var user = executingRequestContextAdapter.GetAuthenticatedUser();
+            var storeUser = await databaseContext.StoreUsers.SingleAsync(x => x.Username == user.UserEmail);
+            
             var category = new Database.Entities.Category
             {
                 CategoryName = command.CategoryCreationContract.CategoryName,
-                StoreId = store.Id,
+                StoreId = storeUser.StoreId,
                 Description = command.CategoryCreationContract.Description,
                 ParentCategoryId = command.CategoryCreationContract.ParentCategoryId,
                 Order = command.CategoryCreationContract.Order
