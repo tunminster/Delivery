@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Delivery.Api.Controllers.Management
 {
     /// <summary>
-    ///  Management user controller
+    ///  Management category controller
     /// </summary>
     [Route("api/v1/category-management", Name = "6 - Management Category")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
@@ -35,7 +35,7 @@ namespace Delivery.Api.Controllers.Management
         }
         
         /// <summary>
-        ///  Get all categories
+        ///  Get all management categories
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -43,7 +43,7 @@ namespace Delivery.Api.Controllers.Management
         [HttpGet]
         [ProducesResponseType(typeof(List<CategoryContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetAsync(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetManagementCategoryAsync(CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
@@ -53,14 +53,14 @@ namespace Delivery.Api.Controllers.Management
         }
         
         /// <summary>
-        ///  Create a category
+        ///  Create a management category
         /// </summary>
         /// <remark>Create a category</remark>
         [Route("create-category", Order = 2)]
         [HttpPost]
         [ProducesResponseType(typeof(CategoryCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddCategoryAsync(CategoryCreationContract categoryCreationContract)
+        public async Task<IActionResult> AddManagementCategoryAsync(CategoryCreationContract categoryCreationContract)
         {
             var validationResult = await new CategoryCreationValidator().ValidateAsync(categoryCreationContract);
             
@@ -81,14 +81,14 @@ namespace Delivery.Api.Controllers.Management
         }
         
         /// <summary>
-        ///  Update a category
+        ///  Update management category
         /// </summary>
         /// <remark>Update category</remark>
         [Route("update-category/{id}", Order = 5)]
         [HttpPut]
         [ProducesResponseType(typeof(CategoryCreationContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> PutCategoryAsync(string id, CategoryCreationContract categoryCreationContract)
+        public async Task<IActionResult> PutManagementCategoryAsync(string id, CategoryCreationContract categoryCreationContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
@@ -102,12 +102,12 @@ namespace Delivery.Api.Controllers.Management
         }
         
         /// <summary>
-        ///  Delete a category
+        ///  Delete a management category
         /// </summary>
         /// <remark>Delete category</remark>
         [Route("delete-category/{id}/delete", Order = 6)]
         [HttpDelete]
-        public async Task<IActionResult> DeleteCategoryAsync(string id)
+        public async Task<IActionResult> DeleteManagementCategoryAsync(string id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
