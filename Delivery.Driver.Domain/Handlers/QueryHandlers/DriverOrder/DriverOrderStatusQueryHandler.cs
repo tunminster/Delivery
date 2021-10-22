@@ -36,6 +36,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
                 .Include(x => x.Driver)
                 .Include(x => x.Order)
                 .ThenInclude(x => x.Store)
+                .Include(x => x.Order.Customer)
                 .Include(x => x.Order.OrderItems)
                 .ThenInclude(x => x.Product)
                 .Include(x => x.Order.Address)
