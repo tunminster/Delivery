@@ -149,7 +149,7 @@ namespace Delivery.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Route("delete/{id}", Order = 6)]
+        [Route("delete/{id}/delete", Order = 6)]
         [HttpDelete]
         public async Task<IActionResult> DeleteCategoryAsync(string id)
         {
