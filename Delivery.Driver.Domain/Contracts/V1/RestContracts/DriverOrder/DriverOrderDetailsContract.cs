@@ -82,11 +82,11 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
         /// <summary>
         ///  Order items
         /// </summary>
-        public List<OrderItemContract> OrderItems { get; init; } = new();
+        public List<OrderDetailsItemContract> OrderItems { get; init; } = new();
 
     }
 
-    public record OrderItemContract
+    public record OrderDetailsItemContract
     {
         public string Name { get; init; } = string.Empty;
         
