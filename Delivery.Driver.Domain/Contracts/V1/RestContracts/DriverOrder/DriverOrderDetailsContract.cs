@@ -32,10 +32,34 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
         public string StoreAddress { get; init; } = string.Empty;
         
         /// <summary>
+        ///  Store latitude
+        /// </summary>
+        /// <example>{{storeLatitude}}</example>
+        public double StoreLatitude { get; init; }
+        
+        /// <summary>
+        ///  Store longitude
+        /// </summary>
+        /// <example>{{storeLongitude}}</example>
+        public double StoreLongitude { get; init; }
+        
+        /// <summary>
         ///  Delivery Address
         /// <example>{{deliveryAddress}}</example>
         /// </summary>
         public string DeliveryAddress { get; init; } = string.Empty;
+        
+        /// <summary>
+        ///  Delivery latitude
+        /// </summary>
+        /// <example>{{deliveryLatitude}}</example>
+        public double DeliveryLatitude { get; init; }
+        
+        /// <summary>
+        ///  Delivery longitude
+        /// </summary>
+        /// <example>{{deliveryLongitude}}</example>
+        public double DeliveryLongitude { get; init; }
 
         /// <summary>
         ///  Delivery Fee
