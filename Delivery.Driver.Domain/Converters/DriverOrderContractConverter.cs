@@ -33,9 +33,9 @@ namespace Delivery.Driver.Domain.Converters
             return driverOrderDetailsContract;
         }
 
-        private static List<OrderItemContract> ConvertToOrderItemContract(this List<OrderItem> orderItems)
+        private static List<OrderDetailsItemContract> ConvertToOrderItemContract(this List<OrderItem> orderItems)
         {
-            return orderItems.Select(item => new OrderItemContract
+            return orderItems.Select(item => new OrderDetailsItemContract
             {
                 Name = item.Product.ProductName,
                 ItemPrice = item.Product.UnitPrice
