@@ -37,6 +37,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverEarnings
             var firstMondayOfYear = this.GetFirstMondayOfYear(DateTimeOffset.Now.Year);
             var earnings = databaseContext.DriverOrders.Where(x => x.Status == DriverOrderStatus.Complete && x.DriverId == driver.Id)
                 .Include(x => x.Order)
+                .AsEnumerable()
                 .GroupBy(x => (int)(x.InsertionDateTime - firstMondayOfYear).TotalDays / 7)
                 .Select(sl => new DriverEarningContract
                 {
