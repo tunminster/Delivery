@@ -43,7 +43,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverEarnings
                 {
                     TotalOrders = sl.Count(),
                     TotalAmount = sl.Sum(s => s.Order.DeliveryFees),
-                    DateRange = sl.Key.ToString()
+                    DateRange = sl.Key + 1.ToString()
                 });
 
             return earnings.ToList();
