@@ -7,5 +7,7 @@ namespace Delivery.Driver.Domain.Constants
         
         public const string DriverResetPasswordName = "Ragibull Driver Reset Password";
         public const string DriverResetPasswordVerification = "Ragibull Driver reset password verficaiton";
+
+        public const int MaximumYear = 2;
     }
 }

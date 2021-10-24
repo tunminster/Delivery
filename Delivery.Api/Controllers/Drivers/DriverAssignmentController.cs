@@ -12,6 +12,7 @@ using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder;
 using Delivery.Driver.Domain.Validators;
+using Delivery.Driver.Domain.Validators.DriverAssignment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -81,6 +81,14 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                 await new DriverOrderCompleteMessagePublisher(serviceProvider).PublishAsync(
                     driverOrderCompleteMessageContract);
                 
+                // indexing complete delivery
+                await new DriverOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new DriverOrderIndexCommand(new DriverOrderIndexCreationContract
+                    {
+                        DriverId = driver.ExternalId,
+                        OrderId = order.ExternalId
+                    }));
+                
                 // split payment request
 
                 if (!string.IsNullOrEmpty(driver.PaymentAccountId))
