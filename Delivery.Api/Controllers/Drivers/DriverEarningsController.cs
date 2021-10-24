@@ -51,7 +51,7 @@ namespace Delivery.Api.Controllers.Drivers
                 return validationResult.ConvertToBadRequest();
             }
             
-            var driverEarningsQuery = new DriverEarningsQuery(driverEarningQueryContract);
+            var driverEarningsQuery = new DriverEarningsQuery(driverEarningQueryContract, 1, 100);
             var earnings = await new DriverEarningsQueryHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(driverEarningsQuery);
             

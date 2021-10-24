@@ -12,9 +12,11 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder;
 using Delivery.Driver.Domain.Validators;
+using Delivery.Driver.Domain.Validators.DriverAssignment;
 using Delivery.Driver.Domain.Validators.DriverOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -99,6 +101,89 @@ namespace Delivery.Api.Controllers.Drivers
 
             return Ok(driverOrderDetails);
 
+        }
+
+        [Route("set-driver-orders-index", Order = 3)]
+        [ProducesResponseType(typeof(StatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Set_DriverOrdersIndex_Async(
+            DriverOrderIndexCreationContract driverOrderIndexCreationContract,
+            CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var validationResult = await new DriverOrderIndexCreationContractValidator()
+                .ValidateAsync(driverOrderIndexCreationContract, cancellationToken);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+
+            var statusContract = new StatusContract
+            {
+                Status = true,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+            
+            var driverOrderIndexMessageContract = new DriverOrderIndexMessageContract
+            {
+                PayloadIn = driverOrderIndexCreationContract,
+                PayloadOut = statusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+            
+            await new DriverOrderIndexMessagePublisher(serviceProvider).PublishAsync(driverOrderIndexMessageContract);
+
+            return Ok(statusContract);
+        }
+        
+        [Route("set-all-driver-orders-index", Order = 4)]
+        [ProducesResponseType(typeof(HttpStatusCode), (int) HttpStatusCode.Accepted)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Set_AllDriverOrdersIndex_Async(
+            DriverOrderIndexAllCreationContract driverOrderIndexAllCreationContract,
+            CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var validationResult = await new DriverOrderIndexAllCreationContractValidator()
+                .ValidateAsync(driverOrderIndexAllCreationContract, cancellationToken);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+
+            await new DriverOrderIndexAllCommandHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(new DriverOrderIndexAllCommand(driverOrderIndexAllCreationContract.CreateDate));
+
+            return Accepted();
+        }
+        
+        [Route("remove-all-driver-orders-index", Order = 5)]
+        [ProducesResponseType(typeof(HttpStatusCode), (int) HttpStatusCode.Accepted)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpDelete]
+        public async Task<IActionResult> Remove_AllDriverOrdersIndex_Async(DriverOrderIndexAllCreationContract driverOrderIndexAllCreationContract,
+            CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var validationResult = await new DriverOrderIndexAllCreationContractValidator()
+                .ValidateAsync(driverOrderIndexAllCreationContract, cancellationToken);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            await new DriverOrderIndexDeleteAllCommandHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(new DriverOrderIndexDeleteAllCommand(driverOrderIndexAllCreationContract.CreateDate));
+
+            return Accepted();
         }
     }
 }

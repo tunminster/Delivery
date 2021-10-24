@@ -1,7 +1,7 @@
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using FluentValidation;
 
-namespace Delivery.Driver.Domain.Validators
+namespace Delivery.Driver.Domain.Validators.DriverAssignment
 {
     public class DriverAssignmentValidator : AbstractValidator<DriverAssignmentCreationContract>
     {
