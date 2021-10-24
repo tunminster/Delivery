@@ -82,12 +82,12 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                     driverOrderCompleteMessageContract);
                 
                 // indexing complete delivery
-                await new DriverOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new DriverOrderIndexCommand(new DriverOrderIndexCreationContract
-                    {
-                        DriverId = driver.ExternalId,
-                        OrderId = order.ExternalId
-                    }));
+                // await new DriverOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter)
+                //     .Handle(new DriverOrderIndexCommand(new DriverOrderIndexCreationContract
+                //     {
+                //         DriverId = driver.ExternalId,
+                //         OrderId = order.ExternalId
+                //     }));
                 
                 // split payment request
 
