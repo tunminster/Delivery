@@ -28,7 +28,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var driverOrders = await databaseContext.DriverOrders
-                .Where(x => x.Status == DriverOrderStatus.Complete && x.InsertionDateTime > DateTimeOffset.UtcNow.AddYears(DriverConstant.MaximumYear))
+                .Where(x => x.Status == DriverOrderStatus.Complete && x.InsertionDateTime > DateTimeOffset.UtcNow.AddYears(-DriverConstant.MaximumYear))
                 .Include(x => x.Driver)
                 .Include(x => x.Order)
                 .ToListAsync();

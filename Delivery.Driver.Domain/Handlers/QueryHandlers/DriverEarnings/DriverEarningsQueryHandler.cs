@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Enums;
+using Delivery.Domain.Constants;
+using Delivery.Domain.Helpers;
 using Delivery.Domain.QueryHandlers;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverEarnings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Nest;
 
 namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverEarnings
 {
-    public record DriverEarningsQuery(DriverEarningQueryContract DriverEarningQueryContract) : IQuery<List<DriverEarningContract>>;
+    public record DriverEarningsQuery(DriverEarningQueryContract DriverEarningQueryContract, int Page, int PageSize = 52) : IQuery<List<DriverEarningContract>>;
     
     public class DriverEarningsQueryHandler : IQueryHandler<DriverEarningsQuery, List<DriverEarningContract>>
     {
@@ -34,19 +39,63 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverEarnings
             var driver =
                 await databaseContext.Drivers.SingleAsync(x => x.EmailAddress == driverUser.UserEmail);
             
-            var firstMondayOfYear = this.GetFirstMondayOfYear(DateTimeOffset.Now.Year);
-            var earnings = databaseContext.DriverOrders.Where(x => x.Status == DriverOrderStatus.Complete && x.DriverId == driver.Id)
+            var firstMondayOfYear = this.GetFirstMondayOfYear(query.DriverEarningQueryContract.Year);
+            var earnings = databaseContext.DriverOrders
+                .Where(x => x.Status == DriverOrderStatus.Complete && x.DriverId == driver.Id && x.InsertionDateTime.Year == DateTimeOffset.Now.Year)
                 .Include(x => x.Order)
-                .AsEnumerable()
+                .ToList()
                 .GroupBy(x => (int)(x.InsertionDateTime - firstMondayOfYear).TotalDays / 7)
                 .Select(sl => new DriverEarningContract
                 {
                     TotalOrders = sl.Count(),
                     TotalAmount = sl.Sum(s => s.Order.DeliveryFees),
-                    DateRange = sl.Key.ToString()
+                    DateRange = $"{DateTimeHelper.FirstDateOfWeek(query.DriverEarningQueryContract.Year, int.Parse(sl.Key.ToString())):dd MMMM} {DateTimeHelper.FirstDateOfWeek(query.DriverEarningQueryContract.Year, int.Parse(sl.Key.ToString())).AddDays(7):dd MMMM}"
                 });
+            
 
             return earnings.ToList();
+        }
+
+        private async Task<List<DriverEarningContract>> GetDriverOrderAsync(DriverEarningsQuery query, string driverId)
+        {
+            // todo: aggreation is not working
+            var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
+            var driverOrderSearchResult = await elasticClient.SearchAsync<DriverOrderContract>(x =>
+                x.Index(
+                        $"{ElasticSearchIndexConstants.DriverOrdersIndex}{executingRequestContextAdapter.GetShard().Key.ToLower()}")
+                    .Query(q =>
+                        q.Bool(bl =>
+                            bl.Filter(fl =>
+                                fl.Terms(tm =>
+                                    tm.Field(fd => fd.DriverId).Terms(driverId))))
+                        && q.Bool(b =>
+                            b.Filter(f =>
+                                f.Terms(ts =>
+                                    ts.Field(tsf => tsf.Status).Terms(DriverOrderStatus.Complete))))
+                    )
+                    .Aggregations(a =>
+                        a.DateHistogram("DateRange", d =>
+                            d.Field(df => df.DateCreated)
+                                .CalendarInterval(DateInterval.Week)
+                                .Aggregations(ag =>
+                                    ag.Sum("TotalAmount", ags =>
+                                        ags.Field(af => af.DeliveryFee)))
+                                .Aggregations(ag => 
+                                    ag.ValueCount("TotalOrders", av =>  
+                                        av.Field(af => af)))))
+                    .Source()
+                    .From((query.Page - 1) * query.PageSize)
+                    .Size(query.PageSize)
+            );
+            
+            var result = driverOrderSearchResult.Aggregations;
+            // var driverContracts = driverOrderSearchResult.Documents
+            //     .Zip(driverOrderSearchResult.Fields, (s, d) => new DriverEarningContract
+            //     {
+            //         DateRange = d.
+            //     }).ToList();
+
+            return null;
         }
         
         private DateTimeOffset GetFirstMondayOfYear(int year)

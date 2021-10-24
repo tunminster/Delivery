@@ -82,7 +82,6 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                     }
                 }
             }
-            throw new System.NotImplementedException();
         }
     }
 }

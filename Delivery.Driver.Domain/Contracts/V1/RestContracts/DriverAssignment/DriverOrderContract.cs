@@ -1,4 +1,5 @@
 using System;
+using Delivery.Database.Enums;
 
 namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment
 {
@@ -36,6 +37,12 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment
         /// </summary>
         /// <example>{{dateCreated}}</example>
         public DateTimeOffset DateCreated { get; init; }
+        
+        /// <summary>
+        ///  Status
+        /// </summary>
+        /// <example>{{status}}</example>
+        public DriverOrderStatus Status { get; init; }
         
     }
 }

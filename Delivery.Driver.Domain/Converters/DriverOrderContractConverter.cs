@@ -14,7 +14,8 @@ namespace Delivery.Driver.Domain.Converters
                 DriverId = driver.ExternalId,
                 OrderId = order.ExternalId,
                 DeliveryFee = order.DeliveryFees,
-                DateCreated = driverOrder.InsertionDateTime
+                DateCreated = driverOrder.InsertionDateTime,
+                Status = driverOrder.Status
             };
 
             return driverOrderContract;
