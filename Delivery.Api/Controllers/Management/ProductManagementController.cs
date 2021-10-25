@@ -59,8 +59,8 @@ namespace Delivery.Api.Controllers.Management
         public async Task<IActionResult> GetAsync(CancellationToken cancellationToken = default)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-            var productGetAllQueryHandler = new ProductGetAllQueryHandler(serviceProvider, executingRequestContextAdapter);
-            var productContractList = await productGetAllQueryHandler.Handle(new ProductGetAllQuery()); 
+            var productManagementGetAllQueryHandler = new ProductManagementGetAllQueryHandler(serviceProvider, executingRequestContextAdapter);
+            var productContractList = await productManagementGetAllQueryHandler.Handle(new ProductManagementGetAllQuery()); 
             return Ok(productContractList);
         }
         
