@@ -49,7 +49,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverEarnings
                 {
                     TotalOrders = sl.Count(),
                     TotalAmount = sl.Sum(s => s.Order.DeliveryFees),
-                    DateRange = $"{DateTimeHelper.FirstDateOfWeek(query.DriverEarningQueryContract.Year, int.Parse(sl.Key.ToString())):dd MMMM} {DateTimeHelper.FirstDateOfWeek(query.DriverEarningQueryContract.Year, int.Parse(sl.Key.ToString())).AddDays(7):dd MMMM}"
+                    DateRange = $"{DateTimeHelper.FirstDateOfWeek(query.DriverEarningQueryContract.Year, int.Parse(sl.Key.ToString()) + 1):dd MMMM} {DateTimeHelper.FirstDateOfWeek(query.DriverEarningQueryContract.Year, int.Parse(sl.Key.ToString()) + 1).AddDays(6):dd MMMM}"
                 });
             
 
