@@ -4,14 +4,11 @@ using Delivery.Product.Domain.Contracts.V1.RestContracts;
 
 namespace Delivery.Product.Domain.Contracts.V1.ModelContracts
 {
-    [DataContract]
-    public class ProductContract : ProductCreationContract
+    public record ProductContract : ProductCreationContract
     {
-        [DataMember]
-        public string Id { get; set; }
-        
-        [DataMember]
-        public string CategoryName { get; set; }
+        public string Id { get; set; } = string.Empty;
+
+        public string CategoryName { get; set; } = string.Empty;
         
         public override string ToString()
         {

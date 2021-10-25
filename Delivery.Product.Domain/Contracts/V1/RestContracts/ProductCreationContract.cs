@@ -3,30 +3,21 @@ using Delivery.Azure.Library.Core.Extensions.Objects;
 
 namespace Delivery.Product.Domain.Contracts.V1.RestContracts
 {
-    [DataContract]
-    public class ProductCreationContract
+    public record ProductCreationContract
     {
+        public string ProductName { get; set; } = string.Empty;
 
-        [DataMember]
-        public string ProductName { get; set; }
+        public string Description { get; set; } = string.Empty;
 
-        [DataMember]
-        public string Description { get; set; }
+        public string ProductImage { get; set; } = string.Empty;
 
-        [DataMember]
-        public string ProductImage { get; set; }
+        public string ProductImageUrl { get; set; } = string.Empty;
 
-        [DataMember]
-        public string ProductImageUrl { get; set; }
-
-        [DataMember]
         public int UnitPrice { get; set; }
 
-        [DataMember]
-        public string CategoryId { get; set; }
-        
-        [DataMember]
-        public string StoreId { get; set; }
+        public string CategoryId { get; set; } = string.Empty;
+
+        public string StoreId { get; set; } = string.Empty;
         
         public override string ToString()
         {

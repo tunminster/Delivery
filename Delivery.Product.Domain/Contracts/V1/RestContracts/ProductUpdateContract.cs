@@ -3,11 +3,9 @@ using Delivery.Azure.Library.Core.Extensions.Objects;
 
 namespace Delivery.Product.Domain.Contracts.V1.RestContracts
 {
-    [DataContract]
-    public class ProductUpdateContract : ProductCreationContract
+    public record ProductUpdateContract : ProductCreationContract
     {
-        [DataMember]
-        public string ProductId { get; set; }
+        public string ProductId { get; set; } = string.Empty;
         
         public override string ToString()
         {
