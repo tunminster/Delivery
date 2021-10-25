@@ -27,7 +27,7 @@ namespace Delivery.Category.Domain.CommandHandlers
 
             var storeUser = await databaseContext.StoreUsers.SingleAsync(x => x.Username == user.UserEmail);
             
-            var category = await databaseContext.Categories.FirstAsync(x => x.ExternalId == command.Id && x.StoreId == storeUser.StoreId);
+            var category = await databaseContext.Categories.SingleAsync(x => x.ExternalId == command.Id && x.StoreId == storeUser.StoreId);
 
             var categoryUpdateStatusContract = new CategoryUpdateStatusContract();
             if (category == null)
