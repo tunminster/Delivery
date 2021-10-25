@@ -4,7 +4,7 @@ namespace Delivery.Database.Models
     public class CurrencySign
     {
         public static readonly CurrencySign BritishPound = new CurrencySign("1", "£");
-        public static readonly CurrencySign US = new CurrencySign("2", "$");
+        public static readonly CurrencySign Usd = new CurrencySign("2", "$");
 
         public CurrencySign(string code, string value)
         {
