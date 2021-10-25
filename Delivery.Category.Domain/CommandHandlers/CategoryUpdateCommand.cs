@@ -8,6 +8,7 @@ namespace Delivery.Category.Domain.CommandHandlers
         public CategoryUpdateCommand(CategoryCreationContract categoryCreationContract, string id)
         {
             CategoryCreationContract = categoryCreationContract;
+            Id = id;
         }
         public CategoryCreationContract CategoryCreationContract { get; } 
         
