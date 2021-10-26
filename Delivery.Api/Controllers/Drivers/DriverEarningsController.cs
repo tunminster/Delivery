@@ -33,10 +33,10 @@ namespace Delivery.Api.Controllers.Drivers
         }
         
         /// <summary>
-        ///  Get driver earnings
+        ///  Get weekly driver earnings
         /// </summary>
         /// <returns></returns>
-        [Route("get-driver-earnings", Order = 1)]
+        [Route("get-weekly-driver-earnings", Order = 1)]
         [ProducesResponseType(typeof(List<DriverEarningContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpPost]
