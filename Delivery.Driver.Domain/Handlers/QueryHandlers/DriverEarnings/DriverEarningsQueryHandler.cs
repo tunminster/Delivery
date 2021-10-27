@@ -9,6 +9,7 @@ using Delivery.Database.Enums;
 using Delivery.Domain.Constants;
 using Delivery.Domain.Helpers;
 using Delivery.Domain.QueryHandlers;
+using Delivery.Driver.Domain.Contracts.V1.Enums.DriverEarnings;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverEarnings;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,25 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverEarnings
                 await databaseContext.Drivers.SingleAsync(x => x.EmailAddress == driverUser.UserEmail);
             
             var firstMondayOfYear = GetFirstMondayOfYear(query.DriverEarningQueryContract.Year);
+
+            if (query.DriverEarningQueryContract.DriverEarningFilter == DriverEarningFilter.Monthly)
+            {
+                var earningMonthly = databaseContext.DriverOrders
+                    .Where(x => x.Status == DriverOrderStatus.Complete && x.DriverId == driver.Id
+                                                                       && x.InsertionDateTime.Year ==
+                                                                       query.DriverEarningQueryContract.Year)
+                    .Include(x => x.Order)
+                    .ToList()
+                    .GroupBy(x => new { Month = x.InsertionDateTime.Month })
+                    .Select(sl => new DriverEarningContract
+                    {
+                        TotalOrders = sl.Count(),
+                        TotalAmount = sl.Sum(s => s.Order.DeliveryFees),
+                        DateRange = $"{sl.Key.Month} {query.DriverEarningQueryContract.Year}"
+                    });
+                return earningMonthly.ToList();
+            }
+            
             var earnings = databaseContext.DriverOrders
                 .Where(x => x.Status == DriverOrderStatus.Complete && x.DriverId == driver.Id 
                                                                    && x.InsertionDateTime.Year == query.DriverEarningQueryContract.Year
