@@ -35,6 +35,27 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopPaymentHistory
             
             var firstMondayOfYear = GetFirstMondayOfYear(query.ShopPaymentHistoryQueryContract.Year);
 
+            if (query.ShopPaymentHistoryQueryContract.ShopPaymentHistoryFilter == ShopPaymentHistoryFilter.CurrentWeek)
+            {
+                var startDate = DateTimeOffset.UtcNow.Date.AddDays(-(int)DateTimeOffset.UtcNow.Date.DayOfWeek);
+                var endDate = startDate.AddDays(7);
+                var paymentHistoryCurrentWeekResult = await databaseContext.Orders.Where(x =>
+                        x.StoreId == storeUser.StoreId
+                        && x.InsertionDateTime.Date >= startDate
+                        && x.InsertionDateTime.Date < endDate)
+                    .ToListAsync();
+
+                var shopPaymentHistoryContract = new ShopPaymentHistoryContract
+                {
+                    TotalAmount = paymentHistoryCurrentWeekResult.Sum(x => x.SubTotal) +
+                                  paymentHistoryCurrentWeekResult.Sum(x => x.TaxFees),
+                    TotalOrders = paymentHistoryCurrentWeekResult.Count,
+                    DateRange = "This week"
+                };
+
+                return new List<ShopPaymentHistoryContract> { shopPaymentHistoryContract };
+            }
+
             if (query.ShopPaymentHistoryQueryContract.ShopPaymentHistoryFilter == ShopPaymentHistoryFilter.Monthly)
             {
                 var paymentHistoryYearResult = databaseContext.Orders.Where(x => x.StoreId == storeUser.StoreId
