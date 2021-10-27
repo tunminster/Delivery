@@ -7,11 +7,11 @@ namespace Delivery.Order.Domain.Factories
     {
         public static int GeneratorFees(int subTotalAmount)
         {
-            if (subTotalAmount < 1000)
+            if (subTotalAmount < 2000)
             {
                 return 100;
             }
-            return (int)(OrderConstant.CustomerApplicationServiceRate / 100 * subTotalAmount);
+            return (OrderConstant.CustomerApplicationServiceRate / 100 * subTotalAmount) * 100;
         }
 
         public static int GenerateDeliveryFees(int radius)
@@ -35,7 +35,7 @@ namespace Delivery.Order.Domain.Factories
         
         public static int BusinessServiceFees(int subTotalAmount, int serviceRate)
         {
-            return (serviceRate / 100 * subTotalAmount);
+            return (serviceRate / 100 * subTotalAmount) * 100;
         }
     }
 }
