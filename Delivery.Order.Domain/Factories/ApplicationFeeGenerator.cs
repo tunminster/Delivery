@@ -11,7 +11,8 @@ namespace Delivery.Order.Domain.Factories
             {
                 return 100;
             }
-            return (OrderConstant.CustomerApplicationServiceRate / 100 * subTotalAmount) * 100;
+            
+            return (int)(Math.Round(((decimal)OrderConstant.CustomerApplicationServiceRate / 100) * subTotalAmount)) ;
         }
 
         public static int GenerateDeliveryFees(int radius)
@@ -35,7 +36,7 @@ namespace Delivery.Order.Domain.Factories
         
         public static int BusinessServiceFees(int subTotalAmount, int serviceRate)
         {
-            return (int)(Math.Round((double)(serviceRate / 100 * subTotalAmount), MidpointRounding.ToEven)) * 100;
+            return (int)(Math.Round(((decimal)serviceRate / 100) * subTotalAmount)) ;
         }
     }
 }
