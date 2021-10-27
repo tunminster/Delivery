@@ -15,10 +15,11 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverEarnings
         public int Year { get; init; }
         
         /// <summary>
-        ///  Date created from
+        ///  Month 
         /// </summary>
-        /// <example>{{dateCreatedFrom}}</example>
-        public DateTimeOffset DateCreatedFrom { get; init; }
+        /// <example>{{month}}</example>
+        public int Month { get; init; }
+        
         
         /// <summary>
         ///  Driver earning filter

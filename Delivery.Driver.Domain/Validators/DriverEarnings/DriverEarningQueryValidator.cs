@@ -10,7 +10,8 @@ namespace Delivery.Driver.Domain.Validators.DriverEarnings
         public DriverEarningQueryValidator()
         {
             RuleFor(x => x.DriverEarningFilter).NotEqual(DriverEarningFilter.None).WithMessage($"{nameof(DriverEarningFilter)} must be provided.");
-            RuleFor(x => x.DateCreatedFrom).GreaterThan(DateTimeOffset.Now.AddYears(-3)).WithMessage($"{nameof(DriverEarningQueryContract.DateCreatedFrom)} must be provided and greater than last 3 years.");
+            RuleFor(x => x.Year).NotEqual(0).WithMessage($"{nameof(DriverEarningQueryContract.Year)} must be provided");
+            RuleFor(x => x.Month).NotEqual(0).WithMessage($"{nameof(DriverEarningQueryContract.Month)} must be provided");
         }
     }
 }

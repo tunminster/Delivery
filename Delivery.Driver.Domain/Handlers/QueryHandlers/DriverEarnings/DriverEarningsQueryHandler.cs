@@ -39,9 +39,11 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverEarnings
             var driver =
                 await databaseContext.Drivers.SingleAsync(x => x.EmailAddress == driverUser.UserEmail);
             
-            var firstMondayOfYear = this.GetFirstMondayOfYear(query.DriverEarningQueryContract.Year);
+            var firstMondayOfYear = GetFirstMondayOfYear(query.DriverEarningQueryContract.Year);
             var earnings = databaseContext.DriverOrders
-                .Where(x => x.Status == DriverOrderStatus.Complete && x.DriverId == driver.Id && x.InsertionDateTime.Year == DateTimeOffset.Now.Year)
+                .Where(x => x.Status == DriverOrderStatus.Complete && x.DriverId == driver.Id 
+                                                                   && x.InsertionDateTime.Year == query.DriverEarningQueryContract.Year
+                                                                   && x.InsertionDateTime.Month == query.DriverEarningQueryContract.Month)
                 .Include(x => x.Order)
                 .ToList()
                 .GroupBy(x => (int)(x.InsertionDateTime - firstMondayOfYear).TotalDays / 7)
