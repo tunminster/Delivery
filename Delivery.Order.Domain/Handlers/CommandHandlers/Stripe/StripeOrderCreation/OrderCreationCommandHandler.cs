@@ -8,6 +8,7 @@ using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Enum;
 using Delivery.Order.Domain.Factories;
@@ -53,7 +54,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
             }
 
             var businessServiceFee =
-                ApplicationFeeGenerator.BusinessServiceFees(command.OrderCreationStatusContract.SubtotalAmount, 5);
+                ApplicationFeeGenerator.BusinessServiceFees(command.OrderCreationStatusContract.SubtotalAmount, OrderConstant.BusinessApplicationServiceRate);
             var orderEntity = new Database.Entities.Order
             {
                 ExternalId = command.OrderCreationStatusContract.OrderId,

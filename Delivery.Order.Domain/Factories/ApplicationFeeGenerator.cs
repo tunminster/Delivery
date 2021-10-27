@@ -35,7 +35,7 @@ namespace Delivery.Order.Domain.Factories
         
         public static int BusinessServiceFees(int subTotalAmount, int serviceRate)
         {
-            return (serviceRate / 100 * subTotalAmount) * 100;
+            return (int)(Math.Round((double)(serviceRate / 100 * subTotalAmount), MidpointRounding.ToEven)) * 100;
         }
     }
 }
