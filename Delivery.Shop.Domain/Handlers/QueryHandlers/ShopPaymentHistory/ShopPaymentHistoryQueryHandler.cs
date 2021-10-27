@@ -6,6 +6,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.Helpers;
 using Delivery.Domain.QueryHandlers;
+using Delivery.Shop.Domain.Contracts.V1.Enums;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopPaymentHistory;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,23 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopPaymentHistory
             var storeUser = await databaseContext.StoreUsers.SingleOrDefaultAsync(x => x.Username == userEmail) ?? throw new InvalidOperationException($"Expected store user.");
             
             var firstMondayOfYear = GetFirstMondayOfYear(query.ShopPaymentHistoryQueryContract.Year);
+
+            if (query.ShopPaymentHistoryQueryContract.ShopPaymentHistoryFilter == ShopPaymentHistoryFilter.Monthly)
+            {
+                var paymentHistoryYearResult = databaseContext.Orders.Where(x => x.StoreId == storeUser.StoreId
+                        && x.InsertionDateTime.Year == query.ShopPaymentHistoryQueryContract.Year)
+                    .ToList()
+                    .GroupBy(x => new { Month = x.InsertionDateTime.Month })
+                    .Select(sl => new ShopPaymentHistoryContract
+                    {
+                        TotalAmount = sl.Sum(s => s.SubTotal) + sl.Sum(s => s.TaxFees),
+                        TotalOrders = sl.Count(),
+                        DateRange = $"{sl.Key.Month} {query.ShopPaymentHistoryQueryContract.Year}"
+                    });
+                
+                return paymentHistoryYearResult.ToList();
+            }
+            
             var paymentHistory = databaseContext.Orders.Where(x => x.StoreId == storeUser.StoreId
                                                                    && x.InsertionDateTime.Month ==
                                                                    query.ShopPaymentHistoryQueryContract.Month
