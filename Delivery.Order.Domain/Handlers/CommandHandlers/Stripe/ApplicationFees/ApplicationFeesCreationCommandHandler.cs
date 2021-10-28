@@ -7,6 +7,7 @@ using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts.DistanceMatrix;
 using Delivery.Domain.Services;
+using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.RestContracts.ApplicationFees;
 using Delivery.Order.Domain.Factories;
 using Microsoft.EntityFrameworkCore;
@@ -77,6 +78,9 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
             
             
             var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
+            
+            //todo: get tax rate
+            var taxFee = TaxFeeGenerator.GenerateTaxFees(command.ApplicationFeesCreationContract.SubTotal, 5);
 
             var totalAmount = command.ApplicationFeesCreationContract.SubTotal + platformFee;
 
@@ -87,8 +91,9 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
             
             var applicationFeesContract = new ApplicationFeesContract
             {
-                PlatformFee = command.ApplicationFeesCreationContract.OrderType == OrderType.DeliverTo ? 0 :platformFee,
-                DeliveryFee = deliveryFee,
+                PlatformFee = platformFee,
+                DeliveryFee = command.ApplicationFeesCreationContract.OrderType == OrderType.DeliverTo ? deliveryFee : 0,
+                TaxFee = taxFee,
                 TotalAmount = totalAmount
             };
 

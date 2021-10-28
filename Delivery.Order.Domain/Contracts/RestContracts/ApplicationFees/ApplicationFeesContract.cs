@@ -16,6 +16,11 @@ namespace Delivery.Order.Domain.Contracts.RestContracts.ApplicationFees
         public int DeliveryFee { get; init; }
         
         /// <summary>
+        ///  Tax amount of order
+        /// </summary>
+        public int TaxFee { get; init; }
+        
+        /// <summary>
         ///  Total amount of order
         /// </summary>
         public int TotalAmount { get; init; }
