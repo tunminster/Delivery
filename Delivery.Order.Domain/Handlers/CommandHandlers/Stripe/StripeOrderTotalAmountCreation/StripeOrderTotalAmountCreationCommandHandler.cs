@@ -6,7 +6,9 @@ using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
+using Delivery.Domain.Contracts.V1.RestContracts.DistanceMatrix;
 using Delivery.Domain.Factories;
+using Delivery.Domain.Services;
 using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Factories;
@@ -61,7 +63,27 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             }
 
             var customerApplicationFee = ApplicationFeeGenerator.GeneratorFees(subtotalAmount);
-            var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(subtotalAmount);
+            
+            var customer = await databaseContext.Customers.Where(x =>
+                x.Id == command.StripeOrderCreationContract.CustomerId)
+                .Include(x => x.Addresses)
+                .SingleOrDefaultAsync();
+            var address = customer.Addresses.FirstOrDefault(x => x.Id == command.StripeOrderCreationContract.ShippingAddressId);
+            var distanceMatrix = await new DistanceMatrixService(serviceProvider, executingRequestContextAdapter)
+                .GetDistanceAsync(new DistanceMatrixRequestContract
+                {
+                    DestinationLatitude = address?.Lat ?? 0,
+                    DestinationLongitude = address?.Lng ?? 0,
+                    SourceLatitude = store?.Latitude ?? 0,
+                    SourceLongitude = store?.Longitude ?? 0
+                });
+            
+            var distance = distanceMatrix.Status == "OK"
+                ? distanceMatrix.Rows.First()
+                    .Elements.First().Distance.Value : 1000;
+
+            
+            var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
             
             // todo: calculate tax rate
             var taxFee = TaxFeeGenerator.GenerateTaxFees(subtotalAmount, 5);
