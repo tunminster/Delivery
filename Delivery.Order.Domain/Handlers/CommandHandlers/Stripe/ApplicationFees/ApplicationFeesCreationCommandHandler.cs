@@ -82,7 +82,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
             //todo: get tax rate
             var taxFee = TaxFeeGenerator.GenerateTaxFees(command.ApplicationFeesCreationContract.SubTotal, 5);
 
-            var totalAmount = command.ApplicationFeesCreationContract.SubTotal + platformFee;
+            var totalAmount = command.ApplicationFeesCreationContract.SubTotal + platformFee + taxFee;
 
             if (command.ApplicationFeesCreationContract.OrderType == OrderType.DeliverTo)
             {
