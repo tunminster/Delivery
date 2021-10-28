@@ -31,7 +31,7 @@ namespace Delivery.Category.Domain.QueryHandlers
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var user = executingRequestContextAdapter.GetAuthenticatedUser();
             var storeUser = await databaseContext.StoreUsers.FirstAsync(x => x.Username == user.UserEmail);
-            var categoryContractList =  await databaseContext.Categories.Where(x => x.StoreId == storeUser.StoreId).Include(x => x.Store)
+            var categoryContractList =  await databaseContext.Categories.Where(x => x.StoreId == storeUser.StoreId && x.IsDeleted != true).Include(x => x.Store)
                 .Select(x => new CategoryContract
                 {
                     Id = x.ExternalId,

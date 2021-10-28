@@ -26,7 +26,7 @@ namespace Delivery.Category.Domain.QueryHandlers
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            var categoryContractList =  await databaseContext.Categories.Include(x => x.Store)
+            var categoryContractList =  await databaseContext.Categories.Where(x => x.IsDeleted != true).Include(x => x.Store)
                 .Select(x => new CategoryContract()
             {
                 Id = x.ExternalId,

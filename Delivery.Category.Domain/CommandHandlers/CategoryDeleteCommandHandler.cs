@@ -6,6 +6,7 @@ using Delivery.Category.Domain.Contracts.V1.RestContracts;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph;
 
 namespace Delivery.Category.Domain.CommandHandlers
 {
@@ -33,8 +34,10 @@ namespace Delivery.Category.Domain.CommandHandlers
             {
                 return categoryUpdateStatusContract;
             }
+
+            category.IsDeleted = true;
             
-            databaseContext.Categories.Remove(category);
+            //databaseContext.Categories.Remove(category);
             await databaseContext.SaveChangesAsync();
             categoryUpdateStatusContract.Updated = true;
 

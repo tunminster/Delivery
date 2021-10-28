@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ApplicationServices" />
       <Folder Include="Handlers" />
     </ItemGroup>
 
