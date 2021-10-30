@@ -16,6 +16,8 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
     {
         public string Email { get; init; } = string.Empty;
         public OrderStatus Status { get; init; }
+        
+        public DateTimeOffset DateFrom { get; init; }
     }
     
     public class ShopOrderHistoryQueryHandler : IQueryHandler<ShopOrderHistoryQuery, List<ShopOrderContract>>
@@ -38,7 +40,8 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
 
             var orderList =
                 await databaseContext.Orders.Where(x => isOrderStatusEmpty ? x.Status == OrderStatus.Completed || x.Status == OrderStatus.Rejected : x.Status == query.Status
-                                                        && x.StoreId == storeUser.StoreId)
+                                                        && x.StoreId == storeUser.StoreId
+                                                        && x.InsertionDateTime >= query.DateFrom)
                     .Include(x => x.Store)
                     .Include(x => x.OrderItems)
                     .ThenInclude(x => x.Product)
