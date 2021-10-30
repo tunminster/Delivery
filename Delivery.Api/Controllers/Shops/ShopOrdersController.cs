@@ -83,7 +83,8 @@ namespace Delivery.Api.Controllers.Shops
             var shopOrderHistoryQuery = new ShopOrderHistoryQuery
             {
                 Email = userEmail, 
-                Status = shopOrderQueryContract.OrderStatus
+                Status = shopOrderQueryContract.OrderStatus,
+                DateFrom = shopOrderQueryContract.DateFrom
             };
 
             var shopOrders = await new ShopOrderHistoryQueryHandler(serviceProvider, executingRequestContextAdapter)
