@@ -99,7 +99,7 @@ namespace Delivery.Azure.Library.Storage.Cosmos.Services
         {
             var memoryCachePartition = typeof(TContract).Name;
             
-            var cacheKey = $"Database-{executingRequestContextAdapter.GetShard().Key}-{partitionKey}-latest-document";
+            var cacheKey = $"{partitionKey}-latest-document";
             var cache = await serviceProvider.GetInvalidationEnabledCacheAsync(alwaysUseCache: true);
             if (cache != null)
             {
