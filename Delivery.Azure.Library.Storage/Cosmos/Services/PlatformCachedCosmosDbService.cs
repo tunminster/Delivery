@@ -98,7 +98,8 @@ namespace Delivery.Azure.Library.Storage.Cosmos.Services
             bool isDocumentRequired = true, DateTimeOffset? validFromDate = null, DateTimeOffset? validToDate = null) where TDocument : DocumentContract<TContract>, new() where TContract : class
         {
             var memoryCachePartition = typeof(TContract).Name;
-            var cacheKey = $"{partitionKey}-latest-document";
+            
+            var cacheKey = $"Database-{executingRequestContextAdapter.GetShard().Key}-{partitionKey}-latest-document";
             var cache = await serviceProvider.GetInvalidationEnabledCacheAsync(alwaysUseCache: true);
             if (cache != null)
             {
