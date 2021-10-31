@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
+using Delivery.Database.Entities;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts.DistanceMatrix;
@@ -31,14 +32,15 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
         {
             var platformFee = ApplicationFeeGenerator.GeneratorFees(command.ApplicationFeesCreationContract.SubTotal);
 
+            await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
+            var store = await databaseContext.Stores.SingleOrDefaultAsync(x =>
+                x.ExternalId == command.ApplicationFeesCreationContract.StoreId);
+            
             int distance = 0;
             if (command.ApplicationFeesCreationContract.CustomerLatitude == null)
             {
-                await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
-
-                var store = await databaseContext.Stores.SingleOrDefaultAsync(x =>
-                    x.ExternalId == command.ApplicationFeesCreationContract.StoreId);
+                
 
                 var customer = await databaseContext.Customers.Where(x =>
                     x.ExternalId == command.ApplicationFeesCreationContract.CustomerId)
@@ -75,12 +77,13 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
                         .Elements.First().Distance.Value : 1000;
             }
             
-            
-            
             var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
+
+            var taxRate =
+                await new TaxRateService(serviceProvider, executingRequestContextAdapter).GetTaxRateAsync(
+                    store?.City ?? string.Empty, store?.Country ?? string.Empty);
             
-            //todo: get tax rate
-            var taxFee = TaxFeeGenerator.GenerateTaxFees(command.ApplicationFeesCreationContract.SubTotal, 5);
+            var taxFee = TaxFeeGenerator.GenerateTaxFees(command.ApplicationFeesCreationContract.SubTotal, taxRate);
 
             var totalAmount = command.ApplicationFeesCreationContract.SubTotal + platformFee + taxFee;
 

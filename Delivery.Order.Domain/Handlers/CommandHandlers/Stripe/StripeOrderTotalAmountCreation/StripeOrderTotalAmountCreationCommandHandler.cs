@@ -1,17 +1,24 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Database.DataAccess;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Storage.Cosmos.Accessors;
+using Delivery.Azure.Library.Storage.Cosmos.Configurations;
+using Delivery.Azure.Library.Storage.Cosmos.Contracts;
+using Delivery.Azure.Library.Storage.Cosmos.Services;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts.DistanceMatrix;
+using Delivery.Domain.Contracts.V1.RestContracts.TaxRates;
 using Delivery.Domain.Factories;
 using Delivery.Domain.Services;
 using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Factories;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotalAmountCreation
@@ -85,8 +92,11 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             
             var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
             
-            // todo: calculate tax rate
-            var taxFee = TaxFeeGenerator.GenerateTaxFees(subtotalAmount, 5);
+            var taxRate =
+                await new TaxRateService(serviceProvider, executingRequestContextAdapter).GetTaxRateAsync(store?.City ?? string.Empty,
+                    store?.Country ?? string.Empty);
+            
+            var taxFee = TaxFeeGenerator.GenerateTaxFees(subtotalAmount, taxRate);
             var totalAmount = subtotalAmount + customerApplicationFee + deliveryFee + taxFee;
             
             var businessApplicationFee = ApplicationFeeGenerator.BusinessServiceFees(subtotalAmount,
@@ -109,6 +119,8 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                 };
             return orderCreationStatus;
         }
+
+        
         
         private string CacheKey { get;  }
     }
