@@ -38,12 +38,12 @@ namespace Delivery.Domain.Services
             
             var queryDefinition = new QueryDefinition($"SELECT d.stateName, d.stateCode, d.taxRate FROM c join d in c.data where c.partitionKey = 'UsState'");
 
-            var taxList = await new PlatformCachedCosmosDbService(serviceProvider, executingRequestContextAdapter, platformCosmosDbService).GetItemsAsync<DocumentContract<PlatformTaxRateContract>>(queryDefinition);
+            var taxList = await new PlatformCachedCosmosDbService(serviceProvider, executingRequestContextAdapter, platformCosmosDbService).GetItemAsync<DocumentContract<PlatformTaxRateContract>>(queryDefinition);
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace( $"{nameof(TaxRateService)} produces tax list - {taxList.ConvertToJson()}",
                 SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
-            var taxRate = taxList.FirstOrDefault()?.Data.FirstOrDefault(x => x.StateCode == stateCode)?.TaxRate ?? 0;
+            var taxRate = taxList?.Data.FirstOrDefault(x => x.StateCode == stateCode)?.TaxRate ?? 0;
 
             return taxRate;
         }
