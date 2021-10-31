@@ -45,11 +45,23 @@ namespace Delivery.Azure.Library.Storage.Cosmos.Services
                 await cache.ClearAsync(memoryCachePartition, executingRequestContextAdapter.GetCorrelationId());
             }
         }
-
+        
         public async Task<TDocument?> GetLatestDocumentAsync<TDocument, TContract>(string partitionKey, bool isDocumentRequired = true,
             DateTimeOffset? validFromDate = null, DateTimeOffset? validToDate = null) where TDocument : DocumentContract<TContract>, new() where TContract : class
         {
             const double defaultMinutesToCache = 10;
+            
+            return await GetLatestDocumentAsync<TDocument, TContract>(partitionKey, defaultMinutesToCache, isDocumentRequired, validFromDate, validToDate);
+        }
+
+        public async Task<TDocument?> GetLatestDocumentAsync<TDocument, TContract>(string partitionKey, bool isDocumentRequired = true,
+            DateTimeOffset? validFromDate = null, DateTimeOffset? validToDate = null, int? dayToCache = null) where TDocument : DocumentContract<TContract>, new() where TContract : class
+        {
+            double defaultMinutesToCache = 10;
+            if (dayToCache != null)
+            {
+                defaultMinutesToCache = (double)dayToCache * 24 * 60;
+            }
             return await GetLatestDocumentAsync<TDocument, TContract>(partitionKey, defaultMinutesToCache, isDocumentRequired, validFromDate, validToDate);
         }
 
