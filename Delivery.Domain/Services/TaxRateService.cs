@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Core.Extensions.Json;
@@ -36,14 +37,14 @@ namespace Delivery.Domain.Services
             var cosmosDatabaseAccessor = await CosmosDatabaseAccessor.CreateAsync(serviceProvider, new CosmosDatabaseConnectionConfigurationDefinition(serviceProvider, Delivery.Domain.Constants.Constants.CosmosDatabaseHnPlatformConnectionString));
             var platformCosmosDbService = new PlatformCosmosDbService(serviceProvider, executingRequestContextAdapter, cosmosDatabaseAccessor.CosmosClient, cosmosDatabaseAccessor.GetContainer(Delivery.Domain.Constants.Constants.HnPlatform, OrderConstants.TaxRateContainer));
             
-            var queryDefinition = new QueryDefinition($"SELECT d.stateName, d.stateCode, d.taxRate FROM c join d in c.data where c.partitionKey = 'UsState'");
+            //var queryDefinition = new QueryDefinition($"SELECT d.stateName, d.stateCode, d.taxRate FROM c join d in c.data where c.partitionKey = 'UsState'");
 
-            var taxList = await new PlatformCachedCosmosDbService(serviceProvider, executingRequestContextAdapter, platformCosmosDbService).GetItemAsync<DocumentContract<PlatformTaxRateContract>>(queryDefinition);
+            var taxList = await new PlatformCachedCosmosDbService(serviceProvider, executingRequestContextAdapter, platformCosmosDbService).GetLatestDocumentAsync<DocumentContract<List<PlatformTaxRateContract>>, List<PlatformTaxRateContract>>("UsState");
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace( $"{nameof(TaxRateService)} produces tax list - {taxList.ConvertToJson()}",
                 SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
-            var taxRate = taxList?.Data.FirstOrDefault(x => x.StateCode == stateCode)?.TaxRate ?? 0;
+            var taxRate = taxList?.Data.FirstOrDefault()?.FirstOrDefault(x => x.StateCode == stateCode)?.TaxRate ?? 0;
 
             return taxRate;
         }
