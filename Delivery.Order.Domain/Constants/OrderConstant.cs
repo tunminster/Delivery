@@ -7,5 +7,8 @@ namespace Delivery.Order.Domain.Constants
 
         public const int BusinessApplicationServiceRate = 5;
         public const int CustomerApplicationServiceRate = 5;
+
+        
+        
     }
 }
