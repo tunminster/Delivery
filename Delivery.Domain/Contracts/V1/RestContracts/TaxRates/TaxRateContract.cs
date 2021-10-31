@@ -3,7 +3,7 @@ namespace Delivery.Domain.Contracts.V1.RestContracts.TaxRates
     /// <summary>
     ///  This contract contains tax rate
     /// </summary>
-    public record PlatformTaxRateContract
+    public record TaxRateContract
     {
         /// <summary>
         ///  State name

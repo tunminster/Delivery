@@ -14,6 +14,7 @@ using Delivery.Domain.Contracts.V1.RestContracts.TaxRates;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceStack;
 
 namespace Delivery.Domain.Services
 {
@@ -39,12 +40,12 @@ namespace Delivery.Domain.Services
             
             //var queryDefinition = new QueryDefinition($"SELECT d.stateName, d.stateCode, d.taxRate FROM c join d in c.data where c.partitionKey = 'UsState'");
 
-            var taxList = await new PlatformCachedCosmosDbService(serviceProvider, executingRequestContextAdapter, platformCosmosDbService).GetLatestDocumentAsync<DocumentContract<List<PlatformTaxRateContract>>, List<PlatformTaxRateContract>>("Database-Raus-UsState-latest-document");
+            var taxList = await new PlatformCachedCosmosDbService(serviceProvider, executingRequestContextAdapter, platformCosmosDbService).GetLatestDocumentAsync<DocumentContract<PlatformTaxRate>, PlatformTaxRate>("PlatformTaxRate");
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace( $"{nameof(TaxRateService)} produces tax list - {taxList.ConvertToJson()}",
                 SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
-            var taxRate = taxList?.Data.FirstOrDefault()?.FirstOrDefault(x => x.StateCode == stateCode)?.TaxRate ?? 0;
+            var taxRate = taxList?.Data.FirstOrDefault()?.TaxRates.FirstOrDefault(x => x.StateCode == stateCode)?.TaxRate ?? 0;
 
             return taxRate;
         }
