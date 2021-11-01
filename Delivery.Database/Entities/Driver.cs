@@ -65,6 +65,8 @@ namespace Delivery.Database.Entities
         
         public bool IsOrderAssigned { get; set; }
         
+        public bool IsBankDetailsUpdated { get; set; }
+        
         public bool IsActive { get; set; }
         
         [MaxLength(250)]
