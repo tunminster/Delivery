@@ -166,7 +166,6 @@ namespace Delivery.Api.Controllers.Shops
         /// <summary>
         ///  Request delivery driver for the order.
         /// </summary>
-        /// <param name="orderId"></param>
         /// <returns></returns>
         [Route("request-delivery-driver", Order = 4)]
         [HttpPost]
@@ -245,6 +244,37 @@ namespace Delivery.Api.Controllers.Shops
                 shopOrderIndexAllCommand);
             
             return Ok(new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow});
+        }
+        
+        /// <summary>
+        ///  Get order by shop user
+        /// </summary>
+        [Route("get-order-status", Order = 7)]
+        [HttpPost]
+        [ProducesResponseType(typeof(ShopOrderStatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetShopOrderStatusAsync(ShopOrderStatusQueryContract shopOrderStatusQueryContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var validationResult =
+                await new ShopOrderStatusQueryValidator().ValidateAsync(
+                    shopOrderStatusQueryContract);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var shopOrderStatusQuery = new ShopOrderStatusQuery
+            {
+                ShopOrderStatusQueryContract = shopOrderStatusQueryContract
+            };
+
+            var shopOrderStatusContract = await new ShopOrderStatusQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(shopOrderStatusQuery);
+            
+            return Ok(shopOrderStatusContract);
         }
     }
 }
