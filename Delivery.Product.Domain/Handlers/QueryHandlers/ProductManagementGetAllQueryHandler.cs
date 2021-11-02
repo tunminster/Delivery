@@ -29,7 +29,7 @@ namespace Delivery.Product.Domain.Handlers.QueryHandlers
                 .SingleOrDefaultAsync();
             
             var productContractList =  await databaseContext.Products
-                .Where(x => x.StoreId == storeUser.StoreId)
+                .Where(x => x.StoreId == storeUser.StoreId && x.IsDeleted == false)
                 .Include(x => x.Category)
                 .Include(x => x.Store)
                 .Select(x => new ProductContract
