@@ -57,5 +57,31 @@ namespace Delivery.Api.Controllers.Drivers
             
             return Ok(earnings);
         }
+        
+        /// <summary>
+        ///  Get driver earning details list
+        /// </summary>
+        /// <returns></returns>
+        [Route("get-driver-earnings-details", Order = 2)]
+        [ProducesResponseType(typeof(List<DriverEarningDetailsContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Get_Driver_Earnings_Details_Async(DriverEarningDetailsQueryContract driverEarningDetailsQueryContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var validationResult = await new DriverEarningDetailsQueryValidator().ValidateAsync(driverEarningDetailsQueryContract);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var driverEarningDetailsQuery = new DriverEarningDetailsQuery(driverEarningDetailsQueryContract);
+            var earningDetailList = await new DriverEarningDetailsQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(driverEarningDetailsQuery);
+            
+            return Ok(earningDetailList);
+        }
     }
 }
