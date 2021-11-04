@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Database.DataAccess;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
@@ -9,6 +10,7 @@ using Delivery.Azure.Library.Storage.Cosmos.Accessors;
 using Delivery.Azure.Library.Storage.Cosmos.Configurations;
 using Delivery.Azure.Library.Storage.Cosmos.Contracts;
 using Delivery.Azure.Library.Storage.Cosmos.Services;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts.DistanceMatrix;
@@ -18,8 +20,10 @@ using Delivery.Domain.Services;
 using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Factories;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotalAmountCreation
 {
@@ -85,9 +89,15 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     SourceLongitude = store?.Longitude ?? 0
                 });
             
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DistanceMatrixService)} responses {distanceMatrix.ConvertToJson()}",
+                SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+            
             var distance = (distanceMatrix.Status == "OK"
                 ? distanceMatrix.Rows.FirstOrDefault()?
                     .Elements.FirstOrDefault()?.Distance.Value : 1000) ?? 1000;
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DistanceMatrixService)} distance value is -  {distance}",
+                SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
             var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
             
