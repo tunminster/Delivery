@@ -94,7 +94,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             
             var distance = (distanceMatrix.Status == "OK"
                 ? distanceMatrix.Rows.FirstOrDefault()?
-                    .Elements.FirstOrDefault()?.Distance.Value : 1000) ?? 1000;
+                    .Elements.FirstOrDefault()?.Distance?.Value : 1000) ?? 1000;
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DistanceMatrixService)} distance value is -  {distance}",
                 SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
