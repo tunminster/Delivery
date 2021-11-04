@@ -85,10 +85,9 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     SourceLongitude = store?.Longitude ?? 0
                 });
             
-            var distance = distanceMatrix.Status == "OK"
-                ? distanceMatrix.Rows.First()
-                    .Elements.First().Distance.Value : 1000;
-
+            var distance = (distanceMatrix.Status == "OK"
+                ? distanceMatrix.Rows.FirstOrDefault()?
+                    .Elements.FirstOrDefault()?.Distance.Value : 1000) ?? 1000;
             
             var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
             
