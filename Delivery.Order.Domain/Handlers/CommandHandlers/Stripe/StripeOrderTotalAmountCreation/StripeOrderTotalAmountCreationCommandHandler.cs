@@ -12,6 +12,7 @@ using Delivery.Azure.Library.Storage.Cosmos.Contracts;
 using Delivery.Azure.Library.Storage.Cosmos.Services;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
+using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts.DistanceMatrix;
 using Delivery.Domain.Contracts.V1.RestContracts.TaxRates;
@@ -79,27 +80,32 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                 x.Id == command.StripeOrderCreationContract.CustomerId)
                 .Include(x => x.Addresses)
                 .SingleOrDefaultAsync();
-            var address = customer.Addresses.FirstOrDefault(x => x.Id == command.StripeOrderCreationContract.ShippingAddressId);
-            var distanceMatrix = await new DistanceMatrixService(serviceProvider, executingRequestContextAdapter)
-                .GetDistanceAsync(new DistanceMatrixRequestContract
-                {
-                    DestinationLatitude = address?.Lat ?? 0,
-                    DestinationLongitude = address?.Lng ?? 0,
-                    SourceLatitude = store?.Latitude ?? 0,
-                    SourceLongitude = store?.Longitude ?? 0
-                });
+
+            int deliveryFee = 0;
+            if (command.StripeOrderCreationContract.OrderType == OrderType.DeliverTo)
+            {
+                var address = customer.Addresses.FirstOrDefault(x => x.Id == command.StripeOrderCreationContract.ShippingAddressId);
+                var distanceMatrix = await new DistanceMatrixService(serviceProvider, executingRequestContextAdapter)
+                    .GetDistanceAsync(new DistanceMatrixRequestContract
+                    {
+                        DestinationLatitude = address?.Lat ?? 0,
+                        DestinationLongitude = address?.Lng ?? 0,
+                        SourceLatitude = store?.Latitude ?? 0,
+                        SourceLongitude = store?.Longitude ?? 0
+                    });
+                
+                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DistanceMatrixService)} responses {distanceMatrix.ConvertToJson()}",
+                    SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
-            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DistanceMatrixService)} responses {distanceMatrix.ConvertToJson()}",
-                SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+                var distance = (distanceMatrix.Status == "OK"
+                    ? distanceMatrix.Rows.FirstOrDefault()?
+                        .Elements.FirstOrDefault()?.Distance?.Value : 1000) ?? 1000;
+                
+                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DistanceMatrixService)} distance value is -  {distance}",
+                    SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
-            var distance = (distanceMatrix.Status == "OK"
-                ? distanceMatrix.Rows.FirstOrDefault()?
-                    .Elements.FirstOrDefault()?.Distance?.Value : 1000) ?? 1000;
-            
-            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DistanceMatrixService)} distance value is -  {distance}",
-                SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
-            
-            var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
+                deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
+            }
             
             var taxRate =
                 await new TaxRateService(serviceProvider, executingRequestContextAdapter).GetTaxRateAsync(store?.City ?? string.Empty,
