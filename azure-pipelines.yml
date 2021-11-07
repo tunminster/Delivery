@@ -200,7 +200,7 @@ stages:
         - group: Hn-Platform-Infra-Variables
         - group: Hn-Platform-Infra
     jobs:  
-      - template: '/devops/pipelines/job-deploy-postman-apis.yml'
+      - template: '/DevOps/pipelines/job-deploy-postman-apis.yml'
         parameters:
           jobName: 'Postman Apis'
           jobDisplayName: 'Deploy postman apis'
