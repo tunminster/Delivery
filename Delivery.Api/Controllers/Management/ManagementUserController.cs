@@ -151,6 +151,12 @@ namespace Delivery.Api.Controllers.Management
             }
             
             await userManager.AddToRoleAsync(user, RoleConstant.Administrator);
+            var claim = new Claim(ClaimData.AdminUserAccess.ClaimType, ClaimData.AdminUserAccess.ClaimValue, ClaimValueTypes.String);
+            var groupClaim = new Claim("groups", executingRequestContextAdapter.GetShard().Key,
+                ClaimValueTypes.String);
+                
+            await userManager.AddClaimAsync(user, claim);
+            await userManager.AddClaimAsync(user, groupClaim);
             
             var statusContract = new StatusContract
             {
