@@ -17,7 +17,7 @@
 
         - template: '/azure-infrastructure/devops/pipelines/tasks-postman-api-upload.yml'
           parameters:
-            domain: 'Management'
+            domain: 'management'
             environment: '${{parameters.environment}}'
             authorizationTokenEndpoint: '$(Okta-AuthorizationServer-TokenEndpoint)'
             authorizationClientId: '$(Okta-Sren-Management-ClientId)'
