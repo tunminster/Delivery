@@ -202,7 +202,7 @@ stages:
     jobs:  
       - template: '/DevOps/pipelines/job-deploy-postman-apis.yml'
         parameters:
-          jobName: 'Postman Apis'
+          jobName: 'PostmanApis'
           jobDisplayName: 'Deploy postman apis'
           dependsOn: ''
           environment: 'dev'
