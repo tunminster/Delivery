@@ -5,7 +5,7 @@
   ${{ if parameters.condition }}:
     condition: '${{ parameters.condition }}'
   pool:
-    name: ${{ parameters.pool }}
+    name: 'ubuntu-latest'
     vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools.
   environment: ${{ parameters.environment }}
   strategy:
@@ -24,6 +24,6 @@
             authorizationClientSecret: '$(Okta-Sren-Management-ClientSecret)'
             authorizationScopes: 'category_management'
             maxRetryCount: $(Max-Postman-Retry-Count)
-            additionalEnvironmentSettingsJson: "{ 'licenseCheckLineOfBusiness': 'marine', 'productDefinitionPartitionKey': 'industrymachinery', 'partnerId': 'Contoso' }"
+            additionalEnvironmentSettingsJson: "{ 'partnerId': 'Contoso' }"
             failOnStderr: false
  

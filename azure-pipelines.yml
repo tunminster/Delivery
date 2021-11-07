@@ -16,6 +16,11 @@ parameters:
     type: boolean
     default: false
 
+  - name: RunPostmanStage
+    displayName: Run Postman stage
+    type: boolean
+    default: false
+
 trigger:
 - master
 
@@ -188,7 +193,19 @@ stages:
           #     ARM_TENANT_ID: $(app-dev-tenant-id)
 
          
-
+  - stage: DeployPostmanStage
+    displayName: Deploy postman stage
+    condition: eq('${{ parameters.RunInfraProvisionStage }}' , true)
+    variables:
+        - group: Hn-Platform-Infra-Variables
+        - group: Hn-Platform-Infra
+    jobs:  
+      - template: '/delivery/devops/pipelines/job-deploy-postman-apis.yml'
+        parameters:
+          jobName: 'Postman Apis'
+          jobDisplayName: 'Deploy postman apis'
+          dependsOn: ''
+          
   - stage: DeployDev
     displayName: Deploy Development Env
     dependsOn: InfraProvisions
