@@ -15,7 +15,7 @@
         - checkout: self
           fetchDepth: 1
 
-        - template: '/delivery/devops/pipelines/tasks-postman-api-upload.yml'
+        - template: '/devops/pipelines/tasks-postman-api-upload.yml'
           parameters:
             domain: 'management'
             environment: '${{parameters.environment}}'
