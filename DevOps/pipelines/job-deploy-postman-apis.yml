@@ -1,3 +1,4 @@
+jobs:
 - deployment: '${{ parameters.jobName }}'
   displayName: ${{ coalesce(parameters.jobDisplayName, 'Deploy postman apis') }}
   ${{ if parameters.dependsOn }}:
