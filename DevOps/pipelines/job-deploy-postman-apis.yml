@@ -6,7 +6,6 @@ jobs:
   ${{ if parameters.condition }}:
     condition: '${{ parameters.condition }}'
   pool:
-    name: 'ubuntu-latest'
     vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools.
   environment: ${{ parameters.environment }}
   strategy:
