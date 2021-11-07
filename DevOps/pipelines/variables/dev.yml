@@ -1,0 +1,3 @@
+variables:
+  - group: Hn-Platform-Infra-Variables
+  - group: Hn-Platform-Infra
