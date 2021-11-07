@@ -5,6 +5,7 @@ using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
+using Delivery.Database.Constants;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopApproval;
 using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopApproval;
@@ -17,7 +18,7 @@ namespace Delivery.Api.Controllers.Management
     [Route("api/store-management" , Name = "2 - Store management")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
-    [Authorize(Policy = "BackOfficeUser")]
+    [Authorize(Roles = RoleConstant.Administrator)]
     public class StoreManagementController : Controller
     {
         private readonly IServiceProvider serviceProvider;
