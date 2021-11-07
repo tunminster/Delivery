@@ -205,6 +205,7 @@ stages:
           jobName: 'Postman Apis'
           jobDisplayName: 'Deploy postman apis'
           dependsOn: ''
+          environment: 'dev'
           
   - stage: DeployDev
     displayName: Deploy Development Env
