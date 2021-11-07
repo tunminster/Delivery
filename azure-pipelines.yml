@@ -197,8 +197,7 @@ stages:
     displayName: Deploy postman stage
     condition: eq('${{ parameters.RunPostmanStage }}' , true)
     variables:
-        - group: Hn-Platform-Infra-Variables
-        - group: Hn-Platform-Infra
+    - template: DevOps/pipelines/variables/dev.yml
     jobs:  
       - template: '/DevOps/pipelines/job-deploy-postman-apis.yml'
         parameters:
