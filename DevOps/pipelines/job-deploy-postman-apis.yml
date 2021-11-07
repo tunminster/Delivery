@@ -19,11 +19,11 @@ jobs:
           parameters:
             domain: 'management'
             environment: '${{parameters.environment}}'
-            authorizationTokenEndpoint: '$(Okta-AuthorizationServer-TokenEndpoint)'
-            authorizationClientId: '$(Okta-Sren-Management-ClientId)'
-            authorizationClientSecret: '$(Okta-Sren-Management-ClientSecret)'
+            authorizationTokenEndpoint: 'https://localhost:5001'
+            authorizationClientId: 'test-clientid'
+            authorizationClientSecret: 'test-seecret'
             authorizationScopes: 'category_management'
-            maxRetryCount: $(Max-Postman-Retry-Count)
-            additionalEnvironmentSettingsJson: "{ 'partnerId': 'Contoso' }"
+            maxRetryCount: 5
+            additionalEnvironmentSettingsJson: "{ 'partnerId': 'Delivery' }"
             failOnStderr: false
  
