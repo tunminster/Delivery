@@ -16,7 +16,7 @@ jobs:
         - checkout: self
           fetchDepth: 1
 
-        - template: '/tasks-postman-api-upload.yml'
+        - template: '/DevOps/pipelines/task-postman-api-upload.yml'
           parameters:
             domain: 'management'
             environment: '${{parameters.environment}}'
