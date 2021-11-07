@@ -125,7 +125,7 @@ namespace Delivery.Api.Controllers.Management
         [ProducesResponseType(typeof(StatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpPost]
-        //[Authorize(Roles = RoleConstant.Administrator)]
+        [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Post_AddAdminRoleAsync(ManagementUserContract managementUserContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -145,10 +145,12 @@ namespace Delivery.Api.Controllers.Management
 
 
             var user = await userManager.FindByNameAsync(managementUserContract.Email);
-            if (user.EmailConfirmed)
+            if (!user.EmailConfirmed)
             {
-                await userManager.AddToRoleAsync(user, RoleConstant.Administrator);
+                throw new InvalidOperationException($"{managementUserContract.Email} has not been confirmed.");
             }
+            
+            await userManager.AddToRoleAsync(user, RoleConstant.Administrator);
             
             var statusContract = new StatusContract
             {
