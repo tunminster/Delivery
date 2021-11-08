@@ -9,10 +9,12 @@ jobs:
     vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools.
   environment: ${{ parameters.environment }}
   strategy:
-    runcOnce:
-        deploy:
-          steps:
-          - checkout: self          
+    runOnce:
+      deploy:
+        steps:
+        - checkout: self
+        - bash: echo hello
+          
 
         # - template: '/DevOps/pipelines/task-postman-api-upload.yml'
         #   parameters:
