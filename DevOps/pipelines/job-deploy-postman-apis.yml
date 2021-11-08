@@ -10,19 +10,21 @@ jobs:
   environment: ${{ parameters.environment }}
   strategy:
     rolling:
-      deploy:
+      runcOnce:
         steps:
         - checkout: self
+        - bash: echo hello
+          name: step
 
-        - template: '/DevOps/pipelines/task-postman-api-upload.yml'
-          parameters:
-            domain: 'management'
-            environment: '${{parameters.environment}}'
-            authorizationTokenEndpoint: 'https://localhost:5001'
-            authorizationClientId: 'test-clientid'
-            authorizationClientSecret: 'test-seecret'
-            authorizationScopes: 'category_management'
-            maxRetryCount: 10
-            additionalEnvironmentSettingsJson: "{}"
-            failOnStderr: false
+        # - template: '/DevOps/pipelines/task-postman-api-upload.yml'
+        #   parameters:
+        #     domain: 'management'
+        #     environment: '${{parameters.environment}}'
+        #     authorizationTokenEndpoint: 'https://localhost:5001'
+        #     authorizationClientId: 'test-clientid'
+        #     authorizationClientSecret: 'test-seecret'
+        #     authorizationScopes: 'category_management'
+        #     maxRetryCount: 10
+        #     additionalEnvironmentSettingsJson: "{}"
+        #     failOnStderr: false
  
