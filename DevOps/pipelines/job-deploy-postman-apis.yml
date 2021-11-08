@@ -7,16 +7,15 @@ jobs:
     condition: '${{ parameters.condition }}'
   pool:
     vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools. 
-  steps:
-    - template: '/DevOps/pipelines/task-postman-upload.yml'
-      parameters:
-        domain: 'management'
-        environment: '${{parameters.environment}}'
-        authorizationTokenEndpoint: 'https://localhost:5001'
-        authorizationClientId: 'test-clientid'
-        authorizationClientSecret: 'test-seecret'
-        authorizationScopes: 'category_management'
-        maxRetryCount: 10
-        additionalEnvironmentSettingsJson: "{}"
-        failOnStderr: false
+- template: '/DevOps/pipelines/task-postman-upload.yml'
+  parameters:
+    domain: 'management'
+    environment: '${{parameters.environment}}'
+    authorizationTokenEndpoint: 'https://localhost:5001'
+    authorizationClientId: 'test-clientid'
+    authorizationClientSecret: 'test-seecret'
+    authorizationScopes: 'category_management'
+    maxRetryCount: 10
+    additionalEnvironmentSettingsJson: "{}"
+    failOnStderr: false
  
