@@ -23,7 +23,7 @@ jobs:
             authorizationClientId: 'test-clientid'
             authorizationClientSecret: 'test-seecret'
             authorizationScopes: 'category_management'
-            maxRetryCount: 5
-            additionalEnvironmentSettingsJson: ""
+            maxRetryCount: 10
+            additionalEnvironmentSettingsJson: "{'userName' : 'Enter username'}"
             failOnStderr: false
  
