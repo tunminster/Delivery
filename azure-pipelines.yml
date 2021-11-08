@@ -192,7 +192,6 @@ stages:
           #     ARM_SUBSCRIPTION_ID: $(app-dev-subscription-id)
           #     ARM_TENANT_ID: $(app-dev-tenant-id)
 
-         
   - stage: DeployPostmanStage
     displayName: Deploy postman stage
     condition: eq('${{ parameters.RunPostmanStage }}' , true)
