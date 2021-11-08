@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers.Management
 {
-    [Route("api/store-management" , Name = "2 - Store management")]
+    [Route("api/v1/store-management" , Name = "2 - Store management")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
     [Authorize(Roles = RoleConstant.Administrator)]
