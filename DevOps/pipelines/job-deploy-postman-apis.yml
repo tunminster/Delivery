@@ -12,7 +12,7 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - checkout: none
+        - checkout: self
 
         - template: '/DevOps/pipelines/task-postman-upload.yml'
           parameters:
