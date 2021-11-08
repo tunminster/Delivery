@@ -20,8 +20,8 @@ jobs:
             domain: 'management'
             environment: '${{parameters.environment}}'
             authorizationTokenEndpoint: 'https://localhost:5001'
-            authorizationClientId: 'test-clientid'
-            authorizationClientSecret: 'test-seecret'
+            authorizationClientId: 'clientid'
+            authorizationClientSecret: 'seecret'
             authorizationScopes: 'category_management'
             maxRetryCount: 10
             additionalEnvironmentSettingsJson: "{ 'licenseCheckLineOfBusiness': 'marine', 'productDefinitionPartitionKey': 'industrymachinery', 'partnerId': 'Contoso' }"

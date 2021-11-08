@@ -19,7 +19,7 @@ parameters:
   type: boolean
 
 steps:
-  - pwsh: '$(Build.SourcesDirectory)/DevOps/scripts/postman/Update-Environment.ps1 -postmanApiKeys "$(Postman-Api-Key)" -workspaceId "$(Postman-Workspace-Id)" -environment "${{ parameters.environment }}" -domain "${{ parameters.domain }}" -authorizationTokenEndpoint "${{ parameters.authorizationTokenEndpoint }}" -authorizationScopes "${{ parameters.authorizationScopes }}" -maxRetryCount "${{ parameters.maxRetryCount }}" -additionalEnvironmentSettingsJson "${{ parameters.additionalEnvironmentSettingsJson }}"'
+  - pwsh: '$(Build.SourcesDirectory)/DevOps/scripts/Update-Environment.ps1 -postmanApiKeys "$(Postman-Api-Key)" -workspaceId "$(Postman-Workspace-Id)" -environment "${{ parameters.environment }}" -domain "${{ parameters.domain }}" -authorizationTokenEndpoint "${{ parameters.authorizationTokenEndpoint }}" -authorizationScopes "${{ parameters.authorizationScopes }}" -maxRetryCount "${{ parameters.maxRetryCount }}" -additionalEnvironmentSettingsJson "${{ parameters.additionalEnvironmentSettingsJson }}"'
     displayName: 'Update environments (public)'
     failOnStderr: true
 
