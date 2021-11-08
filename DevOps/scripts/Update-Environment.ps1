@@ -8,8 +8,8 @@ param
     [string] $authorizationScopes= $(throw "The authorization scopes are required"),
     [string] $authorizationClientId,
     [string] $authorizationClientSecret,
-    [string] $maxRetryCount,
-    [string] $additionalEnvironmentSettingsJson
+    [string] $maxRetryCount
+    #[string] $additionalEnvironmentSettingsJson
 )
 
 # ## Add api keys to a list
