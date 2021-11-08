@@ -9,6 +9,7 @@ jobs:
     vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools.
   environment: ${{ parameters.environment }}
   strategy:
+    runOnce:
       deploy:
         steps:
         - checkout: none
