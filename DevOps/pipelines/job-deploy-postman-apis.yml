@@ -10,7 +10,7 @@ jobs:
   environment: ${{ parameters.environment }}
   strategy:
     rolling:
-      runcOnce:
+      runOnce:
         steps:
         - checkout: self
         - bash: echo hello
