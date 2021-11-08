@@ -10,9 +10,10 @@ jobs:
   environment: ${{ parameters.environment }}
   strategy:
     runcOnce:
-      steps:
-      - checkout: self
-      - bash: echo hello
+        deploy:
+          steps:
+          - checkout: self
+          - bash: echo hello
           
 
         # - template: '/DevOps/pipelines/task-postman-api-upload.yml'
