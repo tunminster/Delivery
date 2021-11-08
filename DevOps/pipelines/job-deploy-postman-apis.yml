@@ -24,6 +24,6 @@ jobs:
             authorizationClientSecret: 'test-seecret'
             authorizationScopes: 'category_management'
             maxRetryCount: 5
-            additionalEnvironmentSettingsJson: "{ 'partnerId': 'Delivery' }"
+            additionalEnvironmentSettingsJson: ""
             failOnStderr: false
  
