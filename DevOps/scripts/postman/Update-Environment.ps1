@@ -86,6 +86,7 @@ $environmentPayload = @"
 "@
 
 Write-Host $environmentPayload
+Write-Host "WorkspaceId" + $workspaceId
 
 ## Create or update environment
 $httpMethod = 'POST'
