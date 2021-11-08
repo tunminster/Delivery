@@ -7,7 +7,7 @@ jobs:
     condition: '${{ parameters.condition }}'
   pool:
     vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools.
-  environment: ${{ parameters.environment }}
+  #environment: ${{ parameters.environment }}
   strategy:
     runOnce:
       deploy:
