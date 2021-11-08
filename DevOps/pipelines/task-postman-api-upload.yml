@@ -23,10 +23,10 @@ steps:
     displayName: 'Update environments (public)'
     failOnStderr: true
 
-  # - pwsh: '$(Build.SourcesDirectory)/DevOps/scripts/postman/Update-Environment.ps1 -postmanApiKeys "$(Postman-Api-Key)" -workspaceId "$(Postman-Workspace-Id)" -environment "${{ parameters.environment }}" -domain "${{ parameters.domain }}" -authorizationClientId "${{ parameters.authorizationClientId }}" -authorizationClientSecret "${{ parameters.authorizationClientSecret }}" -authorizationTokenEndpoint "${{ parameters.authorizationTokenEndpoint }}" -authorizationScopes "${{ parameters.authorizationScopes }}"  -maxRetryCount "${{ parameters.maxRetryCount }}" -additionalEnvironmentSettingsJson "${{ parameters.additionalEnvironmentSettingsJson }}"'
-  #   displayName: 'Update environments (internal use only)'
-  #   failOnStderr: true
+  - pwsh: '$(Build.SourcesDirectory)/DevOps/scripts/postman/Update-Environment.ps1 -postmanApiKeys "$(Postman-Api-Key)" -workspaceId "$(Postman-Workspace-Id)" -environment "${{ parameters.environment }}" -domain "${{ parameters.domain }}" -authorizationClientId "${{ parameters.authorizationClientId }}" -authorizationClientSecret "${{ parameters.authorizationClientSecret }}" -authorizationTokenEndpoint "${{ parameters.authorizationTokenEndpoint }}" -authorizationScopes "${{ parameters.authorizationScopes }}"  -maxRetryCount "${{ parameters.maxRetryCount }}" -additionalEnvironmentSettingsJson "${{ parameters.additionalEnvironmentSettingsJson }}"'
+    displayName: 'Update environments (internal use only)'
+    failOnStderr: true
 
-  # - pwsh: '$(Build.SourcesDirectory)/DevOps/scripts/postman/Import-Api-Specification.ps1 -postmanApiKeys "$(Postman-Api-Key)" -workspaceId "$(Postman-Workspace-Id)" -environment "${{ parameters.environment }}" -domain "${{ parameters.domain }}" -openApiDownloadLink "$(Api-Base-Url)/swagger/api/${{ parameters.domain }}/v1/swagger.json"'
-  #   displayName: 'Update collections'
-  #   failOnStderr: ${{ parameters.failOnStderr }} # some schemas are not supported by the postman tool
+  - pwsh: '$(Build.SourcesDirectory)/DevOps/scripts/postman/Import-Api-Specification.ps1 -postmanApiKeys "$(Postman-Api-Key)" -workspaceId "$(Postman-Workspace-Id)" -environment "${{ parameters.environment }}" -domain "${{ parameters.domain }}" -openApiDownloadLink "$(Api-Base-Url)/swagger/api/${{ parameters.domain }}/v1/swagger.json"'
+    displayName: 'Update collections'
+    failOnStderr: ${{ parameters.failOnStderr }} # some schemas are not supported by the postman tool
