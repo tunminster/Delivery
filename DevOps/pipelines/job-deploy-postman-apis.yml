@@ -6,9 +6,7 @@ jobs:
   ${{ if parameters.condition }}:
     condition: '${{ parameters.condition }}'
   pool:
-    vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools.
-  environment: ${{ parameters.environment }}
-        
+    vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools. 
   steps:
     - template: '/DevOps/pipelines/task-postman-upload.yml'
       parameters:
