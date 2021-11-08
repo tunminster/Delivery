@@ -7,15 +7,13 @@ jobs:
     condition: '${{ parameters.condition }}'
   pool:
     vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools.
-  #workspace:
-    #clean: outputs | resources | all # what to clean up before the job runs
   environment: ${{ parameters.environment }}
   strategy:
     runOnce:
       deploy:
         steps:
         - checkout: self
-        - bash: echo hello
+          fetchDepth: 1
           
         - template: '/DevOps/pipelines/task-postman-api-upload.yml'
           parameters:
@@ -26,6 +24,6 @@ jobs:
             authorizationClientSecret: 'seecret'
             authorizationScopes: 'category_management'
             maxRetryCount: 10
-            #additionalEnvironmentSettingsJson: "{ 'licenseCheckLineOfBusiness': 'marine', 'productDefinitionPartitionKey': 'industrymachinery', 'partnerId': 'Contoso' }"
+            additionalEnvironmentSettingsJson: "{ 'partner': 'name' }"
             failOnStderr: false
  
