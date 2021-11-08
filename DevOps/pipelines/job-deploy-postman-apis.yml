@@ -14,7 +14,7 @@ jobs:
         steps:
         - checkout: self
 
-        - template: '/DevOps/pipelines/task-postman-upload.yml'
+        - template: '/DevOps/pipelines/task-postman-api-upload.yml'
           parameters:
             domain: 'management'
             environment: '${{parameters.environment}}'
