@@ -12,9 +12,7 @@ jobs:
     runcOnce:
         deploy:
           steps:
-          - checkout: self
-          - bash: echo hello
-          
+          - checkout: self          
 
         # - template: '/DevOps/pipelines/task-postman-api-upload.yml'
         #   parameters:
