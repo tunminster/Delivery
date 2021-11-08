@@ -7,6 +7,8 @@ jobs:
     condition: '${{ parameters.condition }}'
   pool:
     vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools.
+  workspace:
+    clean: outputs | resources | all # what to clean up before the job runs
   environment: ${{ parameters.environment }}
   strategy:
     runOnce:
