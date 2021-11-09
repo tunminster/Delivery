@@ -26,5 +26,5 @@ jobs:
             maxRetryCount: 10
             additionalEnvironmentSettingsJson: "{ 'Ocp-Apim-Subscription-Key': 'Enter subscription key' }"
             failOnStderr: false
-            baseUrl: '$(baseUrl)'
+            baseUrl: '$(BaseUrl)'
  
