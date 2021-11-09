@@ -33,5 +33,32 @@ namespace Delivery.Store.Domain.Converters.StoreConverters
             
             return storeContractList;
         }
+        
+        public static StoreContract ConvertStoreContract(this Database.Entities.Store store)
+        {
+            var storeContract = new StoreContract
+            {
+                StoreId = store.ExternalId,
+                StoreName = store.StoreName,
+                ImageUri = store.ImageUri,
+                AddressLine1 = store.AddressLine1,
+                AddressLine2 = store.AddressLine2,
+                City = store.City,
+                County = store.County,
+                Country = store.Country,
+                PostalCode = store.PostalCode,
+                StoreType = store.StoreType?.StoreTypeName!,
+                StorePaymentAccountNumber = store.StorePaymentAccount?.AccountNumber ?? string.Empty,
+                StoreOpeningHours = store.OpeningHours.Select(op => new StoreOpeningHourContract
+                {
+                    DayOfWeek = op.DayOfWeek,
+                    Open = op.Open,
+                    Close = op.Close
+                }).ToList(),
+                Location = new GeoLocation(store.Latitude ?? 0, store.Longitude ?? 0)
+            };
+            
+            return storeContract;
+        }
     }
 }

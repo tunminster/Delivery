@@ -41,6 +41,7 @@ namespace Delivery.Azure.Library.WebApi.Swagger.Filters
 
 			AddHeader(operation, "Authorization", "Required to authenticate via OAuth to the api", isRequired: isAuthorizationRequired, "Bearer {{bearerToken}}");
 			AddHeader(operation, HttpHeaders.CorrelationId, "Allows to pass a correlation id to the service", isRequired: false);
+			AddHeader(operation, HttpHeaders.OcpSubscriptionKey, "Allows to pass a ocp subscription key to the service", isRequired: false);
 
 			var featureProvider = serviceProvider.GetRequiredService<IFeatureProvider>();
 

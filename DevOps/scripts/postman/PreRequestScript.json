@@ -1,0 +1,24 @@
+{
+    "listen": "prerequest",
+    "script": {
+      "exec": [
+        "// insert any pre-request logic here",
+        "let headerKey = 'Request-Id'",
+        "let headerValue = pm.variables.get(headerKey)",
+        "if(!headerValue){",
+        "    var uuid = require('uuid')",
+        "    headerValue = uuid.v4()",
+        "}",
+        "",
+        "console.log('Using correlation id ' + headerValue)",
+        "pm.variables.set(headerKey, headerValue)",
+        "",
+        "// insert subscription key here",
+        "let subscriptionKey = 'Ocp-Apim-Subscription-Key'",
+        "let subscriptionKeyValue = pm.variables.get(subscriptionKey)",
+        "pm.variables.set(subscriptionKey, subscriptionKeyValue)",
+        ""
+      ],
+      "type": "text/javascript"
+    }
+  }

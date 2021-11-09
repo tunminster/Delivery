@@ -1,3 +1,4 @@
+jobs:
 - deployment: '${{ parameters.jobName }}'
   displayName: ${{ coalesce(parameters.jobDisplayName, 'Deploy postman apis') }}
   ${{ if parameters.dependsOn }}:
@@ -5,7 +6,6 @@
   ${{ if parameters.condition }}:
     condition: '${{ parameters.condition }}'
   pool:
-    name: ${{ parameters.pool }}
     vmImage: 'ubuntu-latest' #this property is only considered for Azure Hosted pools.
   environment: ${{ parameters.environment }}
   strategy:
@@ -14,16 +14,16 @@
         steps:
         - checkout: self
           fetchDepth: 1
-
-        - template: '/azure-infrastructure/devops/pipelines/tasks-postman-api-upload.yml'
+          
+        - template: '/DevOps/pipelines/task-postman-api-upload.yml'
           parameters:
-            domain: 'Management'
+            domain: 'management'
             environment: '${{parameters.environment}}'
-            authorizationTokenEndpoint: '$(Okta-AuthorizationServer-TokenEndpoint)'
-            authorizationClientId: '$(Okta-Sren-Management-ClientId)'
-            authorizationClientSecret: '$(Okta-Sren-Management-ClientSecret)'
+            authorizationTokenEndpoint: 'https://localhost:5001'
+            authorizationClientId: 'clientid'
+            authorizationClientSecret: 'seecret'
             authorizationScopes: 'category_management'
-            maxRetryCount: $(Max-Postman-Retry-Count)
-            additionalEnvironmentSettingsJson: "{ 'licenseCheckLineOfBusiness': 'marine', 'productDefinitionPartitionKey': 'industrymachinery', 'partnerId': 'Contoso' }"
+            maxRetryCount: 10
+            additionalEnvironmentSettingsJson: "{ 'Ocp-Apim-Subscription-Key': 'Enter subscription key' }"
             failOnStderr: false
  

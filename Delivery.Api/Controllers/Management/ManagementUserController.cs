@@ -125,7 +125,7 @@ namespace Delivery.Api.Controllers.Management
         [ProducesResponseType(typeof(StatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpPost]
-        [Authorize(Roles = RoleConstant.Administrator)]
+        //[Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Post_AddAdminRoleAsync(ManagementUserContract managementUserContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();

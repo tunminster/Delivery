@@ -17,7 +17,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers.Management
 {
-    [Route("api/driver-management" , Name = "2 - Driver management")]
+    /// <summary>
+    ///  Driver management
+    /// </summary>
+    [Route("api/v1/driver-management" , Name = "2 - Driver management")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
     [Authorize(Policy = "BackOfficeUser")]
