@@ -480,15 +480,15 @@ stages:
               containerRegistryType: 'Azure Container Registry'
               
   - stage: DeployPostmanStage
-      displayName: Deploy postman stage
-      condition: eq('${{ parameters.RunPostmanStage }}' , true)
-      variables:
-        - template: DevOps/pipelines/variables/dev.yml
-      jobs:
-        - template: '/DevOps/pipelines/job-deploy-postman-apis.yml'
-          parameters:
-            jobName: 'PostmanApis'
-            jobDisplayName: 'Deploy postman apis'
-            dependsOn: ''
-            environment: 'dev'
-            baseUrl: '$(baseUrl)'
+    displayName: Deploy postman stage
+    condition: eq('${{ parameters.RunPostmanStage }}' , true)
+    variables:
+      - template: DevOps/pipelines/variables/dev.yml
+    jobs:
+      - template: '/DevOps/pipelines/job-deploy-postman-apis.yml'
+        parameters:
+          jobName: 'PostmanApis'
+          jobDisplayName: 'Deploy postman apis'
+          dependsOn: ''
+          environment: 'dev'
+          baseUrl: '$(baseUrl)'
