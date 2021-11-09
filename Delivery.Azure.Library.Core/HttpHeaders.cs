@@ -11,5 +11,6 @@ namespace Delivery.Azure.Library.Core
         public const string UserId = "X-User-Id";
         public const string UserRequiresOAuthToken = "X-User-Requires-OAuth-Token";
         public const string SubscriptionKey = "Subscription-Key";
+        public const string OcpSubscriptionKey = "Ocp-Apim-Subscription-Key";
     }
 }

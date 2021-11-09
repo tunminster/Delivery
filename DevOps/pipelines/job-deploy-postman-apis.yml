@@ -24,6 +24,6 @@ jobs:
             authorizationClientSecret: 'seecret'
             authorizationScopes: 'category_management'
             maxRetryCount: 10
-            additionalEnvironmentSettingsJson: "{ 'Ocp-Apim-Subscription-Key': 'Enters subscription key' }"
+            additionalEnvironmentSettingsJson: "{ 'Ocp-Apim-Subscription-Key': 'Enter subscription key' }"
             failOnStderr: false
  
