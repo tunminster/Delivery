@@ -491,4 +491,3 @@ stages:
           jobDisplayName: 'Deploy postman apis'
           dependsOn: ''
           environment: 'dev'
-          baseUrl: '$(baseUrl)'
