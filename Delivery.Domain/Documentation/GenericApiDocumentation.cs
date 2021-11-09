@@ -22,7 +22,7 @@ The apis use the client credentials flow for server-to-server communication.
 		";
         
         public static string GetApiGeneralAboutDocumentationMarkdown(string category) => @$"
-The {category.ToLowerInvariant()} apis allow a distribution partner or carrier to create and manage their own food and delivery services.
+The {category.ToLowerInvariant()} apis allow a distribution partner to create and manage their own food and delivery services.
 		";
         public const string GetApiGeneralUsageDocumentationMarkdown = @"
 ## Updating data

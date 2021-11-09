@@ -192,18 +192,7 @@ stages:
           #     ARM_SUBSCRIPTION_ID: $(app-dev-subscription-id)
           #     ARM_TENANT_ID: $(app-dev-tenant-id)
 
-  - stage: DeployPostmanStage
-    displayName: Deploy postman stage
-    condition: eq('${{ parameters.RunPostmanStage }}' , true)
-    variables:
-    - template: DevOps/pipelines/variables/dev.yml
-    jobs:  
-      - template: '/DevOps/pipelines/job-deploy-postman-apis.yml'
-        parameters:
-          jobName: 'PostmanApis'
-          jobDisplayName: 'Deploy postman apis'
-          dependsOn: ''
-          environment: 'dev'
+  
           
   - stage: DeployDev
     displayName: Deploy Development Env
@@ -489,3 +478,16 @@ stages:
               arguments: '-f $(Build.ArtifactStagingDirectory)/devops/orders-service-deploy.yaml'
               secretType: 'dockerRegistry'
               containerRegistryType: 'Azure Container Registry'
+              
+  - stage: DeployPostmanStage
+      displayName: Deploy postman stage
+      condition: eq('${{ parameters.RunPostmanStage }}' , true)
+      variables:
+        - template: DevOps/pipelines/variables/dev.yml
+      jobs:
+        - template: '/DevOps/pipelines/job-deploy-postman-apis.yml'
+          parameters:
+            jobName: 'PostmanApis'
+            jobDisplayName: 'Deploy postman apis'
+            dependsOn: ''
+            environment: 'dev'

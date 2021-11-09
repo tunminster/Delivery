@@ -27,6 +27,7 @@ namespace Delivery.Api.Controllers.Management
         {
             this.serviceProvider = serviceProvider;
         }
+        
 
         /// <summary>
         ///  Shop approval

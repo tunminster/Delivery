@@ -9,7 +9,8 @@ param
     [string] $authorizationClientId,
     [string] $authorizationClientSecret,
     [string] $maxRetryCount,
-    [string] $additionalEnvironmentSettingsJson
+    [string] $additionalEnvironmentSettingsJson,
+    [string] $baseUrl
 )
 
 ## Add api keys to a list
@@ -58,6 +59,7 @@ $environmentValues = @{
     'authorizationTokenEndpoint' = $authorizationTokenEndpoint
     'authorizationScopes' = $authorizationScopes
     'maxRetryCount' = $maxRetryCount
+    'baseUrl' = $baseUrl
 }
 
 $environmentItems = New-Object Collections.Generic.List[string]
