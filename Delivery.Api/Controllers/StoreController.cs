@@ -66,7 +66,7 @@ namespace Delivery.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CreateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreCreationContract storeCreationContract,IFormFile storeImage)
+        public async Task<IActionResult> CreateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreCreationContract storeCreationContract, IFormFile? storeImage)
         {
             var validationResult =
                 await new StoreCreationValidator().ValidateAsync(storeCreationContract);

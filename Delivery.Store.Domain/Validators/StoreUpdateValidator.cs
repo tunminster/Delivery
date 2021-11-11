@@ -13,6 +13,8 @@ namespace Delivery.Store.Domain.Validators
             RuleFor(x => x.City).NotNull().NotEmpty().WithMessage("City must be provided.");
             RuleFor(x => x.Country).NotNull().NotEmpty().WithMessage("Country must be provided.");
             RuleFor(x => x.PostalCode).NotNull().NotEmpty().WithMessage("PostalCode must be provided.");
+            
+            RuleForEach(x => x.StoreOpeningHours).SetValidator(new StoreOpeningHourCreationValidator());
         }
     }
 }

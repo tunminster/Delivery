@@ -1,105 +1,91 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Delivery.Azure.Library.Core.Extensions.Objects;
+using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 
 namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
 {
     /// <summary>
-    ///  A contract to receive a store
+    ///  Store creation contract
     /// </summary>
-    [DataContract]
-    public class StoreCreationContract
+    public record StoreCreationContract
     {
         /// <summary>
         ///  Store name
+        /// <example>{{storeName}}</example>
         /// </summary>
-        ///<example>Buenos Aires</example>
-        [DataMember]
-        public string StoreName { get; set; }
-        
+        public string StoreName { get; init; } = string.Empty;
+
         /// <summary>
-        ///  Image uri
+        /// Address line 1
+        /// <example>{{addressLine1}}</example>
         /// </summary>
-        /// <example>https://www.imageurl.com</example>
-        [DataMember]
-        public string ImageUri { get; set; }
-        
+        public string AddressLine1 { get; init; } = string.Empty;
+
         /// <summary>
-        ///  Address line 1
+        ///  Address line 2
+        /// <example>{{addressLine2}}</example>
         /// </summary>
-        /// <example>Address line 1</example>
-        [DataMember]
-        public string AddressLine1 { get; set; }
-        
-        /// <summary>
-        ///  Address Line 2
-        /// </summary>
-        /// <example>Address line 2</example>
-        [DataMember]
-        public string AddressLine2 { get; set; }
-        
+        public string AddressLine2 { get; init; } = string.Empty;
+
         /// <summary>
         ///  City
+        /// <example>{{city}}</example>
         /// </summary>
-        /// <example>New york city</example>
-        [DataMember]
-        public string City { get; set; }
-        
+        public string City { get; init; } = string.Empty;
+
         /// <summary>
         ///  County
+        /// <example>{{county}}</example>
         /// </summary>
-        /// <example>New york</example>
-        [DataMember]
-        public string County { get; set; }
-        
+        public string County { get; init; } = string.Empty;
+
         /// <summary>
         ///  Country
+        /// <example>{{country}}</example>
         /// </summary>
-        /// <example>United States</example>
-        [DataMember]
-        public string Country { get; set; }
-        
+        public string Country { get; init; } = string.Empty;
+
         /// <summary>
-        ///  Postalcode
+        ///  PostalCode
+        /// <example>{{postalCode}}</example>
         /// </summary>
-        /// <example>95012</example>
-        [DataMember]
-        public string PostalCode { get; set; }
-        
+        public string PostalCode { get; init; } = string.Empty;
+
         /// <summary>
-        ///  StoreTypeId
+        /// Store type id
+        /// <example>{{storeTypeId}}</example>
         /// </summary>
-        /// <example>da12345</example>
-        [DataMember]
-        public string StoreTypeId { get; set; }
-        
+        public string StoreTypeId { get; init; } = string.Empty;
+
+        /// <summary>
+        ///  Radius
+        /// <example>{{radius}}</example>
+        /// </summary>
+        public int Radius { get; init; }
+
         /// <summary>
         ///  Payment account number
+        /// <example>{{paymentAccountNumber}}</example>
         /// </summary>
-        /// <example>acct_1IZcerRGV3DhAqtX</example>
-        [DataMember]
-        public string PaymentAccountNumber { get; set; }
-        
+        public string PaymentAccountNumber { get; init; } = string.Empty;
+
+        /// <summary>
+        ///  Image uri
+        /// <example>{{imageUri}}</example>
+        /// </summary>
+        public string ImageUri { get; set; } = string.Empty;
+
         /// <summary>
         ///  Store opening hours
+        /// <example>{{storeOpeningHours}}</example>
         /// </summary>
-        [DataMember]
-        public List<StoreOpeningHourCreationContract> StoreOpeningHours { get; set; }
-        
-        public override string ToString()
-        {
-            return $"{GetType().Name}" +
-                   $"{nameof(StoreName)}: {StoreName.Format()}," +
-                   $"{nameof(ImageUri)}: {ImageUri.Format()}," +
-                   $"{nameof(AddressLine1)}: {AddressLine1.Format()}," +
-                   $"{nameof(AddressLine2)}: {AddressLine2.Format()}," +
-                   $"{nameof(City)}: {City.Format()}," +
-                   $"{nameof(County)}: {County.Format()}," +
-                   $"{nameof(Country)}: {Country.Format()}," +
-                   $"{nameof(PostalCode)}: {PostalCode.Format()}," +
-                   $"{nameof(StoreOpeningHours)}: {StoreOpeningHours.Format()}," +
-                   $"{nameof(StoreTypeId)} : {StoreTypeId.Format()}";
+        public List<StoreOpeningHourContract> StoreOpeningHours { get; init; } = new();
 
-        }
+        /// <summary>
+        ///  Store user
+        /// <example>{{storeUser}}</example>
+        /// </summary>
+        public StoreUserCreationContract StoreUser { get; init; } = new();
     }
 }
