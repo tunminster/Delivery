@@ -13,6 +13,15 @@ namespace Delivery.Store.Domain.Validators
             RuleFor(x => x.City).NotNull().NotEmpty().WithMessage("City must be provided.");
             RuleFor(x => x.Country).NotNull().NotEmpty().WithMessage("Country must be provided.");
             RuleFor(x => x.PostalCode).NotNull().NotEmpty().WithMessage("PostalCode must be provided.");
+
+            RuleFor(x => x.StoreUser.EmailAddress).NotNull().NotEmpty()
+                .WithMessage("Store user email must be provided.")
+                .EmailAddress().WithMessage("A valid email is required");
+
+            RuleForEach(x => x.StoreOpeningHours).SetValidator(new StoreOpeningHourCreationValidator());
+            
+            RuleFor(x => x.StoreUser.Password).MinimumLength(6).WithMessage("Password must be at least 6 characters");
+            RuleFor(x => x.StoreUser.ConfirmPassword).NotEmpty().NotNull().WithMessage("Confirm password must be provided");
         }
     }
 }

@@ -71,6 +71,14 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
                 IsDeleted = false
             };
             
+            // store user
+            var storeUser = new StoreUser
+            {
+                Username = command.StoreCreationContract.StoreUser.EmailAddress
+            };
+            
+            store.StoreUsers.Add(storeUser);
+            
             await databaseContext.Stores.AddAsync(store);
             await databaseContext.SaveChangesAsync();
 

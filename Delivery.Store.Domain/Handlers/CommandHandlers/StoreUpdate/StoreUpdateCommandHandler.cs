@@ -49,8 +49,6 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
                 };
             }
             
-            
-
             store.StoreName = command.StoreUpdateContract.StoreName;
             store.AddressLine1 = command.StoreUpdateContract.AddressLine1;
             store.AddressLine2 = command.StoreUpdateContract.AddressLine2;
