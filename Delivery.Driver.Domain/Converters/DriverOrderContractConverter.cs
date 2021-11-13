@@ -1,5 +1,6 @@
 using Delivery.Database.Entities;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverHistory;
 
 namespace Delivery.Driver.Domain.Converters
 {
@@ -19,6 +20,19 @@ namespace Delivery.Driver.Domain.Converters
             };
 
             return driverOrderContract;
+        }
+
+        public static DriverOrderHistoryContract ConvertToDriverHistoryContract(this DriverOrder driverOrder)
+        {
+            var driverHistoryContract = new DriverOrderHistoryContract
+            {
+                StoreName = driverOrder.Order.Store.StoreName,
+                OrderId = driverOrder.Order.ExternalId,
+                OrderDate = driverOrder.InsertionDateTime,
+                DeliveryFee = driverOrder.Order.DeliveryFees
+            };
+
+            return driverHistoryContract;
         }
     }
 }

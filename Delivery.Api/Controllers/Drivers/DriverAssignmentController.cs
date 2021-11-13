@@ -21,7 +21,7 @@ namespace Delivery.Api.Controllers.Drivers
     /// <summary>
     ///  Driver assignment controller
     /// </summary>
-    [Route("api/v1/driver-assignment", Name = "3 - Driver Assignment")]
+    [Route("api/v1/delivery-partners/driver-assignment", Name = "3 - Driver Assignment")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [Authorize(Policy = "DriverApiUser")]
     [ApiController]

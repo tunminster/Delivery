@@ -18,7 +18,7 @@ namespace Delivery.Api.Controllers.Drivers
     /// <summary>
     ///  Driver notification controller
     /// </summary>
-    [Route("api/v1/driver-notification", Name = "4 - Driver Notification")]
+    [Route("api/v1/delivery-partners/driver-notification", Name = "4 - Driver Notification")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [ApiController]
     [Authorize(Policy = "DriverApiUser")]

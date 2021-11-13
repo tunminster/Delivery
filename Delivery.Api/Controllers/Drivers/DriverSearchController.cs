@@ -18,7 +18,7 @@ namespace Delivery.Api.Controllers.Drivers
     /// <summary>
     ///  Driver controller
     /// </summary>
-    [Route("api/v1/driver-search", Name = "6 - Driver Search")]
+    [Route("api/v1/delivery-partners/driver-search", Name = "6 - Driver Search")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [ApiController]
     [Authorize(Policy = "DriverApiUser")]
