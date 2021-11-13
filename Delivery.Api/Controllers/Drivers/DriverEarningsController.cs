@@ -19,7 +19,7 @@ namespace Delivery.Api.Controllers.Drivers
     /// <summary>
     ///  Driver earning controller
     /// </summary>
-    [Route("api/v1/driver-earning", Name = "7 - Driver Earnings")]
+    [Route("api/v1/delivery-partners/driver-earning", Name = "7 - Driver Earnings")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [Authorize(Policy = "DriverApiUser")]
     [ApiController]

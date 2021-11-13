@@ -51,7 +51,7 @@ namespace Delivery.Api.Controllers.Drivers
     /// <summary>
     ///  Driver controller
     /// </summary>
-    [Route("api/v1/[controller]", Name = "1 - Driver")]
+    [Route("api/v1/delivery-partners/drivers", Name = "1 - Driver")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [ApiController]
     public class DriversController : ControllerBase

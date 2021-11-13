@@ -11,22 +11,25 @@ using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverHistory;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder;
+using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrderHistory;
 using Delivery.Driver.Domain.Validators;
 using Delivery.Driver.Domain.Validators.DriverAssignment;
 using Delivery.Driver.Domain.Validators.DriverOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Nest;
 
 namespace Delivery.Api.Controllers.Drivers
 {
     /// <summary>
     ///  Driver orders controller
     /// </summary>
-    [Route("api/v1/driver-orders", Name = "5 - Driver Orders")]
+    [Route("api/v1/delivery-partners/driver-orders", Name = "5 - Driver Orders")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [ApiController]
     [Authorize(Policy = "DriverApiUser")]
@@ -184,6 +187,22 @@ namespace Delivery.Api.Controllers.Drivers
                 .Handle(new DriverOrderIndexDeleteAllCommand(driverOrderIndexAllCreationContract.CreateDate));
 
             return Accepted();
+        }
+
+        [Route("get-driver-order-history", Order = 6)]
+        [ProducesResponseType(typeof(List<DriverOrderHistoryContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Get_OrderHistoryAsync(
+            DriverOrderHistoryRequestContract driverOrderHistoryRequestContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var orderHistoryContracts = await new DriverOrderHistoryQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(new DriverOrderHistoryQuery(driverOrderHistoryRequestContract.OrderDateFrom,
+                    driverOrderHistoryRequestContract.DriverOrderStatus));
+
+            return Ok(orderHistoryContracts);
         }
     }
 }
