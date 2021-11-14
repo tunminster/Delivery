@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Database.DataAccess;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
-using Delivery.Database.Enums;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverHistory;
 using Delivery.Driver.Domain.Converters;
@@ -13,22 +14,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrderHistory
 {
-    public record DriverOrderHistoryQuery
-        (DateTimeOffset OrderDateFrom, DriverOrderStatus DriverOrderStatus) : IQuery<List<DriverOrderHistoryContract>>;
-    
-    
-    public class DriverOrderHistoryQueryHandler : IQueryHandler<DriverOrderHistoryQuery, List<DriverOrderHistoryContract>>
+    public record DriverOrderHistoryDetailsQuery(string OrderId) : IQuery<DriverOrderHistoryDetailsContract>;
+    public class DriverOrderHistoryDetailsQueryHandler : IQueryHandler<DriverOrderHistoryDetailsQuery,DriverOrderHistoryDetailsContract>
     {
         private IServiceProvider serviceProvider;
         private IExecutingRequestContextAdapter executingRequestContextAdapter;
         
-        public DriverOrderHistoryQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        public DriverOrderHistoryDetailsQueryHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<List<DriverOrderHistoryContract>> Handle(DriverOrderHistoryQuery query)
+        public async Task<DriverOrderHistoryDetailsContract> Handle(DriverOrderHistoryDetailsQuery query)
         {
             await using var dataAccess = new ShardedDataAccess<PlatformDbContext, Database.Entities.DriverOrder>(
                 serviceProvider, () => PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter));
@@ -44,21 +42,20 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrderHistory
                     x.EmailAddress == executingRequestContextAdapter.GetAuthenticatedUser().UserEmail)) ?? throw new InvalidOperationException($"Expected to be found driver.");
             
             var cacheKey =
-                $"Database-{executingRequestContextAdapter.GetShard().Key}-driver-{query.DriverOrderStatus}-{nameof(DriverOrderHistoryQuery).ToLowerInvariant()}-{query.OrderDateFrom:dd-MM-yyyy-hh-mm-ss}";
-
-            var driverHistoryContracts = await dataAccess.GetCachedItemsAsync(
+                $"Database-{executingRequestContextAdapter.GetShard().Key}-order-history-{query.OrderId}";
+            
+            var driverHistoryDetailsContract = await dataAccess.GetCachedItemsAsync(
                 cacheKey,
                 databaseContext.GlobalDatabaseCacheRegion,
                 async () => await databaseContext.DriverOrders
-                    .Where(x =>
-                        x.DriverId == driver.Id &&
-                        x.InsertionDateTime >= query.OrderDateFrom
-                                && x.Status == query.DriverOrderStatus)
+                    .Where(x => x.DriverId >= driver.Id && x.Order.ExternalId == query.OrderId)
                     .Include(x => x.Order)
                     .ThenInclude(x => x.Store)
-                    .Select(x => x.ConvertToDriverHistoryContract()).ToListAsync()) ?? new List<DriverOrderHistoryContract>();
-            
-            return driverHistoryContracts;
+                    .Include(x => x.Order.OrderItems)
+                    .ThenInclude(x => x.Product)
+                    .Select(x => x.ConvertToDriverOrderHistoryDetailsContract()).FirstOrDefaultAsync());
+
+            return driverHistoryDetailsContract ?? throw new FileNotFoundException($"Expected to be found and order. Instead: {driverHistoryDetailsContract.ConvertToJson()}");
         }
     }
 }

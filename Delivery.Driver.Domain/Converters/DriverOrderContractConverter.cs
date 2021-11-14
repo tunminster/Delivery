@@ -1,3 +1,4 @@
+using System.Linq;
 using Delivery.Database.Entities;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverHistory;
@@ -33,6 +34,33 @@ namespace Delivery.Driver.Domain.Converters
             };
 
             return driverHistoryContract;
+        }
+
+        public static DriverOrderHistoryDetailsContract ConvertToDriverOrderHistoryDetailsContract(
+            this DriverOrder driverOrder)
+        {
+            var driverOrderHistoryDetailsContract = new DriverOrderHistoryDetailsContract
+            {
+                StoreName = driverOrder.Order.Store.StoreName,
+                StoreAddress = driverOrder.Order.Store.FormattedAddress ?? string.Empty,
+                OrderId = driverOrder.Order.ExternalId,
+                OrderDate = driverOrder.InsertionDateTime,
+                DeliveryFee = driverOrder.Order.DeliveryFees,
+                OrderItems = driverOrder.Order.OrderItems.Select(x => x.ConvertToOrderHistoryItemContract()).ToList()
+            };
+
+            return driverOrderHistoryDetailsContract;
+        }
+
+        public static DriverOrderHistoryItemContract ConvertToOrderHistoryItemContract(this OrderItem orderItem)
+        {
+            var driverOrderHistoryItemContract = new DriverOrderHistoryItemContract
+            {
+                ItemName = orderItem.Product.ProductName,
+                ItemCount = orderItem.Count.ToString()
+            };
+
+            return driverOrderHistoryItemContract;
         }
     }
 }
