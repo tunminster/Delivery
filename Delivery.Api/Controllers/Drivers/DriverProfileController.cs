@@ -231,8 +231,6 @@ namespace Delivery.Api.Controllers.Drivers
         public async Task<IActionResult> UpdateDriverProfile_Async([ModelBinder(BinderType = typeof(JsonModelBinder))] DriverProfileUpdateContract driverProfileUpdateContract, 
             IFormFile? driverImage)
         {
-            //todo: add validation and file size limit
-            
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
             var files = await Request.GetFilesAsync();
