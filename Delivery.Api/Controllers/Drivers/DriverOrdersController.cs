@@ -204,5 +204,26 @@ namespace Delivery.Api.Controllers.Drivers
 
             return Ok(orderHistoryContracts);
         }
+        
+        [Route("get-driver-order-history-details", Order = 7)]
+        [ProducesResponseType(typeof(List<DriverOrderHistoryContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpGet]
+        public async Task<IActionResult> Get_OrderHistoryAsync(
+            string orderId)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            if (string.IsNullOrEmpty(orderId))
+            {
+                const string message = "Order id is required";
+                return message.ConvertToBadRequest();
+            }
+            
+            var orderHistoryDetailsContract = await new DriverOrderHistoryDetailsQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(new DriverOrderHistoryDetailsQuery(orderId));
+
+            return Ok(orderHistoryDetailsContract);
+        }
     }
 }
