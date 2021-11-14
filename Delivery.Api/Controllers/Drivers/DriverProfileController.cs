@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,9 +9,12 @@ using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
+using Delivery.Azure.Library.WebApi.Files;
 using Delivery.Azure.Library.WebApi.ModelBinders;
+using Delivery.Azure.Library.WebApi.Swagger.Attributes;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Driver.Domain.Configurations;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverProfile;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverActive;
@@ -92,18 +97,47 @@ namespace Delivery.Api.Controllers.Drivers
             return Ok(driverActiveStatusContract);
         }
 
-        [Route("update-service-area", Order = 3)]
-        [HttpPut]
-        [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
+        /// <summary>
+        ///  Get service area
+        /// </summary>
+        /// <remarks>
+        ///     Get service area endpoint allows user to get current service area location
+        /// </remarks>
+        [Route("get-service-area", Order = 3)]
+        [HttpGet]
+        [ProducesResponseType(typeof(DriverServiceAreaContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateDriverServiceAreaAsync(
-            DriverServiceAreaUpdateContract driverServiceAreaUpdateContract)
+        public async Task<IActionResult> Get_DriverServiceAreaAsync()
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected authenticated user.")
                 .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
 
-            var validationResult = await new DriverServiceAreaValidator().ValidateAsync(driverServiceAreaUpdateContract);
+            var driverServiceAreaContract =
+                await new DriverServiceAreaGetQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new DriverServiceAreaGetQuery(userEmail));
+
+            return Ok(driverServiceAreaContract);
+        }
+
+        /// <summary>
+        ///  Update service area contract
+        /// </summary>
+        /// <remarks>
+        ///     The update service area endpoint allows user to update the service area
+        /// </remarks>
+        [Route("update-service-area", Order = 4)]
+        [HttpPut]
+        [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateDriverServiceAreaAsync(
+            DriverServiceAreaContract driverServiceAreaContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected authenticated user.")
+                .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
+
+            var validationResult = await new DriverServiceAreaValidator().ValidateAsync(driverServiceAreaContract);
             
             if (!validationResult.IsValid)
             {
@@ -118,7 +152,7 @@ namespace Delivery.Api.Controllers.Drivers
             
             var driverServiceAreaUpdateMessage = new DriverServiceAreaUpdateMessageContract
             {
-                PayloadIn = driverServiceAreaUpdateContract,
+                PayloadIn = driverServiceAreaContract,
                 PayloadOut = statusContract,
                 RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
             };
@@ -128,7 +162,13 @@ namespace Delivery.Api.Controllers.Drivers
             return Ok(statusContract);
         }
 
-        [Route("get-total-earnings-details" , Order = 4)]
+        /// <summary>
+        ///  Get total earnings details
+        /// </summary>
+        /// <remarks>
+        ///     The get total earnings details endpoint allows user to get total earning details.
+        /// </remarks>
+        [Route("get-total-earnings-details" , Order = 5)]
         [HttpGet]
         [ProducesResponseType(typeof(DriverTotalEarningsContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -153,8 +193,10 @@ namespace Delivery.Api.Controllers.Drivers
         /// <summary>
         ///  Index driver
         /// </summary>
-        /// <returns></returns>
-        [Route("index-driver" , Order = 5)]
+        /// <remarks>
+        ///  The index driver endpoint allows user to update driver index
+        /// </remarks>
+        [Route("index-driver" , Order = 6)]
         [HttpPost]
         [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -180,17 +222,30 @@ namespace Delivery.Api.Controllers.Drivers
         ///  Upload profile image
         /// </summary>
         /// <returns></returns>
-        [Route("update-driver-profile" , Order = 6)]
+        [Route("update-driver-profile" , Order = 7)]
         [HttpPut]
         [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [RequestSizeLimit(5000000)]
+        [OpenApiMultipartUploadFilter("driverImage")]
         public async Task<IActionResult> UpdateDriverProfile_Async([ModelBinder(BinderType = typeof(JsonModelBinder))] DriverProfileUpdateContract driverProfileUpdateContract, 
             IFormFile? driverImage)
         {
-            //todo: add validation and file size limit
-            
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
+            var files = await Request.GetFilesAsync();
+            
+            var driverFileConfigurations = new DriverFileConfigurations(serviceProvider);
+            List<string> fileExtensions = driverFileConfigurations.GetValidFileExtensions();
+            var totalMaximumFilesSize = driverFileConfigurations.MaximumTotalFilesSize;
+
+            var fileValidationResult =
+                await new DriverProfileFileUploadValidator(fileExtensions, totalMaximumFilesSize).ValidateAsync(files);
+            
+            if (!fileValidationResult.IsValid)
+            {
+                return fileValidationResult.ConvertToBadRequest();
+            }
             
             var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected authenticated user.")
                 .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
@@ -210,7 +265,7 @@ namespace Delivery.Api.Controllers.Drivers
             {
                 DriverName = driverProfileContract.FullName,
                 DriverEmailAddress = driverProfileContract.EmailAddress,
-                DriverImage = driverImage,
+                DriverImage = files.First(),
                 DrivingLicenseFrontImage = null,
                 DrivingLicenseBackImage = null
             };
@@ -237,7 +292,7 @@ namespace Delivery.Api.Controllers.Drivers
         ///  Upload profile image
         /// </summary>
         /// <returns></returns>
-        [Route("update-driver-bank-details" , Order = 7)]
+        [Route("update-driver-bank-details" , Order = 8)]
         [HttpPut]
         [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]

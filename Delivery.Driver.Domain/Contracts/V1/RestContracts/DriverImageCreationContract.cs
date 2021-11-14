@@ -1,3 +1,4 @@
+using Delivery.Azure.Library.WebApi.Files;
 using Microsoft.AspNetCore.Http;
 
 namespace Delivery.Driver.Domain.Contracts.V1.RestContracts

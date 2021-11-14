@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Delivery.Driver.Domain.Validators.DriverProfile
 {
-    public class DriverServiceAreaValidator : AbstractValidator<DriverServiceAreaUpdateContract>
+    public class DriverServiceAreaValidator : AbstractValidator<DriverServiceAreaContract>
     {
         public DriverServiceAreaValidator()
         {

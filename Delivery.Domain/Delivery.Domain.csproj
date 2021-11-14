@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Delivery.Azure.Library.Authentication\Delivery.Azure.Library.Authentication.csproj" />
     <ProjectReference Include="..\Delivery.Azure.Library.Sharding\Delivery.Azure.Library.Sharding.csproj" />
     <ProjectReference Include="..\Delivery.Azure.Library.Storage\Delivery.Azure.Library.Storage.csproj" />
+    <ProjectReference Include="..\Delivery.Azure.Library.WebApi\Delivery.Azure.Library.WebApi.csproj" />
     <ProjectReference Include="..\Delivery.Database\Delivery.Database.csproj" />
   </ItemGroup>
 

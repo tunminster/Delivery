@@ -3,7 +3,7 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverProfile
     /// <summary>
     ///  Driver service area update contract
     /// </summary>
-    public record DriverServiceAreaUpdateContract
+    public record DriverServiceAreaContract
     {
         /// <summary>
         ///  Driver's service area that he/she intends to work.
