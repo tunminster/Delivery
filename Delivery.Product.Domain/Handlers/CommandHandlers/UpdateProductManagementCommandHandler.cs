@@ -61,6 +61,7 @@ namespace Delivery.Product.Domain.Handlers.CommandHandlers
             }
             
             await databaseContext.SaveChangesAsync();
+            
 
             var productManagementCreationStatusContract = new ProductManagementCreationStatusContract
             {
