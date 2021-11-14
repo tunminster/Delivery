@@ -228,8 +228,7 @@ namespace Delivery.Api.Controllers.Drivers
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         [RequestSizeLimit(5000000)]
         [OpenApiMultipartUploadFilter("driverImage")]
-        public async Task<IActionResult> UpdateDriverProfile_Async([ModelBinder(BinderType = typeof(JsonModelBinder))] DriverProfileUpdateContract driverProfileUpdateContract, 
-            IFormFile? driverImage)
+        public async Task<IActionResult> UpdateDriverProfile_Async([ModelBinder(BinderType = typeof(JsonModelBinder))] DriverProfileUpdateContract driverProfileUpdateContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
