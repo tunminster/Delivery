@@ -4,7 +4,7 @@ using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverProfile;
 
 namespace Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverProfile
 {
-    public class DriverServiceAreaUpdateMessageContract : AuditableResponseMessage<DriverServiceAreaUpdateContract, StatusContract>
+    public class DriverServiceAreaUpdateMessageContract : AuditableResponseMessage<DriverServiceAreaContract, StatusContract>
     {
     }
 }

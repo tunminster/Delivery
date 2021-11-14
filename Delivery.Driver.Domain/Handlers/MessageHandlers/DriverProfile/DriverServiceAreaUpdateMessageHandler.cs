@@ -25,7 +25,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile
             try
             {
                 var messageAdapter =
-                    new AuditableResponseMessageAdapter<DriverServiceAreaUpdateContract, StatusContract>(message);
+                    new AuditableResponseMessageAdapter<DriverServiceAreaContract, StatusContract>(message);
 
                 if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
                 {

@@ -36,7 +36,7 @@ namespace Delivery.Driver.Domain.Services
             var driverImage = driverImageCreationContract.DriverImage;
             var drivingLicenseFrontImage = driverImageCreationContract.DrivingLicenseFrontImage;
             var drivingLicenseBackImage = driverImageCreationContract.DrivingLicenseBackImage;
-
+            
             if (driverImage != null)
             {
                 driverImageUri = await UploadBlobAsync(driverImage, 

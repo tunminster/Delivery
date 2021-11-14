@@ -8,7 +8,7 @@ using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverProfile;
 
 namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverProfile
 {
-    public record DriverServiceAreaUpdateCommand(DriverServiceAreaUpdateContract DriverServiceAreaUpdateContract);
+    public record DriverServiceAreaUpdateCommand(DriverServiceAreaContract DriverServiceAreaContract);
     
     public class DriverServiceAreaUpdateCommandHandler : ICommandHandler<DriverServiceAreaUpdateCommand>
     {
@@ -26,10 +26,10 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverProfile
             var driver = databaseContext.Drivers.FirstOrDefault(x =>
                 x.EmailAddress == executingRequestContextAdapter.GetAuthenticatedUser().UserEmail) ?? throw new InvalidOperationException($"Expected a driver by user email: {executingRequestContextAdapter.GetAuthenticatedUser().UserEmail}");
             
-            driver.ServiceArea = command.DriverServiceAreaUpdateContract.ServiceArea;
-            driver.Latitude = command.DriverServiceAreaUpdateContract.Latitude;
-            driver.Longitude = command.DriverServiceAreaUpdateContract.Longitude;
-            driver.Radius = command.DriverServiceAreaUpdateContract.Radius;
+            driver.ServiceArea = command.DriverServiceAreaContract.ServiceArea;
+            driver.Latitude = command.DriverServiceAreaContract.Latitude;
+            driver.Longitude = command.DriverServiceAreaContract.Longitude;
+            driver.Radius = command.DriverServiceAreaContract.Radius;
 
             await databaseContext.SaveChangesAsync();
         }
