@@ -40,6 +40,9 @@ namespace Delivery.Database.Entities
         [MaxLength(500)]
         public string? FormattedAddress { get; set; }
         
+        [MaxLength(500)]
+        public string? ContactNumber { get; set; }
+        
         public int StoreTypeId { get; set; }
         
         public int? Radius { get; set; }

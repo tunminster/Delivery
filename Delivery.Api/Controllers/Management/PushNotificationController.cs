@@ -9,7 +9,7 @@ namespace Delivery.Api.Controllers.Management
     /// <summary>
     ///  Push notification controller
     /// </summary>
-    [Route("api/v1/push-notification" , Name = "2 - Push notification management")]
+    [Route("api/v1/management/push-notification" , Name = "2 - Push notification management")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
     [Authorize(Roles = "Driver,ShopOwner")]
