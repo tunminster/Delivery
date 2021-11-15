@@ -53,6 +53,8 @@ namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
         
         [DataMember]
         public double Distance { get; set; }
+
+        public string ContactNumber { get; set; } = string.Empty;
         
         
         public override string ToString()
