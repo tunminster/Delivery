@@ -38,6 +38,7 @@ namespace Delivery.Customer.Domain.Handlers.CommandHandlers.PushNotifications
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var order = await databaseContext.Orders.Where(x => x.ExternalId == command.OrderId)
                 .Include(x => x.Store)
+                .Include(x => x.Address)
                 .Include(x => x.Customer).SingleOrDefaultAsync() ?? 
                         throw new InvalidOperationException($"Expected order by order id: {command.OrderId}");
 
