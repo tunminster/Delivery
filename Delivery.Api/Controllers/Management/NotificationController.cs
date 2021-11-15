@@ -21,7 +21,7 @@ namespace Delivery.Api.Controllers.Management
     /// <summary>
     ///  Notification controller
     /// </summary>
-    [Route("api/v1/[controller]" , Name = "1 - Notification management")]
+    [Route("api/v1/management/notification" , Name = "1 - Notification management")]
     [PlatformSwaggerCategory(ApiCategory.Driver)]
     [ApiController]
     [Authorize(Roles = "Driver,ShopOwner")]

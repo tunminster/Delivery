@@ -21,7 +21,7 @@ namespace Delivery.Api.Controllers.Management
     /// <summary>
     ///  Management category controller
     /// </summary>
-    [Route("api/v1/category-management", Name = "6 - Management Category")]
+    [Route("api/v1/management/category-management", Name = "6 - Management Category")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
     [Authorize(Roles = "ShopOwner,Administrator")]

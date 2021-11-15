@@ -41,7 +41,7 @@ namespace Delivery.Api.Controllers.Management
     /// <summary>
     ///  Management user controller
     /// </summary>
-    [Route("api/v1/management-user", Name = "5 - Management user")]
+    [Route("api/v1/management/management-user", Name = "5 - Management user")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
     public class ManagementUserController : ControllerBase
@@ -338,6 +338,27 @@ namespace Delivery.Api.Controllers.Management
             
             var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, driverLoginContract.Username, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
             return new OkObjectResult(jwt);
+        }
+
+        /// <summary>
+        ///  Get role
+        /// </summary>
+        ///<remarks>The endpoint allows user to get role name.</remarks>
+        [Route("get-role", Order = 6)]
+        [ProducesResponseType(typeof(ManagementUserRoleContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [HttpGet]
+        public async Task<IActionResult> Get_RoleAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var role = executingRequestContextAdapter.GetAuthenticatedUser().Role;
+
+            if (string.Equals(role, "administrator", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return Ok(await Task.FromResult(new ManagementUserRoleContract { Role = "SuperAdmin" }));
+            }
+
+            return Ok(await Task.FromResult(new ManagementUserRoleContract() { Role = "ShopOwner" }));
         }
         
         private async Task<ClaimsIdentity?> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)

@@ -20,7 +20,7 @@ namespace Delivery.Api.Controllers.Management
     /// <summary>
     ///  Driver management
     /// </summary>
-    [Route("api/v1/driver-management" , Name = "2 - Driver management")]
+    [Route("api/v1/management/driver-management" , Name = "2 - Driver management")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
     [Authorize(Policy = "BackOfficeUser")]

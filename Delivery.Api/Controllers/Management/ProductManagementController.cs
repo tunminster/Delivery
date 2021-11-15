@@ -29,7 +29,7 @@ namespace Delivery.Api.Controllers.Management
     ///  Product management
     /// </summary>
     /// <remarks>Product management</remarks>
-    [Route("api/v1/product-management", Name = "7 - Management Product")]
+    [Route("api/v1/management/product-management", Name = "7 - Management Product")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
     [Authorize(Roles = "ShopOwner,Administrator")]
