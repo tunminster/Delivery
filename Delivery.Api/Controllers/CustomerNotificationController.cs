@@ -113,7 +113,7 @@ namespace Delivery.Api.Controllers
         }
         
         /// <summary>
-        ///  Send push notification
+        ///  Send order arrive notification
         /// </summary>
         /// <returns></returns>
         [Route("send/order-message", Order = 5)]
