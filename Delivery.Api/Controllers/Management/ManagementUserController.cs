@@ -348,6 +348,7 @@ namespace Delivery.Api.Controllers.Management
         [ProducesResponseType(typeof(ManagementUserRoleContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         [HttpGet]
+        [Authorize(Roles = "ShopOwner,Administrator")]
         public async Task<IActionResult> Get_RoleAsync()
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -358,7 +359,7 @@ namespace Delivery.Api.Controllers.Management
                 return Ok(await Task.FromResult(new ManagementUserRoleContract { Role = "SuperAdmin" }));
             }
 
-            return Ok(await Task.FromResult(new ManagementUserRoleContract() { Role = "ShopOwner" }));
+            return Ok(await Task.FromResult(new ManagementUserRoleContract() { Role = "Admin" }));
         }
         
         private async Task<ClaimsIdentity?> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)
