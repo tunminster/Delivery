@@ -24,7 +24,7 @@ namespace Delivery.Api.Controllers.Shops
     /// <summary>
     ///  Shop profile controller
     /// </summary>
-    [Route("api/v1/shop-profile", Name = "3 - Shop profile")]
+    [Route("api/v1/shop-owner/shop-profile", Name = "3 - Shop profile")]
     [PlatformSwaggerCategory(ApiCategory.ShopOwner)]
     [ApiController]
     [Authorize(Policy = "ShopApiUser")]

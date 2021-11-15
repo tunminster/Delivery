@@ -29,7 +29,7 @@ namespace Delivery.Api.Controllers.Shops
     /// <summary>
     ///  Shop order controller
     /// </summary>
-    [Route("api/v1/shop-orders", Name = "2 - Shop order")]
+    [Route("api/v1/shop-owner/shop-orders", Name = "2 - Shop order")]
     [PlatformSwaggerCategory(ApiCategory.ShopOwner)]
     [ApiController]
     [Authorize(Policy = "ShopApiUser")]

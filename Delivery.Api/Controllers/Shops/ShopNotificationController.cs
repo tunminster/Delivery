@@ -18,7 +18,7 @@ namespace Delivery.Api.Controllers.Shops
     /// <summary>
     ///  Shop notification controller
     /// </summary>
-    [Route("api/v1/shop-notification", Name = "4 - Shop Notification")]
+    [Route("api/v1/shop-owner/shop-notification", Name = "4 - Shop Notification")]
     [PlatformSwaggerCategory(ApiCategory.ShopOwner)]
     [ApiController]
     [Authorize(Policy = "ShopApiUser")]

@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Delivery.Api.Controllers.Shops
 {
-    [Route("api/v1/shop-payments", Name = "6 - Shop payments")]
+    [Route("api/v1/shop-owner/shop-payments", Name = "6 - Shop payments")]
     [PlatformSwaggerCategory(ApiCategory.ShopOwner)]
     [ApiController]
     [Authorize(Policy = "ShopApiUser")]

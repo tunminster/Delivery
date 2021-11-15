@@ -42,7 +42,7 @@ namespace Delivery.Api.Controllers.Shops
     /// <summary>
     ///  Shop controller
     /// </summary>
-    [Route("api/v1/[controller]", Name = "1 - Shop owner")]
+    [Route("api/v1/shop-owner/[controller]", Name = "1 - Shop owner")]
     [PlatformSwaggerCategory(ApiCategory.ShopOwner)]
     [ApiController]
     public class ShopsController : ControllerBase
