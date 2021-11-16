@@ -339,7 +339,7 @@ namespace Delivery.Api.Controllers.Management
             
             
             var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, driverLoginContract.Username, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
-            return new OkObjectResult(jwt.ConvertToJson());
+            return new OkObjectResult(jwt);
         }
 
         /// <summary>
