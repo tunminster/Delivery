@@ -6,7 +6,7 @@ namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
     /// <summary>
     ///  Store opening hour contract
     /// </summary>
-    public class StoreOpeningHourContract
+    public record StoreOpeningHourContract
     {
         /// <summary>
         ///  Day of week

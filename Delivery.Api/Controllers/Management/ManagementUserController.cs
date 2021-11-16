@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
@@ -125,7 +126,7 @@ namespace Delivery.Api.Controllers.Management
         [ProducesResponseType(typeof(StatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpPost]
-        //[Authorize(Roles = RoleConstant.Administrator)]
+        [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Post_AddAdminRoleAsync(ManagementUserContract managementUserContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -320,7 +321,8 @@ namespace Delivery.Api.Controllers.Management
         /// <summary>
         ///  User login 
         /// </summary>
-        [Route("login", Order = 5)]
+        [Route("login", Order = 8)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpPost]
         public async Task<IActionResult> Post_LoginAsync([FromBody] ManagementUserLoginContract driverLoginContract)
         {
@@ -337,7 +339,7 @@ namespace Delivery.Api.Controllers.Management
             
             
             var jwt = await Tokens.GenerateJwtAsync(identity, jwtFactory, driverLoginContract.Username, jwtOptions, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Formatting.Indented });
-            return new OkObjectResult(jwt);
+            return new OkObjectResult(jwt.ConvertToJson());
         }
 
         /// <summary>

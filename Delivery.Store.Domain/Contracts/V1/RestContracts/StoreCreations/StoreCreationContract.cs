@@ -12,80 +12,80 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
     {
         /// <summary>
         ///  Store name
-        /// <example>{{storeName}}</example>
         /// </summary>
+        /// <example>{{storeName}}</example>
         public string StoreName { get; init; } = string.Empty;
 
         /// <summary>
         /// Address line 1
-        /// <example>{{addressLine1}}</example>
         /// </summary>
+        /// <example>{{addressLine1}}</example>
         public string AddressLine1 { get; init; } = string.Empty;
 
         /// <summary>
         ///  Address line 2
-        /// <example>{{addressLine2}}</example>
         /// </summary>
+        /// <example>{{addressLine2}}</example>
         public string AddressLine2 { get; init; } = string.Empty;
 
         /// <summary>
         ///  City
-        /// <example>{{city}}</example>
         /// </summary>
+        /// <example>{{city}}</example>
         public string City { get; init; } = string.Empty;
 
         /// <summary>
         ///  County
-        /// <example>{{county}}</example>
         /// </summary>
+        /// <example>{{county}}</example>
         public string County { get; init; } = string.Empty;
 
         /// <summary>
         ///  Country
-        /// <example>{{country}}</example>
         /// </summary>
+        /// <example>{{country}}</example>
         public string Country { get; init; } = string.Empty;
 
         /// <summary>
         ///  PostalCode
-        /// <example>{{postalCode}}</example>
         /// </summary>
+        /// <example>{{postalCode}}</example>
         public string PostalCode { get; init; } = string.Empty;
 
         /// <summary>
         /// Store type id
-        /// <example>{{storeTypeId}}</example>
         /// </summary>
+        /// <example>{{postalCode}}</example>
         public string StoreTypeId { get; init; } = string.Empty;
 
         /// <summary>
         ///  Radius
-        /// <example>{{radius}}</example>
         /// </summary>
+        /// <example>20</example>
         public int Radius { get; init; }
 
         /// <summary>
         ///  Payment account number
-        /// <example>{{paymentAccountNumber}}</example>
         /// </summary>
+        /// <example>{{paymentAccountNumber}}</example>
         public string PaymentAccountNumber { get; init; } = string.Empty;
 
         /// <summary>
         ///  Image uri
-        /// <example>{{imageUri}}</example>
         /// </summary>
+        /// <example>{{imageUri}}</example>
         public string ImageUri { get; set; } = string.Empty;
 
         /// <summary>
         ///  Store opening hours
-        /// <example>{{storeOpeningHours}}</example>
         /// </summary>
+        /// <example>{{imageUri}}</example>
         public List<StoreOpeningHourContract> StoreOpeningHours { get; init; } = new();
 
         /// <summary>
         ///  Store user
-        /// <example>{{storeUser}}</example>
         /// </summary>
+        /// <example>{{imageUri}}</example>
         public StoreUserCreationContract StoreUser { get; init; } = new();
     }
 }
