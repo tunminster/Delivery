@@ -4,8 +4,7 @@ using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 
 namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations
 {
-    [DataContract]
-    public class StoreOpeningHourCreationContract : StoreOpeningHourContract
+    public record StoreOpeningHourCreationContract : StoreOpeningHourContract
     {
         public override string ToString()
         {

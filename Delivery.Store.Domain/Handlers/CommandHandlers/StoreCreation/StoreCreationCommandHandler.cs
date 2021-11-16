@@ -77,6 +77,8 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
                 Username = command.StoreCreationContract.StoreUser.EmailAddress
             };
             
+            store.StoreUsers = new List<StoreUser>();
+            
             store.StoreUsers.Add(storeUser);
             
             await databaseContext.Stores.AddAsync(store);
