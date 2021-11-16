@@ -8,11 +8,13 @@ namespace Delivery.Managements.Domain.Contracts.V1.RestContracts
         /// <summary>
         ///  Username
         /// </summary>
+        /// <example>{{userName}}</example>
         public string Username { get; init; } = string.Empty;
 
         /// <summary>
         ///  Password
         /// </summary>
+        /// <example>{{password}}</example>
         public string Password { get; init; } = string.Empty;
     }
 }
