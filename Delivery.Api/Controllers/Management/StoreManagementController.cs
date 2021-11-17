@@ -19,6 +19,7 @@ using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreImageCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
+using Delivery.Store.Domain.Handlers.CommandHandlers.StoreDelete;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate;
 using Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries;
@@ -104,7 +105,7 @@ namespace Delivery.Api.Controllers.Management
         }
 
         /// <summary>
-        ///  Create store endpoint
+        ///  Create store
         /// </summary>
         /// <remarks>
         ///     This endpoint allows user to create a new store with store user.
@@ -148,7 +149,7 @@ namespace Delivery.Api.Controllers.Management
         }
         
         /// <summary>
-        ///  Update store endpoint
+        ///  Update store
         /// </summary>
         /// <remarks>
         ///     This endpoint allows user to update the store with store user.
@@ -239,6 +240,31 @@ namespace Delivery.Api.Controllers.Management
                 shopUserApprovalCommand);
 
             return Ok(shopUserApprovalStatusContract);
+        }
+        
+        /// <summary>
+        ///  Delete store
+        /// </summary>
+        /// <remarks>
+        ///     This endpoint allows user to delete the store with store user.
+        /// </remarks>
+        [Route("delete-store", Order = 6)]
+        [HttpPut]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Delete_StoreAsync(string storeId)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            if (string.IsNullOrEmpty(storeId))
+            {
+                const string message = "store id must be provided";
+                return message.ConvertToBadRequest();
+            }
+
+            await new StoreDeleteCommandHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(new StoreDeleteCommand(storeId));
+            
+            return Accepted();
         }
         
         private async Task<StoreImageCreationStatusContract> UploadStoreImageAsync(string storeId, string storeName, IFormFile storeImage, IExecutingRequestContextAdapter executingRequestContextAdapter)
