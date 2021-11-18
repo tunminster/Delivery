@@ -15,6 +15,7 @@ using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopApproval;
 using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopApproval;
 using Delivery.Shop.Domain.Validators;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
+using Delivery.Store.Domain.Contracts.V1.RestContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreImageCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate;
@@ -49,22 +50,22 @@ namespace Delivery.Api.Controllers.Management
         /// <returns></returns>
         [Route("get-stores", Order = 1)]
         [HttpGet]
-        [ProducesResponseType(typeof(List<StoreContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(StorePagedContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Get_StoresAsync(string totalPage, string pageNumber)
+        public async Task<IActionResult> Get_StoresAsync(string pageSize, string pageNumber)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            int.TryParse(totalPage, out var iNumberOfObjectPerPage);
+            int.TryParse(pageSize, out var iPageSize);
             int.TryParse(pageNumber, out var iPageNumber);
         
             var storeGetAllQuery =
-                new StoreGetAllQuery(iNumberOfObjectPerPage, iPageNumber);
-            var storeContractList =
+                new StoreGetAllQuery(iPageSize, iPageNumber);
+            var storePagedContract =
                 await new StoreGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
                     .Handle(storeGetAllQuery);
             
-            return Ok(storeContractList);
+            return Ok(storePagedContract);
         }
         
         /// <summary>

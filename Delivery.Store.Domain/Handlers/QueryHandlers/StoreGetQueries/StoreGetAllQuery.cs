@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
+using Delivery.Store.Domain.Contracts.V1.RestContracts;
 
 namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries
 {
-    public class StoreGetAllQuery : IQuery<List<StoreContract>>
+    public class StoreGetAllQuery : IQuery<StorePagedContract>
     {
-        public StoreGetAllQuery(int numberOfObjectPerPage, int pageNumber)
+        public StoreGetAllQuery(int pageSize, int pageNumber)
         {
-            NumberOfObjectPerPage = numberOfObjectPerPage;
+            PageSize = pageSize;
             PageNumber = pageNumber;
         }
         
-        public int NumberOfObjectPerPage { get;  }
+        public int PageSize { get;  }
         
         public int PageNumber { get;  }
 

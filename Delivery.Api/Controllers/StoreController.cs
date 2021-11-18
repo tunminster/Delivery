@@ -194,11 +194,11 @@ namespace Delivery.Api.Controllers
         
             var storeGetAllQuery =
                 new StoreGetAllQuery(iNumberOfObjectPerPage, iPageNumber);
-            var storeContractList =
+            var storePagedContract =
                 await new StoreGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
                     .Handle(storeGetAllQuery);
             
-            return Ok(storeContractList);
+            return Ok(storePagedContract.Data);
         }
 
         /// <summary>

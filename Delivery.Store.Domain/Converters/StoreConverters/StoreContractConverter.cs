@@ -48,7 +48,7 @@ namespace Delivery.Store.Domain.Converters.StoreConverters
                 County = store.County,
                 Country = store.Country,
                 PostalCode = store.PostalCode,
-                StoreType = store.StoreType?.StoreTypeName!,
+                StoreType = store.StoreType?.StoreTypeName ?? string.Empty,
                 StorePaymentAccountNumber = store.StorePaymentAccount?.AccountNumber ?? string.Empty,
                 StoreOpeningHours = store.OpeningHours.Select(op => new StoreOpeningHourContract
                 {
