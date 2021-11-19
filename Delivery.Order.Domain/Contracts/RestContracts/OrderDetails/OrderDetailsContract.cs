@@ -5,52 +5,99 @@ using Delivery.Database.Enums;
 
 namespace Delivery.Order.Domain.Contracts.RestContracts.OrderDetails
 {
-    [DataContract]
-    public class OrderDetailsContract
+    /// <summary>
+    ///  Order details contract
+    /// </summary>
+    public record OrderDetailsContract
     {
-        [DataMember]
+        /// <summary>
+        ///  Order id
+        /// </summary>
+        /// <example>{{orderId}}</example>
         public string OrderId { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Estimated cooking time
+        /// </summary>
+        /// <example>{{estimatedCookingTime}}</example>
         public string EstimatedCookingTime { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Store name
+        /// </summary>
+        /// <example>{{storeName}}</example>
         public string StoreName { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Store address
+        /// </summary>
+        /// <example>{{storeAddress}}</example>
         public string StoreAddress { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Delivery address
+        /// </summary>
+        /// <example>{{deliveryAddress}}</example>
         public string DeliveryAddress { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Order status
+        /// </summary>
+        /// <example>{{orderStatus}}</example>
         public string OrderStatus { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Status
+        /// </summary>
+        /// <example>{{status}}</example>
         public OrderStatus Status { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Subtotal amount
+        /// </summary>
+        /// <example>{{subtotalAmount}}</example>
         public int SubtotalAmount { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Total amount
+        /// </summary>
+        /// <example>{{totalAmount}}</example>
         public int TotalAmount { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Delivery fees
+        /// </summary>
+        /// <example>{{deliveryFees}}</example>
         public int DeliveryFees { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Tax fees
+        /// </summary>
+        /// <example>{{taxFees}}</example>
         public int TaxFees { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Application fees
+        /// </summary>
+        /// <example>{{applicationFees}}</example>
         public int ApplicationFees { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Image uri
+        /// </summary>
+        /// <example>{{imageUri}}</example>
         public string ImageUri { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Order type
+        /// </summary>
+        /// <example>{{orderType}}</example>
         public OrderType OrderType { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Order items
+        /// </summary>
+        /// <example>{{orderItems}}</example>
         public List<OrderItemContract> OrderItems { get; set; }
         
         public override string ToString()
