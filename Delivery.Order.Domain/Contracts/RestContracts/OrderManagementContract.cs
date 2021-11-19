@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using Delivery.Azure.Library.Core.Extensions.Objects;
 using Delivery.Database.Enums;
 
-namespace Delivery.Order.Domain.Contracts
+namespace Delivery.Order.Domain.Contracts.RestContracts
 {
     /// <summary>
-    ///  Order contract
+    ///  Order management contract
     /// </summary>
-    public record OrderContract
+    public record OrderManagementContract
     {
         /// <summary>
         ///  Id 
@@ -22,7 +19,13 @@ namespace Delivery.Order.Domain.Contracts
         ///  Customer id
         /// </summary>
         /// <example>{{customerId}}</example>
-        public int CustomerId { get; set; }
+        public string CustomerId { get; set; }
+        
+        /// <summary>
+        ///  Customer name
+        /// </summary>
+        /// <example>{{customerName}</example>
+        public string CustomerName { get; set; }
         
         /// <summary>
         ///  Total amount
@@ -31,16 +34,16 @@ namespace Delivery.Order.Domain.Contracts
         public decimal TotalAmount { get; set; }
         
         /// <summary>
+        ///  Business application fees
+        /// </summary>
+        /// <example>{{businessApplicationFees}}</example>
+        public decimal BusinessApplicationFees { get; set; }
+        
+        /// <summary>
         ///  Order type
         /// </summary>
         /// <example>{{orderType}}</example>
         public OrderType OrderType { get; set; }
-        
-        /// <summary>
-        ///  Image uri 
-        /// </summary>
-        /// <example>{{imageUri}}</example>
-        public string ImageUri { get; set; }
         
         /// <summary>
         ///  Status
@@ -71,22 +74,5 @@ namespace Delivery.Order.Domain.Contracts
         /// </summary>
         /// <example>{{orderItems}}</example>
         public List<OrderItemContract> OrderItems { get; set; }
-        
-        public override string ToString()
-        {
-            return $"{GetType().Name}" +
-                   $"{nameof(Id)}: {Id.Format()}," +
-                   $"{nameof(CustomerId)}: {CustomerId.Format()}," +
-                   $"{nameof(Status)}: {Status.Format()}," +
-                   $"{nameof(TotalAmount)}: {TotalAmount.Format()}," +
-                   $"{nameof(OrderType)}: {OrderType.Format()}," +
-                   $"{nameof(ImageUri)}: {ImageUri.Format()}," +
-                   $"{nameof(StoreName)}: {StoreName.Format()}," +
-                   $"{nameof(DeliveryAddress)}: {DeliveryAddress.Format()}," +
-                   $"{nameof(DateCreated)}: {DateCreated.Format()}," +
-                   $"{nameof(OrderItems)} : {OrderItems.Format()}";
-
-        }
     }
-    
 }
