@@ -9,7 +9,7 @@ using Delivery.Database.Entities;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Constants;
-using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Enum;
 using Delivery.Order.Domain.Factories;
 

@@ -6,7 +6,6 @@ using Delivery.Azure.Library.Messaging.ServiceBus.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Domain.Constants;
 using Delivery.Domain.FrameWork.Messages;
-using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 
 namespace Delivery.Order.Domain.Handlers.MessageHandlers

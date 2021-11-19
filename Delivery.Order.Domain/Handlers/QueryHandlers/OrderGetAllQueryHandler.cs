@@ -6,7 +6,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Order.Domain.Contracts;
-using Delivery.Order.Domain.Contracts.RestContracts;
+using Delivery.Order.Domain.Contracts.V1.RestContracts;
 using Delivery.Order.Domain.Converters;
 using Microsoft.EntityFrameworkCore;
 

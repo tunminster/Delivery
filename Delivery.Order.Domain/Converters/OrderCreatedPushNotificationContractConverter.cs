@@ -4,7 +4,7 @@ using System.Linq;
 using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 using Delivery.Domain.Helpers;
 using Delivery.Order.Domain.Constants;
-using Delivery.Order.Domain.Contracts.RestContracts.PushNotification;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.PushNotification;
 
 namespace Delivery.Order.Domain.Converters
 {

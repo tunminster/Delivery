@@ -8,7 +8,7 @@ using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.FrameWork.Context;
-using Delivery.Order.Domain.Contracts.RestContracts;
+using Delivery.Order.Domain.Contracts.V1.RestContracts;
 using Delivery.Order.Domain.Handlers.CommandHandlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

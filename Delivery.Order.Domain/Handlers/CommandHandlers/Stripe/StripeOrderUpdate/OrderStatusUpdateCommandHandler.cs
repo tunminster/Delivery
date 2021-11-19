@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
-using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrderUpdate;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderUpdate

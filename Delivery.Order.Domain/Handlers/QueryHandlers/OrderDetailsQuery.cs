@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Delivery.Domain.Enum;
 using Delivery.Domain.QueryHandlers;
-using Delivery.Order.Domain.Contracts.RestContracts.OrderDetails;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.OrderDetails;
 
 namespace Delivery.Order.Domain.Handlers.QueryHandlers
 {
