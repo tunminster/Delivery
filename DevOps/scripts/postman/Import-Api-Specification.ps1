@@ -331,15 +331,32 @@ $defaultHeaders['X-Api-Key'] = $apiKey
 ## Reload collection with details
 $collectionUrl = $postmanBaseUrl + "/collections/$collectionUid"
 Write-Host "Loading collection details: $collectionUrl with $apiKey"
-$collectionPayload = Invoke-RestMethod $collectionUrl -Method "GET" -Headers $defaultHeaders | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+$collectionPayload = InvokeWithRetry $collectionUrl 'GET' $null | ConvertFrom-Json
 $collectionPayload.collection.item = $collectionDefinition.item
-
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
 
 ## Update collection with postman format document
 Write-Host "Updating collection: $collectionUrl with $apiKey"
 $collectionPayloadBody = $collectionPayload | ConvertTo-Json -Depth 100
-$response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
-Write-Host "Finalized $collectionUid"
+
+##  Get random API key
+ $apiKeys = $postmanApiKeys.Split(",")
+ $apiKey = $apiKeys | Get-Random
+ $defaultHeaders = @{
+     'Accept' = 'application/json'
+     'Content-Type' = 'application/json'
+ }
+ $defaultHeaders.add('X-Api-Key', $apiKey)
+
+try{
+    $response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
+    Write-Host "Finalized $collectionUid"
+}
+catch{
+    $responseCode = $_.Exception.Response.StatusCode.value__ 
+    if($responseCode -eq 504){
+        Write-Host "Collection update timed out, check that collection was actually created"
+    }
+    else{
+        throw "Error thrown from put collection: " + $responseCode
+    }
+}
