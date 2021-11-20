@@ -11,7 +11,7 @@ using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Notifications.Constants;
-using Delivery.Order.Domain.Contracts.RestContracts.PushNotification;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.PushNotification;
 using Delivery.Order.Domain.Converters;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;

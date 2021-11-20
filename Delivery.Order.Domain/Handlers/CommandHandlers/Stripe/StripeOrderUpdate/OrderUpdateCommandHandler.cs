@@ -4,7 +4,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
-using Delivery.Order.Domain.Contracts.RestContracts.StripeOrderUpdate;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrderUpdate;
 using Delivery.Order.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 

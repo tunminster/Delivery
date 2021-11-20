@@ -1,4 +1,4 @@
-using Delivery.Order.Domain.Contracts.RestContracts;
+using Delivery.Order.Domain.Contracts.V1.RestContracts;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers
 {

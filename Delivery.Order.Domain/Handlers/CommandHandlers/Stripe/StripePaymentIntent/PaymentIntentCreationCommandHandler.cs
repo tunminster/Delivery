@@ -7,7 +7,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Sharding.Contracts.V1;
 using Delivery.Azure.Library.Sharding.Interfaces;
 using Delivery.Domain.CommandHandlers;
-using Delivery.Order.Domain.Contracts.ModelContracts.Stripe;
+using Delivery.Order.Domain.Contracts.V1.ModelContracts.Stripe;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
 

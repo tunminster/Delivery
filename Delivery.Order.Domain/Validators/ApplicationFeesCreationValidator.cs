@@ -1,4 +1,4 @@
-using Delivery.Order.Domain.Contracts.RestContracts.ApplicationFees;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.ApplicationFees;
 using FluentValidation;
 
 namespace Delivery.Order.Domain.Validators

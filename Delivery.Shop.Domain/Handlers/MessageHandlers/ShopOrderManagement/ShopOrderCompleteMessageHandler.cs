@@ -4,6 +4,7 @@ using Delivery.Azure.Library.Messaging.Adapters;
 using Delivery.Azure.Library.Microservices.Hosting.MessageHandlers;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
+using Delivery.Customer.Domain.Contracts.V1.Enums;
 using Delivery.Customer.Domain.Handlers.CommandHandlers.PushNotifications;
 using Delivery.Database.Enums;
 using Delivery.Domain.Contracts.Enums;
@@ -62,9 +63,9 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                     
                     // push notification to customer
                     var customerOrderArrivedPushNotificationCommand =
-                        new CustomerOrderArrivedPushNotificationCommand(messageAdapter.GetPayloadIn().Id);
+                        new CustomerOrderPushNotificationCommand(messageAdapter.GetPayloadIn().Id, OrderNotificationFilter.Arrived);
 
-                    await new CustomerOrderArrivedPushNotificationCommandHandler(ServiceProvider,
+                    await new CustomerOrderPushNotificationCommandHandler(ServiceProvider,
                             ExecutingRequestContextAdapter)
                         .Handle(customerOrderArrivedPushNotificationCommand);
                         

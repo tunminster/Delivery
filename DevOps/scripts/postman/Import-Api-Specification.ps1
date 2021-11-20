@@ -37,7 +37,8 @@ $postmanBaseUrl = "https://api.getpostman.com"
 $apisBaseUrl = "$postmanBaseUrl/apis"
 $getApiUrl = $apisBaseUrl + "?workspace=$workspaceId"
 Write-Host "Querying current apis from $getApiUrl with api Key $apiKey"
-$response = Invoke-RestMethod $getApiUrl -Method 'GET' -Headers $defaultHeaders | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+
+$response = InvokeWithRetry $getApiUrl 'GET' $null | ConvertFrom-Json
 $apis = $response.apis | Where-Object { $_.name -eq $documentTitle }
 
 if($apis.Length -gt 1) {

@@ -250,7 +250,7 @@ namespace Delivery.Api.Controllers.Management
         ///     This endpoint allows user to delete the store with store user.
         /// </remarks>
         [Route("delete-store", Order = 6)]
-        [HttpPut]
+        [HttpDelete]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Delete_StoreAsync(string storeId)
         {

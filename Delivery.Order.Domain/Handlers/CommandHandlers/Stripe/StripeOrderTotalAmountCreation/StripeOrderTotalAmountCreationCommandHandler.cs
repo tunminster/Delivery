@@ -19,7 +19,7 @@ using Delivery.Domain.Contracts.V1.RestContracts.TaxRates;
 using Delivery.Domain.Factories;
 using Delivery.Domain.Services;
 using Delivery.Order.Domain.Constants;
-using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Factories;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Cosmos;

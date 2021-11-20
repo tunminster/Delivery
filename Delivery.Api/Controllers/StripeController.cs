@@ -9,7 +9,6 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.Factories;
 using Delivery.Domain.FrameWork.Context;
-using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.AccountLinkCreation;
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.LoginLinkCreation;

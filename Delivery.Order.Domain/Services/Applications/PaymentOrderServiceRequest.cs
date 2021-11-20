@@ -1,5 +1,4 @@
-using Delivery.Order.Domain.Contracts.RestContracts;
-using Delivery.Order.Domain.Contracts.RestContracts.StripeOrder;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder;
 
 namespace Delivery.Order.Domain.Services.Applications
 {

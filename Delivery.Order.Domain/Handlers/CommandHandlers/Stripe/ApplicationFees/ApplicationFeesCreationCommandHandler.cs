@@ -9,7 +9,7 @@ using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts.DistanceMatrix;
 using Delivery.Domain.Services;
 using Delivery.Order.Domain.Constants;
-using Delivery.Order.Domain.Contracts.RestContracts.ApplicationFees;
+using Delivery.Order.Domain.Contracts.V1.RestContracts.ApplicationFees;
 using Delivery.Order.Domain.Factories;
 using Microsoft.EntityFrameworkCore;
 
