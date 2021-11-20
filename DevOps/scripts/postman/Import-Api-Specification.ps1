@@ -91,9 +91,9 @@ $apis = $response.apis | Where-Object { $_.name -eq $documentTitle }
 
 Write-Host "Response document title: '$apis'"
 
-# if($apis.Length -gt 1) {
-#     throw "Expected one or less apis to match '$documentTitle' since it's managed by automation. Found: $apis"
-# }
+if($apis.Length -gt 1) {
+    throw "Expected one or less apis to match '$documentTitle' since it's managed by automation. Found: $apis"
+}
 
 $updateApiUrl = $apisBaseUrl + "?workspace=$workspaceId"
 $apiHttpMethod = "POST"
@@ -224,11 +224,17 @@ $defaultHeaders['X-Api-Key'] = $apiKey
 ## Drop previous collection
 $getCollectionsUrl = "https://api.getpostman.com/collections"
 Write-Host "Calling $getCollectionsUrl with $apiKey"
-$response = Invoke-RestMethod $getCollectionsUrl -Method 'GET' -Headers $defaultHeaders | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+$response = InvokeWithRetry $getCollectionsUrl 'GET' $null | ConvertFrom-Json
 $collections = $response.collections | Where-Object { $_.name -eq $documentTitle }
+$collectionCount = $collections.Length
 
-if($collections.Length -gt 1) {
-    throw "Expected one or less collections to match '$documentTitle'. Found: $collections"
+if($collectionCount -gt 1) {
+    Write-Host "Expected one or less collections to match '$documentTitle'. Found: $collections"
+    $collectionUid = $collections[0].uid
+    $deleteCollectionsUri = $getCollectionsUrl + "/" + $collectionUid
+    Write-Host "Deleting collections with uid $collectionUid"
+    InvokeWithRetry $deleteCollectionsUri 'DELETE' $null
+    $collectionCount = 0
 }
 
 if($collections.Length -eq 0) {
