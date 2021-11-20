@@ -89,6 +89,8 @@ Write-Host "Querying current apis from $getApiUrl with api Key $apiKey"
 $response = InvokeWithRetry $getApiUrl 'GET' $null | ConvertFrom-Json
 $apis = $response.apis | Where-Object { $_.name -eq $documentTitle }
 
+Write-Host "Response - '$response'"
+
 if($apis.Length -gt 1) {
     throw "Expected one or less apis to match '$documentTitle' since it's managed by automation. Found: $apis"
 }
