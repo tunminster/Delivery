@@ -7,6 +7,54 @@ param
     [string] $domain = $(throw "Domain is required")
 )
 
+function InvokeWithRetry {
+    param
+    (
+        [string] $url = $(throw "The url is required"),
+        [string] $method = $(throw "method is required"),
+        [string] $body = $(throw "body is required")
+    )
+
+    ## Add api keys to a list
+    $apiKeys = $postmanApiKeys.Split(",")
+
+    ##  Get random API key
+    $apiKey = $apiKeys | Get-Random
+
+    $defaultHeaders = @{
+        'Accept' = 'application/json'
+        'Content-Type' = 'application/json'
+    }
+    $defaultHeaders.add('X-Api-Key', $apiKey)
+    $retryCount = 0
+    $completed = $false
+    $response = $null
+    while (-not $completed) {
+        try {
+            if($method -eq 'GET'){
+                Write-Host "Calling $url with method $method and headers $defaultHeaders"
+                $response = Invoke-RestMethod $url -Method $method -Headers $defaultHeaders | ConvertTo-Json -Depth 100
+            }
+            else{
+                Write-Host "Calling $url with method $method, headers $defaultHeaders and body $body"
+                $response = Invoke-RestMethod $url -Method $method -Headers $defaultHeaders -Body $body | ConvertTo-Json -Depth 100
+            }
+            $completed = $true
+        } catch {
+            $errorDescription = $_.Exception.Response.StatusDescription
+            Write-Host "Error: $errorDescription"
+            if ($retrycount -ge 5) {
+                throw "Request to $url failed the maximum number of $retryCount times."
+            } else {
+                Write-Warning "Request to $url failed. Retrying in 2 seconds."
+                Start-Sleep 2
+                $retrycount++
+            }
+        }
+    }
+    return $response
+}
+
 ## Add api keys to a list
 $apiKeys = $postmanApiKeys.Split(",")
 
