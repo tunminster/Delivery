@@ -18,5 +18,4 @@ jobs:
 
         - template: '/DevOps/pipelines/task-terraform.yml'
           parameters:
-            environment: '${{ parameters.environment }}'
             terraformFilesDirectory: '${{ parameters.terraformFilesDirectory }}'
