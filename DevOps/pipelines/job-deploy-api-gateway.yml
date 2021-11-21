@@ -16,7 +16,7 @@ jobs:
         - checkout: self
           fetchDepth: 1
 
-        - template: '/azure-infrastructure/pipelines/task-terraform.yml'
+        - template: '/DevOps/pipelines/task-terraform.yml'
           parameters:
             environment: '${{ parameters.environment }}'
             terraformFilesDirectory: '${{ parameters.terraformFilesDirectory }}'
