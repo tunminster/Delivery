@@ -10,3 +10,8 @@ variable "platform_public_management_api_link"{
 variable "protocol" {
   default = "https"
 }
+
+variable "release_name" {
+  default     = "1.0.0"
+  description = "The release_name number to link which release_name the infratructure was created from."
+}
