@@ -7,7 +7,8 @@ resource "azurerm_api_management_api" "hn-platform-public-management-api" {
   description         = "Contains all of the managemenet endpoints."
   path                = ""
   protocols           = [var.protocol]
-  service_url         = "${var.api_backend_url}"
+  service_url         = "https://delivery-api.harveynetwork.com"
+  #service_url         = "${var.api_backend_url}"
 
   subscription_required = false
 
