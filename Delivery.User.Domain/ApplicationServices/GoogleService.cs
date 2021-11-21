@@ -10,7 +10,6 @@ using Delivery.Azure.Library.Exceptions.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.Models;
-using Delivery.User.Domain.CommandHandlers;
 using Delivery.User.Domain.Contracts.Facebook;
 using Delivery.User.Domain.Contracts.Google;
 using Microsoft.AspNetCore.Identity;

@@ -33,8 +33,4 @@
       </Reference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Contracts\V1\RestContracts" />
-    </ItemGroup>
-
 </Project>
