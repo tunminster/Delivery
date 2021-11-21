@@ -28,6 +28,8 @@ using Delivery.Managements.Domain.Handlers.CommandHandlers.ResetPassword;
 using Delivery.Managements.Domain.Validators.EmailVerification;
 using Delivery.Managements.Domain.Validators.ManagementUserCreation;
 using Delivery.Managements.Domain.Validators.ResetPassword;
+using Delivery.User.Domain.Contracts.V1.RestContracts.Managements;
+using Delivery.User.Domain.Handlers.QueryHandlers;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -362,6 +364,22 @@ namespace Delivery.Api.Controllers.Management
             }
 
             return Ok(await Task.FromResult(new ManagementUserRoleContract() { Role = "Admin" }));
+        }
+        
+        [Route("get-user-profile", Order = 7)]
+        [ProducesResponseType(typeof(UserProfileContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [HttpGet]
+        [Authorize(Roles = "ShopOwner,Administrator")]
+        public async Task<IActionResult> Get_UserProfileAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail;
+
+            var userProfileContract = await new UserGetQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(new UserGetQuery(userEmail!));
+
+            return Ok(userProfileContract);
         }
         
         private async Task<ClaimsIdentity?> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)

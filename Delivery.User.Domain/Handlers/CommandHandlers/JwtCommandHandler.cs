@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Delivery.Azure.Library.Configuration.Configurations.Definitions;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.User.Domain.Contracts.Facebook;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 
-namespace Delivery.User.Domain.CommandHandlers
+namespace Delivery.User.Domain.Handlers.CommandHandlers
 {
     public class JwtCommandHandler
     {

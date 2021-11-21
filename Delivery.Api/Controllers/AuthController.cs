@@ -22,7 +22,6 @@ using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Domain.Models;
 using Delivery.User.Domain.ApplicationServices;
-using Delivery.User.Domain.CommandHandlers;
 using Delivery.User.Domain.Contracts.Apple;
 using Delivery.User.Domain.Contracts.Facebook;
 using Delivery.User.Domain.Contracts.Google;
