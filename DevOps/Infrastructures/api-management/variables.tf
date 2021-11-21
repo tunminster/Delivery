@@ -12,7 +12,7 @@ variable "protocol" {
 }
 
 variable "release_name" {
-  default     = "1.0.0"
+  default     = $(Build.BuildNumber)
   description = "The release_name number to link which release_name the infratructure was created from."
 }
 
