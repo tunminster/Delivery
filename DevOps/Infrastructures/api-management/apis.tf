@@ -1,5 +1,5 @@
 resource "azurerm_api_management_api" "hn-platform-public-management-api" {
-  name                = "hn-platform-public-management-api-${var.environment_name}"
+  name                = "hn-platform-public-management-api-dev"
   resource_group_name = data.azurerm_api_management.hn-platform.resource_group_name
   api_management_name = data.azurerm_api_management.hn-platform.name
   revision            = replace(var.release_name, ".", "")
