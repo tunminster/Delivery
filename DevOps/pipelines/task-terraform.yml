@@ -1,6 +1,8 @@
 parameters:
 - name: terraformFilesDirectory
   type: string
+- name: environment
+  type: string
 
 steps:
 
