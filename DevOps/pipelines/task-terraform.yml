@@ -1,6 +1,8 @@
 parameters:
 - name: terraformFilesDirectory
   type: string
+- name: environment
+  type: string
 
 steps:
 
@@ -19,7 +21,7 @@ steps:
       -backend-config="key=$TF_STATE_BLOB_FILE" \
       -backend-config="access_key=$TF_STATE_BLOB_Access_TOKEN"
     displayName: Terraform Init
-    workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/api-management'
     env:
       ARM_CLIENT_ID: $(app-dev-client-id)
       ARM_CLIENT_SECRET: $(app-dev-secret)
@@ -42,7 +44,7 @@ steps:
     inputs:
       targetType: 'inline'
       #script: 'terraform plan -var-file=$(tfvarfile) -input=false --refresh-only'
-      script: 'terraform plan -var-file=$(tfvarfile) -input=false'
+      script: 'terraform plan -var-file=$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/api-management/variables.tfvars -input=false'
       workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/api-management' 
     env:
       ARM_CLIENT_ID: $(app-dev-client-id)
@@ -52,14 +54,14 @@ steps:
 
       allowTelemetryCollection: true
 
-  # - task: Bash@3
-  #   displayName: 'Apply terraform'
-  #   inputs:
-  #     targetType: inline
-  #     script: 'terraform apply -var-file=$(tfvarfile) -input=false -auto-approve'
-  #     workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/api-management' 
-  #   env:
-  #     ARM_CLIENT_ID: $(app-dev-client-id)
-  #     ARM_CLIENT_SECRET: $(app-dev-secret)
-  #     ARM_SUBSCRIPTION_ID: $(app-dev-subscription-id)
-  #     ARM_TENANT_ID: $(app-dev-tenant-id)
+  - task: Bash@3
+    displayName: 'Apply terraform'
+    inputs:
+      targetType: inline
+      script: 'terraform apply -var-file=$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/api-management/variables.tfvars -input=false -auto-approve'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/api-management' 
+    env:
+      ARM_CLIENT_ID: $(app-dev-client-id)
+      ARM_CLIENT_SECRET: $(app-dev-secret)
+      ARM_SUBSCRIPTION_ID: $(app-dev-subscription-id)
+      ARM_TENANT_ID: $(app-dev-tenant-id)

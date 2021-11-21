@@ -1,3 +1,4 @@
 variables:
   - group: hn-platform-dev
   - group: Hn-Platform-Infra
+  - group: hn-platform-configuration
