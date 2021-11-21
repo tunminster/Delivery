@@ -21,6 +21,11 @@ parameters:
     type: boolean
     default: false
 
+  - name: DeployGatewayApisStage
+    displayName: Deploy gateway stage
+    type: boolean
+    default: false
+
 trigger:
 - master
 
