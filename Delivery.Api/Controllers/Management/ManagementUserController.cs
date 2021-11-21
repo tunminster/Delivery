@@ -366,6 +366,10 @@ namespace Delivery.Api.Controllers.Management
             return Ok(await Task.FromResult(new ManagementUserRoleContract() { Role = "Admin" }));
         }
         
+        /// <summary>
+        ///  Get user profile
+        /// </summary>
+        ///<remarks>The endpoint allows user to get user profile.</remarks>
         [Route("get-user-profile", Order = 7)]
         [ProducesResponseType(typeof(UserProfileContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
