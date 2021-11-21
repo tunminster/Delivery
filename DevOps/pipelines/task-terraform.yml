@@ -19,7 +19,7 @@ steps:
       -backend-config="key=$TF_STATE_BLOB_FILE" \
       -backend-config="access_key=$TF_STATE_BLOB_Access_TOKEN"
     displayName: Terraform Init
-    workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/provisions'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/DevOps/Infrastructures/api-management'
     env:
       ARM_CLIENT_ID: $(app-dev-client-id)
       ARM_CLIENT_SECRET: $(app-dev-secret)
