@@ -91,9 +91,9 @@ $apis = $response.apis | Where-Object { $_.name -eq $documentTitle }
 
 Write-Host "Response document title: '$apis'"
 
-# if($apis.Length -gt 1) {
-#     throw "Expected one or less apis to match '$documentTitle' since it's managed by automation. Found: $apis"
-# }
+if($apis.Length -gt 1) {
+    throw "Expected one or less apis to match '$documentTitle' since it's managed by automation. Found: $apis"
+}
 
 $updateApiUrl = $apisBaseUrl + "?workspace=$workspaceId"
 $apiHttpMethod = "POST"
@@ -224,11 +224,17 @@ $defaultHeaders['X-Api-Key'] = $apiKey
 ## Drop previous collection
 $getCollectionsUrl = "https://api.getpostman.com/collections"
 Write-Host "Calling $getCollectionsUrl with $apiKey"
-$response = Invoke-RestMethod $getCollectionsUrl -Method 'GET' -Headers $defaultHeaders | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+$response = InvokeWithRetry $getCollectionsUrl 'GET' $null | ConvertFrom-Json
 $collections = $response.collections | Where-Object { $_.name -eq $documentTitle }
+$collectionCount = $collections.Length
 
-if($collections.Length -gt 1) {
-    throw "Expected one or less collections to match '$documentTitle'. Found: $collections"
+if($collectionCount -gt 1) {
+    Write-Host "Expected one or less collections to match '$documentTitle'. Found: $collections"
+    $collectionUid = $collections[0].uid
+    $deleteCollectionsUri = $getCollectionsUrl + "/" + $collectionUid
+    Write-Host "Deleting collections with uid $collectionUid"
+    InvokeWithRetry $deleteCollectionsUri 'DELETE' $null
+    $collectionCount = 0
 }
 
 if($collections.Length -eq 0) {
@@ -325,15 +331,32 @@ $defaultHeaders['X-Api-Key'] = $apiKey
 ## Reload collection with details
 $collectionUrl = $postmanBaseUrl + "/collections/$collectionUid"
 Write-Host "Loading collection details: $collectionUrl with $apiKey"
-$collectionPayload = Invoke-RestMethod $collectionUrl -Method "GET" -Headers $defaultHeaders | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+$collectionPayload = InvokeWithRetry $collectionUrl 'GET' $null | ConvertFrom-Json
 $collectionPayload.collection.item = $collectionDefinition.item
-
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
 
 ## Update collection with postman format document
 Write-Host "Updating collection: $collectionUrl with $apiKey"
 $collectionPayloadBody = $collectionPayload | ConvertTo-Json -Depth 100
-$response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
-Write-Host "Finalized $collectionUid"
+
+##  Get random API key
+ $apiKeys = $postmanApiKeys.Split(",")
+ $apiKey = $apiKeys | Get-Random
+ $defaultHeaders = @{
+     'Accept' = 'application/json'
+     'Content-Type' = 'application/json'
+ }
+ $defaultHeaders.add('X-Api-Key', $apiKey)
+
+try{
+    $response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
+    Write-Host "Finalized $collectionUid"
+}
+catch{
+    $responseCode = $_.Exception.Response.StatusCode.value__ 
+    if($responseCode -eq 504){
+        Write-Host "Collection update timed out, check that collection was actually created"
+    }
+    else{
+        throw "Error thrown from put collection: " + $responseCode
+    }
+}
