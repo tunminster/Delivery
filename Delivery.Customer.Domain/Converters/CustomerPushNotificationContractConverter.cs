@@ -27,7 +27,8 @@ namespace Delivery.Customer.Domain.Converters
                     order.Address.Country, order.Address.PostCode),
                 DeliveryFee = order.DeliveryFees,
                 OrderId = order.ExternalId,
-                PushNotificationType = pushNotificationType
+                PushNotificationType = pushNotificationType,
+                OrderType = order.OrderType
             };
             return customerOrderNotificationContract;
         }
