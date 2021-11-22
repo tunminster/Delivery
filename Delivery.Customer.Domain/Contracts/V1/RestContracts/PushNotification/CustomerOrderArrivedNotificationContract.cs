@@ -1,6 +1,7 @@
 using Delivery.Azure.Library.NotificationHub.Clients.Contracts;
 using Delivery.Azure.Library.NotificationHub.Clients.Interfaces;
 using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
+using Delivery.Database.Enums;
 
 namespace Delivery.Customer.Domain.Contracts.V1.RestContracts.PushNotification
 {
@@ -32,5 +33,10 @@ namespace Delivery.Customer.Domain.Contracts.V1.RestContracts.PushNotification
         ///  Push notification type
         /// </summary>
         public PushNotificationType PushNotificationType { get; init; }
+        
+        /// <summary>
+        ///  Order type
+        /// </summary>
+        public OrderType OrderType { get; init; }
     }
 }
