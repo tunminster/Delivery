@@ -19,7 +19,6 @@ namespace Delivery.Api.Controllers.Management
     [Route("api/v1/management/orders" , Name = "8 - Order management")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
-    [Authorize(Roles = RoleConstant.Administrator)]
     public class OrderManagementController : Controller
     {
         private readonly IServiceProvider serviceProvider;
@@ -35,7 +34,7 @@ namespace Delivery.Api.Controllers.Management
         /// <returns></returns>
         [Route("get-orders", Order = 1)]
         [HttpGet]
-        [Authorize(Roles = RoleConstant.ShopOwner)]
+        [Authorize(Roles = "ShopOwner")]
         [ProducesResponseType(typeof(OrderPagedContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Get_OrdersAsync(string pageSize, string pageNumber)
