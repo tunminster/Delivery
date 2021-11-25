@@ -12,6 +12,7 @@ namespace Delivery.Order.Domain.Converters
             {
                 Id = order.ExternalId,
                 CustomerId = order.Customer.ExternalId,
+                CustomerName = order.Customer.Username,
                 TotalAmount = order.TotalAmount -
                               (order.BusinessServiceFees + order.PlatformServiceFees + order.DeliveryFees),
                 BusinessApplicationFees = order.BusinessServiceFees,
