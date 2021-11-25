@@ -16,9 +16,9 @@ namespace Delivery.Order.Domain.Converters
                               (order.BusinessServiceFees + order.PlatformServiceFees + order.DeliveryFees),
                 BusinessApplicationFees = order.BusinessServiceFees,
                 OrderType = order.OrderType,
-                StoreName = order.Store.StoreName,
-                DeliveryAddress = order.Address.AddressLine,
-                OrderItems = order.OrderItems.Select(x => x.ConvertToOrderItemContract()).ToList(),
+                StoreName = order.Store?.StoreName ?? string.Empty,
+                DeliveryAddress = order.Address?.AddressLine ?? string.Empty,
+                OrderItems = order.OrderItems?.Select(x => x.ConvertToOrderItemContract()).ToList() ?? new(),
                 DateCreated = order.InsertionDateTime
             };
 
@@ -30,8 +30,8 @@ namespace Delivery.Order.Domain.Converters
             var orderItemContract = new OrderItemContract
             {
                 ProductId = orderItem.ProductId,
-                ProductName = orderItem.Product.ProductName,
-                ProductPrice = orderItem.Product.UnitPrice,
+                ProductName = orderItem.Product?.ProductName ?? string.Empty,
+                ProductPrice = orderItem.Product?.UnitPrice ?? 100,
                 Count = orderItem.Count
             };
 
