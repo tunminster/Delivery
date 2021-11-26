@@ -347,16 +347,31 @@ $collectionPayloadBody = $collectionPayload | ConvertTo-Json -Depth 100
  }
  $defaultHeaders.add('X-Api-Key', $apiKey)
 
-try{
+ try{
     $response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
     Write-Host "Finalized $collectionUid"
 }
 catch{
     $responseCode = $_.Exception.Response.StatusCode.value__ 
+    $responseDescription = $_
+    Write-Host 'response description: ' + $responseDescription
     if($responseCode -eq 504){
         Write-Host "Collection update timed out, check that collection was actually created"
+    } elseif ($responseDescription -like '*instanceFoundError*'){
+        Write-Host "PUT request returned instanceAlreadyExists error for collection '$collectionUid'. Found: $collections"
+        $deleteCollectionsUri = $getCollectionsUrl + "/" + $collectionUid
+        Write-Host "Deleting collections with uid $collectionUid"
+        InvokeWithRetry $deleteCollectionsUri 'DELETE' $null
+        
+        Write-Host "Readding $collectionUrl"
+        $response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
     }
+    elseif ($responseDescription -like '*serverError*'){
+        Write-Host "Postman server error thrown"
+    } 
     else{
-        throw "Error thrown from put collection: " + $responseCode
+        Write-Host "Error thrown from put collection: $responseCode" 
+        Write-Host "Rethrowing error to log to stream for $collectionUrl"
+        $response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
     }
 }
