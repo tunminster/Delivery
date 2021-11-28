@@ -4,14 +4,16 @@ using Delivery.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delivery.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211128111021_AddCoupon")]
+    partial class AddCoupon
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,55 +119,6 @@ namespace Delivery.Database.Migrations
                     b.HasIndex("StoreId");
 
                     b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("Delivery.Database.Entities.CouponCode", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("CouponCodeType")
-                        .HasMaxLength(256)
-                        .HasColumnType("int");
-
-                    b.Property<string>("CouponId")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<int>("DiscountAmount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ExternalId")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("NVARCHAR(40)");
-
-                    b.Property<int>("MinimumOrderValue")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<int>("NumberOfTimes")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PromotionCode")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTimeOffset>("RedeemBy")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UniqueExternalId");
-
-                    b.ToTable("CouponCodes");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.Customer", b =>
@@ -534,9 +487,6 @@ namespace Delivery.Database.Migrations
 
                     b.Property<string>("CouponCode")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CouponDiscountPaid")
-                        .HasColumnType("int");
 
                     b.Property<string>("CurrencyCode")
                         .HasMaxLength(15)

@@ -8,38 +8,49 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder
     /// <summary>
     ///  A contract to receive an order
     /// </summary>
-    [DataContract]
     public class StripeOrderCreationContract
     {
-        [DataMember]
+        /// <summary>
+        ///  Customer Id
+        /// </summary>
+        /// <example>{{customerId}}</example>
         public int CustomerId { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Order items
+        /// </summary>
+        /// <example>{{orderItems}}</example>
         public List<OrderItemCreationContract> OrderItems { get; set; } = new();
         
-        [DataMember]
+        /// <summary>
+        ///  Shipping address id
+        /// </summary>
+        /// <example>{{shippingAddressId}}</example>
         public int? ShippingAddressId { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Order type
+        /// </summary>
+        /// <example>{{orderType}}</example>
         public OrderType OrderType { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Discount
+        /// </summary>
+        /// <example>discount</example>
         public decimal Discount { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Store id
+        /// </summary>
+        /// <example>{{storeId}}</example>
         public string StoreId { get; set; }
-        
-        public override string ToString()
-        {
-            return $"{GetType().Name}" +
-                   $"{nameof(CustomerId)}: {CustomerId.Format()}," +
-                   $"{nameof(OrderItems)}: {OrderItems.Format()}," +
-                   $"{nameof(ShippingAddressId)}: {ShippingAddressId.Format()}," +
-                   $"{nameof(StoreId)}: {StoreId.Format()}," +
-                   $"{nameof(Discount)} : {Discount.Format()}";
 
-        }
+        /// <summary>
+        ///  Promo code
+        /// </summary>
+        /// <example>{{promoCode}}</example>
+        public string PromoCode { get; init; } = string.Empty;
         
-       
     }
 }
