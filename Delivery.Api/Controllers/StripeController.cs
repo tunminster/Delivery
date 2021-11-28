@@ -14,6 +14,8 @@ using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.Accou
 using Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.LoginLinkCreation;
 using Delivery.StripePayment.Domain.Contracts.Enums;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts;
+using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.CouponPayments;
+using Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments;
 using Delivery.StripePayment.Domain.Handlers.QueryHandlers.Stripe.ApplicationFees;
 using Delivery.StripePayment.Domain.Handlers.QueryHandlers.Stripe.ConnectAccounts;
 using Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccounts;
@@ -222,6 +224,29 @@ namespace Delivery.Api.Controllers
             var id = executingRequestContextAdapter.GetShard().GenerateExternalId();
 
             return Ok(id);
+        }
+
+        /// <summary>
+        ///  Confirm coupon code
+        /// </summary>
+        /// <remarks>
+        ///  This endpoint allows to verify the coupon code
+        /// </remarks>
+        [Route("confirm-coupon-code", Order = 8)]
+        [HttpPost]
+        [ProducesResponseType(typeof(CouponCodeConfirmationQueryStatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Verify_PromoCodeAsync(CouponCodeConfirmationQueryContract couponCodeConfirmationQueryContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var couponCodeConfirmationQuery = new CouponCodeConfirmationQuery(couponCodeConfirmationQueryContract);
+
+            var couponCodeConfirmationQueryStatusContract =
+                await new CouponCodeConfirmationQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(couponCodeConfirmationQuery);
+
+            return Ok(couponCodeConfirmationQueryStatusContract);
         }
         
     }

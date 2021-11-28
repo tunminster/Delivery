@@ -89,6 +89,10 @@ namespace Delivery.Database.Entities
         
         public string DriverTransferredId { get; set; }
         
+        public string? CouponCode { get; set; }
+        
+        public int? CouponDiscountPaid { get; set; }
+        
         public OrderType OrderType { get; set; }
         public bool IsDeleted { get; set; }
     }
