@@ -49,7 +49,7 @@ namespace Delivery.Api.Controllers.Management
         /// <returns></returns>
         [Route("get-stores", Order = 1)]
         [HttpGet]
-        [ProducesResponseType(typeof(StorePagedContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(StoreManagementPagedContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Get_StoresAsync(string pageSize, string pageNumber)
@@ -59,13 +59,13 @@ namespace Delivery.Api.Controllers.Management
             int.TryParse(pageSize, out var iPageSize);
             int.TryParse(pageNumber, out var iPageNumber);
         
-            var storeGetAllQuery =
-                new StoreGetAllQuery(iPageSize, iPageNumber);
-            var storePagedContract =
-                await new StoreGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(storeGetAllQuery);
+            var storeManagementGetAllQuery =
+                new StoreManagementGetAllQuery(iPageSize, iPageNumber);
+            var storeManagementPagedContract =
+                await new StoreManagementGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(storeManagementGetAllQuery);
             
-            return Ok(storePagedContract);
+            return Ok(storeManagementPagedContract);
         }
         
         /// <summary>
@@ -93,17 +93,17 @@ namespace Delivery.Api.Controllers.Management
         /// <returns></returns>
         [Route("get-store-details", Order = 2)]
         [HttpGet]
-        [ProducesResponseType(typeof(StoreContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(StoreManagementContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleConstant.ShopOwner)]
         public async Task<IActionResult> Get_StoresAsync()
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var storeContract = await new StoreGetQueryHandler(serviceProvider, executingRequestContextAdapter)
+            var storeManagementContract = await new StoreGetQueryHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(new StoreGetQuery{StoreId = string.Empty, StoreUserEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!});
             
-            return Ok(storeContract);
+            return Ok(storeManagementContract);
         }
 
         /// <summary>

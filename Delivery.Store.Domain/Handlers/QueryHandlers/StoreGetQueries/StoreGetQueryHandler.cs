@@ -5,19 +5,20 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
+using Delivery.Store.Domain.Contracts.V1.RestContracts;
 using Delivery.Store.Domain.Converters.StoreConverters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries
 {
-    public record StoreGetQuery : IQuery<StoreContract>
+    public record StoreGetQuery : IQuery<StoreManagementContract>
     {
         public string StoreId { get; init; } = string.Empty;
 
         public string StoreUserEmail { get; init; } = string.Empty;
     }
     
-    public class StoreGetQueryHandler : IQueryHandler<StoreGetQuery, StoreContract>
+    public class StoreGetQueryHandler : IQueryHandler<StoreGetQuery, StoreManagementContract>
     {
         private IServiceProvider serviceProvider;
         private IExecutingRequestContextAdapter executingRequestContextAdapter;
@@ -27,7 +28,7 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StoreContract> Handle(StoreGetQuery query)
+        public async Task<StoreManagementContract> Handle(StoreGetQuery query)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
@@ -39,7 +40,7 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries
                     .Include(x => x.StorePaymentAccount)
                     .FirstOrDefaultAsync();
 
-                return store.ConvertStoreContract();
+                return store.ConvertStoreManagementContract();
             }
 
             var storeUser = await databaseContext.StoreUsers.SingleOrDefaultAsync(x =>
@@ -51,7 +52,7 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreGetQueries
                 .Include(x => x.StorePaymentAccount)
                 .FirstOrDefaultAsync();
 
-            return storeDetails.ConvertStoreContract();
+            return storeDetails.ConvertStoreManagementContract();
 
 
         }
