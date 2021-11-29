@@ -8,52 +8,97 @@ namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
     /// <summary>
     ///  A contract for store
     /// </summary>
-    [DataContract]
-    public class StoreContract
+    public record StoreContract
     {
-        [DataMember]
-        public string StoreId { get; set; }
+        /// <summary>
+        ///  Store id
+        /// </summary>
+        /// <example>{{storeId}}</example>
+        public string StoreId { get; set; } = string.Empty;
+
+        /// <summary>
+        ///  Store name
+        /// </summary>
+        /// <example>{{storeName}}</example>
+        public string StoreName { get; set; } = string.Empty;
+
+        /// <summary>
+        ///  Image uri
+        /// </summary>
+        /// <example>{{imageUri}}</example>
+        public string ImageUri { get; set; } = string.Empty;
         
-        [DataMember]
-        public string StoreName { get; set; }
+        /// <summary>
+        ///  Address line 1
+        /// </summary>
+        /// <example>{{addressLine1}}</example>
+        public string AddressLine1 { get; set; } = string.Empty;
         
-        [DataMember]
-        public string ImageUri { get; set; }
+        /// <summary>
+        ///  Address line 2
+        /// </summary>
+        /// <example>{{addressLine2}}</example>
+        public string AddressLine2 { get; set; } = string.Empty;
         
-        [DataMember]
-        public string AddressLine1 { get; set; }
+        /// <summary>
+        ///  City
+        /// </summary>
+        /// <example>{{city}}</example>
+        public string City { get; set; } = string.Empty;
         
-        [DataMember]
-        public string AddressLine2 { get; set; }
+        /// <summary>
+        ///  County
+        /// </summary>
+        /// <example>{{county}}</example>
+        public string County { get; set; } = string.Empty;
         
-        [DataMember]
-        public string City { get; set; }
+        /// <summary>
+        ///  Country
+        /// </summary>
+        /// <example>{{country}}</example>
+        public string Country { get; set; } = string.Empty;
         
-        [DataMember]
-        public string County { get; set; }
+        /// <summary>
+        ///  PostalCode
+        /// </summary>
+        /// <example>{{postalCode}}</example>
+        public string PostalCode { get; set; } = string.Empty;
         
-        [DataMember]
-        public string Country { get; set; }
+        /// <summary>
+        ///  Store type
+        /// </summary>
+        /// <example>{{storeType}}</example>
+        public string StoreType { get; set; } = string.Empty;
         
-        [DataMember]
-        public string PostalCode { get; set; }
+        /// <summary>
+        ///  Store payment account number
+        /// </summary>
+        /// <example>{{storePaymentAccountNumber}}</example>
+        public string StorePaymentAccountNumber { get; set; } = string.Empty;
+
+        /// <summary>
+        ///  Store opening hours
+        /// </summary>
+        /// <example>{{storeOpeningHours}}</example>
+        public List<StoreOpeningHourContract> StoreOpeningHours { get; set; } = new();
         
-        [DataMember]
-        public string StoreType { get; set; }
-        
-        [DataMember]
-        public string StorePaymentAccountNumber { get; set; }
-        
-        [DataMember]
-        public List<StoreOpeningHourContract> StoreOpeningHours { get; set; }
-        
-        [DataMember]
+        /// <summary>
+        ///  Location
+        /// </summary>
+        /// <example>{{location}}</example>
         [GeoPoint(Name = "location")]
         public GeoLocation Location { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Distance
+        /// </summary>
+        /// <example>{{distance}}</example>
         public double Distance { get; set; }
 
+        /// <summary>
+        ///  Contact number
+        /// </summary>
+        /// <example>{{contactNumber}}</example>
         public string ContactNumber { get; set; } = string.Empty;
         
         

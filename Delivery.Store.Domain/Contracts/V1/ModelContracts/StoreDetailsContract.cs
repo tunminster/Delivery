@@ -5,11 +5,16 @@ using Delivery.Category.Domain.Contracts;
 
 namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
 {
-    [DataContract]
-    public class StoreDetailsContract : StoreContract
+    /// <summary>
+    ///  Store details controct
+    /// </summary>
+    public record StoreDetailsContract : StoreContract
     {
-        [DataMember]
-        public List<StoreCategoriesContract> StoreCategoriesList { get; set; }
+        /// <summary>
+        ///  Store category list
+        /// </summary>
+        /// <example>{{storeCategoriesList}}</example>
+        public List<StoreCategoriesContract> StoreCategoriesList { get; set; } = new();
         
         public override string ToString()
         {

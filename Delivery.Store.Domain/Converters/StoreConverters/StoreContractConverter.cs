@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
+using Delivery.Store.Domain.Contracts.V1.RestContracts;
 using Nest;
 
 namespace Delivery.Store.Domain.Converters.StoreConverters
@@ -49,6 +50,34 @@ namespace Delivery.Store.Domain.Converters.StoreConverters
                 Country = store.Country,
                 PostalCode = store.PostalCode,
                 StoreType = store.StoreType?.StoreTypeName ?? string.Empty,
+                StorePaymentAccountNumber = store.StorePaymentAccount?.AccountNumber ?? string.Empty,
+                StoreOpeningHours = store.OpeningHours.Select(op => new StoreOpeningHourContract
+                {
+                    DayOfWeek = op.DayOfWeek,
+                    Open = op.Open,
+                    Close = op.Close
+                }).ToList(),
+                Location = new GeoLocation(store.Latitude ?? 0, store.Longitude ?? 0)
+            };
+            
+            return storeContract;
+        }
+        
+        public static StoreManagementContract ConvertStoreManagementContract(this Database.Entities.Store store)
+        {
+            var storeContract = new StoreManagementContract
+            {
+                StoreId = store.ExternalId,
+                StoreName = store.StoreName,
+                ImageUri = store.ImageUri,
+                AddressLine1 = store.AddressLine1,
+                AddressLine2 = store.AddressLine2,
+                City = store.City,
+                County = store.County,
+                Country = store.Country,
+                PostalCode = store.PostalCode,
+                StoreType = store.StoreType?.StoreTypeName ?? string.Empty,
+                StoreTypeId = store.StoreType?.ExternalId ?? string.Empty,
                 StorePaymentAccountNumber = store.StorePaymentAccount?.AccountNumber ?? string.Empty,
                 StoreOpeningHours = store.OpeningHours.Select(op => new StoreOpeningHourContract
                 {
