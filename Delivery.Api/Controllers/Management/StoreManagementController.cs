@@ -34,7 +34,6 @@ namespace Delivery.Api.Controllers.Management
     [Route("api/v1/management/store-management" , Name = "2 - Store management")]
     [PlatformSwaggerCategory(ApiCategory.Management)]
     [ApiController]
-    [Authorize(Roles = RoleConstant.Administrator)]
     public class StoreManagementController : Controller
     {
         private readonly IServiceProvider serviceProvider;
@@ -52,6 +51,7 @@ namespace Delivery.Api.Controllers.Management
         [HttpGet]
         [ProducesResponseType(typeof(StorePagedContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Get_StoresAsync(string pageSize, string pageNumber)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -76,6 +76,7 @@ namespace Delivery.Api.Controllers.Management
         [HttpGet]
         [ProducesResponseType(typeof(StoreContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Get_StoresAsync(string id)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -115,6 +116,7 @@ namespace Delivery.Api.Controllers.Management
         [HttpPost]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Post_CreateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreCreationContract storeCreationContract, IFormFile? storeImage)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -159,6 +161,7 @@ namespace Delivery.Api.Controllers.Management
         [HttpPut]
         [ProducesResponseType(typeof(StoreUpdateStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Put_UpdateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreUpdateContract storeUpdateContract, IFormFile? storeImage)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -199,6 +202,7 @@ namespace Delivery.Api.Controllers.Management
         [ProducesResponseType(typeof(ShopApprovalStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         [HttpPost]
+        [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Post_ApproveAsync(ShopApprovalContract shopApprovalContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -225,6 +229,7 @@ namespace Delivery.Api.Controllers.Management
         [ProducesResponseType(typeof(ShopApprovalStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         [HttpPost]
+        [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Post_ApproveUserAsync(ShopUserApprovalContract shopUserApprovalContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -252,6 +257,7 @@ namespace Delivery.Api.Controllers.Management
         [Route("delete-store", Order = 6)]
         [HttpDelete]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [Authorize(Roles = RoleConstant.Administrator)]
         public async Task<IActionResult> Delete_StoreAsync(string storeId)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
