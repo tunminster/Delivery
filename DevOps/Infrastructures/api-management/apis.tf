@@ -10,7 +10,7 @@ resource "azurerm_api_management_api" "hn-platform-public-management-api" {
   service_url         = "https://delivery-api.harveynetwork.com"
   #service_url         = "${var.api_backend_url}"
 
-  subscription_required = false
+  subscription_required = true
 
   import {
     content_format = "openapi-link"
@@ -26,12 +26,12 @@ resource "azurerm_api_management_api" "hn-platform-public-customer-api" {
   revision            = replace(var.release_name, ".", "")
   display_name        = "Ragibull - Customer Apis"
   description         = "Contains all of the customer endpoints."
-  path                = ""
+  path                = "customer"
   protocols           = [var.protocol]
   service_url         = "https://delivery-api.harveynetwork.com"
   #service_url         = "${var.api_backend_url}"
 
-  subscription_required = false
+  subscription_required = true
 
   import {
     content_format = "openapi-link"
