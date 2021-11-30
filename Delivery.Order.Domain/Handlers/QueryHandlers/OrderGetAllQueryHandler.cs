@@ -42,7 +42,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 : query.StoreId;
             
             var store = await databaseContext.Stores.SingleOrDefaultAsync(x => x.ExternalId == storeId);
-            var orderTotal = await databaseContext.Orders.CountAsync();
+            var orderTotal = await databaseContext.Orders.Where(x => x.StoreId == store.Id).CountAsync();
             
             var orderManagementContractList = await dataAccess.GetCachedItemsAsync(
                 orderCacheKey,
