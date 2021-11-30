@@ -31,8 +31,6 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
             
             var databaseContext = await dataAccess.ReusableDatabaseContext.GetOrCreateContextAsync();
             
-            var orderCacheKey = $"Database-{executingRequestContextAdapter.GetShard().Key}-{query.PageSize}-{query.PageNumber}-{nameof(OrderGetAllQueryHandler).ToLowerInvariant()}";
-
             var storeId = string.IsNullOrEmpty(query.StoreId)
                 ? databaseContext.StoreUsers
                     .Where(x => x.Username == executingRequestContextAdapter.GetAuthenticatedUser().UserEmail)
@@ -40,6 +38,8 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                     .Single()
                     .Store.ExternalId
                 : query.StoreId;
+
+            var orderCacheKey = $"Database-{executingRequestContextAdapter.GetShard().Key}-{query.PageSize}-{query.PageNumber}-{storeId}-{nameof(OrderGetAllQueryHandler).ToLowerInvariant()}";    
             
             var store = await databaseContext.Stores.SingleOrDefaultAsync(x => x.ExternalId == storeId);
             var orderTotal = await databaseContext.Orders.Where(x => x.StoreId == store.Id).CountAsync();
