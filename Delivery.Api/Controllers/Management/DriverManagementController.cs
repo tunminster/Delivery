@@ -80,27 +80,7 @@ namespace Delivery.Api.Controllers.Management
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract, true);
-
-            var driverApprovalStatusContract = await new DriverApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
-                driverApprovalCommand);
-            
-            return Ok(driverApprovalStatusContract);
-        }
-        
-        /// <summary>
-        ///  Driver un-approve
-        /// </summary>
-        /// <returns></returns>
-        [Route("un-approve-driver", Order = 2)]
-        [ProducesResponseType(typeof(DriverApprovalStatusContract), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
-        [HttpPost]
-        public async Task<IActionResult> Post_UnApproveAsync(DriverApprovalContract driverApprovalContract)
-        {
-            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-            
-            var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract, true);
+            var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract, driverApprovalContract.Approve);
 
             var driverApprovalStatusContract = await new DriverApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
                 driverApprovalCommand);
