@@ -37,8 +37,12 @@ namespace Delivery.Api.Controllers.Management
             this.serviceProvider = serviceProvider;
         }
 
+        /// <summary>
+        ///  Driver list
+        /// </summary>
+        /// <returns></returns>
         [Route("drivers", Order = 1)]
-        [ProducesResponseType(typeof(List<DriverContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DriversPageContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         [HttpGet]
         public async Task<IActionResult> Get_DriversAsync(string pageNumber, string pageSize)
@@ -58,10 +62,10 @@ namespace Delivery.Api.Controllers.Management
 
             var driverQuery = new DriversQuery(iPageNumber, iPageSize);
 
-            var driversContracts = await new DriversQueryHandler(serviceProvider, executingRequestContextAdapter)
+            var driversPageContract = await new DriversQueryHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(driverQuery);
 
-            return Ok(driversContracts);
+            return Ok(driversPageContract);
         }
         
         /// <summary>
@@ -76,7 +80,27 @@ namespace Delivery.Api.Controllers.Management
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract);
+            var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract, true);
+
+            var driverApprovalStatusContract = await new DriverApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                driverApprovalCommand);
+            
+            return Ok(driverApprovalStatusContract);
+        }
+        
+        /// <summary>
+        ///  Driver un-approve
+        /// </summary>
+        /// <returns></returns>
+        [Route("un-approve-driver", Order = 2)]
+        [ProducesResponseType(typeof(DriverApprovalStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_UnApproveAsync(DriverApprovalContract driverApprovalContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract, true);
 
             var driverApprovalStatusContract = await new DriverApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
                 driverApprovalCommand);
