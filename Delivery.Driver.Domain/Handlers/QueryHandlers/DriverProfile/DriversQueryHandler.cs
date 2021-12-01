@@ -13,9 +13,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile
 {
-    public record DriversQuery(int PageNumber, int PageSize) : IQuery<List<DriverContract>>;
+    public record DriversQuery(int PageNumber, int PageSize) : IQuery<DriversPageContract>;
     
-    public class DriversQueryHandler : IQueryHandler<DriversQuery, List<DriverContract>>
+    public class DriversQueryHandler : IQueryHandler<DriversQuery, DriversPageContract>
     {
         private IServiceProvider serviceProvider;
         private IExecutingRequestContextAdapter executingRequestContextAdapter;
@@ -25,7 +25,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<List<DriverContract>> Handle(DriversQuery query)
+        public async Task<DriversPageContract> Handle(DriversQuery query)
         {
             await using var dataAccess = new ShardedDataAccess<PlatformDbContext, Database.Entities.DriverOrder>(
                 serviceProvider, () => PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter));
@@ -33,6 +33,8 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile
             var databaseContext = await dataAccess.ReusableDatabaseContext.GetOrCreateContextAsync();
             var driverCacheKey = $"Database-{executingRequestContextAdapter.GetShard().Key}-{nameof(DriversQuery).ToLowerInvariant()}-{query.PageNumber}-{query.PageSize}";
 
+            var driverTotal = await databaseContext.Drivers.CountAsync();
+            
             var driverContracts = await dataAccess.GetCachedItemsAsync(
                 driverCacheKey,
                 databaseContext.GlobalDatabaseCacheRegion,
@@ -41,7 +43,13 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile
                     .Skip(query.PageSize * (query.PageNumber - 1))
                     .Take(query.PageSize).Select(x => x.ConvertToDriverContract()).ToListAsync());
 
-            return driverContracts ?? new List<DriverContract>();
+            var driversPageContract = new DriversPageContract
+            {
+                TotalPages = (driverTotal + query.PageSize - 1) / query.PageSize,
+                Data = driverContracts
+            };
+
+            return driversPageContract;
         }
     }
 }
