@@ -397,11 +397,20 @@ namespace Delivery.Api.Controllers.Management
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         [HttpGet]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Get_UsersAsync(int pageNumber, int pageSize)
+        public async Task<IActionResult> Get_UsersAsync(string pageNumber, string pageSize)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            if (string.IsNullOrEmpty(pageNumber) || string.IsNullOrEmpty(pageSize))
+            {
+                var errorMessage = $"{nameof(pageNumber)} and {nameof(pageSize)} are required";
+
+                return errorMessage.ConvertToBadRequest();
+            }
+
+            int.TryParse(pageNumber, out var iPageNumber);
+            int.TryParse(pageSize, out var iPageSize);
             
-            var shopUserAllQuery = new ShopUserAllQuery(pageNumber, pageSize);
+            var shopUserAllQuery = new ShopUserAllQuery(iPageNumber, iPageSize);
             
             var shopUsersPageContract = await new ShopUserAllQueryHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(shopUserAllQuery);
