@@ -26,7 +26,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopApproval
 
             if (storeUser != null)
             {
-                storeUser.Approved = true;
+                storeUser.Approved = command.ShopUserApprovalContract.Approve;
                 await databaseContext.SaveChangesAsync();
 
                 return new ShopUserApprovalStatusContract(true, DateTimeOffset.UtcNow);
