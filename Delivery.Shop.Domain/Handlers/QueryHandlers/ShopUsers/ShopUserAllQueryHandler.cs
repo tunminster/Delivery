@@ -37,6 +37,7 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopUsers
                 shopUsersCacheKey,
                 databaseContext.GlobalDatabaseCacheRegion,
                 async () => await databaseContext.StoreUsers
+                    .Include(x => x.Store)
                     .OrderByDescending(x => x.InsertionDateTime)
                     .Skip(query.PageSize * (query.PageNumber - 1))
                     .Take(query.PageSize).Select(x => x.ConvertToShopUserContract()).ToListAsync());
