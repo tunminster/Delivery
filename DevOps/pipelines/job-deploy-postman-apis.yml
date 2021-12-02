@@ -38,4 +38,28 @@ jobs:
             maxRetryCount: 10
             additionalEnvironmentSettingsJson: "{ 'Ocp-Apim-Subscription-Key': 'Enter subscription key' }"
             failOnStderr: false
+
+        - template: '/DevOps/pipelines/task-postman-api-upload.yml'
+          parameters:
+            domain: 'driver'
+            environment: '${{parameters.environment}}'
+            authorizationTokenEndpoint: 'https://localhost:5001'
+            authorizationClientId: 'clientid'
+            authorizationClientSecret: 'seecret'
+            authorizationScopes: 'category_customer'
+            maxRetryCount: 10
+            additionalEnvironmentSettingsJson: "{ 'Ocp-Apim-Subscription-Key': 'Enter subscription key' }"
+            failOnStderr: false
+
+        - template: '/DevOps/pipelines/task-postman-api-upload.yml'
+          parameters:
+            domain: 'shopowner'
+            environment: '${{parameters.environment}}'
+            authorizationTokenEndpoint: 'https://localhost:5001'
+            authorizationClientId: 'clientid'
+            authorizationClientSecret: 'seecret'
+            authorizationScopes: 'category_customer'
+            maxRetryCount: 10
+            additionalEnvironmentSettingsJson: "{ 'Ocp-Apim-Subscription-Key': 'Enter subscription key' }"
+            failOnStderr: false
  
