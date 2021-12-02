@@ -28,6 +28,8 @@ using Delivery.Managements.Domain.Handlers.CommandHandlers.ResetPassword;
 using Delivery.Managements.Domain.Validators.EmailVerification;
 using Delivery.Managements.Domain.Validators.ManagementUserCreation;
 using Delivery.Managements.Domain.Validators.ResetPassword;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopUsers;
+using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopUsers;
 using Delivery.User.Domain.Contracts.V1.RestContracts.Managements;
 using Delivery.User.Domain.Handlers.QueryHandlers;
 using FluentValidation.Results;
@@ -385,6 +387,27 @@ namespace Delivery.Api.Controllers.Management
 
             return Ok(userProfileContract);
         }
+
+        /// <summary>
+        ///  Get user list
+        /// </summary>
+        /// <remarks>The endpoint allows user to get shop user list</remarks>
+        [Route("get-users", Order = 8)]
+        [ProducesResponseType(typeof(ShopUsersPageContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Get_UsersAsync(int pageNumber, int pageSize)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var shopUserAllQuery = new ShopUserAllQuery(pageNumber, pageSize);
+            
+            var shopUsersPageContract = await new ShopUserAllQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(shopUserAllQuery);
+            
+            return Ok(shopUsersPageContract);
+        }
         
         private async Task<ClaimsIdentity?> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
@@ -397,7 +420,7 @@ namespace Delivery.Api.Controllers.Management
             var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
                 passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider,logger);
 
-            // get the user to verifty
+            // get the user to verify
             var userToVerify = await userManager.FindByNameAsync(userName);
 
             if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);

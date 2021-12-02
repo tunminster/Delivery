@@ -80,7 +80,7 @@ namespace Delivery.Api.Controllers.Management
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract, driverApprovalContract.Approve);
+            var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract);
 
             var driverApprovalStatusContract = await new DriverApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
                 driverApprovalCommand);

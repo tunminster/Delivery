@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval
 {
-    public record DriverApprovalCommand(DriverApprovalContract DriverApprovalContract, bool Approval);
+    public record DriverApprovalCommand(DriverApprovalContract DriverApprovalContract);
     public class DriverApprovalCommandHandler : ICommandHandler<DriverApprovalCommand, DriverApprovalStatusContract>
     {
         private IServiceProvider serviceProvider;
@@ -26,7 +26,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval
 
             if (driver != null)
             {
-                driver.Approved = command.Approval;
+                driver.Approved = command.DriverApprovalContract.Approve;
 
                 await databaseContext.SaveChangesAsync();
             }
