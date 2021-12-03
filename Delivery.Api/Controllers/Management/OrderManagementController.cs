@@ -37,7 +37,7 @@ namespace Delivery.Api.Controllers.Management
         [Authorize(Roles = "ShopOwner")]
         [ProducesResponseType(typeof(OrderPagedContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Get_OrdersAsync(string pageSize, string pageNumber)
+        public async Task<IActionResult> Get_OrdersAsync(string pageSize, string pageNumber, string? freeTextSearch)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
@@ -45,7 +45,7 @@ namespace Delivery.Api.Controllers.Management
             int.TryParse(pageNumber, out var iPageNumber);
         
             var orderGetAllQuery =
-                new OrderGetAllQuery(string.Empty, iPageSize, iPageNumber);
+                new OrderGetAllQuery(string.Empty, iPageSize, iPageNumber, freeTextSearch);
             var orderPagedContract =
                 await new OrderGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
                     .Handle(orderGetAllQuery);
