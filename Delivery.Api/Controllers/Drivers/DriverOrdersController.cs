@@ -79,6 +79,10 @@ namespace Delivery.Api.Controllers.Drivers
             return Ok(statusContract);
         }
 
+        /// <summary>
+        ///  Get driver orders status
+        /// </summary>
+        /// <returns></returns>
         [Route("get-driver-orders-status", Order = 2)]
         [ProducesResponseType(typeof(List<DriverOrderDetailsContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -106,6 +110,12 @@ namespace Delivery.Api.Controllers.Drivers
 
         }
 
+        /// <summary>
+        ///  Set driver order index
+        /// </summary>
+        /// <param name="driverOrderIndexCreationContract"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [Route("set-driver-orders-index", Order = 3)]
         [ProducesResponseType(typeof(StatusContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -142,6 +152,10 @@ namespace Delivery.Api.Controllers.Drivers
             return Ok(statusContract);
         }
         
+        /// <summary>
+        ///  Index all driver orders
+        /// </summary>
+        /// <returns></returns>
         [Route("set-all-driver-orders-index", Order = 4)]
         [ProducesResponseType(typeof(HttpStatusCode), (int) HttpStatusCode.Accepted)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -166,6 +180,10 @@ namespace Delivery.Api.Controllers.Drivers
             return Accepted();
         }
         
+        /// <summary>
+        ///  Remove all driver orders
+        /// </summary>
+        /// <returns></returns>
         [Route("remove-all-driver-orders-index", Order = 5)]
         [ProducesResponseType(typeof(HttpStatusCode), (int) HttpStatusCode.Accepted)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -189,6 +207,10 @@ namespace Delivery.Api.Controllers.Drivers
             return Accepted();
         }
 
+        /// <summary>
+        ///  Get driver order history
+        /// </summary>
+        /// <returns></returns>
         [Route("get-driver-order-history", Order = 6)]
         [ProducesResponseType(typeof(List<DriverOrderHistoryContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
@@ -205,6 +227,10 @@ namespace Delivery.Api.Controllers.Drivers
             return Ok(orderHistoryContracts);
         }
         
+        /// <summary>
+        ///  Get driver order history details
+        /// </summary>
+        /// <returns></returns>
         [Route("get-driver-order-history-details", Order = 7)]
         [ProducesResponseType(typeof(List<DriverOrderHistoryContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]

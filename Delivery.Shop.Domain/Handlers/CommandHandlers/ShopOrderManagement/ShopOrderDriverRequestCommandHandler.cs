@@ -10,6 +10,7 @@ using Delivery.Database.Entities;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
+using Delivery.Domain.Extensions;
 using Delivery.Domain.Helpers;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment;
@@ -76,7 +77,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             var requestedDriverIds = orderRequestedDrivers.Select(x => x.Driver.ExternalId).ToList();
 
              var driverContract = driverList
-                 .FirstOrDefault(x => !requestedDriverIds.Contains(x.DriverId));
+                 .Where(x => !requestedDriverIds.Contains(x.DriverId)).Random();
 
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace(
@@ -118,11 +119,11 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                 DeliveryTips = 0
             };
 
-            var statusContract = await SendPushNotificationAsync(shopOrderDriverRequestPushNotificationContract, driver.Id);
-            
             // indexing driver
             await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
                 new DriverIndexCommand(driverContract.DriverId));
+            
+            var statusContract = await SendPushNotificationAsync(shopOrderDriverRequestPushNotificationContract, driver.Id);
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Sent order push notification for driver: {driverContract.ConvertToJson()}");
 
