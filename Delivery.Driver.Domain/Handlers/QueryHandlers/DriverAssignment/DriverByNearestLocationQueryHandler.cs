@@ -71,6 +71,14 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment
                                     bl.Filter(fl => 
                                         fl.Terms(tm => 
                                             tm.Field(fd => fd.IsOrderAssigned).Terms(false))))
+                                && q.Bool(ba =>
+                                    ba.Filter(baf => 
+                                        baf.Terms(tm =>
+                                            tm.Field(fd => fd.Approved).Terms(true))))
+                                && q.Bool(bat => 
+                                    bat.Filter(flat => 
+                                        flat.Terms(tm => 
+                                            tm.Field(fd => fd.IsActive).Terms(true))))
                                 && q.Bool(b =>
                                     b.Filter(f =>
                                         f.GeoDistance(g =>

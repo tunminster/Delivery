@@ -10,6 +10,7 @@ using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverPayments;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverPayments;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverPayments;
 using Microsoft.EntityFrameworkCore;
@@ -32,10 +33,13 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
         public async Task<StatusContract> Handle(DriverOrderActionCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+            
+            
 
             var driver = await databaseContext.Drivers.SingleAsync(x =>
                 x.EmailAddress == executingRequestContextAdapter.GetAuthenticatedUser().UserEmail);
 
+            var driverId = driver.ExternalId;
             var order = await databaseContext.Orders.SingleOrDefaultAsync(x =>
                 x.ExternalId == command.DriverOrderActionContract.OrderId) ?? throw new InvalidOperationException($"Expected order by order id: {command.DriverOrderActionContract.OrderId}.");
 
@@ -78,6 +82,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                     RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
                 };
 
+                driver.IsOrderAssigned = false;
+                
                 await new DriverOrderCompleteMessagePublisher(serviceProvider).PublishAsync(
                     driverOrderCompleteMessageContract);
                 
@@ -109,6 +115,14 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
 
             await databaseContext.SaveChangesAsync();
 
+            if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Complete)
+            {
+                // indexing driver
+                await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    new DriverIndexCommand(driverId));
+            }
+            
+            
             return new StatusContract
             {
                 Status = true,
