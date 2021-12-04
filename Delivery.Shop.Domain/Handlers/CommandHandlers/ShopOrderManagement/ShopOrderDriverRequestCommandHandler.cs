@@ -14,6 +14,7 @@ using Delivery.Domain.Helpers;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -76,6 +77,11 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
 
             // var driverContract = driverList
             //     .FirstOrDefault(x => !requestedDriverIds.Contains(x.DriverId));
+
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                .TrackTrace(
+                    $"{nameof(ShopOrderDriverRequestCommandHandler)} found: {driverList.ConvertToJson()} with the query {driverByNearestLocationQuery.ConvertToJson()}",
+                    SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
             var driverContract = driverList
                 .FirstOrDefault();
