@@ -69,23 +69,20 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             var driverList = await new DriverByNearestLocationQueryHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(driverByNearestLocationQuery);
 
-            // var orderRequestedDrivers = databaseContext.DriverOrders
-            //     .Include(x => x.Driver)
-            //     .Where(x => x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted);
+             var orderRequestedDrivers = databaseContext.DriverOrders
+                 .Include(x => x.Driver)
+                 .Where(x => x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted);
 
-            //var requestedDriverIds = orderRequestedDrivers.Select(x => x.Driver.ExternalId).ToList();
+            var requestedDriverIds = orderRequestedDrivers.Select(x => x.Driver.ExternalId).ToList();
 
-            // var driverContract = driverList
-            //     .FirstOrDefault(x => !requestedDriverIds.Contains(x.DriverId));
+             var driverContract = driverList
+                 .FirstOrDefault(x => !requestedDriverIds.Contains(x.DriverId));
 
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace(
                     $"{nameof(ShopOrderDriverRequestCommandHandler)} found: {driverList.ConvertToJson()} with the query {driverByNearestLocationQuery.ConvertToJson()}",
                     SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
-            var driverContract = driverList
-                .FirstOrDefault();
-
             if (driverContract == null)
             {
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Expected to find a driver: instead {driverContract.ConvertToJson()}");
