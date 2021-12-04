@@ -11,6 +11,7 @@ using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.Helpers;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Microsoft.EntityFrameworkCore;
@@ -67,14 +68,17 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             var driverList = await new DriverByNearestLocationQueryHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(driverByNearestLocationQuery);
 
-            var orderRequestedDrivers = databaseContext.DriverOrders
-                .Include(x => x.Driver)
-                .Where(x => x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted);
+            // var orderRequestedDrivers = databaseContext.DriverOrders
+            //     .Include(x => x.Driver)
+            //     .Where(x => x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted);
 
-            var requestedDriverIds = orderRequestedDrivers.Select(x => x.Driver.ExternalId).ToList();
+            //var requestedDriverIds = orderRequestedDrivers.Select(x => x.Driver.ExternalId).ToList();
 
+            // var driverContract = driverList
+            //     .FirstOrDefault(x => !requestedDriverIds.Contains(x.DriverId));
+            
             var driverContract = driverList
-                .FirstOrDefault(x => !requestedDriverIds.Contains(x.DriverId));
+                .FirstOrDefault();
 
             if (driverContract == null)
             {
@@ -87,6 +91,8 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             var driver = databaseContext.Drivers.SingleOrDefault(x => x.ExternalId == driverContract.DriverId);
 
             if (driver == null) return new StatusContract { Status = false, DateCreated = DateTimeOffset.UtcNow };
+
+            driver.IsOrderAssigned = true;
             
             databaseContext.DriverOrders.Add(new DriverOrder
                 { DriverId = driver.Id, OrderId = order.Id, Status = DriverOrderStatus.None });
@@ -110,6 +116,10 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             };
 
             var statusContract = await SendPushNotificationAsync(shopOrderDriverRequestPushNotificationContract, driver.Id);
+            
+            // indexing driver
+            await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                new DriverIndexCommand(driverContract.DriverId));
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Sent order push notification for driver: {driverContract.ConvertToJson()}");
 
