@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: delivery-cronjob-deployment
+spec:
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: delivery-cronjob
+            image: #{repository-image}#
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - date; echo Delivery cron job
+            envFrom:
+            - configMapRef:
+                name: config-map-orders
+            env:
+            - name: "ASPNETCORE_ENVIRONMENT"
+              value: #{env-name}#
+          imagePullSecrets:
+            - name: #{acr-secret-name}#  
+          volumes:
+          - name: secrets
+            secret: 
+              secretName: #{appsettings-secret-name}#
