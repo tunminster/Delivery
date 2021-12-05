@@ -8,8 +8,10 @@ using Delivery.Azure.Library.Microservices.Hosting.Extensions;
 using Delivery.Azure.Library.Microservices.Hosting.Logging;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.CronJobs.Host.Kernel;
+using Delivery.CronJobs.Host.Services;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection;
 using Microsoft.Extensions.Hosting;
+using ServiceStack;
 
 namespace Delivery.CronJobs.Host
 {
@@ -20,12 +22,12 @@ namespace Delivery.CronJobs.Host
             var hostBuilder = GetHostBuilder(args).Build();
             await  hostBuilder.RunAsync();
             
-            await new DriverTimerRejectionCommandHandler(hostBuilder.Services, GetExecutingContext("Raus"))
-                .Handle(new DriverTimerRejectionCommand(GetExecutingContext("Raus").GetShard().Key));
-            
-            await new DriverTimerRejectionCommandHandler(hostBuilder.Services, GetExecutingContext("Rauk"))
-                .Handle(new DriverTimerRejectionCommand(GetExecutingContext("Rauk").GetShard().Key));
+            var driverTimerRejectionService =
+                new DriverTimerRejectionService(hostBuilder.Services);
 
+            await driverTimerRejectionService.RunAsync(GetExecutingContext("Raus"));
+            await driverTimerRejectionService.RunAsync(GetExecutingContext("Rauk"));
+            
         }
 
         private static IExecutingRequestContextAdapter GetExecutingContext(string shardKey)
