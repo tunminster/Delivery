@@ -51,6 +51,7 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
             
             var driverList = await databaseContext.DriverOrders
                 .Where(x => orderList.Select(o => o.Id).ToList().Contains(x.OrderId))
+                .Where(x => x.Status != DriverOrderStatus.Rejected)
                 .Include(x => x.Driver)
                 .ToListAsync();
 

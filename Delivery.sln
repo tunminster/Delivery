@@ -113,6 +113,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Managements", "Managements"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Managements.Domain", "Delivery.Managements.Domain\Delivery.Managements.Domain.csproj", "{0E1B9F0C-8EE6-4E0E-9A00-2C28E54116C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.CronJobs.Host", "Delivery.CronJobs.Host\Delivery.CronJobs.Host.csproj", "{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -263,6 +265,10 @@ Global
 		{0E1B9F0C-8EE6-4E0E-9A00-2C28E54116C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E1B9F0C-8EE6-4E0E-9A00-2C28E54116C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E1B9F0C-8EE6-4E0E-9A00-2C28E54116C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -322,5 +328,6 @@ Global
 		{DA7425D3-4021-4542-B669-ABF005963100} = {51332C1E-8D5E-4927-89B0-7250C5DA0BE1}
 		{9A34FC90-7AE1-4CD8-B3E4-4C3A88E7362A} = {138DD804-2DE2-4127-A54C-2D138E40BF22}
 		{0E1B9F0C-8EE6-4E0E-9A00-2C28E54116C0} = {9A34FC90-7AE1-4CD8-B3E4-4C3A88E7362A}
+		{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4} = {5D3CF12A-0299-4ACC-9655-1628E31BDA4C}
 	EndGlobalSection
 EndGlobal

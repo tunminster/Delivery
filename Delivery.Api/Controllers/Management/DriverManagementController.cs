@@ -6,6 +6,7 @@ using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
+using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Driver.Domain.Constants;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
@@ -13,6 +14,7 @@ using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverApproval;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile;
 using Delivery.Driver.Domain.Validators;
@@ -87,5 +89,24 @@ namespace Delivery.Api.Controllers.Management
             
             return Ok(driverApprovalStatusContract);
         }
+
+        [Route("run-driver-status", Order = 3)]
+        [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Run_StatusAsync()
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var driverTimerRejectionCommand =
+                new DriverTimerRejectionCommand(executingRequestContextAdapter.GetShard().Key);
+
+            var statusContract =
+                await new DriverTimerRejectionCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(driverTimerRejectionCommand);
+
+            return Ok(statusContract);
+        }
+        
     }
 }
