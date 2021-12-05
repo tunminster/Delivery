@@ -20,11 +20,11 @@ RUN addgroup -S hn --gid 1000 && adduser -S hnuser -G hn --uid 1000 \
     && chown -R hnuser:hn /usr/
     
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
-WORKDIR /src
-COPY ["Delivery.CronJobs.Host.csproj", "Delivery.CronJobs.Host/"]
+WORKDIR /Delivery
+COPY ["Delivery.CronJobs.Host/Delivery.CronJobs.Host.csproj", "Delivery.CronJobs.Host/"]
 RUN dotnet restore "Delivery.CronJobs.Host/Delivery.CronJobs.Host.csproj"
 COPY . .
-WORKDIR "/src/Delivery.CronJobs.Host"
+WORKDIR "/Delivery/Delivery.CronJobs.Host"
 RUN dotnet build "Delivery.CronJobs.Host.csproj" -c Release -o /app/build 
 
 FROM build AS publish
