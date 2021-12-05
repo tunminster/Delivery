@@ -10,27 +10,33 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
     public record DriverOrderRequestContract : NotificationDataContract
     {
         /// <summary>
-        ///  Store address
-        /// <example>{{storeAddress}}</example>
+        ///  ImageUri
         /// </summary>
+        /// <example>{{imageUri}}</example>
+        public string ImageUri { get; init; } = string.Empty;
+        
+        /// <summary>
+        ///  Store address
+        /// </summary>
+        /// <example>{{storeAddress}}</example>
         public string StoreAddress { get; init; } = string.Empty;
 
         /// <summary>
         ///  Delivery Address
-        /// <example>{{deliveryAddress}}</example>
         /// </summary>
+        /// <example>{{deliveryAddress}}</example>
         public string DeliveryAddress { get; init; } = string.Empty;
         
         /// <summary>
         ///  Delivery Fee
-        ///  <example>{{deliveryFee}}</example>
         /// </summary>
+        ///  <example>{{deliveryFee}}</example>
         public int DeliveryFee { get; init; }
         
         /// <summary>
         ///  Tips
-        /// <example>{{tips}}</example>
         /// </summary>
+        /// <example>{{tips}}</example>
         public int Tips { get; init; }
     }
 }

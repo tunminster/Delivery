@@ -7,6 +7,8 @@ using Delivery.Azure.Library.Configuration.Environments.Interfaces;
 using Delivery.Azure.Library.Configuration.Features;
 using Delivery.Azure.Library.Configuration.Features.Interfaces;
 using Delivery.Azure.Library.KeyVault.Providers;
+using Delivery.Azure.Library.NotificationHub.Connections;
+using Delivery.Azure.Library.NotificationHub.Connections.Interfaces;
 using Delivery.Azure.Library.Resiliency.Stability;
 using Delivery.Azure.Library.Resiliency.Stability.Interfaces;
 using Delivery.Azure.Library.Sharding.Interfaces;
@@ -56,6 +58,7 @@ namespace Delivery.CronJobs.Host.Kernel
                 serviceCollection.AddSingleton<IManagedCache, ManagedRedisCache>();
             }
             
+            serviceCollection.AddSingleton<INotificationHubSenderConnectionManager, NotificationHubSenderConnectionManager>();
             serviceCollection.AddElasticSearch(configuration);
             
             return serviceCollection;

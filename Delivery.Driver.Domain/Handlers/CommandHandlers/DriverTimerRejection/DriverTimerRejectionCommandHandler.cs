@@ -2,12 +2,15 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.NotificationHub.Contracts.Enums;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverNotifications;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -53,6 +56,20 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                 // indexing driver
                 await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
                     new DriverIndexCommand(driverOrder.Driver.ExternalId));
+                
+                // send push notification
+
+                var driverOrderRejectedNotificationContract = new DriverOrderRejectedNotificationContract
+                {
+                    PushNotificationType = PushNotificationType.DeliveryRejected,
+                    OrderId = driverOrder.ExternalId,
+                    StoreId = string.Empty,
+                    StoreName = string.Empty
+                };
+
+                await new DriverSendOrderRejectionCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(new DriverSendOrderRejectionCommand(driverOrderRejectedNotificationContract,
+                        driverOrder.Driver.ExternalId));
             }
 
             return new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow };

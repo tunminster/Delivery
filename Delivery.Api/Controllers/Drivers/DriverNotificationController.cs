@@ -6,6 +6,7 @@ using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.NotificationHub.Contracts.V1;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverNotifications;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification;
 using Delivery.Notifications.Contracts.V1.Enums;
 using Delivery.Notifications.Contracts.V1.RestContracts;
@@ -109,5 +110,27 @@ namespace Delivery.Api.Controllers.Drivers
 
             return Ok(notificationResponseContract);
         }
+
+        /// <summary>
+        ///  Order delivery request
+        /// </summary>
+        [Route("send/order-delivery-request", Order = 5)]
+        [HttpPost]
+        [ProducesResponseType(typeof(NotificationResponseContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Send_OrderDeliveryRequestAsync(
+            DriverOrderNotificationContract driverOrderNotificationContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            var command = new DriverSendOrderDeliveryRequestCommand(driverOrderNotificationContract);
+
+            var statusContract =
+                await new DriverSendOrderDeliveryRequestCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(command);
+            
+            return Ok(statusContract);
+        }
+        
     }
 }

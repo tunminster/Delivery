@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: config-map-cornjobs
+    namespace: "#{Kubernetes-Namespace}#"
+data: 
+    ASPNETCORE_ENVIRONMENT: "#{ASPNETCORE_ENVIRONMENT}#"
+    KeyVault_Uri: "#{KeyVault-Uri}#"
+    KeyVault_ActiveDirectory_ClientId: "#{KeyVault-ActiveDirectory-ClientId}#"
+    KeyVault_ActiveDirectory_AppKey: "#{KeyVault-ActiveDirectory-AppKey}#"
+    ActiveDirectory_Tenant_Id: "#{ActiveDirectory-Tenant-Id}#"
+    ApplicationInsights-InstrumentationKey: "#{ApplicationInsights-InstrumentationKey}#"
+    Stripe-Api-Key: "#{Stripe-Api-Key}#"
+    Geo-Api-Uri: "#{Geo-Api-Uri}#"
+    Distance-Api-Uri: "#{Distance-Api-Uri}#"
+    Elastic-Search-Index: "#{Elastic-Search-Index}#"
+    Elastic-Search-Url: "#{Elastic-Search-Url}#"
+    Ring: "#{Ring}#"
+    Shards: '#{Shards}#'
+    RedisCache-ConnectionString: "#{RedisCache-ConnectionString}#"
+    ServiceStack-Redis-LicenseKey: "#{ServiceStack-Redis-LicenseKey}#"
