@@ -258,7 +258,7 @@ namespace Delivery.Api.Controllers.Drivers
 
             if (driverEmailVerificationStatusContract.Status == "approved")
             {
-                await ConfirmEmailAsync(driverCheckEmailVerificationContract, executingRequestContextAdapter);
+                //await ConfirmEmailAsync(driverCheckEmailVerificationContract, executingRequestContextAdapter);
             }
 
             return Ok(driverEmailVerificationStatusContract);
