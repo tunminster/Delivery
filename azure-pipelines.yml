@@ -488,8 +488,8 @@ stages:
               secretType: 'dockerRegistry'
               containerRegistryType: 'Azure Container Registry'
 
-      - job: DeployCornJobs
-        displayName: Deploy Cornjobs
+      - job: DeployCronJobs
+        displayName: Deploy Cronjobs
         pool: 
           vmImage: 'ubuntu-latest'
         steps:
@@ -547,10 +547,10 @@ stages:
             displayName: 'Replace tokens in deploy file'
             inputs:
               rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates/config-maps'
-              targetFiles: 'config-map-cornjobs.yaml'
+              targetFiles: 'config-map-cronjobs.yaml'
               escapeType: none 
 
-          - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-cornjobs.yaml'
+          - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-cronjobs.yaml'
             displayName: 'Cat deploy'
           - task: CopyFiles@2
             inputs:
@@ -561,7 +561,7 @@ stages:
             displayName: 'Replace tokens in deploy file'
             inputs:
               rootDirectory: '$(Build.ArtifactStagingDirectory)/devops'
-              targetFiles: 'delivery-cornjob-deploy.yaml'
+              targetFiles: 'delivery-cronjob-deploy.yaml'
               escapeType: none
           
           - task: AzureCLI@2
@@ -592,7 +592,7 @@ stages:
               kubernetesServiceEndpoint: 'hn-platform-aks-prod'
               namespace: 'hn-prod'
               command: 'apply'
-              arguments: '-f $(Build.ArtifactStagingDirectory)/devops/delivery-cornjob-deploy.yaml'
+              arguments: '-f $(Build.ArtifactStagingDirectory)/devops/delivery-cronjob-deploy.yaml'
               secretType: 'dockerRegistry'
               containerRegistryType: 'Azure Container Registry'        
               
