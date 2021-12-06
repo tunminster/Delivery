@@ -13,12 +13,13 @@ spec:
             image: #{repository-image}#
             envFrom:
             - configMapRef:
-                name: config-map-orders
+                name: config-map-cronjobs
             env:
             - name: "ASPNETCORE_ENVIRONMENT"
               value: #{env-name}#
           imagePullSecrets:
             - name: #{acr-secret-name}#  
+          restartPolicy: OnFailure
           volumes:
           - name: secrets
             secret: 
