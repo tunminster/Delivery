@@ -11,10 +11,6 @@ spec:
           containers:
           - name: delivery-cronjob
             image: #{repository-image}#
-            command:
-            - /bin/sh
-            - -c
-            - date; echo Delivery cron job
             envFrom:
             - configMapRef:
                 name: config-map-orders
