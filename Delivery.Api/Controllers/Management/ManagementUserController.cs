@@ -23,11 +23,13 @@ using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts.ResetPassword;
+using Delivery.Managements.Domain.Contracts.V1.RestContracts.UpdateProfile;
 using Delivery.Managements.Domain.Handlers.CommandHandlers;
 using Delivery.Managements.Domain.Handlers.CommandHandlers.ResetPassword;
 using Delivery.Managements.Domain.Validators.EmailVerification;
 using Delivery.Managements.Domain.Validators.ManagementUserCreation;
 using Delivery.Managements.Domain.Validators.ResetPassword;
+using Delivery.Managements.Domain.Validators.UpdateProfile;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopUsers;
 using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopUsers;
 using Delivery.User.Domain.Contracts.V1.RestContracts.Managements;
@@ -389,10 +391,66 @@ namespace Delivery.Api.Controllers.Management
         }
 
         /// <summary>
+        ///  Update user profile
+        /// </summary>
+        [Route("update-user-profile", Order = 8)]
+        [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [HttpPut]
+        [Authorize(Roles = "ShopOwner,Administrator")]
+        public async Task<IActionResult> Update_ProfileAsync(
+            UpdateProfileCreationContract updateProfileCreationContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var validationResult =
+                await new UpdateProfileCreationValidator().ValidateAsync(updateProfileCreationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            await using var applicationDbContext =
+                await ApplicationDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+                
+                
+            var store = new UserStore<Database.Models.ApplicationUser>(applicationDbContext);
+
+            var userManager = new UserManager<Database.Models.ApplicationUser>(store, optionsAccessor,
+                passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, serviceProvider, logger);
+
+            var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail;
+
+            var user = await userManager.FindByEmailAsync(userEmail);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException($"Expected to be found {userEmail} user.").WithTelemetry(
+                    executingRequestContextAdapter.GetTelemetryProperties());
+            }
+                
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            var passwordResetResult = await userManager.ResetPasswordAsync(user, token, updateProfileCreationContract.Password);
+
+            if (passwordResetResult.Succeeded)
+            {
+                return Ok(new StatusContract{ Status = true, DateCreated = DateTimeOffset.UtcNow});
+            }
+            
+            foreach (var error in passwordResetResult.Errors)
+            {
+                validationResult.Errors.Add(new ValidationFailure(error.Code, error.Description));
+            }
+                
+            return validationResult.ConvertToBadRequest();
+        }
+        
+
+        /// <summary>
         ///  Get user list
         /// </summary>
         /// <remarks>The endpoint allows user to get shop user list</remarks>
-        [Route("get-users", Order = 8)]
+        [Route("get-users", Order = 9)]
         [ProducesResponseType(typeof(ShopUsersPageContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         [HttpGet]
@@ -416,6 +474,26 @@ namespace Delivery.Api.Controllers.Management
                 .Handle(shopUserAllQuery);
             
             return Ok(shopUsersPageContract);
+        }
+
+        /// <summary>
+        ///  Get user by id
+        /// </summary>
+        [Route("get-user", Order = 10)]
+        [ProducesResponseType(typeof(ShopUserContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Get_UserAsync(string userId)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopUserGetQuery = new ShopUserGetQuery(userId);
+
+            var shopUserContract = await new ShopUserGetQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .Handle(shopUserGetQuery);
+
+            return Ok(shopUserContract);
         }
         
         private async Task<ClaimsIdentity?> GetClaimsIdentityAsync(string userName, string password, IExecutingRequestContextAdapter executingRequestContextAdapter)
