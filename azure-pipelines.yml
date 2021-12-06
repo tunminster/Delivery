@@ -555,7 +555,7 @@ stages:
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps'
-              Contents: 'delivery-cornjob-deploy.yaml'  
+              Contents: 'delivery-cronjob-deploy.yaml'  
               TargetFolder: '$(Build.ArtifactStagingDirectory)/devops'
           - task: qetza.replacetokens.replacetokens-task.replacetokens@3
             displayName: 'Replace tokens in deploy file'
@@ -586,7 +586,7 @@ stages:
               secretType: 'dockerRegistry'
               containerRegistryType: 'Azure Container Registry'
           - task: Kubernetes@1
-            displayName: 'Deploy delivery cornjobs'
+            displayName: 'Deploy delivery cronjobs'
             inputs:
               connectionType: 'Kubernetes Service Connection'
               kubernetesServiceEndpoint: 'hn-platform-aks-prod'
