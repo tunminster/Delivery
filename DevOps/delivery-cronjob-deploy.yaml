@@ -11,7 +11,6 @@ spec:
           containers:
           - name: delivery-cronjob
             image: #{repository-image}#
-            imagePullPolicy: IfNotPresent
             command:
             - /bin/sh
             - -c
