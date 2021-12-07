@@ -91,11 +91,11 @@ namespace Delivery.Api.Controllers.Drivers
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            var validationResult = await new DriverOrderStatusRequestContractValidator().ValidateAsync(driverOrderStatusRequestContract, cancellationToken);
-            if (!validationResult.IsValid)
-            {
-                return validationResult.ConvertToBadRequest();
-            }
+            // var validationResult = await new DriverOrderStatusRequestContractValidator().ValidateAsync(driverOrderStatusRequestContract, cancellationToken);
+            // if (!validationResult.IsValid)
+            // {
+            //     return validationResult.ConvertToBadRequest();
+            // }
             
             var driverOrderStatusQuery = new DriverOrderStatusQuery
             {
