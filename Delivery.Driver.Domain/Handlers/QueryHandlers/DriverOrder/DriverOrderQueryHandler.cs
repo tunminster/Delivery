@@ -42,7 +42,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
                 .Include(x => x.Order.Customer)
                 .Include(x => x.Order)
                 .ThenInclude(x => x.Address)
-                .FirstOrDefaultAsync(x => x.DriverId == driver.Id && x.Status == DriverOrderStatus.None);
+                .FirstOrDefaultAsync(x => x.DriverId == driver.Id && (x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted || x.Status == DriverOrderStatus.InProgress));
 
             if (driverOrders == null)
             {
