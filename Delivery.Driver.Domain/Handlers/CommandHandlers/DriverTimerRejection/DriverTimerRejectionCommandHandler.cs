@@ -8,9 +8,12 @@ using Delivery.Database.Context;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverNotifications;
-using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrderRejection;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.RequestAnotherDriver;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,6 +43,12 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                     .Include(x => x.Driver)
                     .Include(x => x.Order)
                     .ToListAsync();
+            
+            var statusContract = new StatusContract
+            {
+                Status = true,
+                DateCreated = DateTimeOffset.UtcNow
+            };
 
             foreach (var driverOrder in driverOrders)
             {
@@ -47,6 +56,15 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                 driverOrder.Reason = "System rejected";
 
                 driverOrder.Driver.IsOrderAssigned = false;
+                
+                var driverOrderRejectionMessageContract = new DriverOrderRejectionMessageContract
+                {
+                    PayloadIn = new DriverOrderRejectionContract {OrderId = driverOrder.Order.ExternalId},
+                    PayloadOut = statusContract,
+                    RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+                };
+            
+                await new DriverOrderRejectionMessagePublisher(serviceProvider).PublishAsync(driverOrderRejectionMessageContract);
             }
 
             await databaseContext.SaveChangesAsync();
@@ -66,6 +84,9 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                     StoreId = string.Empty,
                     StoreName = string.Empty
                 };
+                
+                // request another driver
+                
 
                 await new DriverSendOrderRejectionCommandHandler(serviceProvider, executingRequestContextAdapter)
                     .Handle(new DriverSendOrderRejectionCommand(driverOrderRejectedNotificationContract,

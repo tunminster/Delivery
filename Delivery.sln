@@ -115,6 +115,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Managements.Domain
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.CronJobs.Host", "Delivery.CronJobs.Host\Delivery.CronJobs.Host.csproj", "{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delivery.Drivers.Host", "Delivery.Drivers.Host\Delivery.Drivers.Host.csproj", "{C32E2753-CE9A-40D5-A39B-6EEF4055F426}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -269,6 +271,10 @@ Global
 		{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C32E2753-CE9A-40D5-A39B-6EEF4055F426}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C32E2753-CE9A-40D5-A39B-6EEF4055F426}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C32E2753-CE9A-40D5-A39B-6EEF4055F426}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C32E2753-CE9A-40D5-A39B-6EEF4055F426}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -329,5 +335,6 @@ Global
 		{9A34FC90-7AE1-4CD8-B3E4-4C3A88E7362A} = {138DD804-2DE2-4127-A54C-2D138E40BF22}
 		{0E1B9F0C-8EE6-4E0E-9A00-2C28E54116C0} = {9A34FC90-7AE1-4CD8-B3E4-4C3A88E7362A}
 		{2FA876BF-AA55-49F7-B8E8-6316B8CD7EF4} = {5D3CF12A-0299-4ACC-9655-1628E31BDA4C}
+		{C32E2753-CE9A-40D5-A39B-6EEF4055F426} = {5D3CF12A-0299-4ACC-9655-1628E31BDA4C}
 	EndGlobalSection
 EndGlobal

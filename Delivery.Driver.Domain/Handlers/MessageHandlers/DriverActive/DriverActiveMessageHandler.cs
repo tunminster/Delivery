@@ -7,7 +7,7 @@ using Delivery.Domain.Contracts.Enums;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverActive;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverActive;
-using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex;
 
 namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive
 {

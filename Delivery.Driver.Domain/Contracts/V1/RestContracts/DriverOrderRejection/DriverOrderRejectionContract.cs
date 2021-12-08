@@ -1,9 +1,9 @@
 namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrderRejection
 {
     /// <summary>
-    ///  Request another driver contract
+    ///  Driver order rejection contract
     /// </summary>
-    public record RequestAnotherDriverContract
+    public record DriverOrderRejectionContract
     {
         /// <summary>
         ///  Order id

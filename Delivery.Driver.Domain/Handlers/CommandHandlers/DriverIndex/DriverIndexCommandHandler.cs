@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
 
-namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch
+namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex
 {
     public record DriverIndexCommand(string DriverId);
     public class DriverIndexCommandHandler : ICommandHandler<DriverIndexCommand, DriverIndexStatusContract>

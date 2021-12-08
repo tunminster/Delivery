@@ -8,7 +8,7 @@ using Delivery.Domain.Contracts.Enums;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCreation;
-using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Handlers.MessageHandlers

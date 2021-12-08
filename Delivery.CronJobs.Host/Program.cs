@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Initialization;
 using Delivery.Azure.Library.Contracts.Contracts;
 using Delivery.Azure.Library.Microservices.Hosting.Extensions;
+using Delivery.Azure.Library.Microservices.Hosting.Hosts;
 using Delivery.Azure.Library.Microservices.Hosting.Logging;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.CronJobs.Host.Kernel;
@@ -19,15 +20,17 @@ namespace Delivery.CronJobs.Host
     {
         public static async Task Main(string[] args)
         {
-            var hostBuilder = GetHostBuilder(args).Build();
-            await  hostBuilder.RunAsync();
-            
-            var driverTimerRejectionService =
-                new DriverTimerRejectionService(hostBuilder.Services);
+            //var hostBuilder = GetHostBuilder(args).Build();
+            await ((ContainerHost) GetHostBuilder(args).Properties[nameof(ContainerHost)]).RunAsync();
 
-            await driverTimerRejectionService.RunAsync(GetExecutingContext("Raus"));
-            await driverTimerRejectionService.RunAsync(GetExecutingContext("Rauk"));
-            
+            //await  hostBuilder.RunAsync();
+
+            // var driverTimerRejectionService =
+            //     new DriverTimerRejectionService(hostBuilder.Services);
+            //
+            // await driverTimerRejectionService.RunAsync(GetExecutingContext("Raus"));
+            // await driverTimerRejectionService.RunAsync(GetExecutingContext("Rauk"));
+
         }
 
         private static IExecutingRequestContextAdapter GetExecutingContext(string shardKey)

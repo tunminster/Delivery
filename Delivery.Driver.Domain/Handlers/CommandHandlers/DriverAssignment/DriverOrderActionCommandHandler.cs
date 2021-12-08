@@ -7,11 +7,14 @@ using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverIndex;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverPayments;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverIndex;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverPayments;
-using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverPayments;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,8 +37,6 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            
-
             var driver = await databaseContext.Drivers.SingleAsync(x =>
                 x.EmailAddress == executingRequestContextAdapter.GetAuthenticatedUser().UserEmail);
 
@@ -70,6 +71,11 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                 await new DriverOrderInProgressMessagePublisher(serviceProvider).PublishAsync(
                     driverOrderInProgressMessageContract);
                 
+            }
+
+            if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Rejected)
+            {
+                driver.IsOrderAssigned = false;
             }
 
             if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Complete)
@@ -114,21 +120,30 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             }
 
             await databaseContext.SaveChangesAsync();
-
-            if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Complete)
-            {
-                // indexing driver
-                await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
-                    new DriverIndexCommand(driverId));
-            }
             
-            
-            return new StatusContract
+            var statusContract = new StatusContract
             {
                 Status = true,
                 DateCreated = DateTimeOffset.UtcNow
             };
+
+            if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Complete)
+            {
+                // indexing driver
+                
+                var driverIndexMessageContract = new DriverIndexMessageContract
+                {
+                    PayloadIn = new DriverIndexCreationContract {DriverId = driverId},
+                    PayloadOut = statusContract,
+                    RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+                };
             
+                await new DriverIndexMessagePublisher(serviceProvider).PublishAsync(driverIndexMessageContract);
+                
+            }
+            
+            
+            return statusContract;
         }
     }
 }
