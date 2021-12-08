@@ -1,4 +1,4 @@
-namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment
+namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverIndex
 {
     /// <summary>
     ///  Driver index creation contract

@@ -12,7 +12,7 @@ using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.Extensions;
 using Delivery.Domain.Helpers;
-using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -74,10 +74,19 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                  .Include(x => x.Driver)
                  .Where(x => x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted);
 
+             var theOrderRejectedDrivers = databaseContext.DriverOrders
+                 .Where(x => x.OrderId == order.Id)
+                 .Include(x => x.Driver)
+                 .Where(x => x.Status == DriverOrderStatus.Rejected);
+                 
+
             var requestedDriverIds = orderRequestedDrivers.Select(x => x.Driver.ExternalId).ToList();
+            var theOrderRejectedIds = theOrderRejectedDrivers.Select(x => x.Driver.ExternalId).ToList();
 
              var driverContract = driverList
-                 .Where(x => !requestedDriverIds.Contains(x.DriverId)).Random();
+                 .Where(x => !requestedDriverIds.Contains(x.DriverId))
+                 .Where(x => !theOrderRejectedIds.Contains(x.DriverId))
+                 .Random();
 
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace(

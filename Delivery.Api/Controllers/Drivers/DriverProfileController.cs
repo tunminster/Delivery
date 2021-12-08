@@ -19,8 +19,9 @@ using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverProfile;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverIndex;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverProfile;
-using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverElasticSearch;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverProfile;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile;
@@ -320,5 +321,7 @@ namespace Delivery.Api.Controllers.Drivers
             
             return Ok(statusContract);
         }
+        
+        
     }
 }

@@ -14,11 +14,14 @@ using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverActive;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverIndex;
+using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverPayments;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverProfile;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts.PushNotification;
@@ -149,6 +152,25 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(driverActiveMessageContract.RequestContext));
                     await driverActiveMessageHandler.HandleMessageAsync(driverActiveMessageContract, processingState);
                     break;
+                
+                case nameof(DriverOrderRejectionMessageContract):
+                    var driverOrderRejectionMessageContract =
+                        message.Deserialize<DriverOrderRejectionMessageContract>();
+                    var driverShopOrderDriverRequestMessageHandler = new ShopOrderDriverRequestMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(driverOrderRejectionMessageContract.RequestContext));
+                    var shopOrderDriverRequestMessageContract = new ShopOrderDriverRequestMessageContract
+                    {
+                        PayloadIn = new ShopOrderDriverRequestContract
+                        {
+                            OrderId = driverOrderRejectionMessageContract.PayloadIn!.OrderId
+                        },
+                        PayloadOut = driverOrderRejectionMessageContract.PayloadOut,
+                        RequestContext = driverOrderRejectionMessageContract.RequestContext
+                    };
+                    await driverShopOrderDriverRequestMessageHandler.HandleMessageAsync(shopOrderDriverRequestMessageContract,
+                        processingState);
+                    break;
+                
                 case nameof(ShopCreationMessageContract):
                     var shopCreationMessageContract = message.Deserialize<ShopCreationMessageContract>();
                     var shopCreationMessageHandler = new ShopCreationMessageHandler(ServiceProvider,
@@ -223,6 +245,14 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(driverOrderIndexMessageContract.RequestContext))
                         .HandleMessageAsync(driverOrderIndexMessageContract, processingState);
                     break;
+                
+                case nameof(DriverIndexMessageContract):
+                    var driverIndexMessageContract = message.Deserialize<DriverIndexMessageContract>();
+                    await new DriverIndexMessageHandler(ServiceProvider,
+                            new ExecutingRequestContextAdapter(driverIndexMessageContract.RequestContext))
+                        .HandleMessageAsync(driverIndexMessageContract, processingState);
+                    break;
+                
                 case nameof(ShopMenuStatusMessageContract):
                     var shopMenuStatusMessageContract = message.Deserialize<ShopMenuStatusMessageContract>();
                     var shopMenuStatusMessageHandler = new ShopMenuStatusMessageHandler(ServiceProvider,

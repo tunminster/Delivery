@@ -109,7 +109,7 @@ namespace Delivery.Api.Controllers.Drivers
             return Ok(driverOrderDetails);
 
         }
-
+        
         /// <summary>
         ///  Set driver order index
         /// </summary>

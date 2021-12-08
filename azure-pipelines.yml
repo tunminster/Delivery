@@ -488,113 +488,113 @@ stages:
               secretType: 'dockerRegistry'
               containerRegistryType: 'Azure Container Registry'
 
-      - job: DeployCronJobs
-        displayName: Deploy Cronjobs
-        pool: 
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: DockerInstaller@0
-            inputs:
-              dockerVersion: '19.03.14'
-          - task: UseDotNet@2
-            displayName: 'Install .Net Core 5'
-            inputs:
-              version: '5.0.x'
-              performMultiLevelLookup: true
-              includePreviewVersions: true
-              installationPath: $(Agent.ToolsDirectory)/dotnet
+      # - job: DeployCronJobs
+      #   displayName: Deploy Cronjobs
+      #   pool: 
+      #     vmImage: 'ubuntu-latest'
+      #   steps:
+      #     - task: DockerInstaller@0
+      #       inputs:
+      #         dockerVersion: '19.03.14'
+      #     - task: UseDotNet@2
+      #       displayName: 'Install .Net Core 5'
+      #       inputs:
+      #         version: '5.0.x'
+      #         performMultiLevelLookup: true
+      #         includePreviewVersions: true
+      #         installationPath: $(Agent.ToolsDirectory)/dotnet
 
-          - task: Docker@2
-            displayName: Build docker
-            inputs:
-              containerRegistry: 'hn-acr-connection'
-              repository: '$(cronjobsImageRepository)'
-              command: 'build'
-              Dockerfile: '**/Delivery.CronJobs.Host/Dockerfile'
-              buildContext: '.'
-              tags: '$(tag)'
-              arguments: '--build-arg BuildVersion=$(build-number)'
+      #     - task: Docker@2
+      #       displayName: Build docker
+      #       inputs:
+      #         containerRegistry: 'hn-acr-connection'
+      #         repository: '$(cronjobsImageRepository)'
+      #         command: 'build'
+      #         Dockerfile: '**/Delivery.CronJobs.Host/Dockerfile'
+      #         buildContext: '.'
+      #         tags: '$(tag)'
+      #         arguments: '--build-arg BuildVersion=$(build-number)'
               
-          - task: Docker@2
-            displayName: Publish docker
-            inputs:
-              containerRegistry: 'hn-acr-connection'
-              repository: '$(cronjobsImageRepository)'
-              command: 'push'
-              tags: '$(tag)'
+      #     - task: Docker@2
+      #       displayName: Publish docker
+      #       inputs:
+      #         containerRegistry: 'hn-acr-connection'
+      #         repository: '$(cronjobsImageRepository)'
+      #         command: 'push'
+      #         tags: '$(tag)'
           
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates'
-              Contents: 'values.yaml'  
-              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates'
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates/config-maps'
-              Contents: '*'  
-              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates/config-maps'
-          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-            displayName: 'Replace tokens in deploy file'
-            inputs:
-              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates'
-              targetFiles: 'values.yaml'
-              escapeType: none      
+      #     - task: CopyFiles@2
+      #       inputs:
+      #         SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates'
+      #         Contents: 'values.yaml'  
+      #         TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates'
+      #     - task: CopyFiles@2
+      #       inputs:
+      #         SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps/templates/config-maps'
+      #         Contents: '*'  
+      #         TargetFolder: '$(Build.ArtifactStagingDirectory)/devops/templates/config-maps'
+      #     - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+      #       displayName: 'Replace tokens in deploy file'
+      #       inputs:
+      #         rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates'
+      #         targetFiles: 'values.yaml'
+      #         escapeType: none      
           
-          - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/values.yaml'
-            displayName: 'Cat deploy'
+      #     - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/values.yaml'
+      #       displayName: 'Cat deploy'
 
-          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-            displayName: 'Replace tokens in deploy file'
-            inputs:
-              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates/config-maps'
-              targetFiles: 'config-map-cronjobs.yaml'
-              escapeType: none 
+      #     - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+      #       displayName: 'Replace tokens in deploy file'
+      #       inputs:
+      #         rootDirectory: '$(Build.ArtifactStagingDirectory)/devops/templates/config-maps'
+      #         targetFiles: 'config-map-cronjobs.yaml'
+      #         escapeType: none 
 
-          - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-cronjobs.yaml'
-            displayName: 'Cat deploy'
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps'
-              Contents: 'delivery-cronjob-deploy.yaml'  
-              TargetFolder: '$(Build.ArtifactStagingDirectory)/devops'
-          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-            displayName: 'Replace tokens in deploy file'
-            inputs:
-              rootDirectory: '$(Build.ArtifactStagingDirectory)/devops'
-              targetFiles: 'delivery-cronjob-deploy.yaml'
-              escapeType: none
+      #     - script: 'cat $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-cronjobs.yaml'
+      #       displayName: 'Cat deploy'
+      #     - task: CopyFiles@2
+      #       inputs:
+      #         SourceFolder: '$(System.DefaultWorkingDirectory)/DevOps'
+      #         Contents: 'delivery-cronjob-deploy.yaml'  
+      #         TargetFolder: '$(Build.ArtifactStagingDirectory)/devops'
+      #     - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+      #       displayName: 'Replace tokens in deploy file'
+      #       inputs:
+      #         rootDirectory: '$(Build.ArtifactStagingDirectory)/devops'
+      #         targetFiles: 'delivery-cronjob-deploy.yaml'
+      #         escapeType: none
           
-          - task: AzureCLI@2
-            displayName: 'Acr maintenance'    
-            inputs:
-              azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: 'az acr run --cmd "acr purge --filter ''cronjobs-service-master:.*'' --ago 14d --untagged" --registry PnGOAcr /dev/null'     
+      #     - task: AzureCLI@2
+      #       displayName: 'Acr maintenance'    
+      #       inputs:
+      #         azureSubscription: 'Pay-As-You-Go(2359b88d-3130-4c42-a9fb-2455697edb51)'
+      #         scriptType: 'bash'
+      #         scriptLocation: 'inlineScript'
+      #         inlineScript: 'az acr run --cmd "acr purge --filter ''cronjobs-service-master:.*'' --ago 14d --untagged" --registry PnGOAcr /dev/null'     
 
-          - task: KubectlInstaller@0
-            inputs:
-              kubectlVersion: 'latest'
-          - task: Kubernetes@1
-            displayName: 'Deploy cronjobs service config-map'
-            inputs:
-              connectionType: 'Kubernetes Service Connection'
-              kubernetesServiceEndpoint: 'hn-platform-aks-prod'
-              namespace: 'hn-prod'
-              command: 'apply'
-              arguments: '-f $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-cronjobs.yaml'
-              secretType: 'dockerRegistry'
-              containerRegistryType: 'Azure Container Registry'
-          - task: Kubernetes@1
-            displayName: 'Deploy delivery cronjobs'
-            inputs:
-              connectionType: 'Kubernetes Service Connection'
-              kubernetesServiceEndpoint: 'hn-platform-aks-prod'
-              namespace: 'hn-prod'
-              command: 'apply'
-              arguments: '-f $(Build.ArtifactStagingDirectory)/devops/delivery-cronjob-deploy.yaml'
-              secretType: 'dockerRegistry'
-              containerRegistryType: 'Azure Container Registry'        
+      #     - task: KubectlInstaller@0
+      #       inputs:
+      #         kubectlVersion: 'latest'
+      #     - task: Kubernetes@1
+      #       displayName: 'Deploy cronjobs service config-map'
+      #       inputs:
+      #         connectionType: 'Kubernetes Service Connection'
+      #         kubernetesServiceEndpoint: 'hn-platform-aks-prod'
+      #         namespace: 'hn-prod'
+      #         command: 'apply'
+      #         arguments: '-f $(Build.ArtifactStagingDirectory)/devops/templates/config-maps/config-map-cronjobs.yaml'
+      #         secretType: 'dockerRegistry'
+      #         containerRegistryType: 'Azure Container Registry'
+      #     - task: Kubernetes@1
+      #       displayName: 'Deploy delivery cronjobs'
+      #       inputs:
+      #         connectionType: 'Kubernetes Service Connection'
+      #         kubernetesServiceEndpoint: 'hn-platform-aks-prod'
+      #         namespace: 'hn-prod'
+      #         command: 'apply'
+      #         arguments: '-f $(Build.ArtifactStagingDirectory)/devops/delivery-cronjob-deploy.yaml'
+      #         secretType: 'dockerRegistry'
+      #         containerRegistryType: 'Azure Container Registry'        
               
   - stage: DeployPostmanStage
     displayName: Deploy postman stage

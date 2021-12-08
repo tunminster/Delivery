@@ -37,8 +37,7 @@ namespace Delivery.Api.Controllers.Management
         [HttpPost]
         [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        [Authorize(Roles = RoleConstant.Administrator)]
-        public async Task<IActionResult> Post_CreateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] SupportCreationContract supportCreationContract, IFormFile? documenet)
+        public async Task<IActionResult> Post_CreateSupportAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] SupportCreationContract supportCreationContract, IFormFile? documenet)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             await Task.CompletedTask;
