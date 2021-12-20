@@ -41,10 +41,13 @@ function InvokeWithRetry {
             }
             $completed = $true
         } catch {
-            $errorDescription = $_.Exception.Response.StatusDescription
-            Write-Host "Error: $errorDescription"
+            $errorDescription = $_
+            $errorString = "Error: $errorDescription"
+            Write-Host $errorString
             if ($retrycount -ge 5) {
-                throw "Request to $url failed the maximum number of $retryCount times."
+                Write-Host "Request to $url failed the maximum number of $retryCount times. Continuing On Error: $errorDescription" 
+                Write-Host "Continuing On Error"   
+                $completed = $true
             } else {
                 Write-Warning "Request to $url failed. Retrying in 2 seconds."
                 Start-Sleep 2
@@ -55,20 +58,10 @@ function InvokeWithRetry {
     return $response
 }
 
-## Add api keys to a list
-$apiKeys = $postmanApiKeys.Split(",")
-
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-
-$defaultHeaders = @{
-    'Accept' = 'application/json'
-    'Content-Type' = 'application/json'
-}
-
 ## Download api specification and update document title
 Write-Host "Downloading open api document from $openApiDownloadLink"
-$openApiSpecificationOriginalText = Invoke-RestMethod $openApiDownloadLink -Method 'GET' -Headers $defaultHeaders | ConvertTo-Json -Depth 100
+$openApiSpecificationOriginalText = InvokeWithRetry $openApiDownloadLink 'GET' $null
+
 $openApiSpecification = $openApiSpecificationOriginalText | ConvertFrom-Json
 $documentTitle = $openApiSpecification.info.title + " (" + $environment + ")"
 Write-Host "Downloded open api document from $openApiDownloadLink"
@@ -79,8 +72,6 @@ $documentTitle = $openApiSpecification.info.title
 Write-Host "Using open api document title '$documentTitle'"
 
 ## Check if api already exists
-$defaultHeaders.add('X-Api-Key', $apiKey)
-
 $postmanBaseUrl = "https://api.getpostman.com"
 $apisBaseUrl = "$postmanBaseUrl/apis"
 $getApiUrl = $apisBaseUrl + "?workspace=$workspaceId"
@@ -88,8 +79,6 @@ Write-Host "Querying current apis from $getApiUrl with api Key $apiKey"
 
 $response = InvokeWithRetry $getApiUrl 'GET' $null | ConvertFrom-Json
 $apis = $response.apis | Where-Object { $_.name -eq $documentTitle }
-
-Write-Host "Response document title: '$apis'"
 
 if($apis.Length -gt 1) {
     throw "Expected one or less apis to match '$documentTitle' since it's managed by automation. Found: $apis"
@@ -110,27 +99,22 @@ $apiPayload = @"
     "api": {
         "name": "$documentTitle",
         "summary": "Contains api operations to manage the domain in $documentTitle",
-        "description": "Contact support (contact@ragibull.com) in case of issues"
+        "description": "Contact support (lst.corso.digital.markets@swissre.com) in case of issues"
     }
 }
 "@
 
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
-Write-Host "Updating api using url $updateApiUrl with api key $apiKey"
-$response = Invoke-RestMethod $updateApiUrl -Method $apiHttpMethod -Headers $defaultHeaders -Body $apiPayload | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+$response = InvokeWithRetry $updateApiUrl $apiHttpMethod $apiPayload | ConvertFrom-Json
+
 $apiId = $response.api.id
 Write-Host "Updated api with name $documentTitle and id $apiUid"
 
 ## Create updated api version
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
-
 $apiVersionUrl = $apisBaseUrl + "/" + $apiId + "/" + "versions?workspace=" + $workspaceId
 Write-Host "Calling $apiVersionUrl with API key $apiKey"
-$response = Invoke-RestMethod $apiVersionUrl -Method 'GET' -Headers $defaultHeaders | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+
+$response = InvokeWithRetry $apiVersionUrl 'GET' $null | ConvertFrom-Json
+Write-Host "Version response $reponse"
 $apiVersions = $response.versions
 $latestName = $apiVersions[0].name
 if($latestName -eq "Draft"){
@@ -148,12 +132,9 @@ $apiVersionPayload = @"
 }
 "@
 
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
-Write-Host "Creating api version using url $apiVersionUrl with API Key $apiKey"
 Write-Host $apiVersionPayload
-$response = Invoke-RestMethod $apiVersionUrl -Method "POST" -Headers $defaultHeaders -Body $apiVersionPayload | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+$response = InvokeWithRetry $apiVersionUrl 'POST' $apiVersionPayload | ConvertFrom-Json
+Write-Host "Post API Version $response"
 $apiVersionId = $response.version.id
 
 ## Attach schema
@@ -169,12 +150,8 @@ $schemaPayload = @"
 }
 "@
 
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
 Write-Host "Importing schema to url $schemaUrl with api key $apiKey"
-
-$response = Invoke-RestMethod $schemaUrl -Method "POST" -Headers $defaultHeaders -Body $schemaPayload | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+$response = InvokeWithRetry $schemaUrl 'POST' $schemaPayload | ConvertFrom-Json
 $schemaId = $response.schema.id
 Write-Host "Updated schema with id $schemaId"
 
@@ -183,22 +160,22 @@ $environmentIds = New-Object Collections.Generic.List[string]
 $environmentsUrl = "$postmanBaseUrl/environments?workspace=$workspaceId"
 $targetEnvironmentPrefix = "$environment - $domain"
 
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
 Write-Host "Calling $environmentsUrl with api key $apiKey"
-$response = Invoke-RestMethod $environmentsUrl -Method 'GET' -Headers $defaultHeaders | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+
+$response = InvokeWithRetry $environmentsUrl 'GET' $null | ConvertFrom-Json
 $response.environments | Where-Object { $_.name -match $targetEnvironmentPrefix } | ForEach-Object{
     $environmentIds.Add("""" + $_.uid + """")
 }
 
-## Delete previous versions 
+# Delete previous versions 
 $versionsUrl = $apisBaseUrl + "/" + $apiId + "/" + "versions"
-$response = Invoke-RestMethod $versionsUrl -Method 'GET' -Headers $defaultHeaders | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+
+$response = InvokeWithRetry $versionsUrl 'GET' $null | ConvertFrom-Json
 $response.versions | Where-Object { $_.id -ne $apiVersionId } | ForEach-Object{
     Write-Host "Deleting previous version $_.id for API $apiId"
     $deleteVersionUrl = $versionsUrl + "/" + $_.id
-    Invoke-RestMethod $deleteVersionUrl -Method 'DELETE' -Headers $defaultHeaders | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+    
+    InvokeWithRetry $deleteVersionUrl 'DELETE' $null
 }
 
 $environmentsFormatted = [String]::Join(",", $environmentIds.ToArray())
@@ -209,21 +186,15 @@ $relationsPayload = @"
 }
 "@
 
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
-
 Write-Host "Linking environments to $relationsUrl with api key $apiKey with payload:"
 Write-Host $relationsPayload
-$response = Invoke-RestMethod $relationsUrl -Method "POST" -Headers $defaultHeaders -Body $relationsPayload | ConvertTo-Json -Depth 100 | ConvertFrom-Json
 
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
+$response = InvokeWithRetry $relationsUrl 'POST' $relationsPayload | ConvertFrom-Json
 
 ## Drop previous collection
 $getCollectionsUrl = "https://api.getpostman.com/collections"
 Write-Host "Calling $getCollectionsUrl with $apiKey"
+
 $response = InvokeWithRetry $getCollectionsUrl 'GET' $null | ConvertFrom-Json
 $collections = $response.collections | Where-Object { $_.name -eq $documentTitle }
 $collectionCount = $collections.Length
@@ -237,7 +208,7 @@ if($collectionCount -gt 1) {
     $collectionCount = 0
 }
 
-if($collections.Length -eq 0) {
+if($collectionCount -eq 0) {
     ## Create collection
     $collectionUrl = $apisBaseUrl + "/" + $apiId + "/" + "versions/" + $apiVersionId + "/schemas/" + $schemaId + "/collections?workspace=$workspaceId"
     $collectionPayload = @"
@@ -251,13 +222,10 @@ if($collections.Length -eq 0) {
 }
 "@
 
-    ##  Get random API key
-    $apiKey = $apiKeys | Get-Random
-    $defaultHeaders['X-Api-Key'] = $apiKey
-
     Start-Sleep -s 20
     Write-Host "Matching collection to api: $collectionUrl with api key $apiKey"
-    $response = Invoke-RestMethod $collectionUrl -Method "POST" -Headers $defaultHeaders -Body $collectionPayload | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+
+    $response = InvokeWithRetry $collectionUrl 'POST'  $collectionPayload | ConvertFrom-Json
     $collection = $response.collection
 } else {
     $collection = $collections[0]
@@ -288,6 +256,7 @@ $rawCollectionDefinition = $rawCollectionDefinition -replace "$circularReference
 $incrementLetters = New-Object Collections.Generic.List[string]
 $incrementLetters.Add("i")
 $incrementLetters.Add("j")
+$incrementLetters.Add("c")
 
 $parameterizedCollectionDefinition = ""
 ForEach ($line in $($rawCollectionDefinition -split "`r`n"))
@@ -295,9 +264,10 @@ ForEach ($line in $($rawCollectionDefinition -split "`r`n"))
     ForEach ($incrementLetter in $incrementLetters)
     {
         # The openapi2postmanv2 tool fakes collections always with 2 items, and for matching post/put requests unique incrementing ids need to be passed to the apis
-        # e.g Machine-1, Machine-2 for post and put
-        $global:i = 1
-        $line = [regex]::replace($line, "\{\{$incrementLetter\}\}", {"$($global:i)"; If ($global:i -eq 2) {$global:i = 1} Else {$global:i++} })
+        $global:i = if ($incrementLetter -eq "c") {2} Else {1}
+        $line = [regex]::replace($line, "\{\{$incrementLetter\}\}", {"$($global:i)"; If ($global:i -eq 2 -and $incrementLetter -ne "c") {$global:i = 1} elseif ($global:i -eq 3 -and $incrementLetter -eq "c") {
+            $global:i = 2
+        } Else {$global:i++} })
     }
 
     $parameterizedCollectionDefinition = $parameterizedCollectionDefinition + $line
@@ -324,13 +294,10 @@ Write-Host "Added pre and post request scripts"
 
 Write-Host "Finalized pre-request substitution"
 
-##  Get random API key
-$apiKey = $apiKeys | Get-Random
-$defaultHeaders['X-Api-Key'] = $apiKey
-
 ## Reload collection with details
-$collectionUrl = $postmanBaseUrl + "/collections/$collectionUid"
+$collectionUrl = $postmanBaseUrl + "/collections/$collectionUid" + "?workspace=$workspaceId"
 Write-Host "Loading collection details: $collectionUrl with $apiKey"
+
 $collectionPayload = InvokeWithRetry $collectionUrl 'GET' $null | ConvertFrom-Json
 $collectionPayload.collection.item = $collectionDefinition.item
 
@@ -338,16 +305,18 @@ $collectionPayload.collection.item = $collectionDefinition.item
 Write-Host "Updating collection: $collectionUrl with $apiKey"
 $collectionPayloadBody = $collectionPayload | ConvertTo-Json -Depth 100
 
-##  Get random API key
- $apiKeys = $postmanApiKeys.Split(",")
- $apiKey = $apiKeys | Get-Random
- $defaultHeaders = @{
-     'Accept' = 'application/json'
-     'Content-Type' = 'application/json'
- }
- $defaultHeaders.add('X-Api-Key', $apiKey)
+## Add api keys to a list
+$apiKeys = $postmanApiKeys.Split(",")
 
- try{
+##  Get random API key
+$apiKey = $apiKeys | Get-Random
+
+$defaultHeaders = @{
+    'Accept' = 'application/json'
+    'Content-Type' = 'application/json'
+}
+
+try{
     $response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
     Write-Host "Finalized $collectionUid"
 }
@@ -358,12 +327,14 @@ catch{
     if($responseCode -eq 504){
         Write-Host "Collection update timed out, check that collection was actually created"
     } elseif ($responseDescription -like '*instanceFoundError*'){
+        
         Write-Host "PUT request returned instanceAlreadyExists error for collection '$collectionUid'. Found: $collections"
         $deleteCollectionsUri = $getCollectionsUrl + "/" + $collectionUid
+        
         Write-Host "Deleting collections with uid $collectionUid"
         InvokeWithRetry $deleteCollectionsUri 'DELETE' $null
         
-        Write-Host "Readding $collectionUrl"
+        Write-Host "Reading $collectionUrl"
         $response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
     }
     elseif ($responseDescription -like '*serverError*'){
