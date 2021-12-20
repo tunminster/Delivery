@@ -91,3 +91,70 @@ resource "azurerm_servicebus_subscription_rule" "orders-ring-1" {
   filter_type         = "SqlFilter"
   sql_filter          = "Ring=1"
 }
+
+# Driver topic
+resource "azurerm_servicebus_topic" "platform-drivers"{
+    name                    = "drivers"
+    resource_group_name     = azurerm_resource_group.hn-platform-data-persistent.name
+    namespace_name          = azurerm_servicebus_namespace.hn-platform-service-bus.name
+}
+
+resource "azurerm_servicebus_topic_authorization_rule" "platform-drivers" {
+  name                = "service-bus-topic-drivers-rule-${var.environment_prefix}"
+
+  resource_group_name = azurerm_resource_group.hn-platform-data-persistent.name
+  namespace_name      = azurerm_servicebus_namespace.hn-platform-service-bus.name
+  topic_name          = azurerm_servicebus_topic.platform-drivers.name
+  listen              = true
+  send                = true
+  manage              = true
+}
+
+resource "azurerm_key_vault_secret" "service-bus-topic-drivers-connection-string" {
+  name         = "ServiceBus-Topic-Drivers-ConnectionString"
+  value        = azurerm_servicebus_topic_authorization_rule.platform-drivers.primary_connection_string
+  key_vault_id = azurerm_key_vault.hnkeyvault.id
+
+  tags = local.common_tags
+}
+
+#Subscription
+resource "azurerm_servicebus_subscription" "drivers-ring-0" {
+  name                                 = "ring-0"
+  resource_group_name                  = azurerm_resource_group.hn-platform-data-persistent.name
+  namespace_name                       = azurerm_servicebus_namespace.hn-platform-service-bus.name
+  topic_name                           = azurerm_servicebus_topic.platform-drivers.name
+  max_delivery_count                   = 5
+  dead_lettering_on_message_expiration = true
+  lock_duration                        = "PT5M"
+}
+
+resource "azurerm_servicebus_subscription_rule" "drivers-ring-0" {
+  name                = "drivers-ring-0-rule"
+  resource_group_name = azurerm_resource_group.hn-platform-data-persistent.name
+  namespace_name      = azurerm_servicebus_namespace.hn-platform-service-bus.name
+  topic_name          = azurerm_servicebus_topic.platform-drivers.name
+  subscription_name   = azurerm_servicebus_subscription.drivers-ring-0.name
+  filter_type         = "SqlFilter"
+  sql_filter          = "Ring=0"
+}
+
+resource "azurerm_servicebus_subscription" "drivers-ring-1" {
+  name                                 = "ring-1"
+  resource_group_name                  = azurerm_resource_group.hn-platform-data-persistent.name
+  namespace_name                       = azurerm_servicebus_namespace.hn-platform-service-bus.name
+  topic_name                           = azurerm_servicebus_topic.platform-drivers.name
+  max_delivery_count                   = 5
+  dead_lettering_on_message_expiration = true
+  lock_duration                        = "PT5M"
+}
+
+resource "azurerm_servicebus_subscription_rule" "drivers-ring-1" {
+  name                = "drivers-ring-1-rule"
+  resource_group_name = azurerm_resource_group.hn-platform-data-persistent.name
+  namespace_name      = azurerm_servicebus_namespace.hn-platform-service-bus.name
+  topic_name          = azurerm_servicebus_topic.platform-drivers.name
+  subscription_name   = azurerm_servicebus_subscription.drivers-ring-1.name
+  filter_type         = "SqlFilter"
+  sql_filter          = "Ring=1"
+}

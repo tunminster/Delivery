@@ -315,6 +315,7 @@ $defaultHeaders = @{
     'Accept' = 'application/json'
     'Content-Type' = 'application/json'
 }
+$defaultHeaders.add('X-Api-Key', $apiKey)
 
 try{
     $response = Invoke-RestMethod $collectionUrl -Method "PUT" -Headers $defaultHeaders -Body $collectionPayloadBody
