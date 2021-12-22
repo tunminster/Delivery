@@ -13,7 +13,13 @@ namespace Delivery.Azure.Library.Caching.Cache.Configurations
         {
             return await SecretProvider.GetSecretAsync("RedisCache-ConnectionString");
         }
-        
+
+        public virtual string GetConnectionStackExchangeRedis()
+        {
+            var connectionString = ConfigurationProvider.GetSetting("RedisCache-ConnectionString");
+            return connectionString;
+        }
+
         public virtual string GetConnectionString()
         {
             var connectionString = ConfigurationProvider.GetSetting("RedisCache-ConnectionString");
