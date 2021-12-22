@@ -27,7 +27,9 @@
       <ProjectReference Include="..\Delivery.Azure.Library.Telemetry\Delivery.Azure.Library.Telemetry.csproj" />
       <ProjectReference Include="..\Delivery.Domain\Delivery.Domain.csproj" />
       <ProjectReference Include="..\Delivery.Driver.Domain\Delivery.Driver.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.Shop.Domain\Delivery.Shop.Domain.csproj" />
       <ProjectReference Include="..\Delivery.Store.Domain\Delivery.Store.Domain.csproj" />
+      <ProjectReference Include="..\Delivery.StripePayment.Domain\Delivery.StripePayment.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
