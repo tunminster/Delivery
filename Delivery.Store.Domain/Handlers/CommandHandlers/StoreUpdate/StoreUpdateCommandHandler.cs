@@ -66,10 +66,26 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
                     var openingHour = await databaseContext.OpeningHours.FirstOrDefaultAsync(x =>
                         x.StoreId == store.Id && x.DayOfWeek == storeOpeningHour.DayOfWeek);
 
-                    openingHour.Open = storeOpeningHour.Open;
-                    openingHour.Close = storeOpeningHour.Close;
+                    if (openingHour != null)
+                    {
+                        openingHour.Open = storeOpeningHour.Open;
+                        openingHour.Close = storeOpeningHour.Close;
 
-                    databaseContext.OpeningHours.Update(openingHour);
+                        databaseContext.OpeningHours.Update(openingHour);
+                    }
+                    else
+                    {
+                        databaseContext.OpeningHours.Add(new OpeningHour
+                        {
+                            DayOfWeek = storeOpeningHour.DayOfWeek,
+                            Open = storeOpeningHour.Open,
+                            Close = storeOpeningHour.Close,
+                            IsDeleted = false,
+                            InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+                            InsertionDateTime = DateTimeOffset.UtcNow
+                        });
+                    }
+                    
                 }
             }
             else
