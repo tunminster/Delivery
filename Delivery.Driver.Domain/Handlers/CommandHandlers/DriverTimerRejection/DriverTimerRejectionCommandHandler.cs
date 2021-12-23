@@ -50,6 +50,11 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                 DateCreated = DateTimeOffset.UtcNow
             };
 
+            if (driverOrders.Count == 0)
+            {
+                return new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow };
+            }
+
             foreach (var driverOrder in driverOrders)
             {
                 driverOrder.Status = DriverOrderStatus.Rejected;

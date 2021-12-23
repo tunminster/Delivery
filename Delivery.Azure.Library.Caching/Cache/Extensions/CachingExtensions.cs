@@ -20,6 +20,17 @@ namespace Delivery.Azure.Library.Caching.Cache.Extensions
             var connectionString = new RedisCacheConfigurationDefinition(serviceCollection.BuildServiceProvider()).GetConnectionString();
             
             serviceCollection.AddSingleton<IRedisClientsManagerAsync>(_ => new RedisManagerPool(connectionString));
+            
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddPlatformStackExchangeCaching(this IServiceCollection serviceCollection)
+        {
+            var connectionString = new RedisCacheConfigurationDefinition(serviceCollection.BuildServiceProvider()).GetConnectionStackExchangeRedis();
+            serviceCollection.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(new RedisConfiguration
+            {
+                ConnectionString = connectionString
+            });
             return serviceCollection;
         }
 
