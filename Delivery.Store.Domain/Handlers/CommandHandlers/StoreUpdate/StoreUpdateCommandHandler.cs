@@ -78,6 +78,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
                         databaseContext.OpeningHours.Add(new OpeningHour
                         {
                             DayOfWeek = storeOpeningHour.DayOfWeek,
+                            StoreId = store.Id,
                             Open = storeOpeningHour.Open,
                             Close = storeOpeningHour.Close,
                             IsDeleted = false,
