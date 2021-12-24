@@ -41,12 +41,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name:  driver-micro-service-service
+  name:  driver-micro-service
 spec:
   selector:
     app:  driver-service-app
   ports:
-  - name: http fty
+  - name: http
     protocol: TCP
     port: 80
     targetPort: 80
