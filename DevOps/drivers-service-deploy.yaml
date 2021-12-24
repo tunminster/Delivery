@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driver-service-deployment
+spec:
+  selector:
+    matchLabels:
+      app:  driver-service-app
+  replicas: 3    
+  template:
+    metadata:
+      labels:
+        app:  driver-service-app
+    spec:
+      containers:
+      - name:  driver-service-app
+        image: #{driver-service-repository-image}#
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name: config-map-drivers
+        env:
+        - name: "ASPNETCORE_ENVIRONMENT"
+          value: #{env-name}#
+      imagePullSecrets:
+        - name: #{acr-secret-name}#  
+      volumes:
+      - name: secrets
+        secret: 
+          secretName: #{appsettings-secret-name}#
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  driver-micro-service-service
+spec:
+  selector:
+    app:  driver-service-app
+  ports:
+  - name: http fty
+    protocol: TCP
+    port: 80
+    targetPort: 80
