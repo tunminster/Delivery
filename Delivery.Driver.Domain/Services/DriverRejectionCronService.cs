@@ -20,8 +20,8 @@ namespace Delivery.Driver.Domain.Services
         
         public override async Task DoWorkAsync(CancellationToken cancellationToken)
         {
-            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-                .TrackTrace($"{nameof(DriverRejectionCronService)} has started.");
+            // serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+            //     .TrackTrace($"{nameof(DriverRejectionCronService)} has started.");
 
             var executingContextUs = GetExecutingContext("Raus");
             
