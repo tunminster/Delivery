@@ -12,9 +12,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
 {
     public record CouponCodeConfirmationQuery(CouponCodeConfirmationQueryContract CouponCodeConfirmationQueryContract) 
-        : IQuery<CouponCodeConfirmationQueryStatusContract>;
+        : IQuery<CouponCodeStatusContract>;
     
-    public class CouponCodeConfirmationQueryHandler : IQueryHandler<CouponCodeConfirmationQuery, CouponCodeConfirmationQueryStatusContract>
+    public class CouponCodeConfirmationQueryHandler : IQueryHandler<CouponCodeConfirmationQuery, CouponCodeStatusContract>
     {
         private IServiceProvider serviceProvider;
         private IExecutingRequestContextAdapter executingRequestContextAdapter;
@@ -24,7 +24,7 @@ namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<CouponCodeConfirmationQueryStatusContract> Handle(CouponCodeConfirmationQuery query)
+        public async Task<CouponCodeStatusContract> Handle(CouponCodeConfirmationQuery query)
         {
             await using var dataAccess = new ShardedDataAccess<PlatformDbContext, Database.Entities.DriverOrder>(
                 serviceProvider, () => PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter));
@@ -41,7 +41,7 @@ namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
 
             if (couponCodeContract != null && couponCodeContract.RedeemBy > DateTimeOffset.UtcNow)
             {
-                var couponCodeConfirmationQueryStatusContract = new CouponCodeConfirmationQueryStatusContract
+                var couponCodeConfirmationQueryStatusContract = new CouponCodeStatusContract
                 {
                     Status = true,
                     PromoCode = couponCodeContract.PromoCode,
@@ -51,7 +51,7 @@ namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
                 return couponCodeConfirmationQueryStatusContract;
             }
 
-            return new CouponCodeConfirmationQueryStatusContract
+            return new CouponCodeStatusContract
             {
                 Status = false,
                 PromoCode = string.Empty,
