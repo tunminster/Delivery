@@ -10,19 +10,19 @@ using Stripe;
 
 namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.CouponPayments
 {
-    public record CouponCodeConfirmationCommand(CouponCodeConfirmationQueryContract CouponCodeConfirmationQueryContract);
-    public class CouponCodeConfirmationCommandHandler : ICommandHandler<CouponCodeConfirmationCommand, CouponCodeStatusContract>
+    public record CouponCodeValidConfirmationCommand(CouponCodeConfirmationQueryContract CouponCodeConfirmationQueryContract);
+    public class CouponCodeValidConfirmationCommandHandler : ICommandHandler<CouponCodeValidConfirmationCommand, CouponCodeStatusContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public CouponCodeConfirmationCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
+        public CouponCodeValidConfirmationCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<CouponCodeStatusContract> Handle(CouponCodeConfirmationCommand command)
+        public async Task<CouponCodeStatusContract> Handle(CouponCodeValidConfirmationCommand command)
         {
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;
