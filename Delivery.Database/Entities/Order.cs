@@ -91,6 +91,8 @@ namespace Delivery.Database.Entities
         
         public string? CouponCode { get; set; }
         
+        public int? DeliveryTips { get; set; }
+        
         public int? CouponDiscountPaid { get; set; }
         
         public OrderType OrderType { get; set; }

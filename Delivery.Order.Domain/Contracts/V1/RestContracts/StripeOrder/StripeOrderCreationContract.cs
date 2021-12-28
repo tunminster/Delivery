@@ -51,6 +51,12 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder
         /// </summary>
         /// <example>{{promoCode}}</example>
         public string PromoCode { get; init; } = string.Empty;
-        
+
+        /// <summary>
+        ///  Delivery tips
+        /// </summary>
+        /// <example>{{deliveryTips}}</example>
+        public int DeliveryTips { get; init; } = 0;
+
     }
 }

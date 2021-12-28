@@ -6,6 +6,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Sharding.Contracts.V1;
 using Delivery.Azure.Library.Sharding.Interfaces;
 using Delivery.Database.Context;
+using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.SplitPayments;
@@ -45,7 +46,8 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.SplitPayments
             {
                 var order = databaseContext.Orders.Single(x =>
                     x.ExternalId == command.SplitPaymentCreationContract.OrderId);
-                var driverPaymentFee = order.DeliveryFees;
+                
+                var driverPaymentFee = order.DeliveryFees + order.DeliveryTips;
                 var driverTransferOptions = new TransferCreateOptions
                 {
                     Amount = driverPaymentFee,
@@ -56,6 +58,20 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.SplitPayments
                 var driverTransferResult = await transferService.CreateAsync(driverTransferOptions);
                 
                 order.DriverTransferredId = driverTransferResult.Id;
+
+                var driver = databaseContext.Drivers.FirstOrDefault(x =>
+                    x.PaymentAccountId == command.SplitPaymentCreationContract.DriverConnectedAccountId);
+
+                if (driver != null)
+                {
+                    var driverPayment = new DriverPayment
+                    {
+                        TotalPaymentAmount = driverPaymentFee ?? 0,
+                        DriverId = driver.Id
+                    };
+                    databaseContext.Add(driverPayment);
+                }
+                
                 await databaseContext.SaveChangesAsync();
             }
             
