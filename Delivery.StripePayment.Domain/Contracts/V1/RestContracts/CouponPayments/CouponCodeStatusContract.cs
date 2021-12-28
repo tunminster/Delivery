@@ -3,7 +3,7 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts.CouponPayment
     /// <summary>
     ///  Coupon code confirmation creation contract
     /// </summary>
-    public record CouponCodeConfirmationQueryStatusContract
+    public record CouponCodeStatusContract
     {
         /// <summary>
         /// Status

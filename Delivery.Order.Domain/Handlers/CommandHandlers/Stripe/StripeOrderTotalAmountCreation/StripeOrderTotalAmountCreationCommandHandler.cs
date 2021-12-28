@@ -126,6 +126,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     CustomerApplicationFee = customerApplicationFee,
                     TaxFee = taxFee,
                     DeliveryFee = deliveryFee,
+                    DeliveryTips = command.StripeOrderCreationContract.DeliveryTips,
                     TotalAmount = totalAmount, 
                     CreatedDateTime = DateTimeOffset.UtcNow,
                     BusinessApplicationFee = businessApplicationFee,

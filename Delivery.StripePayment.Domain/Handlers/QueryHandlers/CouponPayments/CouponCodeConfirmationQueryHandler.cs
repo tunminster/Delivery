@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Database.DataAccess;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
@@ -8,13 +9,15 @@ using Delivery.Domain.QueryHandlers;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.CouponPayments;
 using Delivery.StripePayment.Domain.Converters.CouponPayments;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Stripe;
 
 namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
 {
     public record CouponCodeConfirmationQuery(CouponCodeConfirmationQueryContract CouponCodeConfirmationQueryContract) 
-        : IQuery<CouponCodeConfirmationQueryStatusContract>;
+        : IQuery<CouponCodeStatusContract>;
     
-    public class CouponCodeConfirmationQueryHandler : IQueryHandler<CouponCodeConfirmationQuery, CouponCodeConfirmationQueryStatusContract>
+    public class CouponCodeConfirmationQueryHandler : IQueryHandler<CouponCodeConfirmationQuery, CouponCodeStatusContract>
     {
         private IServiceProvider serviceProvider;
         private IExecutingRequestContextAdapter executingRequestContextAdapter;
@@ -24,8 +27,11 @@ namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<CouponCodeConfirmationQueryStatusContract> Handle(CouponCodeConfirmationQuery query)
+        public async Task<CouponCodeStatusContract> Handle(CouponCodeConfirmationQuery query)
         {
+            var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
+            StripeConfiguration.ApiKey = stripeApiKey;
+            
             await using var dataAccess = new ShardedDataAccess<PlatformDbContext, Database.Entities.DriverOrder>(
                 serviceProvider, () => PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter));
             
@@ -38,10 +44,27 @@ namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
                 async () => await databaseContext.CouponCodes
                     .Where(x => x.PromotionCode == query.CouponCodeConfirmationQueryContract.CouponCode)
                     .Select(x => x.ConvertToCouponCodeContract()).SingleAsync());
+            
+            // retrieve promotion code
+            var options = new PromotionCodeListOptions
+            {
+                Limit = 1,
+                Code = query.CouponCodeConfirmationQueryContract.CouponCode
+            };
+
+            var service = new PromotionCodeService();
+            var promotionCodes = await service.ListAsync(options);
+            if (!promotionCodes.Any())
+                return new CouponCodeStatusContract
+                {
+                    PromoCode = query.CouponCodeConfirmationQueryContract.CouponCode,
+                    Status = false,
+                    Message = $"{query.CouponCodeConfirmationQueryContract.CouponCode} is not valid."
+                };
 
             if (couponCodeContract != null && couponCodeContract.RedeemBy > DateTimeOffset.UtcNow)
             {
-                var couponCodeConfirmationQueryStatusContract = new CouponCodeConfirmationQueryStatusContract
+                var couponCodeConfirmationQueryStatusContract = new CouponCodeStatusContract
                 {
                     Status = true,
                     PromoCode = couponCodeContract.PromoCode,
@@ -51,7 +74,7 @@ namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
                 return couponCodeConfirmationQueryStatusContract;
             }
 
-            return new CouponCodeConfirmationQueryStatusContract
+            return new CouponCodeStatusContract
             {
                 Status = false,
                 PromoCode = string.Empty,

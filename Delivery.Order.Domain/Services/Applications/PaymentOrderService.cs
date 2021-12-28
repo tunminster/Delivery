@@ -60,6 +60,7 @@ namespace Delivery.Order.Domain.Services.Applications
                 orderCreationStatus.SubtotalAmount,
                 orderCreationStatus.CustomerApplicationFee,
                 orderCreationStatus.DeliveryFee,
+                orderCreationStatus.DeliveryTips,
                 OrderConstant.BusinessApplicationServiceRate);
             
             var shardMetadataManager = serviceProvider.GetRequiredService<IShardMetadataManager>();

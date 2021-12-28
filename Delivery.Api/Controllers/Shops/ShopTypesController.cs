@@ -17,7 +17,7 @@ namespace Delivery.Api.Controllers.Shops
     /// <summary>
     ///  Shop types controller
     /// </summary>
-    [Route("api/v1/shop-owner/shop-types", Name = "1 - Shop Types")]
+    [Route("api/v1/shop-owner/storetype", Name = "1 - Shop Types")]
     [PlatformSwaggerCategory(ApiCategory.ShopOwner)]
     [ApiController]
     public class ShopTypesController : ControllerBase

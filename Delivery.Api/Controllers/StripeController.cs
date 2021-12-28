@@ -234,7 +234,7 @@ namespace Delivery.Api.Controllers
         /// </remarks>
         [Route("confirm-coupon-code", Order = 8)]
         [HttpPost]
-        [ProducesResponseType(typeof(CouponCodeConfirmationQueryStatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(CouponCodeStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Verify_PromoCodeAsync(CouponCodeConfirmationQueryContract couponCodeConfirmationQueryContract)
         {
