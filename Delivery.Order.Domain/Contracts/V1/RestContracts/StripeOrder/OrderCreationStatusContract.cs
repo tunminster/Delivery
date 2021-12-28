@@ -79,5 +79,11 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder
         /// </summary>
         /// <example>{{deliveryTips}}</example>
         public int DeliveryTips { get; set; }
+        
+        /// <summary>
+        ///  Promotion discount amount
+        /// </summary>
+        /// <example>{{promotionDiscountAmount}}</example>
+        public int PromotionDiscountAmount { get; set; }
     }
 }

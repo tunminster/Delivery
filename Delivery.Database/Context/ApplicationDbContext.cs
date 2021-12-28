@@ -65,6 +65,7 @@ namespace Delivery.Database.Context
         public DbSet<NotificationDevice> NotificationDevices { get; set; }
         public DbSet<DriverPayment> DriverPayments { get; set; }
         public DbSet<CouponCode> CouponCodes { get; set; }
+        public DbSet<CouponCodeCustomer> CouponCodeCustomers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

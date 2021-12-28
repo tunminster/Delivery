@@ -59,7 +59,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentInt
                         "card",
                     },
                     Amount = command.PaymentIntentCreationContract.Amount,
-                    Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "gbp",
+                    Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "usd",
                     TransferGroup = command.PaymentIntentCreationContract.OrderId,
                     Metadata = new Dictionary<string, string>
                     {

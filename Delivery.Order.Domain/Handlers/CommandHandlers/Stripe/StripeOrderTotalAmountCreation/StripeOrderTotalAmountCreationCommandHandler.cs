@@ -33,16 +33,19 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         
-        public StripeOrderTotalAmountCreationCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter, string cacheKey)
+        public StripeOrderTotalAmountCreationCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
-            CacheKey = cacheKey;
         }
         
         public async Task<OrderCreationStatusContract> Handle(StripeOrderTotalAmountCreationCommand command)
         {
-
+            var strProductIds = string.Join(",",
+                command.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId));
+            var cacheKey =
+                $"Database-{executingRequestContextAdapter.GetShard().Key}-products-{strProductIds}-default-includes";
+            
             await using var dataAccess = new ShardedDataAccess<PlatformDbContext, Database.Entities.Order>(
                 serviceProvider, () => PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter));
 
@@ -50,7 +53,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             
             var productIds = command.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId).ToList();
 
-            var products = await dataAccess.GetCachedItemsAsync(CacheKey, databaseContext.GlobalDatabaseCacheRegion,
+            var products = await dataAccess.GetCachedItemsAsync(cacheKey, databaseContext.GlobalDatabaseCacheRegion,
                 async () => await databaseContext.Products.Where(x => productIds.Contains(x.ExternalId)).ToListAsync());
 
             var store = await dataAccess.GetCachedItemsAsync(
@@ -105,6 +108,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
                 deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
+
             }
             
             var taxRate =
@@ -112,7 +116,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     store?.Country ?? string.Empty);
             
             var taxFee = TaxFeeGenerator.GenerateTaxFees(subtotalAmount, taxRate);
-            var totalAmount = subtotalAmount + customerApplicationFee + deliveryFee + taxFee;
+            var totalAmount = subtotalAmount + customerApplicationFee + deliveryFee + taxFee + command.StripeOrderCreationContract.DeliveryTips;
             
             var businessApplicationFee = ApplicationFeeGenerator.BusinessServiceFees(subtotalAmount,
                 OrderConstant.BusinessApplicationServiceRate);
@@ -127,7 +131,8 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     TaxFee = taxFee,
                     DeliveryFee = deliveryFee,
                     DeliveryTips = command.StripeOrderCreationContract.DeliveryTips,
-                    TotalAmount = totalAmount, 
+                    TotalAmount = totalAmount - command.PromotionDiscount, 
+                    PromotionDiscountAmount = command.PromotionDiscount,
                     CreatedDateTime = DateTimeOffset.UtcNow,
                     BusinessApplicationFee = businessApplicationFee,
                     PaymentAccountNumber = store?.StorePaymentAccount?.AccountNumber ?? throw new InvalidOperationException($" {command.StripeOrderCreationContract.StoreId} doesn't have payment account number.")
@@ -136,8 +141,5 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             return orderCreationStatus;
         }
 
-        
-        
-        private string CacheKey { get;  }
     }
 }
