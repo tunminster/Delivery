@@ -62,7 +62,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 TotalAmount = command.OrderCreationStatusContract.TotalAmount,
                 PlatformServiceFees = command.OrderCreationStatusContract.CustomerApplicationFee,
                 DeliveryFees = command.OrderCreationStatusContract.DeliveryFee,
-                DeliveryTips = command.OrderCreationStatusContract.DeliveryFee,
+                DeliveryTips = command.OrderCreationStatusContract.DeliveryTips,
                 BusinessServiceFees = businessServiceFee,
                 TaxFees = command.OrderCreationStatusContract.TaxFee,
                 CurrencyCode = command.OrderCreationStatusContract.CurrencyCode,
