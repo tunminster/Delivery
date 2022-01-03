@@ -10,6 +10,7 @@ using Delivery.Database.Entities;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.StripePayment.Domain.Contracts.V1.RestContracts.SplitPayments;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
 
@@ -40,13 +41,13 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.SplitPayments
             
             
             var transferService = new TransferService();
+
+            var order = await databaseContext.Orders.SingleAsync(x =>
+                x.ExternalId == command.SplitPaymentCreationContract.OrderId);
             
             // Transfer payment to driver
             if (!string.IsNullOrEmpty(command.SplitPaymentCreationContract.DriverConnectedAccountId))
             {
-                var order = databaseContext.Orders.Single(x =>
-                    x.ExternalId == command.SplitPaymentCreationContract.OrderId);
-                
                 var driverPaymentFee = order.DeliveryFees + order.DeliveryTips;
                 var driverTransferOptions = new TransferCreateOptions
                 {
@@ -75,6 +76,33 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.SplitPayments
                 await databaseContext.SaveChangesAsync();
             }
             
+            //Transfer promotion discount to store owner account
+            var promoCode = order.CouponCode;
+            if (!string.IsNullOrEmpty(promoCode) && !string.IsNullOrEmpty(order.PaymentAccountNumber))
+            {
+                var couponCode = await databaseContext.CouponCodes
+                    .FirstOrDefaultAsync(x => x.PromotionCode == promoCode);
+
+                if (couponCode != null)
+                {
+                    var storeOwnerTransferOptions = new TransferCreateOptions
+                    {
+                        Amount = couponCode.DiscountAmount,
+                        Currency = shardInformation?.Currency != null ? shardInformation.Currency.ToLower() : "usd",
+                        Destination = order.PaymentAccountNumber,
+                        TransferGroup = command.SplitPaymentCreationContract.OrderId
+                    };
+                    
+                    var storeOwnerTransferResult = await transferService.CreateAsync(storeOwnerTransferOptions);
+                    order.ShopOwnerTransferredId = storeOwnerTransferResult.Id;
+                    order.StoreOwnerPaymentAmount = couponCode.DiscountAmount;
+                }
+                
+                await databaseContext.SaveChangesAsync();
+                
+            }
+
+
             return new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow };
         }
     }

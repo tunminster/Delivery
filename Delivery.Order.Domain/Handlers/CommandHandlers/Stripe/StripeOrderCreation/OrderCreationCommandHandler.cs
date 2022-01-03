@@ -66,6 +66,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 BusinessServiceFees = businessServiceFee,
                 TaxFees = command.OrderCreationStatusContract.TaxFee,
                 CurrencyCode = command.OrderCreationStatusContract.CurrencyCode,
+                CouponCode = command.StripeOrderCreationContract.PromoCode,
                 PaymentType = "Card",
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
                 PaymentStatusCode = OrderPaymentStatus.InProgress,
