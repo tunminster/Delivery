@@ -25,6 +25,8 @@ namespace Delivery.Order.Domain.Contracts.V1.ModelContracts.Stripe
         
         public int DeliveryFeeAmount { get; set; }
         
+        public int DeliveryTips { get; set; }
+        
         public int BusinessFeeAmount { get; set; }
         
         public int CustomerApplicationFeeAmount { get; set; }

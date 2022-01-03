@@ -53,5 +53,17 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts.ApplicationFees
         /// </summary>
         /// <example>{{storeLongitude}}</example>
         public double? StoreLongitude { get; init; }
+        
+        /// <summary>
+        ///  Delivery tips
+        /// </summary>
+        /// <example>{{deliveryTips}}</example>
+        public int? DeliveryTips { get; init; }
+
+        /// <summary>
+        ///  Promo code
+        /// </summary>
+        /// <example>{{promoCode}}</example>
+        public string PromoCode { get; init; } = string.Empty;
     }
 }

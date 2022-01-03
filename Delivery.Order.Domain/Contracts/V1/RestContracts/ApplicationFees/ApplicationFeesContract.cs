@@ -24,5 +24,16 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts.ApplicationFees
         ///  Total amount of order
         /// </summary>
         public int TotalAmount { get; init; }
+        
+        /// <summary>
+        ///  Delivery tips
+        /// </summary>
+        public int DeliveryTips { get; init; }
+        
+        /// <summary>
+        ///  Promotion discount
+        /// </summary>
+        /// <example>{{promotionDiscount}}</example>
+        public int PromotionDiscount { get; init; }
     }
 }

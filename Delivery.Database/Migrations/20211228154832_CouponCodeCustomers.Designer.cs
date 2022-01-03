@@ -4,14 +4,16 @@ using Delivery.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delivery.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211228154832_CouponCodeCustomers")]
+    partial class CouponCodeCustomers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,22 +177,10 @@ namespace Delivery.Database.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("CouponCodeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ExternalId")
                         .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("NVARCHAR(40)");
-
-                    b.Property<string>("InsertedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("InsertionDateTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("PromotionCode")
                         .HasMaxLength(256)
@@ -201,8 +191,6 @@ namespace Delivery.Database.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CouponCodeId");
 
                     b.HasIndex("ExternalId")
                         .IsUnique()
@@ -1444,17 +1432,6 @@ namespace Delivery.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Store");
-                });
-
-            modelBuilder.Entity("Delivery.Database.Entities.CouponCodeCustomer", b =>
-                {
-                    b.HasOne("Delivery.Database.Entities.CouponCode", "CouponCode")
-                        .WithMany()
-                        .HasForeignKey("CouponCodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CouponCode");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.Customer", b =>
