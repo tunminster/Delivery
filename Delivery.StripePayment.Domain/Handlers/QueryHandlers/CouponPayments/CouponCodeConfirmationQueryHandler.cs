@@ -43,7 +43,17 @@ namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
                 databaseContext.GlobalDatabaseCacheRegion,
                 async () => await databaseContext.CouponCodes
                     .Where(x => x.PromotionCode == query.CouponCodeConfirmationQueryContract.CouponCode)
-                    .Select(x => x.ConvertToCouponCodeContract()).SingleAsync());
+                    .Select(x => x.ConvertToCouponCodeContract()).FirstOrDefaultAsync());
+
+            if (couponCodeContract == null)
+            {
+                return new CouponCodeStatusContract
+                {
+                    PromoCode = query.CouponCodeConfirmationQueryContract.CouponCode,
+                    Status = false,
+                    Message = $"{query.CouponCodeConfirmationQueryContract.CouponCode} is not valid."
+                };
+            }
             
             // retrieve promotion code
             var options = new PromotionCodeListOptions
