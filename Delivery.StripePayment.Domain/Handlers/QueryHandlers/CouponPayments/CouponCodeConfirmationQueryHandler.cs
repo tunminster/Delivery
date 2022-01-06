@@ -55,41 +55,50 @@ namespace Delivery.StripePayment.Domain.Handlers.QueryHandlers.CouponPayments
                 };
             }
             
-            // retrieve promotion code
-            var options = new PromotionCodeListOptions
-            {
-                Limit = 1,
-                Code = query.CouponCodeConfirmationQueryContract.CouponCode
-            };
-
-            var service = new PromotionCodeService();
-            var promotionCodes = await service.ListAsync(options);
-            if (!promotionCodes.Any())
-                return new CouponCodeStatusContract
-                {
-                    PromoCode = query.CouponCodeConfirmationQueryContract.CouponCode,
-                    Status = false,
-                    Message = $"{query.CouponCodeConfirmationQueryContract.CouponCode} is not valid."
-                };
-
-            if (couponCodeContract != null && couponCodeContract.RedeemBy > DateTimeOffset.UtcNow)
-            {
-                var couponCodeConfirmationQueryStatusContract = new CouponCodeStatusContract
-                {
-                    Status = true,
-                    PromoCode = couponCodeContract.PromoCode,
-                    Message = string.Empty
-                };
-
-                return couponCodeConfirmationQueryStatusContract;
-            }
-
+            // to check whether it's already redeemed.
             return new CouponCodeStatusContract
             {
-                Status = false,
-                PromoCode = string.Empty,
-                Message = $"{query.CouponCodeConfirmationQueryContract.CouponCode} is expired or not valid."
+                PromoCode = query.CouponCodeConfirmationQueryContract.CouponCode,
+                Status = true,
+                Message = $"{query.CouponCodeConfirmationQueryContract.CouponCode} is valid."
             };
+            
+            
+            // retrieve promotion code
+            // var options = new PromotionCodeListOptions
+            // {
+            //     Limit = 1,
+            //     Code = query.CouponCodeConfirmationQueryContract.CouponCode
+            // };
+            //
+            // var service = new PromotionCodeService();
+            // var promotionCodes = await service.ListAsync(options);
+            // if (!promotionCodes.Any())
+            //     return new CouponCodeStatusContract
+            //     {
+            //         PromoCode = query.CouponCodeConfirmationQueryContract.CouponCode,
+            //         Status = false,
+            //         Message = $"{query.CouponCodeConfirmationQueryContract.CouponCode} is not valid."
+            //     };
+            //
+            // if (couponCodeContract != null && couponCodeContract.RedeemBy > DateTimeOffset.UtcNow)
+            // {
+            //     var couponCodeConfirmationQueryStatusContract = new CouponCodeStatusContract
+            //     {
+            //         Status = true,
+            //         PromoCode = couponCodeContract.PromoCode,
+            //         Message = string.Empty
+            //     };
+            //
+            //     return couponCodeConfirmationQueryStatusContract;
+            // }
+            //
+            // return new CouponCodeStatusContract
+            // {
+            //     Status = false,
+            //     PromoCode = string.Empty,
+            //     Message = $"{query.CouponCodeConfirmationQueryContract.CouponCode} is expired or not valid."
+            // };
         }
     }
 }
