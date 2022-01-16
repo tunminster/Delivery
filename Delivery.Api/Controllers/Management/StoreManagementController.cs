@@ -10,6 +10,7 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Azure.Library.WebApi.ModelBinders;
 using Delivery.Database.Constants;
+using Delivery.Domain.Constants;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopApproval;
 using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopApproval;
@@ -157,11 +158,11 @@ namespace Delivery.Api.Controllers.Management
         /// <remarks>
         ///     This endpoint allows user to update the store with store user.
         /// </remarks>
-        [Route("update-store", Order = 3)]
+        [Route("update-store", Order = 4)]
         [HttpPut]
         [ProducesResponseType(typeof(StoreUpdateStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        [Authorize(Roles = RoleConstant.Administrator)]
+        [Authorize(Roles = "Administrator,ShopOwner")]
         public async Task<IActionResult> Put_UpdateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreUpdateContract storeUpdateContract, IFormFile? storeImage)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
