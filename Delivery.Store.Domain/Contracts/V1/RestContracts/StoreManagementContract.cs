@@ -18,5 +18,11 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts
         /// </summary>
         /// <example>{{isActive}}</example>
         public bool IsActive { get; init; }
+        
+        /// <summary>
+        ///  Approved
+        /// </summary>
+        /// <example>{{approved}}</example>
+        public bool Approved { get; init; }
     }
 }
