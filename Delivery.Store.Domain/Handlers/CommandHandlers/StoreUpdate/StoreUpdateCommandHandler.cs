@@ -58,6 +58,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreUpdate
             store.Country = command.StoreUpdateContract.Country;
             store.PostalCode = command.StoreUpdateContract.PostalCode;
             store.StoreTypeId = storeType.Id;
+            store.IsActive = command.StoreUpdateContract.IsActive;
 
             if (store.OpeningHours == null || store.OpeningHours.Count < 1)
             {

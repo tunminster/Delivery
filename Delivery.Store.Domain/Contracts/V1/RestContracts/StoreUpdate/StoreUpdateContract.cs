@@ -79,6 +79,12 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate
         /// <example>{{imageUri}}</example>
         /// </summary>
         public string ImageUri { get; set; } = string.Empty;
+        
+        /// <summary>
+        ///  Active 
+        /// </summary>
+        /// <example>{{isActive}}</example>
+        public bool IsActive { get; init;  }
 
         /// <summary>
         ///  Store opening hours
