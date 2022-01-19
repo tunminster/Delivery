@@ -12,5 +12,11 @@ namespace Delivery.Store.Domain.Contracts.V1.RestContracts
         /// <example>{{storeTypeId}}</example>
         /// </summary>
         public string StoreTypeId { get; init; } = string.Empty;
+        
+        /// <summary>
+        ///  Is active
+        /// </summary>
+        /// <example>{{isActive}}</example>
+        public bool IsActive { get; init; }
     }
 }
