@@ -78,6 +78,7 @@ namespace Delivery.Store.Domain.Converters.StoreConverters
                 PostalCode = store.PostalCode,
                 StoreType = store.StoreType?.StoreTypeName ?? string.Empty,
                 StoreTypeId = store.StoreType?.ExternalId ?? string.Empty,
+                IsActive = store.IsActive,
                 StorePaymentAccountNumber = store.StorePaymentAccount?.AccountNumber ?? string.Empty,
                 StoreOpeningHours = store.OpeningHours.Select(op => new StoreOpeningHourContract
                 {
