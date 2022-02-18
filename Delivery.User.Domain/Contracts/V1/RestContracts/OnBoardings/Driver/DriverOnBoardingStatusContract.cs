@@ -6,9 +6,9 @@ namespace Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings.Driver
     public record DriverOnBoardingStatusContract
     {
         /// <summary>
-        ///  Account number
+        ///  Display message
         /// </summary>
-        /// <example>{{accountNumber}}</example>
-        public string AccountNumber { get; init; } = string.Empty;
+        /// <example>{{message}}</example>
+        public string Message { get; init; } = string.Empty;
     }
 }

@@ -6,9 +6,8 @@ namespace Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings.ShopOwner
     public record ShopOwnerOnBoardingStatusContract
     {
         /// <summary>
-        ///  Account number
+        ///  Display success message
         /// </summary>
-        /// <example>{{accountNumber}}</example>
-        public string AccountNumber { get; init; } = string.Empty;
+        public string Message { get; init; } = string.Empty;
     }
 }

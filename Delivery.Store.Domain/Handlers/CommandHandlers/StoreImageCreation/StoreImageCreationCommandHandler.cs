@@ -11,19 +11,22 @@ using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreImageCreations;
 
 namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation
 {
-    public class StoreImageCreationCommandHandler : ICommandHandler<StoreImageCreationCommand, StoreImageCreationStatusContract>
+    //public class StoreImageCreationCommandHandler : ICommandHandler<StoreImageCreationCommand, StoreImageCreationStatusContract>
+    public class StoreImageCreationCommandHandler : CommandHandler<StoreImageCreationCommand, StoreImageCreationStatusContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
         public StoreImageCreationCommandHandler(IServiceProvider serviceProvider,
-            IExecutingRequestContextAdapter executingRequestContextAdapter)
+            IExecutingRequestContextAdapter executingRequestContextAdapter): base(serviceProvider)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
-        
-        public async Task<StoreImageCreationStatusContract> Handle(StoreImageCreationCommand command)
+
+        protected override IExecutingRequestContextAdapter ExecutingRequestContext => executingRequestContextAdapter;
+
+        public override async Task<StoreImageCreationStatusContract> HandleAsync(StoreImageCreationCommand command)
         {
             var storageAccountConnectionStringKey = $"Storage-Account-{executingRequestContextAdapter.GetShard().Key}-Connection-String";
             

@@ -34,7 +34,7 @@ namespace Delivery.Api.Controllers.OnBoardings
                 return "Identity file should be attached".ConvertToBadRequest();
             }
             
-            return Ok(new ShopOwnerOnBoardingStatusContract { AccountNumber = "acct_1JlVEQRTb0JcIyR1"});
+            return Ok(new ShopOwnerOnBoardingStatusContract { Message = "Thank you for joining the Shop Owner partner. We will contact you soon."});
         }
     }
 }
