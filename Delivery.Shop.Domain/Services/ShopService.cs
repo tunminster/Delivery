@@ -2,11 +2,14 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreImageCreations;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Shop.Domain.Services
 {
@@ -35,7 +38,7 @@ namespace Delivery.Shop.Domain.Services
 
             var storeImageCreationStatusContract =
                 await new StoreImageCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(storeImageCreationCommand);
+                    .HandleCoreAsync(storeImageCreationCommand);
 
             var shopImageCreationStatusContract = new ShopImageCreationStatusContract
             {
@@ -51,6 +54,8 @@ namespace Delivery.Shop.Domain.Services
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
             var storeUser = await databaseContext.StoreUsers.FirstOrDefaultAsync(x => x.Username == emailAddress && x.Approved);
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(IsShopOwnerApprovedAsync)} executed", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             if (storeUser is null)
             {
                 return false;

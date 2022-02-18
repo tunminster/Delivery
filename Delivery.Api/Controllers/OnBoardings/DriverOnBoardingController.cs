@@ -35,7 +35,7 @@ namespace Delivery.Api.Controllers.OnBoardings
                 return "Identity file should be attached".ConvertToBadRequest();
             }
             
-            return Ok(new DriverOnBoardingStatusContract { AccountNumber = "acct_1JlVEQRTb0JcIyR1"});
+            return Ok(new DriverOnBoardingStatusContract { Message = "Thank you for joining to Delivery partner. We will contact you soon."});
         }
     }
 }

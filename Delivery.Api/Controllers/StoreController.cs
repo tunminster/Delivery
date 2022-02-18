@@ -358,7 +358,7 @@ namespace Delivery.Api.Controllers
 
             var storeImageCreationStatusContract =
                 await new StoreImageCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(storeImageCreationCommand);
+                    .HandleCoreAsync(storeImageCreationCommand);
 
             return storeImageCreationStatusContract;
         }
