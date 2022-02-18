@@ -12,13 +12,14 @@ namespace Delivery.Domain.CommandHandlers
     {
         protected IServiceProvider ServiceProvider { get; }
         
-        protected  abstract  IExecutingRequestContextAdapter ExecutingRequestContext { get;  }
+        protected  IExecutingRequestContextAdapter ExecutingRequestContext { get;  }
         
         public TCommand Command { get; set; }
 
-        protected CommandHandler(IServiceProvider serviceProvider)
+        protected CommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             ServiceProvider = serviceProvider;
+            ExecutingRequestContext = executingRequestContextAdapter;
         }
 
         public async Task<TResult> HandleCoreAsync(TCommand command)
