@@ -18,14 +18,12 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
         public StoreImageCreationCommandHandler(IServiceProvider serviceProvider,
-            IExecutingRequestContextAdapter executingRequestContextAdapter): base(serviceProvider)
+            IExecutingRequestContextAdapter executingRequestContextAdapter): base(serviceProvider, executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
-
-        protected override IExecutingRequestContextAdapter ExecutingRequestContext => executingRequestContextAdapter;
-
+        
         public override async Task<StoreImageCreationStatusContract> HandleAsync(StoreImageCreationCommand command)
         {
             var storageAccountConnectionStringKey = $"Storage-Account-{executingRequestContextAdapter.GetShard().Key}-Connection-String";
