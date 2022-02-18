@@ -24,16 +24,17 @@ namespace Delivery.Domain.CommandHandlers
 
         public async Task<TResult> HandleCoreAsync(TCommand command)
         {
+            TrackHandlerTrace($"{nameof(TCommand)}",  "initiated",ExecutingRequestContext.GetTelemetryProperties());
             var result = await HandleAsync(command);
-            TrackHandlerTrace($"{nameof(TCommand)}", ExecutingRequestContext.GetTelemetryProperties());
+            TrackHandlerTrace($"{nameof(TCommand)}",  "handled",ExecutingRequestContext.GetTelemetryProperties());
             return result;
         }
         
         public abstract Task<TResult> HandleAsync(TCommand command);
 
-        private void TrackHandlerTrace(string command, Dictionary<string, string> customerProperties)
+        private void TrackHandlerTrace(string command, string status, Dictionary<string, string> customerProperties)
         {
-            ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{command} handled", SeverityLevel.Information, customerProperties);
+            ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{command} {status}", SeverityLevel.Information, customerProperties);
         }
 
     }
