@@ -7,22 +7,35 @@ namespace Delivery.StripePayment.Domain.Contracts.V1.RestContracts
     /// <summary>
     ///  A contract represents to create a stripe account
     /// </summary>
-    [DataContract]
-    public class StripeAccountCreationContract
+    public record StripeAccountCreationContract
     {
-        [DataMember]
+        /// <summary>
+        ///  Stripe account type
+        /// </summary>
+        /// <example>Express</example>
         public StripeAccountType StripeAccountType { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Stripe country code
+        /// </summary>
+        /// <example>Us</example>
         public StripeCountryCode StripeCountryCode { get; set; }
 
-        [DataMember] 
+        /// <summary>
+        ///  Email
+        /// </summary>
         public string Email { get; set; } = string.Empty;
         
-        [DataMember]
+        /// <summary>
+        ///  Account payment option
+        /// </summary>
+        /// <example>true</example>
         public bool AccountPaymentOption { get; set; }
         
-        [DataMember]
+        /// <summary>
+        ///  Account transfer option
+        /// </summary>
+        /// <example>true</example>
         public bool AccountTransferOption { get; set; }
 
         public override string ToString()
