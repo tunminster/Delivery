@@ -69,6 +69,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                     RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
                 };
             
+                // request another driver
                 await new DriverOrderRejectionMessagePublisher(serviceProvider).PublishAsync(driverOrderRejectionMessageContract);
             }
 
@@ -90,9 +91,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                     StoreName = string.Empty
                 };
                 
-                // request another driver
-                
-
+                // Send delivery rejection push notification to shop owner
                 await new DriverSendOrderRejectionCommandHandler(serviceProvider, executingRequestContextAdapter)
                     .Handle(new DriverSendOrderRejectionCommand(driverOrderRejectedNotificationContract,
                         driverOrder.Driver.ExternalId));

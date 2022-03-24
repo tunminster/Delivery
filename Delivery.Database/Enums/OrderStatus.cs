@@ -11,6 +11,7 @@ namespace Delivery.Database.Enums
         [EnumMember] Preparing = 3,
         [EnumMember] Ready = 4,
         [EnumMember] DeliveryOnWay = 5,
-        [EnumMember] Completed = 6
+        [EnumMember] Completed = 6,
+        [EnumMember] NoDeliveryAvailable = 7
     }
 }

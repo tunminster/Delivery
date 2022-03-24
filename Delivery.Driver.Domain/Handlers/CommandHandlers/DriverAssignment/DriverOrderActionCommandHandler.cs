@@ -127,7 +127,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                 DateCreated = DateTimeOffset.UtcNow
             };
 
-            if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Complete)
+            if (command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Complete || command.DriverOrderActionContract.DriverOrderStatus == DriverOrderStatus.Rejected)
             {
                 // indexing driver
                 
