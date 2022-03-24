@@ -44,7 +44,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             var notificationSendModel = new NotificationSendModel<DriverOrderRejectedNotificationContract>
             {
                 Pns = driverDevice.Platform,
-                Message = "Request food delivery",
+                Message = "Notify food delivery rejection",
                 Data = command.DriverOrderRejectedNotificationContract,
                 ToTag = driverDevice.Tag,
                 Username = driver.EmailAddress,
