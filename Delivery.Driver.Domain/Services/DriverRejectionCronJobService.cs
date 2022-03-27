@@ -10,19 +10,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Services
 {
-    public class DriverRejectionCronService : CronJobService
+    public class DriverCronJobCronService : CronJobService
     {
         private readonly IServiceProvider serviceProvider;
-        public DriverRejectionCronService(IScheduleConfig<DriverRejectionCronService> config, IServiceProvider serviceProvider) : base(config.CronExpression, config.TimeZoneInfo)
+        public DriverCronJobCronService(IScheduleConfig<DriverCronJobCronService> config, IServiceProvider serviceProvider) : base(config.CronExpression, config.TimeZoneInfo)
         {
             this.serviceProvider = serviceProvider;
         }
         
         public override async Task DoWorkAsync(CancellationToken cancellationToken)
         {
-            // serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-            //     .TrackTrace($"{nameof(DriverRejectionCronService)} has started.");
-
             var executingContextUs = GetExecutingContext("Raus");
             
             await new DriverTimerRejectionCommandHandler(serviceProvider, executingContextUs)

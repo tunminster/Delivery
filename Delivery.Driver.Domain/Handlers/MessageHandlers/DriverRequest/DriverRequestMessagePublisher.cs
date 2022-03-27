@@ -8,9 +8,9 @@ using Delivery.Domain.Constants;
 using Delivery.Domain.FrameWork.Messages;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection;
 
-namespace Delivery.Driver.Domain.Handlers.MessageHandlers.RequestAnotherDriver
+namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverOrderRejection
 {
-    public class DriverOrderRejectionMessagePublisher : IMessagePublisherAsync<DriverOrderRejectionMessageContract>
+    public class DriverOrderRejectionMessagePublisher : IMessagePublisherAsync<DriverRequestMessageContract>
     {
         private readonly IServiceProvider serviceProvider;
 
@@ -19,7 +19,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.RequestAnotherDriver
             this.serviceProvider = serviceProvider;
         }
         
-        public async Task PublishAsync(DriverOrderRejectionMessageContract message)
+        public async Task PublishAsync(DriverRequestMessageContract message)
         {
             var executingContextAdapter = new ExecutingRequestContextAdapter(message.RequestContext);
             var cloudEventMessage = message
