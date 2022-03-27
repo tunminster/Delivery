@@ -6,20 +6,21 @@ using Delivery.Azure.Library.Messaging.ServiceBus.Extensions;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Domain.Constants;
 using Delivery.Domain.FrameWork.Messages;
+using Delivery.Driver.Domain.Constants;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection;
 
-namespace Delivery.Driver.Domain.Handlers.MessageHandlers.RequestAnotherDriver
+namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverRequest
 {
-    public class DriverOrderRejectionMessagePublisher : IMessagePublisherAsync<DriverOrderRejectionMessageContract>
+    public class DriverRequestMessagePublisher : IMessagePublisherAsync<DriverRequestMessageContract>
     {
         private readonly IServiceProvider serviceProvider;
 
-        public DriverOrderRejectionMessagePublisher(IServiceProvider serviceProvider)
+        public DriverRequestMessagePublisher(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
         }
         
-        public async Task PublishAsync(DriverOrderRejectionMessageContract message)
+        public async Task PublishAsync(DriverRequestMessageContract message)
         {
             var executingContextAdapter = new ExecutingRequestContextAdapter(message.RequestContext);
             var cloudEventMessage = message
@@ -27,8 +28,8 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.RequestAnotherDriver
                 .WithExecutingContext(executingContextAdapter);
             
             await serviceProvider.GetRequiredHostedService<IQueueServiceBusWorkBackgroundService>()
-                .EnqueueBackgroundWorkAsync(OrderConstants.ServiceBusEntityName,
-                    OrderConstants.ServiceBusConnectionStringName, cloudEventMessage);
+                .EnqueueBackgroundWorkAsync(Delivery.Domain.Constants.Constants.DriverServiceBusEntityName,
+                    Delivery.Domain.Constants.Constants.DriverServiceBusConnectionStringName, cloudEventMessage);
         }
     }
 }

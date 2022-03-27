@@ -3,32 +3,30 @@ using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Contracts.Contracts;
 using Delivery.Azure.Library.Sharding.Adapters;
-using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Domain.Services;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Services
 {
-    public class DriverRejectionCronService : CronJobService
+    public class DriverAssignmentCronJobService : CronJobService
     {
         private readonly IServiceProvider serviceProvider;
-        public DriverRejectionCronService(IScheduleConfig<DriverRejectionCronService> config, IServiceProvider serviceProvider) : base(config.CronExpression, config.TimeZoneInfo)
+
+        public DriverAssignmentCronJobService(IScheduleConfig<DriverRejectionCronJobService> config, IServiceProvider serviceProvider) : base(config.CronExpression,
+            config.TimeZoneInfo)
         {
             this.serviceProvider = serviceProvider;
         }
-        
+
         public override async Task DoWorkAsync(CancellationToken cancellationToken)
         {
-            // serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-            //     .TrackTrace($"{nameof(DriverRejectionCronService)} has started.");
-
             var executingContextUs = GetExecutingContext("Raus");
-            
-            await new DriverTimerRejectionCommandHandler(serviceProvider, executingContextUs)
-                .Handle(new DriverTimerRejectionCommand(executingContextUs.GetShard().Key));
+
+            await new DriverTimerAssignmentCommandHandler(serviceProvider, executingContextUs)
+                .Handle(new DriverTimerAssignmentCommand(executingContextUs.GetShard().Key));
         }
-        
+
         private static IExecutingRequestContextAdapter GetExecutingContext(string shardKey)
         {
             IExecutingRequestContextAdapter executingRequestContextAdapter =
@@ -41,7 +39,7 @@ namespace Delivery.Driver.Domain.Services
                     {
                         Role = "System",
                         ShardKey = shardKey,
-                        UserEmail = "system-admin@ragibull.com"
+                        UserEmail = $"{nameof(DriverAssignmentCronJobService).ToLowerInvariant()}@ragibull.com"
 
                     }
                 });

@@ -77,10 +77,17 @@ namespace Delivery.Drivers.Host.Kernel
             
             serviceCollection.AddElasticSearch(configuration);
             
-            serviceCollection.AddCronJob<DriverRejectionCronService>(c =>
+            serviceCollection.AddCronJob<DriverRejectionCronJobService>(c =>
             {
                 c.TimeZoneInfo = TimeZoneInfo.Utc;
                 c.CronExpression = @"*/3 * * * *";
+                
+            });
+            
+            serviceCollection.AddCronJob<DriverAssignmentCronJobService>(c =>
+            {
+                c.TimeZoneInfo = TimeZoneInfo.Utc;
+                c.CronExpression = @"*/5 * * * *";
                 
             });
             

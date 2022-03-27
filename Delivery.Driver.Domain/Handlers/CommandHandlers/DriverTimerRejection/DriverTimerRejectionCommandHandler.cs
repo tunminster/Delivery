@@ -13,7 +13,7 @@ using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverNotifications;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification;
-using Delivery.Driver.Domain.Handlers.MessageHandlers.RequestAnotherDriver;
+using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverRequest;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -61,19 +61,21 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                 driverOrder.Reason = "System rejected";
 
                 driverOrder.Driver.IsOrderAssigned = false;
+                await databaseContext.SaveChangesAsync();
                 
-                var driverOrderRejectionMessageContract = new DriverOrderRejectionMessageContract
+                
+                var driverRequestMessageContract = new DriverRequestMessageContract
                 {
-                    PayloadIn = new DriverOrderRejectionContract {OrderId = driverOrder.Order.ExternalId},
+                    PayloadIn = new DriverRequestContract {OrderId = driverOrder.Order.ExternalId},
                     PayloadOut = statusContract,
                     RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
                 };
-            
+                
                 // request another driver
-                await new DriverOrderRejectionMessagePublisher(serviceProvider).PublishAsync(driverOrderRejectionMessageContract);
+                await new DriverRequestMessagePublisher(serviceProvider).PublishAsync(driverRequestMessageContract);
             }
 
-            await databaseContext.SaveChangesAsync();
+            
 
             foreach (var driverOrder in driverOrders)
             {
