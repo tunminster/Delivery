@@ -10,10 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Services
 {
-    public class DriverCronJobCronService : CronJobService
+    public class DriverRejectionCronJobService : CronJobService
     {
         private readonly IServiceProvider serviceProvider;
-        public DriverCronJobCronService(IScheduleConfig<DriverCronJobCronService> config, IServiceProvider serviceProvider) : base(config.CronExpression, config.TimeZoneInfo)
+        public DriverRejectionCronJobService(IScheduleConfig<DriverRejectionCronJobService> config, IServiceProvider serviceProvider) : base(config.CronExpression, config.TimeZoneInfo)
         {
             this.serviceProvider = serviceProvider;
         }
@@ -38,8 +38,7 @@ namespace Delivery.Driver.Domain.Services
                     {
                         Role = "System",
                         ShardKey = shardKey,
-                        UserEmail = "system-admin@ragibull.com"
-
+                        UserEmail = $"{nameof(DriverRejectionCronJobService).ToLowerInvariant()}@ragibull.com"
                     }
                 });
 

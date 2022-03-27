@@ -86,9 +86,9 @@ namespace Delivery.Drivers.Host.ContainerHosts
                     await driverActiveMessageHandler.HandleMessageAsync(driverActiveMessageContract, processingState);
                     break;
                 
-                case nameof(DriverOrderRejectionMessageContract):
+                case nameof(DriverRequestMessageContract):
                     var driverOrderRejectionMessageContract =
-                        message.Deserialize<DriverOrderRejectionMessageContract>();
+                        message.Deserialize<DriverRequestMessageContract>();
                     var driverShopOrderDriverRequestMessageHandler = new ShopOrderDriverRequestMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(driverOrderRejectionMessageContract.RequestContext));
                     var shopOrderDriverRequestMessageContract = new ShopOrderDriverRequestMessageContract

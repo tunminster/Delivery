@@ -153,23 +153,23 @@ namespace Delivery.Orders.Host.ContainerHosts
                     await driverActiveMessageHandler.HandleMessageAsync(driverActiveMessageContract, processingState);
                     break;
                 
-                case nameof(DriverOrderRejectionMessageContract):
-                    var driverOrderRejectionMessageContract =
-                        message.Deserialize<DriverOrderRejectionMessageContract>();
-                    var driverShopOrderDriverRequestMessageHandler = new ShopOrderDriverRequestMessageHandler(ServiceProvider,
-                        new ExecutingRequestContextAdapter(driverOrderRejectionMessageContract.RequestContext));
-                    var shopOrderDriverRequestMessageContract = new ShopOrderDriverRequestMessageContract
-                    {
-                        PayloadIn = new ShopOrderDriverRequestContract
-                        {
-                            OrderId = driverOrderRejectionMessageContract.PayloadIn!.OrderId
-                        },
-                        PayloadOut = driverOrderRejectionMessageContract.PayloadOut,
-                        RequestContext = driverOrderRejectionMessageContract.RequestContext
-                    };
-                    await driverShopOrderDriverRequestMessageHandler.HandleMessageAsync(shopOrderDriverRequestMessageContract,
-                        processingState);
-                    break;
+                // case nameof(DriverRequestMessageContract):
+                //     var driverOrderRejectionMessageContract =
+                //         message.Deserialize<DriverRequestMessageContract>();
+                //     var driverShopOrderDriverRequestMessageHandler = new ShopOrderDriverRequestMessageHandler(ServiceProvider,
+                //         new ExecutingRequestContextAdapter(driverOrderRejectionMessageContract.RequestContext));
+                //     var shopOrderDriverRequestMessageContract = new ShopOrderDriverRequestMessageContract
+                //     {
+                //         PayloadIn = new ShopOrderDriverRequestContract
+                //         {
+                //             OrderId = driverOrderRejectionMessageContract.PayloadIn!.OrderId
+                //         },
+                //         PayloadOut = driverOrderRejectionMessageContract.PayloadOut,
+                //         RequestContext = driverOrderRejectionMessageContract.RequestContext
+                //     };
+                //     await driverShopOrderDriverRequestMessageHandler.HandleMessageAsync(shopOrderDriverRequestMessageContract,
+                //         processingState);
+                //     break;
                 
                 case nameof(ShopCreationMessageContract):
                     var shopCreationMessageContract = message.Deserialize<ShopCreationMessageContract>();

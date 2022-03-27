@@ -4,7 +4,7 @@ using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrderRejection;
 
 namespace Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection
 {
-    public class DriverOrderRejectionMessageContract : AuditableResponseMessage<DriverOrderRejectionContract, StatusContract>
+    public class DriverRequestMessageContract : AuditableResponseMessage<DriverRequestContract, StatusContract>
     {
         
     }
