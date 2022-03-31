@@ -7,13 +7,17 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopActive;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopProfile;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopActive;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopProfile;
 using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile;
+using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopActive;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopProfile;
 using Delivery.Shop.Domain.Handlers.QueryHandlers.ShopProfile;
 using Delivery.Shop.Domain.Services;
+using Delivery.Shop.Domain.Validators.ShopActive;
 using Delivery.Shop.Domain.Validators.ShopProfile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -131,6 +135,41 @@ namespace Delivery.Api.Controllers.Shops
                     new ShopProfileQuery{Email = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!});
             
             return Ok(shopProfileContract);
+        }
+        
+        /// <summary>
+        ///  4. Shop active
+        /// </summary>
+        [Route("set-shop-active", Order = 4)]
+        [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Set_StoreActiveAsync(ShopActiveCreationContract shopActiveCreationContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var validationResult = await new ShopActiveCreationValidator().ValidateAsync(shopActiveCreationContract);
+            
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+
+            var statusContract = new StatusContract
+            {
+                Status = true,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+            var shopActiveMessage = new ShopActiveMessageContract
+            {
+                PayloadIn = shopActiveCreationContract,
+                PayloadOut = statusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+            
+            await new ShopActiveMessagePublisher(serviceProvider).PublishAsync(shopActiveMessage);
+
+            return Ok(statusContract);
         }
     }
 }

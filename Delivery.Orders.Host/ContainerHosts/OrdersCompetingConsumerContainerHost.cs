@@ -28,11 +28,13 @@ using Delivery.Order.Domain.Contracts.V1.MessageContracts.PushNotification;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
 using Delivery.Order.Domain.Handlers.MessageHandlers.PushNotification;
+using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopActive;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopMenu;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopProfile;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
+using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopActive;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopMenu;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
@@ -312,6 +314,14 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(splitPaymentMessage.RequestContext));
                     await splitPMessageHandler.HandleMessageAsync(splitPaymentMessage, processingState);
                     break;
+                
+                case nameof(ShopActiveMessageContract):
+                    var shopActiveMessage = message.Deserialize<ShopActiveMessageContract>();
+                    var shopActiveMessageHandler = new ShopActiveMessageHandler(ServiceProvider,
+                        new ExecutingRequestContextAdapter(shopActiveMessage.RequestContext));
+                    await shopActiveMessageHandler.HandleMessageAsync(shopActiveMessage, processingState);
+                    break;
+                    
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");
             }
