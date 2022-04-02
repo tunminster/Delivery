@@ -9,27 +9,29 @@ using Delivery.Domain.FrameWork.Messages;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopActive;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopMenu;
 
-namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopActive;
-
-public class ShopActiveMessagePublisher : IMessagePublisherAsync<ShopActiveMessageContract>
+namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopActive
 {
-    private readonly IServiceProvider serviceProvider;
 
-    public ShopActiveMessagePublisher(IServiceProvider serviceProvider)
+    public class ShopActiveMessagePublisher : IMessagePublisherAsync<ShopActiveMessageContract>
     {
-        this.serviceProvider = serviceProvider;
-    }
-    
-    public async Task PublishAsync(ShopActiveMessageContract message)
-    {
-        var executingContextAdapter = new ExecutingRequestContextAdapter(message.RequestContext);
-            
-        var cloudEventMessage = message
-            .CreateCloudEventMessage(serviceProvider, executingContextAdapter)
-            .WithExecutingContext(executingContextAdapter);
-            
-        await serviceProvider.GetRequiredHostedService<IQueueServiceBusWorkBackgroundService>()
-            .EnqueueBackgroundWorkAsync(OrderConstants.ServiceBusEntityName,
-                OrderConstants.ServiceBusConnectionStringName, cloudEventMessage);
+        private readonly IServiceProvider serviceProvider;
+
+        public ShopActiveMessagePublisher(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
+
+        public async Task PublishAsync(ShopActiveMessageContract message)
+        {
+            var executingContextAdapter = new ExecutingRequestContextAdapter(message.RequestContext);
+
+            var cloudEventMessage = message
+                .CreateCloudEventMessage(serviceProvider, executingContextAdapter)
+                .WithExecutingContext(executingContextAdapter);
+
+            await serviceProvider.GetRequiredHostedService<IQueueServiceBusWorkBackgroundService>()
+                .EnqueueBackgroundWorkAsync(OrderConstants.ServiceBusEntityName,
+                    OrderConstants.ServiceBusConnectionStringName, cloudEventMessage);
+        }
     }
 }

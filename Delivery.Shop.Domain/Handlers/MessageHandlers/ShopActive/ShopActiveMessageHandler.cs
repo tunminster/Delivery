@@ -10,37 +10,40 @@ using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopActive;
 using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopActive;
 using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopMenu;
 
-namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopActive;
-
-public class ShopActiveMessageHandler : ShardedTelemeterizedMessageHandler
+namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopActive
 {
-    public ShopActiveMessageHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter) : base(serviceProvider, executingRequestContextAdapter)
+    public class ShopActiveMessageHandler : ShardedTelemeterizedMessageHandler
     {
-    }
-
-    public async Task HandleMessageAsync(ShopActiveMessageContract message,
-        OrderMessageProcessingStates processingStates)
-    {
-        try
+        public ShopActiveMessageHandler(IServiceProvider serviceProvider,
+            IExecutingRequestContextAdapter executingRequestContextAdapter) : base(serviceProvider,
+            executingRequestContextAdapter)
         {
-            var messageAdapter =
-                new AuditableResponseMessageAdapter<ShopActiveCreationContract, StatusContract>(message);
-
-            if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
-            {
-                var shopActiveCommand =
-                    new ShopActiveCommand(messageAdapter.GetPayloadIn());
-                    
-                await new ShopActiveCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                    .Handle(shopActiveCommand);
-                    
-                processingStates |= OrderMessageProcessingStates.Processed;
-            }
-                
         }
-        catch (Exception exception)
+
+        public async Task HandleMessageAsync(ShopActiveMessageContract message,
+            OrderMessageProcessingStates processingStates)
         {
-            HandleMessageProcessingFailure(processingStates, exception);
+            try
+            {
+                var messageAdapter =
+                    new AuditableResponseMessageAdapter<ShopActiveCreationContract, StatusContract>(message);
+
+                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                {
+                    var shopActiveCommand =
+                        new ShopActiveCommand(messageAdapter.GetPayloadIn());
+
+                    await new ShopActiveCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                        .Handle(shopActiveCommand);
+
+                    processingStates |= OrderMessageProcessingStates.Processed;
+                }
+
+            }
+            catch (Exception exception)
+            {
+                HandleMessageProcessingFailure(processingStates, exception);
+            }
         }
     }
 }
