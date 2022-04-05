@@ -148,13 +148,15 @@ namespace Delivery.Api.Controllers.Shops
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
-            var validationResult = await new ShopActiveCreationValidator().ValidateAsync(shopActiveCreationContract);
-            
-            if (!validationResult.IsValid)
+            if (string.IsNullOrEmpty(shopActiveCreationContract.ShopUserName))
             {
-                return validationResult.ConvertToBadRequest();
+                shopActiveCreationContract = shopActiveCreationContract
+                    with
+                    {
+                        ShopUserName = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail!
+                    };
             }
-
+            
             var statusContract = new StatusContract
             {
                 Status = true,
