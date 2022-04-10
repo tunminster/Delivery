@@ -18,7 +18,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverOnBoardingEmail
         
         public Task Handle(DriverOnBoardingEmailCommand command)
         {
-            throw new System.NotImplementedException();
+             throw new System.NotImplementedException();
         }
     }
 }
