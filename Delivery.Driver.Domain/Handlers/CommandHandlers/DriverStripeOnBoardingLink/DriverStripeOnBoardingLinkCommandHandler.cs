@@ -1,6 +1,7 @@
-namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverStripeOnBoardingLink;
-
-public class DriverStripeOnBoardingLinkCommandHandler
+namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverStripeOnBoardingLink
 {
-    
+    public class DriverStripeOnBoardingLinkCommandHandler
+    {
+
+    }
 }
