@@ -19,14 +19,14 @@ namespace Delivery.Store.Domain.Handlers.MessageHandlers.StoreTypeCreations
         }
         
         public async Task HandleMessageAsync(StoreTypeCreationMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<StoreTypeCreationContract, StoreTypeCreationStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
+                if (!processingStates.HasFlag(MessageProcessingStates.PersistOrder))
                 {
                     var storeTypeCreationCommand =
                         new StoreTypeCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -34,11 +34,11 @@ namespace Delivery.Store.Domain.Handlers.MessageHandlers.StoreTypeCreations
                     await new StoreTypeCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
                         storeTypeCreationCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.PersistOrder;
+                    processingStates |= MessageProcessingStates.PersistOrder;
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Store type persisted",
                     value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());

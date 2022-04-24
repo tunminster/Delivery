@@ -28,8 +28,8 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment
                 .WithExecutingContext(executingContextAdapter);
             
             await serviceProvider.GetRequiredHostedService<IQueueServiceBusWorkBackgroundService>()
-                .EnqueueBackgroundWorkAsync(OrderConstants.ServiceBusEntityName,
-                    OrderConstants.ServiceBusConnectionStringName, cloudEventMessage);
+                .EnqueueBackgroundWorkAsync(Delivery.Domain.Constants.Constants.DriverServiceBusEntityName,
+                    Delivery.Domain.Constants.Constants.DriverServiceBusConnectionStringName, cloudEventMessage);
         }
     }
 }

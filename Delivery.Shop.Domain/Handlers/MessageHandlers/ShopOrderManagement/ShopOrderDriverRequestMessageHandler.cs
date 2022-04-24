@@ -21,14 +21,14 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
         }
 
         public async Task HandleMessageAsync(ShopOrderDriverRequestMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<ShopOrderDriverRequestContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var shopOrderStatusCommand =
                         new ShopOrderDriverRequestCommand(messageAdapter.GetPayloadIn());
@@ -36,7 +36,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                     await new ShopOrderDriverRequestCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(shopOrderStatusCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Driver requested",

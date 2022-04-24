@@ -19,14 +19,14 @@ namespace Delivery.StripePayment.Domain.Handlers.MessageHandlers
         }
 
         public async Task HandleMessageAsync(PaymentCreationMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<StripePaymentCreationContract, StripePaymentCreationStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
+                if (!processingStates.HasFlag(MessageProcessingStates.PersistOrder))
                 {
                     var stripePaymentCreationCommand =
                         new StripePaymentCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -35,11 +35,11 @@ namespace Delivery.StripePayment.Domain.Handlers.MessageHandlers
                         new StripePaymentCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter);
                     await stripePaymentCreationCommandHandler.Handle(stripePaymentCreationCommand);
 
-                    processingStates |= OrderMessageProcessingStates.PersistOrder;
+                    processingStates |= MessageProcessingStates.PersistOrder;
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Payment persisted",
                     value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());

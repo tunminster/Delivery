@@ -34,7 +34,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Delivery.Drivers.Host.ContainerHosts
 {
-    public class DriversCompetingConsumerContainerHost : CompetingConsumerContainerHost<OrderMessageProcessingStates>
+    public class DriversCompetingConsumerContainerHost : CompetingConsumerContainerHost<MessageProcessingStates>
     {
         public DriversCompetingConsumerContainerHost(IHostBuilder hostBuilder) : base(hostBuilder)
         {
@@ -47,7 +47,7 @@ namespace Delivery.Drivers.Host.ContainerHosts
             ApplicationInsightsStopwatch stopwatch,
             Dictionary<string, string> telemetryContextProperties)
         {
-            var processingState = message.GetMessageProcessingState<OrderMessageProcessingStates>();
+            var processingState = message.GetMessageProcessingState<MessageProcessingStates>();
             var ring = message.GetRing();
 
             if (Ring != ring)

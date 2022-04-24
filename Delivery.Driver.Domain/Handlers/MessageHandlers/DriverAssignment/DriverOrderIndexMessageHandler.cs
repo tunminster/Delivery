@@ -18,14 +18,14 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment
         }
 
         public async Task HandleMessageAsync(DriverOrderIndexMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<DriverOrderIndexCreationContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var driverOrderIndexCommand =
                         new DriverOrderIndexCommand(messageAdapter.GetPayloadIn());
@@ -33,7 +33,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment
                     await new DriverOrderIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(driverOrderIndexCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
             }
             catch (Exception exception)

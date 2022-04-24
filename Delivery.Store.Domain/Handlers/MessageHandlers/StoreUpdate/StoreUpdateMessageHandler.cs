@@ -19,14 +19,14 @@ namespace Delivery.Store.Domain.Handlers.MessageHandlers.StoreUpdate
         }
 
         public async Task HandleMessageAsync(StoreUpdateMessage message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<StoreUpdateContract, StoreUpdateStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
+                if (!processingStates.HasFlag(MessageProcessingStates.PersistOrder))
                 {
                     var storeUpdateCommand =
                         new StoreUpdateCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -34,11 +34,11 @@ namespace Delivery.Store.Domain.Handlers.MessageHandlers.StoreUpdate
                     await new StoreUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
                         storeUpdateCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.PersistOrder;
+                    processingStates |= MessageProcessingStates.PersistOrder;
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Store updated",
                     value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());

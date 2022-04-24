@@ -23,14 +23,14 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
         }
         
         public async Task HandleMessageAsync(ShopOrderDeliverOnWayMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<EntityUpdateContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     // remove shop order indexing
                     var shopOrderRemoveIndexCommand = new ShopOrderRemoveIndexCommand(messageAdapter.GetPayloadIn().Id);
@@ -51,7 +51,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                     await new ShopOrderStatusCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
                         shopOrderStatusCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Shop order delivered",

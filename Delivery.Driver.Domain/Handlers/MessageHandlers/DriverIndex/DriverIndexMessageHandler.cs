@@ -20,14 +20,14 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverIndex
         }
 
         public async Task HandleMessageAsync(DriverIndexMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<DriverIndexCreationContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var driverIndexCommand =
                         new DriverIndexCommand(messageAdapter.GetPayloadIn().DriverId);
@@ -36,7 +36,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverIndex
                         .Handle(driverIndexCommand);
                     
                     // complete
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Driver application persisted",

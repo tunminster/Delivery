@@ -19,14 +19,14 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment
         }
 
         public async Task HandleMessageAsync(DriverAssignmentMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<DriverAssignmentCreationContract, DriverAssignmentStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var driverAssignmentCommand =
                         new DriverAssignmentCommand(messageAdapter.GetPayloadIn());
@@ -34,7 +34,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment
                     await new DriverAssignmentCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(driverAssignmentCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Driver assignment persisted",

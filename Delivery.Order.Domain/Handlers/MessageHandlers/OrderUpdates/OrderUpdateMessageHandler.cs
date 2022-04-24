@@ -28,7 +28,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
         }
 
         public async Task HandleMessageAsync(OrderUpdateMessage message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                     new AuditableResponseMessageAdapter<StripeOrderUpdateContract, StripeOrderUpdateStatusContract>(message);
                 var orderId = string.Empty;
                 var orderPaymentStatus = OrderPaymentStatus.None;
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
+                if (!processingStates.HasFlag(MessageProcessingStates.PersistOrder))
                 {
                     var orderUpdateCommand =
                         new OrderUpdateCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -46,11 +46,11 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                     var stripeOrderUpdateStatusContract = await orderUpdateCommandHandler.Handle(orderUpdateCommand);
                     orderId = stripeOrderUpdateStatusContract.OrderId;
                     orderPaymentStatus = stripeOrderUpdateStatusContract.PaymentStatusEnum;
-                    processingStates |= OrderMessageProcessingStates.PersistOrder;
+                    processingStates |= MessageProcessingStates.PersistOrder;
                 }
                 
                 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed) && !string.IsNullOrEmpty(orderId) && orderPaymentStatus == OrderPaymentStatus.Succeed)
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed) && !string.IsNullOrEmpty(orderId) && orderPaymentStatus == OrderPaymentStatus.Succeed)
                 {
                     var orderCreatedPushNotificationMessageContract = new OrderCreatedPushNotificationMessageContract
                     {
@@ -72,7 +72,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                     
                     ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Sent {nameof(OrderCreatedPushNotificationMessagePublisher)} - {orderCreatedPushNotificationMessageContract.ConvertToJson()}", SeverityLevel.Information, ExecutingRequestContextAdapter.GetTelemetryProperties());
                     
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Order update persisted",
                     value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());

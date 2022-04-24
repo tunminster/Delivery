@@ -19,14 +19,14 @@ namespace Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates
         }
 
         public async Task HandleMessageAsync(StoreGeoUpdateMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<StoreGeoUpdateContract, StoreGeoUpdateStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
+                if (!processingStates.HasFlag(MessageProcessingStates.PersistOrder))
                 {
                     var storeGeoUpdateCommand =
                         new StoreGeoUpdateCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -34,11 +34,11 @@ namespace Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates
                     await new StoreGeoUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
                         storeGeoUpdateCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.PersistOrder;
+                    processingStates |= MessageProcessingStates.PersistOrder;
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Store Geo updated",
                     value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());

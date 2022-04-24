@@ -18,14 +18,14 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopProfile
         }
         
         public async Task HandleMessageAsync(ShopProfileMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<ShopProfileCreationContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var shopProfileUpdateCommand =
                         new ShopProfileUpdateCommand(messageAdapter.GetPayloadIn());
@@ -33,7 +33,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopProfile
                     await new ShopProfileUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(shopProfileUpdateCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
                 
             }

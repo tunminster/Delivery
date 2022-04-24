@@ -7,8 +7,12 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Domain.Contracts.Enums;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOnBoardingEmail;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverStripeOnBoardingLink;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCreation;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverOnBoardingEmail;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverStripeOnBoardingLink;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Handlers.MessageHandlers
@@ -20,14 +24,18 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
         }
 
         public async Task HandleMessageAsync(DriverCreationMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<DriverCreationContract, DriverCreationStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Persisted))
+                var driverCreationContract = messageAdapter.GetPayloadIn();
+
+                var onBoardingLink = string.Empty;
+
+                if (!processingStates.HasFlag(MessageProcessingStates.Persisted))
                 {
                     var driverCreationCommand =
                         new DriverCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -35,11 +43,42 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
                     await new DriverCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(driverCreationCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.Persisted;
+                    processingStates |= MessageProcessingStates.Persisted;
                 }
 
-                if (processingStates.HasFlag(OrderMessageProcessingStates.Persisted) &&
-                    !processingStates.HasFlag(OrderMessageProcessingStates.Indexed))
+                if (!processingStates.HasFlag(MessageProcessingStates.OnBoardingLinkCreated))
+                {
+                    var driverStripeOnBoardingLinkCommand = new DriverStripeOnBoardingLinkCommand(
+                        new DriverOnBoardingLinkCreationContract
+                            {EmailAddress = driverCreationContract.EmailAddress});
+
+                    var driverOnBoardingLinkStatusContract = await new DriverStripeOnBoardingLinkCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                        .Handle(driverStripeOnBoardingLinkCommand);
+
+                    onBoardingLink = driverOnBoardingLinkStatusContract.OnBoardingLink;
+                    
+                    processingStates |= MessageProcessingStates.OnBoardingLinkCreated;
+                }
+
+                if (processingStates.HasFlag(MessageProcessingStates.OnBoardingLinkCreated) && 
+                    !processingStates.HasFlag(MessageProcessingStates.NotificationSent) && !string.IsNullOrEmpty(onBoardingLink))
+                {
+                    var driverOnBoardingEmailCommand = new DriverOnBoardingEmailCommand(
+                        new DriverOnBoardingEmailCreationContract
+                        {
+                            Email = driverCreationContract.EmailAddress, 
+                            Name = driverCreationContract.FullName,
+                            OnBoardingLink = onBoardingLink
+                        });
+
+                    await new DriverOnBoardingEmailCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                        .Handle(driverOnBoardingEmailCommand);
+
+                    processingStates |= MessageProcessingStates.NotificationSent;
+                }
+
+                if (processingStates.HasFlag(MessageProcessingStates.Persisted) &&
+                    !processingStates.HasFlag(MessageProcessingStates.Indexed))
                 {
                     var driverIndexCommand =
                         new DriverIndexCommand(messageAdapter.GetPayloadOut().DriverId);
@@ -47,11 +86,11 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
                     await new DriverIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(driverIndexCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.Indexed;
+                    processingStates |= MessageProcessingStates.Indexed;
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
                 
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Driver application persisted",

@@ -21,14 +21,14 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.MessageHandlers.StoreInde
         }
         
         public async Task HandleMessageAsync(StoreIndexingMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<StoreIndexCreationContract, StoreIndexStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
+                if (!processingStates.HasFlag(MessageProcessingStates.PersistOrder))
                 {
                     var storeIndexCommand =
                         new StoreIndexCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -36,11 +36,11 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.MessageHandlers.StoreInde
                     await new StoreIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
                         storeIndexCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.PersistOrder;
+                    processingStates |= MessageProcessingStates.PersistOrder;
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Store indexed",
                     value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());

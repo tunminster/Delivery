@@ -28,7 +28,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverOnBoardingEmail
         {
             var configurationProvider = serviceProvider.GetRequiredService<IConfigurationProvider>();
             var notificationUniqueId = $"{Guid.NewGuid()}-driver-on-boarding-link";
-            var emailTemplateId = configurationProvider.GetSetting("SendGrid-OnBoarding-EmailTemplateId");
+            var emailTemplateId = configurationProvider.GetSetting("SendGrid-Delivery-OnBoarding-EmailTemplateId");
             var emailTo = command.DriverOnBoardingEmailCreationContract.Email;
             var emailBcc = configurationProvider.GetSetting("SendGrid-On-Boarding-Bcc");
 
