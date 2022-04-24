@@ -20,24 +20,24 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
         }
         
         public async Task HandleMessageAsync(ShopOrderIndexMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<ShopOrderIndexCreationContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var shopOrderIndexCommand =
                         new ShopOrderIndexCommand(messageAdapter.GetPayloadIn().OrderId);
 
-                    if (!processingStates.HasFlag(OrderMessageProcessingStates.Persisted))
+                    if (!processingStates.HasFlag(MessageProcessingStates.Persisted))
                     {
                         await new ShopOrderIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                             .Handle(shopOrderIndexCommand);
                         
-                        processingStates |= OrderMessageProcessingStates.Processed;
+                        processingStates |= MessageProcessingStates.Processed;
                     }
                 }
                 

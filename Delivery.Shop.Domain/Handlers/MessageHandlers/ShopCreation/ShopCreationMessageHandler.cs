@@ -19,14 +19,14 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation
         }
 
         public async Task HandleMessageAsync(ShopCreationMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<ShopCreationContract, ShopCreationStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var shopCreationCommand =
                         new ShopCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -34,7 +34,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation
                     await new ShopCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(shopCreationCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Shop application persisted",

@@ -19,14 +19,14 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderStatusUpdates
         }
 
         public async Task HandleMessageAsync(OrderStatusUpdateMessage message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<StripeUpdateOrderContract, StripeUpdateOrderStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
+                if (!processingStates.HasFlag(MessageProcessingStates.PersistOrder))
                 {
                     var orderStatusUpdateCommand =
                         new OrderStatusUpdateCommand(messageAdapter.GetPayloadIn());
@@ -34,11 +34,11 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderStatusUpdates
                     await new OrderStatusUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
                         orderStatusUpdateCommand);
                     
-                    processingStates |= OrderMessageProcessingStates.PersistOrder;
+                    processingStates |= MessageProcessingStates.PersistOrder;
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Order status updated",
                     value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());

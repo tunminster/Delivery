@@ -20,14 +20,14 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers
         }
 
         public async Task HandleMessageAsync(OrderCreationMessage message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<StripeOrderCreationContract, OrderCreationStatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.PersistOrder))
+                if (!processingStates.HasFlag(MessageProcessingStates.PersistOrder))
                 {
                     var orderCreationCommand =
                         new OrderCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
@@ -36,11 +36,11 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers
                         new OrderCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter);
                     await stripeOrderCreationCommandHandler.Handle(orderCreationCommand);
 
-                    processingStates |= OrderMessageProcessingStates.PersistOrder;
+                    processingStates |= MessageProcessingStates.PersistOrder;
                 }
 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Order persisted",
                     value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());

@@ -22,25 +22,25 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
         }
 
         public async Task HandleMessageAsync(ShopOrderStatusMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<ShopOrderStatusCreationContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var shopOrderStatusCommand =
                         new ShopOrderStatusCommand(messageAdapter.GetPayloadIn());
 
                     var shopOrderStatusContract = new ShopOrderStatusContract();
-                    if (!processingStates.HasFlag(OrderMessageProcessingStates.Persisted))
+                    if (!processingStates.HasFlag(MessageProcessingStates.Persisted))
                     {
                         shopOrderStatusContract = await new ShopOrderStatusCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                             .Handle(shopOrderStatusCommand);
                         
-                        processingStates |= OrderMessageProcessingStates.Persisted;
+                        processingStates |= MessageProcessingStates.Persisted;
                     }
 
                     if (shopOrderStatusContract.Status &&
@@ -58,7 +58,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                             .Handle(shopOrderDriverRequestCommand);
                     }
                     
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Shop application persisted",

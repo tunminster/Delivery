@@ -22,14 +22,14 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.PushNotification
         }
 
         public async Task HandleMessageAsync(OrderCreatedPushNotificationMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<OrderCreatedPushNotificationRequestContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var orderCreatedPushNotificationCommand =
                         new OrderCreatedPushNotificationCommand(messageAdapter.GetPayloadIn());
@@ -40,7 +40,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.PushNotification
                     ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                         .TrackTrace($"{nameof(OrderCreatedPushNotificationCommandHandler)} processed {orderCreatedPushNotificationCommand.OrderCreatedPushNotificationRequestContract.ConvertToJson()}", SeverityLevel.Information, ExecutingRequestContextAdapter.GetTelemetryProperties());
                     
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("A new order push notification sent",

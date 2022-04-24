@@ -20,6 +20,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Delivery.Azure.Library.Communications\Delivery.Azure.Library.Communications.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Messaging\Delivery.Azure.Library.Messaging.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.Microservices.Hosting\Delivery.Azure.Library.Microservices.Hosting.csproj" />
       <ProjectReference Include="..\Delivery.Azure.Library.NotificationHub\Delivery.Azure.Library.NotificationHub.csproj" />
@@ -32,6 +33,7 @@
 
     <ItemGroup>
       <PackageReference Include="NEST" Version="7.10.1" />
+      <PackageReference Include="Stripe.net" Version="39.31.0" />
     </ItemGroup>
 
 </Project>

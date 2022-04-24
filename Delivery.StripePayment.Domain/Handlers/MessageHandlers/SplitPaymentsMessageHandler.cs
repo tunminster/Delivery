@@ -18,14 +18,14 @@ namespace Delivery.StripePayment.Domain.Handlers.MessageHandlers
         }
 
         public async Task HandleMessageAsync(SplitPaymentCreationMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<SplitPaymentCreationContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var splitPaymentCommand =
                         new SplitPaymentCommand(messageAdapter.GetPayloadIn());
@@ -36,7 +36,7 @@ namespace Delivery.StripePayment.Domain.Handlers.MessageHandlers
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
             }
             catch (Exception exception)
             {

@@ -20,14 +20,14 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile
         }
 
         public async Task HandleMessageAsync(DriverServiceAreaUpdateMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<DriverServiceAreaContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var driverServiceAreaUpdateCommand =
                         new DriverServiceAreaUpdateCommand(messageAdapter.GetPayloadIn());
@@ -38,7 +38,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile
                 }
                 
                 // complete
-                processingStates |= OrderMessageProcessingStates.Processed;
+                processingStates |= MessageProcessingStates.Processed;
                 
                 
                 ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Driver service area updated",

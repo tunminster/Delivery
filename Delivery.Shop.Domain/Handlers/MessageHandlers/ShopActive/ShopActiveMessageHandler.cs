@@ -21,14 +21,14 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopActive
         }
 
         public async Task HandleMessageAsync(ShopActiveMessageContract message,
-            OrderMessageProcessingStates processingStates)
+            MessageProcessingStates processingStates)
         {
             try
             {
                 var messageAdapter =
                     new AuditableResponseMessageAdapter<ShopActiveCreationContract, StatusContract>(message);
 
-                if (!processingStates.HasFlag(OrderMessageProcessingStates.Processed))
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
                 {
                     var shopActiveCommand =
                         new ShopActiveCommand(messageAdapter.GetPayloadIn());
@@ -36,7 +36,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopActive
                     await new ShopActiveCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                         .Handle(shopActiveCommand);
 
-                    processingStates |= OrderMessageProcessingStates.Processed;
+                    processingStates |= MessageProcessingStates.Processed;
                 }
 
             }
