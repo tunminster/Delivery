@@ -59,8 +59,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Store: Create store endpoint allows to create store
         /// </summary>
-        /// <param name="storeCreationContract"></param>
-        /// <param name="storeImage"></param>
         /// <returns></returns>
         [Route("CreateStore", Order = 1)]
         [HttpPost]
@@ -105,8 +103,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Store: Update store endpoint allows to update store
         /// </summary>
-        /// <param name="storeUpdateContract"></param>
-        /// <param name="storeImage"></param>
         /// <returns></returns>
         [Route("UpdateStore", Order = 2)]
         [HttpPut]
@@ -177,9 +173,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Get all stores
         /// </summary>
-        /// <param name="numberOfObjectPerPage"></param>
-        /// <param name="pageNumber"></param>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("GetAllStores", Order = 4)]
         [HttpGet]
@@ -204,14 +197,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Store: Search store endpoint allows to search stores 
         /// </summary>
-        /// <param name="searchQuery"></param>
-        /// <param name="filters"></param>
-        /// <param name="storeTypes"></param>
-        /// <param name="latitude"></param>
-        /// <param name="longitude"></param>
-        /// <param name="page"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("Stores-Search", Order = 5)]
         [HttpGet]
@@ -242,12 +227,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Search stores by store type
         /// </summary>
-        /// <param name="storeType"></param>
-        /// <param name="latitude"></param>
-        /// <param name="longitude"></param>
-        /// <param name="page"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("Stores-Search-By-Store-Type", Order = 6)]
         [HttpGet]
@@ -278,7 +257,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Store: Get store details by store id.
         /// </summary>
-        /// <param name="storeId"></param>
         /// <returns></returns>
         [Route("Store-Details", Order = 7)]
         [HttpGet]
@@ -332,17 +310,11 @@ namespace Delivery.Api.Controllers
                     .Id(storeContract.StoreId)
             );
             
-            
-            
-            
             // var deleteResponse = await elasticClient.DeleteAsync<StoreContract>(storeContract.StoreId, d => d
             //     .Index("stores")
             // );
 
             //var deleteIndexResponse = await elasticClient.Index("sto
-            
-            
-            
         }
 
         private async Task<StoreImageCreationStatusContract> UploadStoreImageAsync(string storeId, string storeName, IFormFile storeImage, IExecutingRequestContextAdapter executingRequestContextAdapter)

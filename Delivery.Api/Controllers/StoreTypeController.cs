@@ -40,7 +40,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Create store type
         /// </summary>
-        /// <param name="storeTypeCreationContract"></param>
         /// <returns></returns>
         [Route("Create-StoreType")]
         [HttpPost]
@@ -75,7 +74,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Get store type
         /// </summary>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [Route("GetAllStoreTypes")]
         [HttpGet]
