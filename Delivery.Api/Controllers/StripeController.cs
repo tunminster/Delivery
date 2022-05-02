@@ -41,7 +41,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Stripe api endpoint
         /// </summary>
-        /// <param name="serviceProvider"></param>
         public StripeController(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
@@ -50,7 +49,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Create connect account
         /// </summary>
-        /// <param name="stripeAccountCreationContract"></param>
         /// <returns></returns>
         [Route("Account/CreateAccount", Order = 1)]
         [HttpPost]
@@ -79,7 +77,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Create login link
         /// </summary>
-        /// <param name="stripeLoginLinkCreationContract"></param>
         /// <returns></returns>
         [Route("Account/CreatLoginLink", Order = 2)]
         [HttpPost]
@@ -108,7 +105,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Create on boarding link 
         /// </summary>
-        /// <param name="stripeAccountLinkCreationContract"></param>
         /// <returns></returns>
         [Route("Account/CreatOnBoardingLink", Order = 3)]
         [HttpPost]
@@ -181,7 +177,6 @@ namespace Delivery.Api.Controllers
         /// <summary>
         ///  Create capture payment
         /// </summary>
-        /// <param name="stripePaymentCaptureCreationContract"></param>
         /// <returns></returns>
         [Route("Payment/CapturePayment", Order = 6)]
         [HttpPost]

@@ -65,7 +65,6 @@ namespace Delivery.Api.Controllers
             this.logger = logger;
         }
 
-        // POST: api/User
         /// <summary>
         ///  Register user endpoint 
         /// </summary>
