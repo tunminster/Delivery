@@ -23,7 +23,7 @@ namespace Delivery.Api.OpenApi
 			AddRouteWithCategoryFilter(ApiCategory.Driver, DriverApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.Driver.ToString()));
 			AddRouteWithCategoryFilter(ApiCategory.ShopOwner, StoreOwnerApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.ShopOwner.ToString()));
 			AddRouteWithCategoryFilter(ApiCategory.Customer, CustomerApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.Customer.ToString()));
-			AddRouteWithCategoryFilter(ApiCategory.WebApp, CustomerApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.WebApp.ToString()));
+			AddRouteWithCategoryFilter(ApiCategory.WebApp, WebAppApiDocumentation.GetApiGeneralDocumentationMarkdown(environment, ApiCategory.WebApp.ToString()));
 		}
 
 		private void AddRouteWithCategoryFilter(ApiCategory apiCategory, string description, bool sortBySummary = false)
