@@ -46,7 +46,7 @@ jobs:
             authorizationTokenEndpoint: 'https://localhost:5001'
             authorizationClientId: 'clientid'
             authorizationClientSecret: 'seecret'
-            authorizationScopes: 'category_customer'
+            authorizationScopes: 'category_driver'
             maxRetryCount: 10
             additionalEnvironmentSettingsJson: "{ 'Ocp-Apim-Subscription-Key': 'Enter subscription key' }"
             failOnStderr: false
@@ -58,7 +58,7 @@ jobs:
             authorizationTokenEndpoint: 'https://localhost:5001'
             authorizationClientId: 'clientid'
             authorizationClientSecret: 'seecret'
-            authorizationScopes: 'category_customer'
+            authorizationScopes: 'category_shopowner'
             maxRetryCount: 10
             additionalEnvironmentSettingsJson: "{ 'Ocp-Apim-Subscription-Key': 'Enter subscription key' }"
             failOnStderr: false
