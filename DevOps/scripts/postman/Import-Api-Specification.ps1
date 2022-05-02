@@ -99,7 +99,7 @@ $apiPayload = @"
     "api": {
         "name": "$documentTitle",
         "summary": "Contains api operations to manage the domain in $documentTitle",
-        "description": "Contact support (lst.corso.digital.markets@swissre.com) in case of issues"
+        "description": "Contact support (contact@ragibull.com) in case of issues"
     }
 }
 "@
