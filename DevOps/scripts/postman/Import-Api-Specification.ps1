@@ -192,6 +192,7 @@ Write-Host $relationsPayload
 $response = InvokeWithRetry $relationsUrl 'POST' $relationsPayload | ConvertFrom-Json
 
 ## Drop previous collection
+Write-Host "Dropping previous collection"
 $getCollectionsUrl = "https://api.getpostman.com/collections"
 Write-Host "Calling $getCollectionsUrl with $apiKey"
 
@@ -199,7 +200,10 @@ $response = InvokeWithRetry $getCollectionsUrl 'GET' $null | ConvertFrom-Json
 $collections = $response.collections | Where-Object { $_.name -eq $documentTitle }
 $collectionCount = $collections.Length
 
+Write-Host "Collection count: $collectionCount "
+
 if($collectionCount -gt 1) {
+    Write-Host "Deleting collection"
     Write-Host "Expected one or less collections to match '$documentTitle'. Found: $collections"
     $collectionUid = $collections[0].uid
     $deleteCollectionsUri = $getCollectionsUrl + "/" + $collectionUid
@@ -209,6 +213,7 @@ if($collectionCount -gt 1) {
 }
 
 if($collectionCount -eq 0) {
+    Write-Host "Creating a collection"
     ## Create collection
     $collectionUrl = $apisBaseUrl + "/" + $apiId + "/" + "versions/" + $apiVersionId + "/schemas/" + $schemaId + "/collections?workspace=$workspaceId"
     $collectionPayload = @"
