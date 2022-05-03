@@ -202,6 +202,16 @@ $collectionCount = $collections.Length
 
 Write-Host "Collection count: $collectionCount "
 
+if($collectionCount -eq 1) {
+    Write-Host "Deleting collection"
+    Write-Host "Expected one or less collections to match '$documentTitle'. Found: $collections"
+    $collectionUid = $collections[0].uid
+    $deleteCollectionsUri = $getCollectionsUrl + "/" + $collectionUid
+    Write-Host "Deleting collections with uid $collectionUid"
+    InvokeWithRetry $deleteCollectionsUri 'DELETE' $null
+    $collectionCount = 0
+}
+
 if($collectionCount -gt 1) {
     Write-Host "Deleting collection"
     Write-Host "Expected one or less collections to match '$documentTitle'. Found: $collections"
