@@ -27,7 +27,7 @@ namespace Delivery.Managements.Domain.Handlers.CommandHandlers.ResetPassword
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<UserManagementResetPasswordStatusContract> Handle(UserManagementResetPasswordVerificationRequestCommand command)
+        public async Task<UserManagementResetPasswordStatusContract> HandleAsync(UserManagementResetPasswordVerificationRequestCommand command)
         {
             var twilioAccountSid = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Account-Sid");
             var twilioAuthToken = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Auth-Token");

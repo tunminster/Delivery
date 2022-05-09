@@ -26,7 +26,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<ShopOrderStatusContract> Handle(ShopOrderStatusCommand statusCommand)
+        public async Task<ShopOrderStatusContract> HandleAsync(ShopOrderStatusCommand statusCommand)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
@@ -71,7 +71,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             {
                 // re-index shop order
                 var shopOrderIndexCommand = new ShopOrderIndexCommand(order.ExternalId);
-                await new ShopOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                await new ShopOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                     shopOrderIndexCommand);
             }
 

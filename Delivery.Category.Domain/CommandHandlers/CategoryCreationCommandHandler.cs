@@ -19,7 +19,7 @@ namespace Delivery.Category.Domain.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<CategoryCreationStatusContract> Handle(CategoryCreationCommand command)
+        public async Task<CategoryCreationStatusContract> HandleAsync(CategoryCreationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

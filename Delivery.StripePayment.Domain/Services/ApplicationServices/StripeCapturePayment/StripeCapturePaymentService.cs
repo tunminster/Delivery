@@ -39,7 +39,7 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeCaptu
 
             var stripePaymentCaptureCreationStatus =
                 await new PaymentIntentConfirmationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(paymentIntentConfirmationCommand);
+                    .HandleAsync(paymentIntentConfirmationCommand);
 
             // pay split payment
             // if (stripePaymentCaptureCreationStatus.Captured)

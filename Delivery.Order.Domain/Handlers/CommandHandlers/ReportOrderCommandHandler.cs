@@ -17,7 +17,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
 
-        public async Task<bool> Handle(CreateReportOrderCommand command)
+        public async Task<bool> HandleAsync(CreateReportOrderCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             

@@ -20,7 +20,7 @@ namespace Delivery.Category.Domain.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<CategoryUpdateStatusContract> Handle(CategoryDeleteCommand command)
+        public async Task<CategoryUpdateStatusContract> HandleAsync(CategoryDeleteCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

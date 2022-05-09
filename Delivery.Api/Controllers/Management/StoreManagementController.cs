@@ -147,7 +147,7 @@ namespace Delivery.Api.Controllers.Management
             }
 
             await new StoreCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(new StoreCreationCommand(storeCreationContract, storeCreationStatusContract));
+                .HandleAsync(new StoreCreationCommand(storeCreationContract, storeCreationStatusContract));
             
             return Ok(storeCreationStatusContract);
         }
@@ -190,7 +190,7 @@ namespace Delivery.Api.Controllers.Management
             }
 
             await new StoreUpdateCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(new StoreUpdateCommand(storeUpdateContract, storeUpdateStatusContract));
+                .HandleAsync(new StoreUpdateCommand(storeUpdateContract, storeUpdateStatusContract));
             
             return Ok(storeUpdateStatusContract);
         }
@@ -216,7 +216,7 @@ namespace Delivery.Api.Controllers.Management
             
             var shopApprovalCommand = new ShopApprovalCommand(shopApprovalContract);
             
-            var shopApprovalStatusContract = await new ShopApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+            var shopApprovalStatusContract = await new ShopApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                 shopApprovalCommand);
 
             return Ok(shopApprovalStatusContract);
@@ -243,7 +243,7 @@ namespace Delivery.Api.Controllers.Management
             
             var shopUserApprovalCommand = new ShopUserApprovalCommand(shopUserApprovalContract);
             
-            var shopUserApprovalStatusContract = await new ShopUserApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+            var shopUserApprovalStatusContract = await new ShopUserApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                 shopUserApprovalCommand);
 
             return Ok(shopUserApprovalStatusContract);

@@ -29,7 +29,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.SplitPayments
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StatusContract> Handle(SplitPaymentCommand command)
+        public async Task<StatusContract> HandleAsync(SplitPaymentCommand command)
         {
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;

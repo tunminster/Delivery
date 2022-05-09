@@ -31,7 +31,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StatusContract> Handle(DriverSendOrderRejectionCommand command)
+        public async Task<StatusContract> HandleAsync(DriverSendOrderRejectionCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var driver = await databaseContext.Drivers.SingleOrDefaultAsync(x => x.ExternalId == command.DriverId) 

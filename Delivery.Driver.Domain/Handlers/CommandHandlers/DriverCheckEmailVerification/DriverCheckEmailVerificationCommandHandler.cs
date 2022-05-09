@@ -27,7 +27,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCheckEmailVerifi
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DriverEmailVerificationStatusContract> Handle(DriverCheckEmailVerificationCommand command)
+        public async Task<DriverEmailVerificationStatusContract> HandleAsync(DriverCheckEmailVerificationCommand command)
         {
             var twilioAccountSid = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Account-Sid");
             var twilioAuthToken = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Auth-Token");

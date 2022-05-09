@@ -20,7 +20,7 @@ namespace Delivery.Category.Domain.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<CategoryUpdateStatusContract> Handle(CategoryUpdateCommand command)
+        public async Task<CategoryUpdateStatusContract> HandleAsync(CategoryUpdateCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var user = executingRequestContextAdapter.GetAuthenticatedUser();

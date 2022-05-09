@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Address.Domain.Contracts;
 using Delivery.Azure.Library.Sharding.Adapters;
@@ -18,13 +19,17 @@ namespace Delivery.Address.Domain.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
 
-        public async Task<AddressCreationStatusContract> Handle(AddressCreationCommand command)
+        public async Task<AddressCreationStatusContract> HandleAsync(AddressCreationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+            var customer = databaseContext.Customers.First(x => string.Equals(x.Username,
+                executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
+                StringComparison.InvariantCultureIgnoreCase));
             
             var address = new Database.Entities.Address
             {
-                CustomerId = command.AddressContract.CustomerId,
+                CustomerId = customer.Id,
                 AddressLine = command.AddressContract.AddressLine,
                 Description = command.AddressContract.Description,
                 City = command.AddressContract.City,

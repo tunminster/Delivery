@@ -228,7 +228,7 @@ namespace Delivery.Api.Controllers.Drivers
 
             var driverStartEmailVerificationStatusContract =
                 await new DriverStartEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new DriverStartEmailVerificationCommand(driverStartEmailVerificationContract));
+                    .HandleAsync(new DriverStartEmailVerificationCommand(driverStartEmailVerificationContract));
 
             return Ok(driverStartEmailVerificationStatusContract);
         }
@@ -254,7 +254,7 @@ namespace Delivery.Api.Controllers.Drivers
 
             var driverEmailVerificationStatusContract =
                 await new DriverCheckEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new DriverCheckEmailVerificationCommand(driverCheckEmailVerificationContract));
+                    .HandleAsync(new DriverCheckEmailVerificationCommand(driverCheckEmailVerificationContract));
 
             if (driverEmailVerificationStatusContract.Status == "approved")
             {
@@ -286,7 +286,7 @@ namespace Delivery.Api.Controllers.Drivers
             
             var driverResetPasswordStatusContract =
                 await new DriverResetPasswordVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new DriverResetPasswordVerificationCommand(driverResetPasswordRequestContract));
+                    .HandleAsync(new DriverResetPasswordVerificationCommand(driverResetPasswordRequestContract));
 
             return Ok(driverResetPasswordStatusContract);
         }
@@ -316,7 +316,7 @@ namespace Delivery.Api.Controllers.Drivers
             var driverResetPasswordStatusContract =
                 await new DriverCheckResetPasswordVerificationCommandHandler(serviceProvider,
                         executingRequestContextAdapter)
-                    .Handle(new DriverCheckResetPasswordVerificationCommand(driverResetPasswordCreationContract));
+                    .HandleAsync(new DriverCheckResetPasswordVerificationCommand(driverResetPasswordCreationContract));
 
             if (driverResetPasswordStatusContract.Status == "approved")
             {

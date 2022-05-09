@@ -19,7 +19,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopApproval
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<ShopApprovalStatusContract> Handle(ShopApprovalCommand command)
+        public async Task<ShopApprovalStatusContract> HandleAsync(ShopApprovalCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var store = await databaseContext.Stores.FirstOrDefaultAsync(x => x.ExternalId == command.ShopApprovalContract.ShopId);

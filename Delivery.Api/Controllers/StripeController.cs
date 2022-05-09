@@ -96,7 +96,7 @@ namespace Delivery.Api.Controllers
             
             var loginLinkCreationCommand = new LoginLinkCreationCommand(stripeLoginLinkCreationContract);
             var loginLinkCreationStatusContract =
-                new LoginLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                new LoginLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                     loginLinkCreationCommand);
 
             return Ok(loginLinkCreationStatusContract);
@@ -127,7 +127,7 @@ namespace Delivery.Api.Controllers
                 new AccountLinkCreationCommand(stripeAccountLinkCreationContract);
 
             var stripeAccountLinkCreationStatusContract =
-                await new AccountLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(accountLinkCreationCommand);
+                await new AccountLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(accountLinkCreationCommand);
 
             return Ok(stripeAccountLinkCreationStatusContract);
 

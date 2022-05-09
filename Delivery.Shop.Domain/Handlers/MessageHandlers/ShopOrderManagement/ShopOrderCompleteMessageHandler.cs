@@ -38,7 +38,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                     var shopOrderRemoveIndexCommand = new ShopOrderRemoveIndexCommand(messageAdapter.GetPayloadIn().Id);
 
                     await new ShopOrderRemoveIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(shopOrderRemoveIndexCommand);
+                        .HandleAsync(shopOrderRemoveIndexCommand);
                     
                     
                     // update order
@@ -50,7 +50,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                     };
 
                     var shopOrderStatusCommand = new ShopOrderStatusCommand(shopOrderStatusCreationContract);
-                    await new ShopOrderStatusCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
+                    await new ShopOrderStatusCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).HandleAsync(
                         shopOrderStatusCommand);
                     
                     // push notification to shop owner

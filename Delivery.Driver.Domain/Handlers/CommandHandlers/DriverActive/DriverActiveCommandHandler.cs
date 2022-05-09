@@ -22,7 +22,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverActive
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DriverActiveStatusContract> Handle(DriverActiveCommand command)
+        public async Task<DriverActiveStatusContract> HandleAsync(DriverActiveCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

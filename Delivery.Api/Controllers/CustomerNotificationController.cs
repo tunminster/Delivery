@@ -56,7 +56,7 @@ namespace Delivery.Api.Controllers
             var command = new CustomerNotificationRegistrationIdCommand(handle);
 
             var registrationId =
-                await  new CustomerNotificationRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+                await  new CustomerNotificationRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(command);
             
             return Ok(new DeviceRegistrationResponseContract{Id = registrationId});
         }
@@ -83,7 +83,7 @@ namespace Delivery.Api.Controllers
 
             var command = new CustomerNotificationRegisterDeviceCommand(registerDeviceModel);
             var deviceRegistrationResponseContract =
-                await new CustomerNotificationRegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+                await new CustomerNotificationRegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(command);
             return Ok(deviceRegistrationResponseContract);
         }
         

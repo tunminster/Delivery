@@ -24,7 +24,7 @@ namespace Delivery.Product.Domain.Handlers.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
 
-        public async Task<ProductCreationStatusContract> Handle(CreateProductCommand command)
+        public async Task<ProductCreationStatusContract> HandleAsync(CreateProductCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             

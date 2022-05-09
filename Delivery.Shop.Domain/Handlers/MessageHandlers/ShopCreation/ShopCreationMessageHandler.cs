@@ -32,7 +32,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation
                         new ShopCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
 
                     await new ShopCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(shopCreationCommand);
+                        .HandleAsync(shopCreationCommand);
                     
                     processingStates |= MessageProcessingStates.Processed;
                 }

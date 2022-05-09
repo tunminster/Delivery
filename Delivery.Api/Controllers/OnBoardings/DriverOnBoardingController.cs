@@ -148,7 +148,7 @@ namespace Delivery.Api.Controllers.OnBoardings
 
             var driverStartEmailVerificationStatusContract =
                 await new DriverStartEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new DriverStartEmailVerificationCommand(driverStartEmailVerificationContract));
+                    .HandleAsync(new DriverStartEmailVerificationCommand(driverStartEmailVerificationContract));
 
             return Ok(driverStartEmailVerificationStatusContract);
         }
@@ -174,7 +174,7 @@ namespace Delivery.Api.Controllers.OnBoardings
 
             var driverEmailVerificationStatusContract =
                 await new DriverCheckEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new DriverCheckEmailVerificationCommand(driverCheckEmailVerificationContract));
+                    .HandleAsync(new DriverCheckEmailVerificationCommand(driverCheckEmailVerificationContract));
 
             if (driverEmailVerificationStatusContract.Status == "approved")
             {

@@ -26,7 +26,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<OrderCreationStatusContract> Handle(OrderCreationCommand command)
+        public async Task<OrderCreationStatusContract> HandleAsync(OrderCreationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

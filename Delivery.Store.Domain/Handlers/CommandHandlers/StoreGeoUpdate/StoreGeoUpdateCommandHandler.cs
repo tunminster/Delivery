@@ -25,7 +25,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StoreGeoUpdateStatusContract> Handle(StoreGeoUpdateCommand command)
+        public async Task<StoreGeoUpdateStatusContract> HandleAsync(StoreGeoUpdateCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
@@ -88,7 +88,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate
             var storeIndexCommand = new StoreIndexCommand(storeIndexCreationContract, storeIndexStatusContract);
 
             var storeIndexStatus = await new StoreIndexCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(storeIndexCommand);
+                .HandleAsync(storeIndexCommand);
         }
     }
 }

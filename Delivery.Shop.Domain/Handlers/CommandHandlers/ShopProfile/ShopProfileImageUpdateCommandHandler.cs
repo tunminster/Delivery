@@ -24,7 +24,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopProfile
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StatusContract> Handle(ShopProfileImageUpdateCommand command)
+        public async Task<StatusContract> HandleAsync(ShopProfileImageUpdateCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

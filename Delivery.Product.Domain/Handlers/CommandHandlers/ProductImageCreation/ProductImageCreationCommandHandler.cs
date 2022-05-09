@@ -23,7 +23,7 @@ namespace Delivery.Product.Domain.Handlers.CommandHandlers.ProductImageCreation
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<ProductImageCreationStatusContract> Handle(ProductImageCreationCommand command)
+        public async Task<ProductImageCreationStatusContract> HandleAsync(ProductImageCreationCommand command)
         {
             var storageAccountConnectionStringKey = $"Storage-Account-{executingRequestContextAdapter.GetShard().Key}-Connection-String";
             

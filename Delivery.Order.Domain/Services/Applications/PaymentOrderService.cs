@@ -53,7 +53,7 @@ namespace Delivery.Order.Domain.Services.Applications
             // Generate total amount
             var orderCreationStatus =
                 await new StripeOrderTotalAmountCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new StripeOrderTotalAmountCreationCommand(paymentOrderServiceRequest.StripeOrderCreationContract,
+                    .HandleAsync(new StripeOrderTotalAmountCreationCommand(paymentOrderServiceRequest.StripeOrderCreationContract,
                     orderCreateStatusContract, paymentOrderServiceRequest.StripeOrderCreationContract.PromoCode, promotionDiscount));
             
             //todo: find out store business rate
@@ -94,7 +94,7 @@ namespace Delivery.Order.Domain.Services.Applications
 
             var paymentIntentCreationCommand = new PaymentIntentCreationCommand(paymentIntentCreationContract);
             var paymentIntentCreationStatusContract =
-                await new PaymentIntentCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(paymentIntentCreationCommand);
+                await new PaymentIntentCreationCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(paymentIntentCreationCommand);
 
             orderCreationStatus.StripePaymentIntentId = paymentIntentCreationStatusContract.StripePaymentIntentId;
             

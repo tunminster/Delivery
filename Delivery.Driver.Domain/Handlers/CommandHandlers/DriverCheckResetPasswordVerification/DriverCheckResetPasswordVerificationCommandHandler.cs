@@ -26,7 +26,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCheckResetPasswo
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DriverResetPasswordStatusContract> Handle(DriverCheckResetPasswordVerificationCommand command)
+        public async Task<DriverResetPasswordStatusContract> HandleAsync(DriverCheckResetPasswordVerificationCommand command)
         {
             var twilioAccountSid = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Account-Sid");
             var twilioAuthToken = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Auth-Token");

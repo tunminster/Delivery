@@ -22,7 +22,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreTypeCreation
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StoreTypeCreationStatusContract> Handle(StoreTypeCreationCommand command)
+        public async Task<StoreTypeCreationStatusContract> HandleAsync(StoreTypeCreationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var storeType = StoreTypeConverter.Convert(command.StoreTypeCreationContract);

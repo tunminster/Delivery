@@ -22,7 +22,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.StripePaymentCr
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StripePaymentCreationStatusContract> Handle(StripePaymentCreationCommand command)
+        public async Task<StripePaymentCreationStatusContract> HandleAsync(StripePaymentCreationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

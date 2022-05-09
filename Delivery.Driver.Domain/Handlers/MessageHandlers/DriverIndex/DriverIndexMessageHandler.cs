@@ -33,7 +33,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverIndex
                         new DriverIndexCommand(messageAdapter.GetPayloadIn().DriverId);
 
                     await new DriverIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(driverIndexCommand);
+                        .HandleAsync(driverIndexCommand);
                     
                     // complete
                     processingStates |= MessageProcessingStates.Processed;

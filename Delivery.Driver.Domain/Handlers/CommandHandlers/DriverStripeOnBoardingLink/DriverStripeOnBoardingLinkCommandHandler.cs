@@ -21,7 +21,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverStripeOnBoarding
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DriverOnBoardingLinkStatusContract> Handle(DriverStripeOnBoardingLinkCommand command)
+        public async Task<DriverOnBoardingLinkStatusContract> HandleAsync(DriverStripeOnBoardingLinkCommand command)
         {
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;

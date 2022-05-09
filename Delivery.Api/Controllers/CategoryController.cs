@@ -116,7 +116,7 @@ namespace Delivery.Api.Controllers
                 new CategoryCreationCommandHandler(serviceProvider, executingRequestContextAdapter);
             
             var categoryCreationCommand = new CategoryCreationCommand(categoryCreationContract);
-            var categoryCreationStatusContract = await categoryCreationCommandHandler.Handle(categoryCreationCommand);
+            var categoryCreationStatusContract = await categoryCreationCommandHandler.HandleAsync(categoryCreationCommand);
             
             return Ok(categoryCreationStatusContract);
         }
@@ -139,7 +139,7 @@ namespace Delivery.Api.Controllers
             var categoryUpdateCommandHandler =
                 new CategoryUpdateCommandHandler(serviceProvider, executingRequestContextAdapter);
             
-            var categoryUpdateStatusContract = await categoryUpdateCommandHandler.Handle(categoryUpdateCommand);
+            var categoryUpdateStatusContract = await categoryUpdateCommandHandler.HandleAsync(categoryUpdateCommand);
 
             return Ok(categoryUpdateStatusContract);
         }
@@ -158,7 +158,7 @@ namespace Delivery.Api.Controllers
             var categoryDeleteCommand = new CategoryDeleteCommand(id);
             var categoryDeleteCommandHandler =
                 new CategoryDeleteCommandHandler(serviceProvider, executingRequestContextAdapter);
-            var categoryDeleteStatusContract = await  categoryDeleteCommandHandler.Handle(categoryDeleteCommand);
+            var categoryDeleteStatusContract = await  categoryDeleteCommandHandler.HandleAsync(categoryDeleteCommand);
 
             return Ok(categoryDeleteStatusContract);
         }

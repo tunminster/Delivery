@@ -21,7 +21,7 @@ namespace Delivery.Notifications.Handlers.CommandHandlers.DeleteRegisterDevice
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<string> Handle(DeleteRegisterCommand command)
+        public async Task<string> HandleAsync(DeleteRegisterCommand command)
         {
             var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationHubName, NotificationHubConstants.NotificationHubConnectionStringName);
 

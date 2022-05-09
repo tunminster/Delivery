@@ -112,7 +112,7 @@ namespace Delivery.Api.Controllers.Shops
 
                 var statusContract =
                     await new ShopProfileImageUpdateCommandHandler(serviceProvider, executingRequestContextAdapter)
-                        .Handle(new ShopProfileImageUpdateCommand(shopProfileImageCreationContract));
+                        .HandleAsync(new ShopProfileImageUpdateCommand(shopProfileImageCreationContract));
 
                 return Ok(statusContract);
             }

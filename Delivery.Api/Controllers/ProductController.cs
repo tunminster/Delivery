@@ -140,7 +140,7 @@ namespace Delivery.Api.Controllers
 
             var result =
                 await new CreateProductCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(createProductCommand);
+                    .HandleAsync(createProductCommand);
             
             return Ok(result);
         }
@@ -211,7 +211,7 @@ namespace Delivery.Api.Controllers
                 new ProductUpdateCommandHandler(serviceProvider, executingRequestContextAdapter);
             
             var productUpdateCommand = new ProductUpdateCommand(productUpdateContract);
-            var isProductUpdated = await productUpdateCommandHandler.Handle(productUpdateCommand);
+            var isProductUpdated = await productUpdateCommandHandler.HandleAsync(productUpdateCommand);
             
             return Ok(isProductUpdated);
         }
@@ -229,7 +229,7 @@ namespace Delivery.Api.Controllers
             var productDeleteCommandHandler =
                 new ProductDeleteCommandHandler(serviceProvider, executingRequestContextAdapter);
             var productDeleteCommand = new ProductDeleteCommand(id);
-            var isProductDeleted = await productDeleteCommandHandler.Handle(productDeleteCommand);
+            var isProductDeleted = await productDeleteCommandHandler.HandleAsync(productDeleteCommand);
             
             return Ok(isProductDeleted);
         }
@@ -247,7 +247,7 @@ namespace Delivery.Api.Controllers
 
             var productImageCreationStatusContract =
                 await new ProductImageCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(productImageCreationCommand);
+                    .HandleAsync(productImageCreationCommand);
 
             return productImageCreationStatusContract;
         }

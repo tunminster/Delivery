@@ -52,7 +52,7 @@ namespace Delivery.Api.Controllers.Shops
             var command = new ShopNotificationRegistrationIdCommand(handle);
 
             var registrationId =
-                await  new ShopNotificationRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+                await  new ShopNotificationRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(command);
             
             return Ok(new DeviceRegistrationResponseContract{Id = registrationId});
         }
@@ -79,7 +79,7 @@ namespace Delivery.Api.Controllers.Shops
 
             var command = new ShopNotificationRegisterDeviceCommand(registerDeviceModel);
             var deviceRegistrationResponseContract =
-                await new ShopNotificationRegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+                await new ShopNotificationRegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(command);
             return Ok(deviceRegistrationResponseContract);
         }
         

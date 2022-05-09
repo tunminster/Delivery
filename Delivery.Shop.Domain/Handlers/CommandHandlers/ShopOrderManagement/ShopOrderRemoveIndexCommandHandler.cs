@@ -24,7 +24,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StatusContract> Handle(ShopOrderRemoveIndexCommand command)
+        public async Task<StatusContract> HandleAsync(ShopOrderRemoveIndexCommand command)
         {
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
             var indexExist = await elasticClient.Indices.ExistsAsync($"{ElasticSearchIndexConstants.ShopOrdersIndex}{executingRequestContextAdapter.GetShard().Key.ToLower()}");

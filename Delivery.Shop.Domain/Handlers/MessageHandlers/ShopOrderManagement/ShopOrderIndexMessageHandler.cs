@@ -35,7 +35,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                     if (!processingStates.HasFlag(MessageProcessingStates.Persisted))
                     {
                         await new ShopOrderIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                            .Handle(shopOrderIndexCommand);
+                            .HandleAsync(shopOrderIndexCommand);
                         
                         processingStates |= MessageProcessingStates.Processed;
                     }

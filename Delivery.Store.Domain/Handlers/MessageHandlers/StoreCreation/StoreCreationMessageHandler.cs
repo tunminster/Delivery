@@ -31,7 +31,7 @@ namespace Delivery.Store.Domain.Handlers.MessageHandlers.StoreCreation
                     var storeCreationCommand =
                         new StoreCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
 
-                    await new StoreCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
+                    await new StoreCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).HandleAsync(
                         storeCreationCommand);
                     
                     processingStates |= MessageProcessingStates.PersistOrder;

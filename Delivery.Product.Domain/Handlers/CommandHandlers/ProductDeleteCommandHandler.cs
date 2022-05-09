@@ -16,7 +16,7 @@ namespace Delivery.Product.Domain.Handlers.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<bool> Handle(ProductDeleteCommand command)
+        public async Task<bool> HandleAsync(ProductDeleteCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             

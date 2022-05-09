@@ -115,7 +115,7 @@ namespace Delivery.Api.Controllers
             var addressCreationCommandHandler =
                 new AddressCreationCommandHandler(serviceProvider, executingRequestContextAdapter);
             
-            var addressCreationStatusContract = await addressCreationCommandHandler.Handle(addressCreationCommand);
+            var addressCreationStatusContract = await addressCreationCommandHandler.HandleAsync(addressCreationCommand);
 
             return Ok(addressCreationStatusContract);
         }

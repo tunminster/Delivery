@@ -105,7 +105,7 @@ namespace Delivery.Api.Controllers.Management
 
             var result =
                 await new CreateProductManagementCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(createProductManagementCommand);
+                    .HandleAsync(createProductManagementCommand);
             
             return Ok(result);
         }
@@ -145,7 +145,7 @@ namespace Delivery.Api.Controllers.Management
 
             var productCreationStatusContract =
                 await new UpdateProductManagementCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(updateProductManagementCommand);
+                    .HandleAsync(updateProductManagementCommand);
             
             return Ok(productCreationStatusContract);
         }
@@ -182,7 +182,7 @@ namespace Delivery.Api.Controllers.Management
 
             var productImageCreationStatusContract =
                 await new ProductImageCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(productImageCreationCommand);
+                    .HandleAsync(productImageCreationCommand);
 
             return productImageCreationStatusContract;
         }

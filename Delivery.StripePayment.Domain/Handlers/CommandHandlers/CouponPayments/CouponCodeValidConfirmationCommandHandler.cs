@@ -22,7 +22,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.CouponPayments
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<CouponCodeStatusContract> Handle(CouponCodeValidConfirmationCommand command)
+        public async Task<CouponCodeStatusContract> HandleAsync(CouponCodeValidConfirmationCommand command)
         {
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;

@@ -32,7 +32,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StatusContract> Handle(ShopOrderDriverRequestPushNotificationCommand command)
+        public async Task<StatusContract> HandleAsync(ShopOrderDriverRequestPushNotificationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var driver = await databaseContext.Drivers.SingleOrDefaultAsync(x => x.Id == command.DriverId) 

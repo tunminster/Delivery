@@ -43,7 +43,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates
                     
                     var orderUpdateCommandHandler =
                         new OrderUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter);
-                    var stripeOrderUpdateStatusContract = await orderUpdateCommandHandler.Handle(orderUpdateCommand);
+                    var stripeOrderUpdateStatusContract = await orderUpdateCommandHandler.HandleAsync(orderUpdateCommand);
                     orderId = stripeOrderUpdateStatusContract.OrderId;
                     orderPaymentStatus = stripeOrderUpdateStatusContract.PaymentStatusEnum;
                     processingStates |= MessageProcessingStates.PersistOrder;

@@ -32,7 +32,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DeviceRegistrationResponseContract> Handle(DriverNotificationRegisterDeviceCommand command)
+        public async Task<DeviceRegistrationResponseContract> HandleAsync(DriverNotificationRegisterDeviceCommand command)
         {
             var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationDriverHubName, NotificationHubConstants.NotificationDriverHubConnectionStringName);
 

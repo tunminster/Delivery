@@ -33,7 +33,7 @@ namespace Delivery.StripePayment.Domain.Handlers.MessageHandlers
                     
                     var stripePaymentCreationCommandHandler =
                         new StripePaymentCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter);
-                    await stripePaymentCreationCommandHandler.Handle(stripePaymentCreationCommand);
+                    await stripePaymentCreationCommandHandler.HandleAsync(stripePaymentCreationCommand);
 
                     processingStates |= MessageProcessingStates.PersistOrder;
                 }

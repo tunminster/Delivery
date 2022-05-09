@@ -31,7 +31,7 @@ namespace Delivery.Store.Domain.Handlers.MessageHandlers.StoreUpdate
                     var storeUpdateCommand =
                         new StoreUpdateCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
                     
-                    await new StoreUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
+                    await new StoreUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).HandleAsync(
                         storeUpdateCommand);
                     
                     processingStates |= MessageProcessingStates.PersistOrder;

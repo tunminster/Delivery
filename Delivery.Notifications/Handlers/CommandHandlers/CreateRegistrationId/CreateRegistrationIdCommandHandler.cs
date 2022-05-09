@@ -22,7 +22,7 @@ namespace Delivery.Notifications.Handlers.CommandHandlers.CreateRegistrationId
         }
         
         
-        public async Task<string> Handle(CreateRegistrationIdCommand command)
+        public async Task<string> HandleAsync(CreateRegistrationIdCommand command)
         {
             var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationHubName, NotificationHubConstants.NotificationHubConnectionStringName);
 

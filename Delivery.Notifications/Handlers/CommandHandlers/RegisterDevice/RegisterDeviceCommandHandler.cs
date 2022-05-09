@@ -29,7 +29,7 @@ namespace Delivery.Notifications.Handlers.CommandHandlers.RegisterDevice
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DeviceRegistrationResponseContract> Handle(RegisterDeviceCommand command)
+        public async Task<DeviceRegistrationResponseContract> HandleAsync(RegisterDeviceCommand command)
         {
             var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationHubName, NotificationHubConstants.NotificationHubConnectionStringName);
 

@@ -18,7 +18,7 @@ namespace Delivery.Address.Domain.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<AddressUpdateStatusContract> Handle(AddressUpdateCommand command)
+        public async Task<AddressUpdateStatusContract> HandleAsync(AddressUpdateCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             

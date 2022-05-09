@@ -34,7 +34,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                         new ShopOrderDriverRequestCommand(messageAdapter.GetPayloadIn());
                     
                     await new ShopOrderDriverRequestCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(shopOrderStatusCommand);
+                        .HandleAsync(shopOrderStatusCommand);
                     
                     processingStates |= MessageProcessingStates.Processed;
                 }

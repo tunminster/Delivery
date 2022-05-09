@@ -23,7 +23,7 @@ namespace Delivery.Product.Domain.Handlers.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<ProductUpdateStatusContract> Handle(ProductUpdateCommand command)
+        public async Task<ProductUpdateStatusContract> HandleAsync(ProductUpdateCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             

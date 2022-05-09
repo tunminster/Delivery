@@ -35,7 +35,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StatusContract> Handle(ShopOrderDriverRequestCommand command)
+        public async Task<StatusContract> HandleAsync(ShopOrderDriverRequestCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
@@ -129,7 +129,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             };
 
             // indexing driver
-            await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+            await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                 new DriverIndexCommand(driverContract.DriverId));
             
             var statusContract = await SendPushNotificationAsync(shopOrderDriverRequestPushNotificationContract, driver.Id);
@@ -149,7 +149,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             var statusContract =
                 await new ShopOrderDriverRequestPushNotificationCommandHandler(serviceProvider,
                         executingRequestContextAdapter)
-                    .Handle(shopOrderDriverRequestPushNotificationCommand);
+                    .HandleAsync(shopOrderDriverRequestPushNotificationCommand);
             
             return statusContract;
         }

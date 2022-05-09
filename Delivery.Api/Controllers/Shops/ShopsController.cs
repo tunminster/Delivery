@@ -171,7 +171,7 @@ namespace Delivery.Api.Controllers.Shops
 
             var shopEmailVerificationStatusContract =
                 await new ShopEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new ShopEmailVerificationCommand(shopEmailVerificationContract));
+                    .HandleAsync(new ShopEmailVerificationCommand(shopEmailVerificationContract));
 
             return Ok(shopEmailVerificationStatusContract);
         }
@@ -198,7 +198,7 @@ namespace Delivery.Api.Controllers.Shops
 
             var shopEmailVerificationStatusContract =
                 await new ShopEmailVerificationCheckCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new ShopEmailVerificationCheckCommand(shopEmailVerificationCheckContract));
+                    .HandleAsync(new ShopEmailVerificationCheckCommand(shopEmailVerificationCheckContract));
 
             if (shopEmailVerificationStatusContract.Status == "approved")
             {
@@ -273,7 +273,7 @@ namespace Delivery.Api.Controllers.Shops
             
             var shopResetPasswordStatusContract =
                 await new ShopResetPasswordVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new ShopResetPasswordVerificationCommand(shopResetPasswordRequestContract));
+                    .HandleAsync(new ShopResetPasswordVerificationCommand(shopResetPasswordRequestContract));
 
             return Ok(shopResetPasswordStatusContract);
         }
@@ -303,7 +303,7 @@ namespace Delivery.Api.Controllers.Shops
             var driverResetPasswordStatusContract =
                 await new ShopResetPasswordVerificationCheckCommandHandler(serviceProvider,
                         executingRequestContextAdapter)
-                    .Handle(new ShopResetPasswordVerificationCheckCommand(shopResetPasswordCreationContract));
+                    .HandleAsync(new ShopResetPasswordVerificationCheckCommand(shopResetPasswordCreationContract));
 
             if (driverResetPasswordStatusContract.Status == "approved")
             {

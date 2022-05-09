@@ -31,7 +31,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.OrderStatusUpdates
                     var orderStatusUpdateCommand =
                         new OrderStatusUpdateCommand(messageAdapter.GetPayloadIn());
 
-                    await new OrderStatusUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
+                    await new OrderStatusUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).HandleAsync(
                         orderStatusUpdateCommand);
                     
                     processingStates |= MessageProcessingStates.PersistOrder;
