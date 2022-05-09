@@ -38,7 +38,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                     if (!processingStates.HasFlag(MessageProcessingStates.Persisted))
                     {
                         shopOrderStatusContract = await new ShopOrderStatusCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                            .Handle(shopOrderStatusCommand);
+                            .HandleAsync(shopOrderStatusCommand);
                         
                         processingStates |= MessageProcessingStates.Persisted;
                     }
@@ -55,7 +55,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                         );
 
                         await new ShopOrderDriverRequestCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                            .Handle(shopOrderDriverRequestCommand);
+                            .HandleAsync(shopOrderDriverRequestCommand);
                     }
                     
                     processingStates |= MessageProcessingStates.Processed;

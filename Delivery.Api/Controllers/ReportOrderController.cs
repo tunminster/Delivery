@@ -55,7 +55,7 @@ namespace Delivery.Api.Controllers
             var reportOrderCommandHandler =
                 new ReportOrderCommandHandler(serviceProvider, executingRequestContextAdapter);
 
-            await reportOrderCommandHandler.Handle(createReportOrderCommand);
+            await reportOrderCommandHandler.HandleAsync(createReportOrderCommand);
 
             return Ok();
         }

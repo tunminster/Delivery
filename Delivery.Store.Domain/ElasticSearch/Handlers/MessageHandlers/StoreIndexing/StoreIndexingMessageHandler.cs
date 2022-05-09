@@ -33,7 +33,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.MessageHandlers.StoreInde
                     var storeIndexCommand =
                         new StoreIndexCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
 
-                    await new StoreIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
+                    await new StoreIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).HandleAsync(
                         storeIndexCommand);
                     
                     processingStates |= MessageProcessingStates.PersistOrder;

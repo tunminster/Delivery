@@ -216,7 +216,7 @@ namespace Delivery.Api.Controllers
 
             var customerEmailVerificationStatusContract =
                 await new CustomerEmailVerificationRequestCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new CustomerEmailVerificationRequestCommand(customerEmailVerificationRequestContract));
+                    .HandleAsync(new CustomerEmailVerificationRequestCommand(customerEmailVerificationRequestContract));
 
             return Ok(customerEmailVerificationStatusContract);
         }
@@ -242,7 +242,7 @@ namespace Delivery.Api.Controllers
 
             var customerEmailVerificationStatusContract =
                 await new CustomerEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new CustomerEmailVerificationCommand(customerEmailVerificationContract));
+                    .HandleAsync(new CustomerEmailVerificationCommand(customerEmailVerificationContract));
 
             if (customerEmailVerificationStatusContract.Status == "approved")
             {
@@ -273,7 +273,7 @@ namespace Delivery.Api.Controllers
             
             var customerResetPasswordStatusContract =
                 await new CustomerResetPasswordRequestCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new CustomerResetPasswordRequestCommand(customerResetPasswordRequestContract));
+                    .HandleAsync(new CustomerResetPasswordRequestCommand(customerResetPasswordRequestContract));
 
             return Ok(customerResetPasswordStatusContract);
         }
@@ -302,7 +302,7 @@ namespace Delivery.Api.Controllers
             var customerResetPasswordStatusContract =
                 await new CustomerResetPasswordVerificationCommandHandler(serviceProvider,
                         executingRequestContextAdapter)
-                    .Handle(new CustomerResetPasswordVerificationCommand(customerResetPasswordCreationContract));
+                    .HandleAsync(new CustomerResetPasswordVerificationCommand(customerResetPasswordCreationContract));
 
             if (customerResetPasswordStatusContract.Status == "approved")
             {

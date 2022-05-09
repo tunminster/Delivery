@@ -27,7 +27,7 @@ namespace Delivery.StripePayment.Domain.CommandHandlers.AccountCreation.Stripe.L
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StripeLoginLinkCreationStatusContract> Handle(LoginLinkCreationCommand command)
+        public async Task<StripeLoginLinkCreationStatusContract> HandleAsync(LoginLinkCreationCommand command)
         {
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;

@@ -179,7 +179,7 @@ namespace Delivery.Api.Controllers
 
             var applicationFeesContract =
                 await new ApplicationFeesCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new ApplicationFeesCreationCommand(applicationFeesCreationContract));
+                    .HandleAsync(new ApplicationFeesCreationCommand(applicationFeesCreationContract));
 
             return Ok(applicationFeesContract);
         }

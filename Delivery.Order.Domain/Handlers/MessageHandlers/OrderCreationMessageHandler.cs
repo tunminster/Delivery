@@ -34,7 +34,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers
 
                     var stripeOrderCreationCommandHandler =
                         new OrderCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter);
-                    await stripeOrderCreationCommandHandler.Handle(orderCreationCommand);
+                    await stripeOrderCreationCommandHandler.HandleAsync(orderCreationCommand);
 
                     processingStates |= MessageProcessingStates.PersistOrder;
                 }

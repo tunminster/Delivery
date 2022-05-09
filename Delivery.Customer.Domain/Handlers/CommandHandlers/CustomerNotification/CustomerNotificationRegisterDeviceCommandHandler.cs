@@ -33,7 +33,7 @@ namespace Delivery.Customer.Domain.Handlers.CommandHandlers.CustomerNotification
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DeviceRegistrationResponseContract> Handle(CustomerNotificationRegisterDeviceCommand command)
+        public async Task<DeviceRegistrationResponseContract> HandleAsync(CustomerNotificationRegisterDeviceCommand command)
         {
             var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationHubName, NotificationHubConstants.NotificationHubConnectionStringName);
 

@@ -165,7 +165,7 @@ namespace Delivery.Api.Controllers
 
             var storeIndexCommand = new StoreIndexCommand(storeIndexCreationContract, new StoreIndexStatusContract());
             var storeIndexStatusContract =
-                await new StoreIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(storeIndexCommand);
+                await new StoreIndexCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(storeIndexCommand);
 
             return Ok(storeIndexStatusContract);
         }

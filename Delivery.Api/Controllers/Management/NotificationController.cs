@@ -55,7 +55,7 @@ namespace Delivery.Api.Controllers.Management
             var command = new CreateRegistrationIdCommand(handle);
 
             var registrationId =
-               await  new CreateRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+               await  new CreateRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(command);
             
             return Ok(new DeviceRegistrationResponseContract{Id = registrationId});
         }
@@ -82,7 +82,7 @@ namespace Delivery.Api.Controllers.Management
 
             var command = new RegisterDeviceCommand(registerDeviceModel);
             var deviceRegistrationResponseContract =
-                await new RegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+                await new RegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(command);
             return Ok(deviceRegistrationResponseContract);
         }
 
@@ -100,7 +100,7 @@ namespace Delivery.Api.Controllers.Management
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
 
             var command = new DeleteRegisterCommand(id);
-            var registrationId = await new DeleteRegisterCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+            var registrationId = await new DeleteRegisterCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(command);
 
             var deviceRegistrationResponseContract = new DeviceRegistrationResponseContract
             {

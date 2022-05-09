@@ -19,7 +19,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopApproval
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<ShopUserApprovalStatusContract> Handle(ShopUserApprovalCommand command)
+        public async Task<ShopUserApprovalStatusContract> HandleAsync(ShopUserApprovalCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var storeUser = await databaseContext.StoreUsers.FirstOrDefaultAsync(x => x.Username == command.ShopUserApprovalContract.Email);

@@ -41,7 +41,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
                         new DriverCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
 
                     await new DriverCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(driverCreationCommand);
+                        .HandleAsync(driverCreationCommand);
                     
                     processingStates |= MessageProcessingStates.Persisted;
                 }
@@ -53,7 +53,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
                             {EmailAddress = driverCreationContract.EmailAddress});
 
                     var driverOnBoardingLinkStatusContract = await new DriverStripeOnBoardingLinkCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(driverStripeOnBoardingLinkCommand);
+                        .HandleAsync(driverStripeOnBoardingLinkCommand);
 
                     onBoardingLink = driverOnBoardingLinkStatusContract.OnBoardingLink;
                     
@@ -84,7 +84,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
                         new DriverIndexCommand(messageAdapter.GetPayloadOut().DriverId);
 
                     await new DriverIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(driverIndexCommand);
+                        .HandleAsync(driverIndexCommand);
                     
                     processingStates |= MessageProcessingStates.Indexed;
                 }

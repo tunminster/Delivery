@@ -31,7 +31,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.AccountCreation
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StripeAccountCreationStatusContract> Handle(AccountCreationCommand command)
+        public async Task<StripeAccountCreationStatusContract> HandleAsync(AccountCreationCommand command)
         {
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             StripeConfiguration.ApiKey = stripeApiKey;
@@ -89,7 +89,7 @@ namespace Delivery.StripePayment.Domain.Handlers.CommandHandlers.AccountCreation
 
             var accountLinkCreationCommand = new AccountLinkCreationCommand(stripeAccountLinkCreationContract);
             var accountLinkCreationStatusContract =
-                await new AccountLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(accountLinkCreationCommand);
+                await new AccountLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(accountLinkCreationCommand);
             
             
             var stripeAccountCreationStatusContract = new StripeAccountCreationStatusContract

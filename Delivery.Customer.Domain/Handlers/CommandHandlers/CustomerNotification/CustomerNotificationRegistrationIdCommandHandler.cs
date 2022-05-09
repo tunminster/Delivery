@@ -21,7 +21,7 @@ namespace Delivery.Customer.Domain.Handlers.CommandHandlers.CustomerNotification
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<string> Handle(CustomerNotificationRegistrationIdCommand command)
+        public async Task<string> HandleAsync(CustomerNotificationRegistrationIdCommand command)
         {
             var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationHubName, NotificationHubConstants.NotificationHubConnectionStringName);
             

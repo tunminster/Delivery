@@ -18,7 +18,7 @@ namespace Delivery.Address.Domain.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<AddressDeleteStatusContract> Handle(AddressDeleteCommand command)
+        public async Task<AddressDeleteStatusContract> HandleAsync(AddressDeleteCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var address = await databaseContext.Addresses.FindAsync(command.AddressId);

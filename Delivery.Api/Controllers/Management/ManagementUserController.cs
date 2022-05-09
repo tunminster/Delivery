@@ -194,7 +194,7 @@ namespace Delivery.Api.Controllers.Management
 
             var managementUserEmailVerificationStatusContract =
                 await new ManagementUserEmailVerificationRequestCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new ManagementUserEmailVerificationRequestCommand(managementUserEmailVerificationRequestContract));
+                    .HandleAsync(new ManagementUserEmailVerificationRequestCommand(managementUserEmailVerificationRequestContract));
 
             return Ok(managementUserEmailVerificationStatusContract);
         }
@@ -220,7 +220,7 @@ namespace Delivery.Api.Controllers.Management
 
             var managementUserEmailVerificationStatusContract =
                 await new ManagementUserEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new ManagementUserEmailVerificationCommand(managementUserEmailVerificationContract));
+                    .HandleAsync(new ManagementUserEmailVerificationCommand(managementUserEmailVerificationContract));
 
             if (managementUserEmailVerificationStatusContract.Status == "approved")
             {
@@ -251,7 +251,7 @@ namespace Delivery.Api.Controllers.Management
             
             var userManagementResetPasswordStatusContract =
                 await new UserManagementResetPasswordVerificationRequestCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new UserManagementResetPasswordVerificationRequestCommand(userManagementResetPasswordRequestContract));
+                    .HandleAsync(new UserManagementResetPasswordVerificationRequestCommand(userManagementResetPasswordRequestContract));
 
             return Ok(userManagementResetPasswordStatusContract);
         }
@@ -278,7 +278,7 @@ namespace Delivery.Api.Controllers.Management
             var driverResetPasswordStatusContract =
                 await new UserManagementResetPasswordVerificationCommandHandler(serviceProvider,
                         executingRequestContextAdapter)
-                    .Handle(new UserManagementResetPasswordVerificationCommand(userManagementResetPasswordCreationContract));
+                    .HandleAsync(new UserManagementResetPasswordVerificationCommand(userManagementResetPasswordCreationContract));
 
             if (driverResetPasswordStatusContract.Status == "approved")
             {

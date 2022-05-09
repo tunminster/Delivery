@@ -19,7 +19,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DriverApprovalStatusContract> Handle(DriverApprovalCommand command)
+        public async Task<DriverApprovalStatusContract> HandleAsync(DriverApprovalCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var driver = await databaseContext.Drivers.FirstOrDefaultAsync(x => x.EmailAddress == command.DriverApprovalContract.Username);

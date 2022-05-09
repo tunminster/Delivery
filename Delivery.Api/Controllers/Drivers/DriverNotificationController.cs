@@ -53,7 +53,7 @@ namespace Delivery.Api.Controllers.Drivers
             var command = new DriverNotificationRegistrationIdCommand(handle);
 
             var registrationId =
-                await  new DriverNotificationRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+                await  new DriverNotificationRegistrationIdCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(command);
             
             return Ok(new DeviceRegistrationResponseContract{Id = registrationId});
         }
@@ -80,7 +80,7 @@ namespace Delivery.Api.Controllers.Drivers
 
             var command = new DriverNotificationRegisterDeviceCommand(registerDeviceModel);
             var deviceRegistrationResponseContract =
-                await new DriverNotificationRegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(command);
+                await new DriverNotificationRegisterDeviceCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(command);
             return Ok(deviceRegistrationResponseContract);
         }
         
@@ -127,7 +127,7 @@ namespace Delivery.Api.Controllers.Drivers
 
             var statusContract =
                 await new DriverSendOrderDeliveryRequestCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(command);
+                    .HandleAsync(command);
             
             return Ok(statusContract);
         }

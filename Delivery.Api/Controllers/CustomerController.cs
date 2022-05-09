@@ -79,7 +79,7 @@ namespace Delivery.Api.Controllers
             var updateCustomerCommand = new UpdateCustomerCommand(customerUpdateContract);
             var customerUpdateStatusContract =
                 await new UpdateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(updateCustomerCommand);
+                    .HandleAsync(updateCustomerCommand);
             
             return Ok(customerUpdateStatusContract);
         }

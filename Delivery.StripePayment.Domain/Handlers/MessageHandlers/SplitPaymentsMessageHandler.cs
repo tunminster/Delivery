@@ -32,7 +32,7 @@ namespace Delivery.StripePayment.Domain.Handlers.MessageHandlers
                     
                     var splitPaymentCommandHandler =
                         new SplitPaymentCommandHandler(ServiceProvider, ExecutingRequestContextAdapter);
-                    await splitPaymentCommandHandler.Handle(splitPaymentCommand);
+                    await splitPaymentCommandHandler.HandleAsync(splitPaymentCommand);
                 }
                 
                 // complete

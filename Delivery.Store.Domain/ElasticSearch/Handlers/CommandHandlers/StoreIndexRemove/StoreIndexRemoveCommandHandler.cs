@@ -20,7 +20,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<bool> Handle(StoreIndexRemoveCommand command)
+        public async Task<bool> HandleAsync(StoreIndexRemoveCommand command)
         {
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
             

@@ -111,7 +111,7 @@ namespace Delivery.Api.Controllers
                 var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
                 var createCustomerCommandHandler =
                     new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
-                await createCustomerCommandHandler.Handle(createCustomerCommand);
+                await createCustomerCommandHandler.HandleAsync(createCustomerCommand);
                 
                 return new OkObjectResult("Account created");
             }

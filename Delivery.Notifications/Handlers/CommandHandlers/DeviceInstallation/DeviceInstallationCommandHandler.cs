@@ -29,7 +29,7 @@ namespace Delivery.Notifications.Handlers.CommandHandlers.DeviceInstallation
             };
         }
         
-        public Task<StatusContract> Handle(DeviceInstallationCommand command)
+        public Task<StatusContract> HandleAsync(DeviceInstallationCommand command)
         {
             throw new System.NotImplementedException();
         }

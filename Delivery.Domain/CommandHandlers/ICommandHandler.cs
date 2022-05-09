@@ -4,7 +4,7 @@ namespace Delivery.Domain.CommandHandlers
 {
     public interface ICommandHandler<TCommand, TResult>
     {
-        Task<TResult> Handle(TCommand command);
+        Task<TResult> HandleAsync(TCommand command);
     }
     
     public interface ICommandHandler<TCommand>

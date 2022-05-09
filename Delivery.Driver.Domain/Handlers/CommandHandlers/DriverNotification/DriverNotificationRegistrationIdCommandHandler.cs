@@ -21,7 +21,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<string> Handle(DriverNotificationRegistrationIdCommand command)
+        public async Task<string> HandleAsync(DriverNotificationRegistrationIdCommand command)
         {
             var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationDriverHubName, NotificationHubConstants.NotificationDriverHubConnectionStringName);
             

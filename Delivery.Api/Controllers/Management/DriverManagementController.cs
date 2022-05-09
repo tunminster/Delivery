@@ -84,7 +84,7 @@ namespace Delivery.Api.Controllers.Management
             
             var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract);
 
-            var driverApprovalStatusContract = await new DriverApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+            var driverApprovalStatusContract = await new DriverApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                 driverApprovalCommand);
             
             return Ok(driverApprovalStatusContract);
@@ -103,7 +103,7 @@ namespace Delivery.Api.Controllers.Management
 
             var statusContract =
                 await new DriverTimerRejectionCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(driverTimerRejectionCommand);
+                    .HandleAsync(driverTimerRejectionCommand);
 
             return Ok(statusContract);
         }

@@ -29,7 +29,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<DriverIndexStatusContract> Handle(DriverIndexCommand command)
+        public async Task<DriverIndexStatusContract> HandleAsync(DriverIndexCommand command)
         {
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
             

@@ -209,7 +209,7 @@ namespace Delivery.Api.Controllers.Drivers
 
             var driverIndexCommand = new DriverIndexCommand(driverIndexCreationContract.DriverId);
             var driverIndexStatusContract = await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(driverIndexCommand);
+                .HandleAsync(driverIndexCommand);
             var statusContract = new StatusContract
             {
                 Status = driverIndexStatusContract.Status,

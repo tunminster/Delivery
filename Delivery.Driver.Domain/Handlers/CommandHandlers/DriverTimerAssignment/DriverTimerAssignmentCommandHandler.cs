@@ -29,7 +29,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
 
-        public async Task<StatusContract> Handle(DriverTimerAssignmentCommand command)
+        public async Task<StatusContract> HandleAsync(DriverTimerAssignmentCommand command)
         {
             await using var databaseContext =
                 await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);

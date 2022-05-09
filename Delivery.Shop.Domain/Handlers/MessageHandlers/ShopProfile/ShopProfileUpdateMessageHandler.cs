@@ -31,7 +31,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopProfile
                         new ShopProfileUpdateCommand(messageAdapter.GetPayloadIn());
 
                     await new ShopProfileUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(shopProfileUpdateCommand);
+                        .HandleAsync(shopProfileUpdateCommand);
                     
                     processingStates |= MessageProcessingStates.Processed;
                 }

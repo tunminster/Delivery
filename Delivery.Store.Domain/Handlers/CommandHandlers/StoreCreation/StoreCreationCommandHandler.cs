@@ -34,7 +34,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StoreCreationStatusContract> Handle(StoreCreationCommand command)
+        public async Task<StoreCreationStatusContract> HandleAsync(StoreCreationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

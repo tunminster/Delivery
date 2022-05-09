@@ -26,7 +26,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StoreIndexStatusContract> Handle(StoreIndexCommand command)
+        public async Task<StoreIndexStatusContract> HandleAsync(StoreIndexCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();

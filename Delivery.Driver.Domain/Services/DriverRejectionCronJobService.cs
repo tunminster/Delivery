@@ -23,7 +23,7 @@ namespace Delivery.Driver.Domain.Services
             var executingContextUs = GetExecutingContext("Raus");
             
             await new DriverTimerRejectionCommandHandler(serviceProvider, executingContextUs)
-                .Handle(new DriverTimerRejectionCommand(executingContextUs.GetShard().Key));
+                .HandleAsync(new DriverTimerRejectionCommand(executingContextUs.GetShard().Key));
         }
         
         private static IExecutingRequestContextAdapter GetExecutingContext(string shardKey)

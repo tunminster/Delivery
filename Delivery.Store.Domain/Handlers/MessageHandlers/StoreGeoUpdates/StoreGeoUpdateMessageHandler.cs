@@ -31,7 +31,7 @@ namespace Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates
                     var storeGeoUpdateCommand =
                         new StoreGeoUpdateCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
                     
-                    await new StoreGeoUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).Handle(
+                    await new StoreGeoUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter).HandleAsync(
                         storeGeoUpdateCommand);
                     
                     processingStates |= MessageProcessingStates.PersistOrder;

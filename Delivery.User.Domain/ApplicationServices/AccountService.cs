@@ -147,7 +147,7 @@ namespace Delivery.User.Domain.ApplicationServices
                                 var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
                                 var createCustomerCommandHandler =
                                     new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
-                                await createCustomerCommandHandler.Handle(createCustomerCommand);
+                                await createCustomerCommandHandler.HandleAsync(createCustomerCommand);
                                 break;
                             }
                         }
@@ -216,7 +216,7 @@ namespace Delivery.User.Domain.ApplicationServices
                                 var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
                                 var createCustomerCommandHandler =
                                     new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
-                                await createCustomerCommandHandler.Handle(createCustomerCommand);
+                                await createCustomerCommandHandler.HandleAsync(createCustomerCommand);
                                 break;
                             }
                         }
@@ -285,7 +285,7 @@ namespace Delivery.User.Domain.ApplicationServices
                                 var createCustomerCommand = new CreateCustomerCommand(customerCreationContract);
                                 var createCustomerCommandHandler =
                                     new CreateCustomerCommandHandler(serviceProvider, executingRequestContextAdapter); 
-                                await createCustomerCommandHandler.Handle(createCustomerCommand);
+                                await createCustomerCommandHandler.HandleAsync(createCustomerCommand);
                                 break;
                             }
                         }

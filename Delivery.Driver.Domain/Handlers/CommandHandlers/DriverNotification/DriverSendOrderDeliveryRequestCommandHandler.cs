@@ -34,7 +34,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverNotification
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StatusContract> Handle(DriverSendOrderDeliveryRequestCommand command)
+        public async Task<StatusContract> HandleAsync(DriverSendOrderDeliveryRequestCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var email = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail;

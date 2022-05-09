@@ -24,7 +24,7 @@ namespace Delivery.Driver.Domain.Services
             var executingContextUs = GetExecutingContext("Raus");
 
             await new DriverTimerAssignmentCommandHandler(serviceProvider, executingContextUs)
-                .Handle(new DriverTimerAssignmentCommand(executingContextUs.GetShard().Key));
+                .HandleAsync(new DriverTimerAssignmentCommand(executingContextUs.GetShard().Key));
         }
 
         private static IExecutingRequestContextAdapter GetExecutingContext(string shardKey)

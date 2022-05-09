@@ -43,7 +43,7 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccou
 
                 var accountLinkCreationCommand = new AccountLinkCreationCommand(stripeAccountLinkCreationContract);
                 var accountLinkCreationResult =
-                    await new AccountLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(accountLinkCreationCommand);
+                    await new AccountLinkCreationCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(accountLinkCreationCommand);
 
                 var stripAccountCreationStatusResult = new StripeAccountCreationStatusContract
                 {
@@ -57,7 +57,7 @@ namespace Delivery.StripePayment.Domain.Services.ApplicationServices.StripeAccou
             
             var accountCreationCommand = new AccountCreationCommand(request.StripeAccountCreationContract);
             var stripAccountCreationStatusContract =
-                await new AccountCreationCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                await new AccountCreationCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                     accountCreationCommand);
 
             return new StripeAccountCreationServiceResult(stripAccountCreationStatusContract);

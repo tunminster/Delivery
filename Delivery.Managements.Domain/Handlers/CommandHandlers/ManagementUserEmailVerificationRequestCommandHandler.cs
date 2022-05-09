@@ -25,7 +25,7 @@ namespace Delivery.Managements.Domain.Handlers.CommandHandlers
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<ManagementUserEmailVerificationStatusContract> Handle(ManagementUserEmailVerificationRequestCommand command)
+        public async Task<ManagementUserEmailVerificationStatusContract> HandleAsync(ManagementUserEmailVerificationRequestCommand command)
         {
             var twilioAccountSid = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Account-Sid");
             var twilioAuthToken = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Twilio-{executingRequestContextAdapter.GetShard().Key}-Auth-Token");

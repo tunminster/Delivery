@@ -24,7 +24,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentInt
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<PaymentIntentCreationStatusContract> Handle(PaymentIntentCreationCommand command)
+        public async Task<PaymentIntentCreationStatusContract> HandleAsync(PaymentIntentCreationCommand command)
         {
             var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
             var shardMetadataManager = serviceProvider.GetRequiredService<IShardMetadataManager>();

@@ -31,7 +31,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<ApplicationFeesContract> Handle(ApplicationFeesCreationCommand command)
+        public async Task<ApplicationFeesContract> HandleAsync(ApplicationFeesCreationCommand command)
         {
             var platformFee = ApplicationFeeGenerator.GeneratorFees(command.ApplicationFeesCreationContract.SubTotal);
 

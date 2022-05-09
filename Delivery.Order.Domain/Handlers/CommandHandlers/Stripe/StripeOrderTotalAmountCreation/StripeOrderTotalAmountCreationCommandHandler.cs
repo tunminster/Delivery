@@ -39,7 +39,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<OrderCreationStatusContract> Handle(StripeOrderTotalAmountCreationCommand command)
+        public async Task<OrderCreationStatusContract> HandleAsync(StripeOrderTotalAmountCreationCommand command)
         {
             var strProductIds = string.Join(",",
                 command.StripeOrderCreationContract.OrderItems.Select(x => x.ProductId));

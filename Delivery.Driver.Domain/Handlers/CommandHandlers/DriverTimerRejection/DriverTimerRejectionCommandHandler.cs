@@ -31,7 +31,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task<StatusContract> Handle(DriverTimerRejectionCommand command)
+        public async Task<StatusContract> HandleAsync(DriverTimerRejectionCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
@@ -80,7 +80,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
             foreach (var driverOrder in driverOrders)
             {
                 // indexing driver
-                await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                     new DriverIndexCommand(driverOrder.Driver.ExternalId));
                 
                 // send push notification
@@ -95,7 +95,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                 
                 // Send delivery rejection push notification to shop owner
                 await new DriverSendOrderRejectionCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new DriverSendOrderRejectionCommand(driverOrderRejectedNotificationContract,
+                    .HandleAsync(new DriverSendOrderRejectionCommand(driverOrderRejectedNotificationContract,
                         driverOrder.Driver.ExternalId));
             }
 
