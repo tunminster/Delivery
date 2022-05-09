@@ -101,7 +101,9 @@ namespace Delivery.Api.Controllers
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter(); 
             var identity = await GetClaimsIdentityAsync(model.UserName, model.Password, executingRequestContextAdapter);
 
-            if (identity == null)
+            var customerClaim = identity.Claims.FirstOrDefault(x => x.Type == "role");
+            
+            if (customerClaim?.Value !=  "Customer")
             {
                 return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
             }
