@@ -23,9 +23,7 @@ namespace Delivery.Address.Domain.CommandHandlers
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 
-            var customer = databaseContext.Customers.First(x => string.Equals(x.Username,
-                executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
-                StringComparison.InvariantCultureIgnoreCase));
+            var customer = databaseContext.Customers.First(x => string.Equals(x.Username, executingRequestContextAdapter.GetAuthenticatedUser().UserEmail, StringComparison.CurrentCultureIgnoreCase));
             
             var address = new Database.Entities.Address
             {
