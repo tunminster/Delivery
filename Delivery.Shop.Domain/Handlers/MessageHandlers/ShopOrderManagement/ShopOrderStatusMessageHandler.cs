@@ -9,7 +9,9 @@ using Delivery.Domain.Contracts.Enums;
 using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderRefund;
 using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement;
+using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderRefund;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
@@ -56,6 +58,25 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
 
                         await new ShopOrderDriverRequestCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
                             .HandleAsync(shopOrderDriverRequestCommand);
+                        
+                        processingStates |= MessageProcessingStates.Processed;
+                    }
+                    else if (shopOrderStatusContract.Status &&
+                             shopOrderStatusContract.OrderStatus == OrderStatus.Rejected)
+                    {
+                        var shopOrderRefundCommand = new ShopOrderRefundCommand
+                        (
+                            new ShopOrderRefundCreationContract
+                            {
+                                OrderId = shopOrderStatusContract.OrderId,
+                                Reason = shopOrderStatusCommand.ShopOrderStatusCreationContract.Reason
+                            }
+                        );
+
+                        await new ShopOrderRefundCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                            .HandleAsync(shopOrderRefundCommand);
+                        
+                        processingStates |= MessageProcessingStates.Processed;
                     }
                     
                     processingStates |= MessageProcessingStates.Processed;
