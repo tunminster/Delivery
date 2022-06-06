@@ -42,6 +42,10 @@ namespace Delivery.Api.Controllers.OnBoardings
             this.serviceProvider = serviceProvider;
         }
         
+        /// <summary>
+        ///  Show owner on-boarding
+        /// </summary>
+        /// <returns></returns>
         [Route("on-boarding", Order = 1)]
         [HttpPost]
         [ProducesResponseType(typeof(ShopOwnerOnBoardingStatusContract), (int)HttpStatusCode.OK)]
@@ -63,10 +67,8 @@ namespace Delivery.Api.Controllers.OnBoardings
         }
         
         /// <summary>
-        ///  Shop register
+        ///  Shop owner on-boarding registration
         /// </summary>
-        /// <param name="shopCreationContract"></param>
-        /// <param name="shopImage"></param>
         /// <returns></returns>
         [Route("register", Order = 1)]
         [ProducesResponseType(typeof(ShopCreationStatusContract), (int) HttpStatusCode.OK)]

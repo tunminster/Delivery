@@ -70,6 +70,10 @@ namespace Delivery.Api.Controllers.OnBoardings
             return Ok(new DriverOnBoardingStatusContract { Message = "Thank you for joining to Delivery partner. We will contact you soon."});
         }
 
+        /// <summary>
+        ///  Driver onbarding registration
+        /// </summary>
+        /// <returns></returns>
         [Route("register", Order = 2)]
         [HttpPost]
         [ProducesResponseType(typeof(DriverOnBoardingStatusContract), (int)HttpStatusCode.OK)]
@@ -128,7 +132,7 @@ namespace Delivery.Api.Controllers.OnBoardings
         }
         
         /// <summary>
-        ///  Request email verification
+        ///  Driver on-boarding Request email verification
         /// </summary>
         /// <returns></returns>
         [Route("request-email-otp", Order = 3)]
@@ -154,7 +158,7 @@ namespace Delivery.Api.Controllers.OnBoardings
         }
         
         /// <summary>
-        ///  Verify email verification 
+        ///  Driver on-boarding Verify email verification 
         /// </summary>
         /// <returns></returns>
         [Route("verify-email-otp", Order = 4)]
