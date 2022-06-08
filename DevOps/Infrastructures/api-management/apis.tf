@@ -59,4 +59,5 @@ resource "azurerm_api_management_api" "hn-platform-public-webapp-api" {
     content_value = "https://delivery-api.harveynetwork.com/swagger/api/webapp/v1/swagger.json"
     #content_value  = var.platform_public_management_api_link
   }
+  
 }
