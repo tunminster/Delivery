@@ -14,6 +14,8 @@ using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopCreation;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopEmailVerification;
+using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopEmailVerification;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
 using Delivery.Shop.Domain.Services;
 using Delivery.Shop.Domain.Validators;
@@ -128,6 +130,65 @@ namespace Delivery.Api.Controllers.OnBoardings
             await new ShopCreationMessagePublisher(serviceProvider).PublishAsync(shopCreationMessage);
 
             return Ok(shopCreationStatusContract);
+        }
+        
+        /// <summary>
+        ///  Request email verification
+        /// </summary>
+        /// <param name="shopEmailVerificationContract"></param>
+        /// <returns></returns>
+        [Route("request-email-otp", Order = 3)]
+        [ProducesResponseType(typeof(ShopEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_RequestEmailOtpAsync(
+            [FromBody] ShopEmailVerificationContract shopEmailVerificationContract)
+        {
+            var validationResult = await new ShopEmailVerificationValidator().ValidateAsync(shopEmailVerificationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopEmailVerificationStatusContract =
+                await new ShopEmailVerificationCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .HandleAsync(new ShopEmailVerificationCommand(shopEmailVerificationContract));
+
+            return Ok(shopEmailVerificationStatusContract);
+        }
+        
+        /// <summary>
+        ///  Request email verification
+        /// </summary>
+        /// <param name="shopEmailVerificationCheckContract"></param>
+        /// <returns></returns>
+        [Route("verify-email-otp", Order = 4)]
+        [ProducesResponseType(typeof(ShopEmailVerificationStatusContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [HttpPost]
+        public async Task<IActionResult> Post_VerifyEmailOtpAsync(
+            [FromBody] ShopEmailVerificationCheckContract shopEmailVerificationCheckContract)
+        {
+            var validationResult = await new ShopEmailVerificationCheckValidator().ValidateAsync(shopEmailVerificationCheckContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var shopEmailVerificationStatusContract =
+                await new ShopEmailVerificationCheckCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .HandleAsync(new ShopEmailVerificationCheckCommand(shopEmailVerificationCheckContract));
+
+            if (shopEmailVerificationStatusContract.Status == "approved")
+            {
+                await ConfirmEmailAsync(shopEmailVerificationCheckContract, executingRequestContextAdapter);
+            }
+
+            return Ok(shopEmailVerificationStatusContract);
         }
     }
 }
