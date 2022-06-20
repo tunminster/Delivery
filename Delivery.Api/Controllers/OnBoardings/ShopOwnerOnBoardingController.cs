@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Api.Controllers.Shops;
 using Delivery.Api.OpenApi;
@@ -19,6 +20,8 @@ using Delivery.Shop.Domain.Handlers.CommandHandlers.ShopEmailVerification;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopCreation;
 using Delivery.Shop.Domain.Services;
 using Delivery.Shop.Domain.Validators;
+using Delivery.Store.Domain.Contracts.V1.ModelContracts;
+using Delivery.Store.Domain.Handlers.QueryHandlers.StoreTypeGetQueries;
 using Delivery.User.Domain.Contracts.V1.RestContracts.OnBoardings.ShopOwner;
 using Delivery.User.Domain.Validators.OnBoardings;
 using Microsoft.AspNetCore.Http;
@@ -133,7 +136,7 @@ namespace Delivery.Api.Controllers.OnBoardings
         }
         
         /// <summary>
-        ///  Request email verification
+        ///  Shop owner Request email verification
         /// </summary>
         /// <param name="shopEmailVerificationContract"></param>
         /// <returns></returns>
@@ -160,7 +163,7 @@ namespace Delivery.Api.Controllers.OnBoardings
         }
         
         /// <summary>
-        ///  Request email verification
+        ///  Shop owner Request email verification
         /// </summary>
         /// <param name="shopEmailVerificationCheckContract"></param>
         /// <returns></returns>
@@ -190,5 +193,27 @@ namespace Delivery.Api.Controllers.OnBoardings
 
             return Ok(shopEmailVerificationStatusContract);
         }
+        
+        /// <summary>
+        ///  Get store type
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetAllStoreTypes")]
+        [HttpGet]
+        [ProducesResponseType(typeof(List<StoreTypeContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetStoreTypesAsync(CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var storeTypeGetAllQuery =
+                new StoreTypeGetAllQuery($"Database-{executingRequestContextAdapter.GetShard().Key}-default-store-types");
+            var storeTypeContractList =
+                await new StoreTypeGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(storeTypeGetAllQuery);
+          
+            return Ok(storeTypeContractList);
+        }
+        
     }
 }
