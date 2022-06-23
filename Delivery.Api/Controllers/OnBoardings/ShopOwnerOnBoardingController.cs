@@ -188,7 +188,8 @@ namespace Delivery.Api.Controllers.OnBoardings
 
             if (shopEmailVerificationStatusContract.Status == "approved")
             {
-                await ConfirmEmailAsync(shopEmailVerificationCheckContract, executingRequestContextAdapter);
+                // to call when actually register.
+                //await ConfirmEmailAsync(shopEmailVerificationCheckContract, executingRequestContextAdapter);
             }
 
             return Ok(shopEmailVerificationStatusContract);
