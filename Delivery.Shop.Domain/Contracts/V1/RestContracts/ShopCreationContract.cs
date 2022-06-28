@@ -103,11 +103,11 @@ namespace Delivery.Shop.Domain.Contracts.V1.RestContracts
         ///  Image uri
         /// </summary>
         public string ImageUri { get; set; } = string.Empty;
-        
+
         /// <summary>
         ///  payment account number from stripe payment
         /// </summary>
-        public string PaymentAccountNumber { get; set; }
+        public string PaymentAccountNumber { get; set; } = string.Empty;
         
         /// <summary>
         ///  Store opening hours
