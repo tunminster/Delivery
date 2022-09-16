@@ -11,8 +11,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverProfile
     public record DriverProfileBankDetailsCommand(DriverProfileBankDetailsContract DriverProfileBankDetailsContract);
     public class DriverProfileBankDetailsCommandHandler : ICommandHandler<DriverProfileBankDetailsCommand>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         public DriverProfileBankDetailsCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;

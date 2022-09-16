@@ -24,8 +24,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
     
     public class DriverOrderActionCommandHandler : ICommandHandler<DriverOrderActionCommand, StatusContract>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         
         public DriverOrderActionCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {

@@ -17,21 +17,30 @@ namespace Delivery.Order.Domain.Factories
 
         public static int GenerateDeliveryFees(int radius)
         {
+            var deliverfee = 0;
+            
+            
+            
             if (radius < 1000)
-                return 199;
-            if (radius >= 1000)
-                return 299;
-            if (radius >= 2000)
-                return 399;
-            if (radius >= 3000)
-                return 499;
-            if (radius >= 4000)
-                return 599;
-            if (radius == 5000)
-                return 699;
-            if (radius > 5000)
-                return 799;
-            throw new ArgumentOutOfRangeException(nameof(radius));
+                deliverfee = 199;
+            else if (radius is >= 1000 and < 2000)
+                deliverfee = 299;
+            else if (radius is >= 2000 and < 3000)
+                deliverfee = 399;
+            else if (radius is >= 3000 and < 4000)
+                deliverfee = 499;
+            else if (radius is >= 4000 and < 5000)
+                deliverfee = 599;
+            else if (radius is >= 5000 and < 6000)
+                deliverfee = 799;
+            else if (radius is >= 6000 and < 7000)
+                deliverfee = 899;
+            else if (radius is >= 7000 and < 8000)
+                deliverfee = 999;
+            else if (radius is >= 9000 and < 10000)
+                deliverfee = 1099;
+            
+            return deliverfee > 0 ? deliverfee : throw new ArgumentOutOfRangeException(nameof(radius));
         }
         
         public static int BusinessServiceFees(int subTotalAmount, int serviceRate)

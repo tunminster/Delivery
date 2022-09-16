@@ -12,8 +12,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverCreation
     
     public class DriverCreationCommandHandler : ICommandHandler<DriverCreationCommand, DriverCreationStatusContract>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         public DriverCreationCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;

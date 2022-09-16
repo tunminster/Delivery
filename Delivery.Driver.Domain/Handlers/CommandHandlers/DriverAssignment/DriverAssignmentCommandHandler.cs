@@ -13,8 +13,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
     
     public class DriverAssignmentCommandHandler : ICommandHandler<DriverAssignmentCommand, DriverAssignmentStatusContract>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         public DriverAssignmentCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;

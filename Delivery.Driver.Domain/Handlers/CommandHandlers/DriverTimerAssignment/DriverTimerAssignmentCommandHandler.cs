@@ -19,8 +19,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
 
     public class DriverTimerAssignmentCommandHandler : ICommandHandler<DriverTimerAssignmentCommand, StatusContract>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
         public DriverTimerAssignmentCommandHandler(IServiceProvider serviceProvider,
             IExecutingRequestContextAdapter executingRequestContextAdapter)

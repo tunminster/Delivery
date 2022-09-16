@@ -11,8 +11,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval
     public record DriverApprovalCommand(DriverApprovalContract DriverApprovalContract);
     public class DriverApprovalCommandHandler : ICommandHandler<DriverApprovalCommand, DriverApprovalStatusContract>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         public DriverApprovalCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;

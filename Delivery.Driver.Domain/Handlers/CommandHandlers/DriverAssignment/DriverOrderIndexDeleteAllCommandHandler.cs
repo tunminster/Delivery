@@ -11,8 +11,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
     public record DriverOrderIndexDeleteAllCommand(DateTimeOffset DateCreated);
     public class DriverOrderIndexDeleteAllCommandHandler : ICommandHandler<DriverOrderIndexDeleteAllCommand>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         
         public DriverOrderIndexDeleteAllCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
