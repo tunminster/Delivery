@@ -134,47 +134,6 @@ namespace Delivery.Orders.Host.ContainerHosts
                     await storeIndexMessageHandler.HandleMessageAsync(storeIndexingMessageContract, processingState);
                     break;
                 
-                // case nameof(DriverCreationMessageContract):
-                //     var driverCreationMessageContract = message.Deserialize<DriverCreationMessageContract>();
-                //     var driverCreationMessageHandler = new DriverCreationMessageHandler(ServiceProvider,
-                //         new ExecutingRequestContextAdapter(driverCreationMessageContract.RequestContext));
-                //     await driverCreationMessageHandler.HandleMessageAsync(driverCreationMessageContract,
-                //         processingState);
-                //     break;
-                
-                // case nameof(DriverAssignmentMessageContract):
-                //     var driverAssignmentMessageContract = message.Deserialize<DriverAssignmentMessageContract>();
-                //     var driverAssignmentMessageHandler = new DriverAssignmentMessageHandler(ServiceProvider,
-                //         new ExecutingRequestContextAdapter(driverAssignmentMessageContract.RequestContext));
-                //     await driverAssignmentMessageHandler.HandleMessageAsync(driverAssignmentMessageContract,
-                //         processingState);
-                //     break;
-                
-                // case nameof(DriverActiveMessageContract):
-                //     var driverActiveMessageContract = message.Deserialize<DriverActiveMessageContract>();
-                //     var driverActiveMessageHandler = new DriverActiveMessageHandler(ServiceProvider,
-                //         new ExecutingRequestContextAdapter(driverActiveMessageContract.RequestContext));
-                //     await driverActiveMessageHandler.HandleMessageAsync(driverActiveMessageContract, processingState);
-                //     break;
-                
-                // case nameof(DriverRequestMessageContract):
-                //     var driverOrderRejectionMessageContract =
-                //         message.Deserialize<DriverRequestMessageContract>();
-                //     var driverShopOrderDriverRequestMessageHandler = new ShopOrderDriverRequestMessageHandler(ServiceProvider,
-                //         new ExecutingRequestContextAdapter(driverOrderRejectionMessageContract.RequestContext));
-                //     var shopOrderDriverRequestMessageContract = new ShopOrderDriverRequestMessageContract
-                //     {
-                //         PayloadIn = new ShopOrderDriverRequestContract
-                //         {
-                //             OrderId = driverOrderRejectionMessageContract.PayloadIn!.OrderId
-                //         },
-                //         PayloadOut = driverOrderRejectionMessageContract.PayloadOut,
-                //         RequestContext = driverOrderRejectionMessageContract.RequestContext
-                //     };
-                //     await driverShopOrderDriverRequestMessageHandler.HandleMessageAsync(shopOrderDriverRequestMessageContract,
-                //         processingState);
-                //     break;
-                
                 case nameof(ShopCreationMessageContract):
                     var shopCreationMessageContract = message.Deserialize<ShopCreationMessageContract>();
                     var shopCreationMessageHandler = new ShopCreationMessageHandler(ServiceProvider,
@@ -200,66 +159,6 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(shopProfileMessageContract.RequestContext));
                     await shopProfileMessageHandler.HandleMessageAsync(shopProfileMessageContract, processingState);
                     break;
-                
-                // case nameof(DriverOrderActionMessageContract):
-                //     var driverOrderActionMessageContract = message.Deserialize<DriverOrderActionMessageContract>();
-                //     var driverOrderActionMessageHandler = new DriverOrderActionMessageHandler(ServiceProvider,
-                //         new ExecutingRequestContextAdapter(driverOrderActionMessageContract.RequestContext));
-                //     await driverOrderActionMessageHandler.HandleMessageAsync(driverOrderActionMessageContract,
-                //         processingState);
-                //     break;
-                //
-                // case nameof(DriverServiceAreaUpdateMessageContract):
-                //     var driverServiceAreaMessageContract =
-                //         message.Deserialize<DriverServiceAreaUpdateMessageContract>();
-                //     var driverServiceAreaUpdateMessageHandler = new DriverServiceAreaUpdateMessageHandler(
-                //         ServiceProvider,
-                //         new ExecutingRequestContextAdapter(driverServiceAreaMessageContract.RequestContext));
-                //     await driverServiceAreaUpdateMessageHandler.HandleMessageAsync(driverServiceAreaMessageContract,
-                //         processingState);
-                //     break;
-                //
-                // case nameof(DriverOrderCompleteMessageContract):
-                //     var driverOrderCompleteMessageContract = message.Deserialize<DriverOrderCompleteMessageContract>();
-                //     var shopOrderCompleteMessageContract = new ShopOrderCompleteMessageContract
-                //     {
-                //         PayloadIn = driverOrderCompleteMessageContract.PayloadIn,
-                //         PayloadOut = driverOrderCompleteMessageContract.PayloadOut,
-                //         RequestContext = driverOrderCompleteMessageContract.RequestContext
-                //     };
-                //     var shopOrderCompleteMessageHandler = new ShopOrderCompleteMessageHandler(ServiceProvider,
-                //         new ExecutingRequestContextAdapter(shopOrderCompleteMessageContract.RequestContext));
-                //     await shopOrderCompleteMessageHandler.HandleMessageAsync(shopOrderCompleteMessageContract,
-                //         processingState);
-                //     break;
-                //
-                // case nameof(DriverOrderInProgressMessageContract):
-                //     var driverOrderInProgressMessageContract =
-                //         message.Deserialize<DriverOrderInProgressMessageContract>();
-                //     var shopOrderDeliverOnWayMessageContract = new ShopOrderDeliverOnWayMessageContract
-                //     {
-                //         PayloadIn = driverOrderInProgressMessageContract.PayloadIn,
-                //         PayloadOut = driverOrderInProgressMessageContract.PayloadOut,
-                //         RequestContext = driverOrderInProgressMessageContract.RequestContext
-                //     };
-                //     var shopOrderDeliverOnWayMessageHandler = new ShopOrderDeliverOnWayMessageHandler(ServiceProvider,
-                //         new ExecutingRequestContextAdapter(shopOrderDeliverOnWayMessageContract.RequestContext));
-                //     await shopOrderDeliverOnWayMessageHandler.HandleMessageAsync(shopOrderDeliverOnWayMessageContract,
-                //         processingState);
-                //     break;
-                // case nameof(DriverOrderIndexMessageContract):
-                //     var driverOrderIndexMessageContract = message.Deserialize<DriverOrderIndexMessageContract>();
-                //     await new DriverOrderIndexMessageHandler(ServiceProvider,
-                //         new ExecutingRequestContextAdapter(driverOrderIndexMessageContract.RequestContext))
-                //         .HandleMessageAsync(driverOrderIndexMessageContract, processingState);
-                //     break;
-                //
-                // case nameof(DriverIndexMessageContract):
-                //     var driverIndexMessageContract = message.Deserialize<DriverIndexMessageContract>();
-                //     await new DriverIndexMessageHandler(ServiceProvider,
-                //             new ExecutingRequestContextAdapter(driverIndexMessageContract.RequestContext))
-                //         .HandleMessageAsync(driverIndexMessageContract, processingState);
-                //     break;
                 
                 case nameof(ShopMenuStatusMessageContract):
                     var shopMenuStatusMessageContract = message.Deserialize<ShopMenuStatusMessageContract>();
@@ -304,23 +203,6 @@ namespace Delivery.Orders.Host.ContainerHosts
                         new ExecutingRequestContextAdapter(splitPaymentCreationMessage.RequestContext));
                     await splitPaymentsMessageHandler.HandleMessageAsync(splitPaymentCreationMessage, processingState);
                     break;
-                
-                // case nameof(DriverPaymentCreationMessageContract):
-                //     var driverPaymentCreationMessage = message.Deserialize<DriverPaymentCreationMessageContract>();
-                //     var splitPaymentMessage = new SplitPaymentCreationMessageContract
-                //     {
-                //         PayloadIn = new SplitPaymentCreationContract
-                //         {
-                //             OrderId = driverPaymentCreationMessage.PayloadIn!.OrderId,
-                //             DriverConnectedAccountId = driverPaymentCreationMessage.PayloadIn!.DriverConnectAccountId
-                //         },
-                //         PayloadOut = driverPaymentCreationMessage.PayloadOut,
-                //         RequestContext = driverPaymentCreationMessage.RequestContext
-                //     };
-                //     var splitPMessageHandler = new SplitPaymentsMessageHandler(ServiceProvider,
-                //         new ExecutingRequestContextAdapter(splitPaymentMessage.RequestContext));
-                //     await splitPMessageHandler.HandleMessageAsync(splitPaymentMessage, processingState);
-                //     break;
                 
                 case nameof(ShopActiveMessageContract):
                     var shopActiveMessage = message.Deserialize<ShopActiveMessageContract>();

@@ -14,8 +14,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverActive
     
     public class DriverActiveCommandHandler : ICommandHandler<DriverActiveCommand, DriverActiveStatusContract>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         public DriverActiveCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;

@@ -13,8 +13,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverStripeOnBoarding
         DriverOnBoardingLinkCreationContract DriverOnBoardingLinkCreationContract);
     public class DriverStripeOnBoardingLinkCommandHandler : ICommandHandler<DriverStripeOnBoardingLinkCommand, DriverOnBoardingLinkStatusContract>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         public DriverStripeOnBoardingLinkCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;

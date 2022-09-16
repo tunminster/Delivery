@@ -15,8 +15,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
     
     public class DriverOrderIndexAllCommandHandler : ICommandHandler<DriverOrderIndexAllCommand>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         
         public DriverOrderIndexAllCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {

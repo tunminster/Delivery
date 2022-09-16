@@ -16,8 +16,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverOnBoardingEmail
     public record DriverOnBoardingEmailCommand(DriverOnBoardingEmailCreationContract DriverOnBoardingEmailCreationContract);
     public class DriverOnBoardingEmailCommandHandler : ICommandHandler<DriverOnBoardingEmailCommand>
     {
-        private IServiceProvider serviceProvider;
-        private IExecutingRequestContextAdapter executingRequestContextAdapter;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
         public DriverOnBoardingEmailCommandHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
