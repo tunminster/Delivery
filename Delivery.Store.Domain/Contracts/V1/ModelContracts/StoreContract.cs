@@ -101,6 +101,12 @@ namespace Delivery.Store.Domain.Contracts.V1.ModelContracts
         /// <example>{{contactNumber}}</example>
         public string ContactNumber { get; set; } = string.Empty;
         
+        /// <summary>
+        ///  Is Active
+        /// </summary>
+        /// <example>{{isActive}}</example>
+        public bool IsActive { get; set; }
+        
         
         public override string ToString()
         {

@@ -78,6 +78,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
                     StoreType = s.StoreType,
                     StoreOpeningHours = s.StoreOpeningHours,
                     StorePaymentAccountNumber = s.StorePaymentAccountNumber,
+                    IsActive = s.IsActive,
                     Distance = d.Value<double>("distance")
                 }).ToList();
 

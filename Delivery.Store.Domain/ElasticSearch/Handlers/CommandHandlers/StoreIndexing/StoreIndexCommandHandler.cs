@@ -51,6 +51,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreInde
                 ImageUri = store.ImageUri,
                 Location = $"{store.Latitude}, {store.Longitude}",
                 PostalCode = store.PostalCode,
+                IsActive = store.IsActive,
                 StoreOpeningHours = store.OpeningHours.Select(x =>
                     new StoreOpeningHourContract
                     {
