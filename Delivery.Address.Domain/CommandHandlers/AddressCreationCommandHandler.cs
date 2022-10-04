@@ -33,7 +33,7 @@ namespace Delivery.Address.Domain.CommandHandlers
                     $"{nameof(userEmail)} is not valid at the {nameof(AddressCreationCommandHandler)}. User email: {executingRequestContextAdapter.GetAuthenticatedUser().ConvertToJson()} ");
             }
 
-            var customer = databaseContext.Customers.First(x => string.Equals(x.Username, executingRequestContextAdapter.GetAuthenticatedUser().UserEmail, StringComparison.CurrentCultureIgnoreCase));
+            var customer = databaseContext.Customers.First(x => string.Equals(x.Username, userEmail, StringComparison.CurrentCultureIgnoreCase));
             
             var address = new Database.Entities.Address
             {
