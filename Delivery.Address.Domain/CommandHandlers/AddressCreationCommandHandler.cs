@@ -2,9 +2,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Address.Domain.Contracts;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Address.Domain.CommandHandlers
 {
@@ -22,6 +24,14 @@ namespace Delivery.Address.Domain.CommandHandlers
         public async Task<AddressCreationStatusContract> HandleAsync(AddressCreationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
+
+            var userEmail = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail;
+
+            if (userEmail == null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(userEmail)} is not valid at the {nameof(AddressCreationCommandHandler)}. User email: {executingRequestContextAdapter.GetAuthenticatedUser().ConvertToJson()} ");
+            }
 
             var customer = databaseContext.Customers.First(x => string.Equals(x.Username, executingRequestContextAdapter.GetAuthenticatedUser().UserEmail, StringComparison.CurrentCultureIgnoreCase));
             
