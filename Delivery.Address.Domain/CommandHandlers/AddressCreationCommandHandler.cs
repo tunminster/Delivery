@@ -34,9 +34,7 @@ namespace Delivery.Address.Domain.CommandHandlers
                     $"{nameof(userEmail)} is not valid at the {nameof(AddressCreationCommandHandler)}. User email: {executingRequestContextAdapter.GetAuthenticatedUser().ConvertToJson()} ");
             }
             
-            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Authenticated user {userEmail} of {executingRequestContextAdapter.GetAuthenticatedUser().ConvertToJson()}");
-
-            var customer = databaseContext.Customers.First(x => string.Equals(x.Username.ToLowerInvariant(), userEmail.ToLowerInvariant()));
+            var customer = databaseContext.Customers.First(x => x.Username == userEmail);
             
             var address = new Database.Entities.Address
             {
