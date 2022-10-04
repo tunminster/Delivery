@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Delivery.Address.Domain.Contracts;
 using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,8 @@ namespace Delivery.Address.Domain.CommandHandlers
                 throw new InvalidOperationException(
                     $"{nameof(userEmail)} is not valid at the {nameof(AddressCreationCommandHandler)}. User email: {executingRequestContextAdapter.GetAuthenticatedUser().ConvertToJson()} ");
             }
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"Authenticated user {userEmail} of {executingRequestContextAdapter.GetAuthenticatedUser().ConvertToJson()}");
 
             var customer = databaseContext.Customers.First(x => string.Equals(x.Username.ToLowerInvariant(), userEmail.ToLowerInvariant()));
             
