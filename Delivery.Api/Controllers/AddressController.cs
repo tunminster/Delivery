@@ -38,9 +38,6 @@ namespace Delivery.Api.Controllers
     [Authorize]
     public class AddressController : ControllerBase
     {
-        // private readonly ICommandHandler<AddressCreationCommand, AddressCreationStatusContract> addressCreationCommandHandler;
-        // private readonly IQueryHandler<AddressByIdQuery, AddressContract> addressByIdQueryHandler;
-        // private readonly IQueryHandler<AddressByUserIdQuery, List<AddressContract>> addressByUserIdQueryHandler;
         private readonly IServiceProvider serviceProvider;
 
         /// <summary>
@@ -103,7 +100,6 @@ namespace Delivery.Api.Controllers
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddAddressAsync(AddressContract addressContract)
         {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
