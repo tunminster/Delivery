@@ -20,7 +20,7 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
         public string QueryString { get; }
         
         
-        public string StoreType { get; }
+        public string? StoreType { get; }
         
         public int Page { get; }
         
