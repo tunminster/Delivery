@@ -60,7 +60,7 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment
             var storeLocation = new GeoLocation(query.Latitude, query.Longitude);
             
             var driverContactList = await new DependencyMeasurement(serviceProvider)
-                .ForDependency($"Index-{nameof(DriverContract)}", MeasuredDependencyType.ElasticSearch, query.ConvertToJson(), "http://localhost:9200")
+                .ForDependency($"Search-{nameof(DriverContract)}", MeasuredDependencyType.ElasticSearch, query.ConvertToJson(), "http://localhost:9200")
                 .TrackAsync(async () =>
                 {
                     var driverSearchResult = await elasticClient.SearchAsync<DriverContract>(x =>
