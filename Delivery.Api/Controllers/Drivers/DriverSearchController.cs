@@ -58,5 +58,26 @@ namespace Delivery.Api.Controllers.Drivers
 
             return Ok(driverContracts);
         }
+
+        /// <summary>
+        ///  Search drivers by freetext
+        /// </summary>
+        /// <returns></returns>
+        [Route("search-driver-name")]
+        [HttpPost]
+        [ProducesResponseType(typeof(List<DriverContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Search_Drivers_by_Name_Async(
+            DriverSearchByNameContract driverSearchByNameContract, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var driverSearchQuery = new DriverByNameQuery(driverSearchByNameContract.FreeTextSearch,
+                driverSearchByNameContract.Page, driverSearchByNameContract.PageSize);
+
+            var drivers = await new DriverByNameQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .HandleAsync(driverSearchQuery);
+
+            return Ok(drivers);
+        }
     }
 }

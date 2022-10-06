@@ -28,8 +28,8 @@ namespace Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearch
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
 
             var currentLocation = new GeoLocation(query.Latitude, query.Longitude);
-            //var storeTypeArr = query.StoreType != null ? query.StoreType.Split(new string[] {",", " & ", " "}, StringSplitOptions.None).ToArray() : new []{""};
-            var storeTypeArr = query.StoreType != null ? query.StoreType.Split(new string[] {","}, StringSplitOptions.None).ToArray() : new []{""};
+            var storeTypeArr = query.StoreType != null ? query.StoreType.Split(new string[] {",", " & ", " "}, StringSplitOptions.None).ToArray() : new []{""};
+            //var storeTypeArr = query.StoreType != null ? query.StoreType.Split(new string[] {","}, StringSplitOptions.TrimEntries).ToArray() : new []{""};
             
             var searchResponse = await elasticClient.SearchAsync<StoreContract>(s => s
                 .Index($"stores{executingRequestContextAdapter.GetShard().Key.ToLower()}")
