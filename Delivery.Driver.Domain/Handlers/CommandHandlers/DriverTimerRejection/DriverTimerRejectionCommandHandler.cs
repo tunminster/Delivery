@@ -57,7 +57,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
 
             foreach (var driverOrder in driverOrders)
             {
-                driverOrder.Status = DriverOrderStatus.Rejected;
+                driverOrder.Status = DriverOrderStatus.SystemRejected;
                 driverOrder.Reason = "System rejected";
 
                 driverOrder.Driver.IsOrderAssigned = false;
