@@ -78,14 +78,22 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                  .Where(x => x.OrderId == order.Id)
                  .Include(x => x.Driver)
                  .Where(x => x.Status == DriverOrderStatus.Rejected);
+
+             var systemRejectedDrivers = databaseContext.DriverOrders
+                 .Where(x => x.OrderId == order.Id)
+                 .Include(x => x.Driver)
+                 .Where(x => x.Status == DriverOrderStatus.Rejected &&
+                             x.InsertionDateTime >= DateTimeOffset.UtcNow.AddDays(-1));
                  
 
             var requestedDriverIds = orderRequestedDrivers.Select(x => x.Driver.ExternalId).ToList();
             var theOrderRejectedIds = theOrderRejectedDrivers.Select(x => x.Driver.ExternalId).ToList();
+            var systemRejectedIds = systemRejectedDrivers.Select(x => x.Driver.ExternalId).ToList();
 
              var driverContract = driverList
                  .Where(x => !requestedDriverIds.Contains(x.DriverId))
                  .Where(x => !theOrderRejectedIds.Contains(x.DriverId))
+                 .Where(x => !systemRejectedIds.Contains(x.DriverId))
                  .Random();
 
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
