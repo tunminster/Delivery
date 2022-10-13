@@ -45,7 +45,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                 x.ExternalId == command.DriverOrderActionContract.OrderId) ?? throw new InvalidOperationException($"Expected order by order id: {command.DriverOrderActionContract.OrderId}.");
 
             var driverOrder =
-                await databaseContext.DriverOrders.SingleOrDefaultAsync(x =>
+                await databaseContext.DriverOrders.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x =>
                     x.OrderId == order.Id && x.DriverId == driver.Id);
 
             if (driverOrder == null)

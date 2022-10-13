@@ -35,7 +35,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            var driverResponseThreshold = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSettingOrDefault<string>("DriverResponseThreshold", "2");
+            var driverResponseThreshold = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSettingOrDefault<string>("DriverResponseThreshold", "3");
             
             var driverOrders =
                 await databaseContext.DriverOrders.Where(x =>
