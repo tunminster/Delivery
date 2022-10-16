@@ -28,8 +28,10 @@ namespace Delivery.Azure.Library.WebApi.Filters
         private static void SetRequestData(FilterContext context)
         {
             var request = context.HttpContext.Request;
+            
             if (context.HttpContext.Items.ContainsKey(HttpRequestTracer.StartTime))
             {
+                request.SetUserEmail();
                 return;
             }
 
