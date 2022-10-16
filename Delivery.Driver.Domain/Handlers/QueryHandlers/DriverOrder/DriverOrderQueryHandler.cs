@@ -45,13 +45,14 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
                 .Include(x => x.Order)
                 .ThenInclude(x => x.Address)
                 .FirstOrDefaultAsync(x => x.DriverId == driver.Id && (x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted || x.Status == DriverOrderStatus.InProgress));
-
-            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-                .TrackTrace($"{nameof(DriverOrderQueryHandler)} returns {driverOrders.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+            
             if (driverOrders == null)
             {
                 return null;
             }
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                .TrackTrace($"{nameof(DriverOrderQueryHandler)} returns {driverOrders.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace($"{nameof(DriverOrderQueryHandler)} is going to convert", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
