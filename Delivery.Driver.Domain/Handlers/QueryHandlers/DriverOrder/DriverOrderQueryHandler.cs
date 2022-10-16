@@ -52,9 +52,6 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
             }
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-                .TrackTrace($"{nameof(DriverOrderQueryHandler)} returns {driverOrders.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
-            
-            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace($"{nameof(DriverOrderQueryHandler)} is going to convert", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
             
             var driverOrderDetailsContract = driverOrders.ConvertToDriverOrderDetailsContract();

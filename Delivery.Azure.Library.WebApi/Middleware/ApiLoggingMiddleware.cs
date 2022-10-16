@@ -38,7 +38,7 @@ namespace Delivery.Azure.Library.WebApi.Middleware
 
             context.Items[HttpRequestTracer.StartTime] = DateTimeOffset.UtcNow;
             request.SetCorrelationId();
-            request.SetUserEmail();
+            //request.SetUserEmail();
         }
     }
 }
