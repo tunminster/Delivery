@@ -24,7 +24,7 @@ namespace Delivery.Driver.Domain.Converters
                 DeliveryLatitude = driverOrder.Order.Address.Lat ?? 0,
                 DeliveryLongitude = driverOrder.Order.Address.Lng ?? 0,
                 DeliveryFee = driverOrder.Order.DeliveryFees,
-                Tips = 0,
+                Tips = driverOrder.Order.DeliveryTips ?? 0,
                 TotalAmount = driverOrder.Order.TotalAmount,
                 OrderItems = ConvertToOrderItemContract(driverOrder.Order.OrderItems.ToList())
             };
