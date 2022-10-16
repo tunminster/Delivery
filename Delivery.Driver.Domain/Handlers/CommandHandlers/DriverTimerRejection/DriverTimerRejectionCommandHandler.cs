@@ -35,11 +35,12 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
-            var driverResponseThreshold = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSettingOrDefault<string>("DriverResponseThreshold", "3");
+            var driverResponseThreshold = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSettingOrDefault<string>("DriverResponseThreshold", "5");
             
+            // todo: remove hour after testing
             var driverOrders =
                 await databaseContext.DriverOrders.Where(x =>
-                    x.Status == DriverOrderStatus.None && x.InsertionDateTime.AddMinutes(int.Parse(driverResponseThreshold)) > DateTimeOffset.UtcNow)
+                    x.Status == DriverOrderStatus.None && x.InsertionDateTime.AddHours(int.Parse(driverResponseThreshold)) > DateTimeOffset.UtcNow)
                     .Include(x => x.Driver)
                     .Include(x => x.Order)
                     .ToListAsync();
