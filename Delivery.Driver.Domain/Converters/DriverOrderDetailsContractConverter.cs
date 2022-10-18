@@ -16,6 +16,7 @@ namespace Delivery.Driver.Domain.Converters
                 StoreId = driverOrder.Order.Store.ExternalId,
                 StoreName = driverOrder.Order.Store.StoreName,
                 StoreAddress = driverOrder.Order.Store.FormattedAddress ?? string.Empty,
+                StoreImageUri = driverOrder.Order.Store.ImageUri,
                 StoreLatitude = driverOrder.Order.Store.Latitude ?? 0,
                 StoreLongitude = driverOrder.Order.Store.Longitude ?? 0,
                 DeliveryAddress = FormatAddressLinesHelper.FormatAddress(driverOrder.Order.Address.AddressLine,

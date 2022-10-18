@@ -30,6 +30,11 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder
         /// <example>{{storeAddress}}</example>
         /// </summary>
         public string StoreAddress { get; init; } = string.Empty;
+
+        /// <summary>
+        ///  Store image uri
+        /// </summary>
+        public string StoreImageUri { get; init; } = string.Empty;
         
         /// <summary>
         ///  Store latitude
