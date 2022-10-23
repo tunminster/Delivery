@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
@@ -11,6 +12,7 @@ using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverRequest;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -51,7 +53,10 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
                 var driverOrder = await databaseContext.DriverOrders
                     .FirstOrDefaultAsync(x => x.OrderId == order.Id
                                               && x.Status != DriverOrderStatus.Rejected || x.Status != DriverOrderStatus.SystemRejected);
-
+                
+                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                    .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)}: driver is not empty.  Driver {driverOrder.Driver.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+                
                 if (driverOrder == null)
                 {
                     serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)}'s driver order is empty. Driver Request message is raising.");
