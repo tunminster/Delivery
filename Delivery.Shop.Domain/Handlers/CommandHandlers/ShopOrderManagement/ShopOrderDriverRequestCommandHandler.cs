@@ -18,6 +18,7 @@ using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceStack;
 
 namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
 {
@@ -69,7 +70,12 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
 
             var driverList = await new DriverByNearestLocationQueryHandler(serviceProvider, executingRequestContextAdapter)
                 .Handle(driverByNearestLocationQuery);
-
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                .TrackTrace(
+                    $"Nearest drivers found: {driverList.Select(x => x.DriverId).Join(",")}",
+                    SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+            
              var orderRequestedDrivers = databaseContext.DriverOrders
                  .Include(x => x.Driver)
                  .Where(x => x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted);
@@ -83,7 +89,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                  .Where(x => x.OrderId == order.Id)
                  .Include(x => x.Driver)
                  .Where(x => x.Status == DriverOrderStatus.Rejected &&
-                             x.InsertionDateTime >= DateTimeOffset.UtcNow.AddDays(-1));
+                             x.InsertionDateTime < DateTimeOffset.UtcNow.AddDays(-1));
                  
 
             var requestedDriverIds = orderRequestedDrivers.Select(x => x.Driver.ExternalId).ToList();
