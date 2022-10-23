@@ -54,7 +54,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
             {
                 var driverOrder = await databaseContext.DriverOrders
                     .FirstOrDefaultAsync(x => x.OrderId == order.Id
-                                              && x.Status != DriverOrderStatus.Rejected || x.Status != DriverOrderStatus.SystemRejected);
+                                              && x.Status != DriverOrderStatus.Rejected && x.Status != DriverOrderStatus.SystemRejected);
                 
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                     .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)}: driver is not empty.  Driver {driverOrder.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
