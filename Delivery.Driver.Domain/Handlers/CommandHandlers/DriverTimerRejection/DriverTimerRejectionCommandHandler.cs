@@ -73,7 +73,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                 };
                 
                 // request another driver
-                await new DriverRequestMessagePublisher(serviceProvider).PublishAsync(driverRequestMessageContract);
+                await new DriverRequestMessagePublisher(serviceProvider, executingRequestContextAdapter).ExecuteAsync(driverRequestMessageContract);
             }
 
             
