@@ -55,7 +55,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
                                               && x.Status != DriverOrderStatus.Rejected || x.Status != DriverOrderStatus.SystemRejected);
                 
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-                    .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)}: driver is not empty.  Driver {driverOrder.Driver.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+                    .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)}: driver is not empty.  Driver {driverOrder.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
                 
                 if (driverOrder == null)
                 {
