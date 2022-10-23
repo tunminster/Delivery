@@ -9,6 +9,7 @@ using Delivery.Domain.FrameWork.Context;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrder;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder;
 using Delivery.Driver.Domain.Validators;

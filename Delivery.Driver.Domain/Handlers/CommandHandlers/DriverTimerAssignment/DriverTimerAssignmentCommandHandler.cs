@@ -39,9 +39,11 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
             
             var orders =  await databaseContext.Orders.Where(x => x.OrderType == OrderType.DeliverTo
                                                                  && x.Status == OrderStatus.Ready
-                                                                 )
-                .ToListAsync();
+                                                                 ).ToListAsync();
             
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)} retrieves orders to be assigned.", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+
             var statusContract = new StatusContract
             {
                 Status = true,
@@ -52,7 +54,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
             {
                 var driverOrder = await databaseContext.DriverOrders
                     .FirstOrDefaultAsync(x => x.OrderId == order.Id
-                                              && x.Status != DriverOrderStatus.Rejected || x.Status != DriverOrderStatus.SystemRejected);
+                                              && x.Status != DriverOrderStatus.Rejected && x.Status != DriverOrderStatus.SystemRejected);
                 
                 serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                     .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)}: driver is not empty.  Driver {driverOrder.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
