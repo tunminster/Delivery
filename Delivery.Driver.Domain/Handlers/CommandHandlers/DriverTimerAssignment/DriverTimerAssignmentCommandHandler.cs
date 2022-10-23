@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
@@ -53,6 +54,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
 
                 if (driverOrder == null)
                 {
+                    serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)}'s driver order is empty. Driver Request message is raising.");
                     var driverRequestMessageContract = new DriverRequestMessageContract
                     {
                         PayloadIn = new DriverRequestContract {OrderId = order.ExternalId},
