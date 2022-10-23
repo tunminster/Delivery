@@ -17,26 +17,23 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
 {
     public record DriverTimerAssignmentCommand(string ShardKey);
 
-    public class DriverTimerAssignmentCommandHandler : ICommandHandler<DriverTimerAssignmentCommand, StatusContract>
+    public class DriverTimerAssignmentCommandHandler : CommandHandler<DriverTimerAssignmentCommand, StatusContract>
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
         public DriverTimerAssignmentCommandHandler(IServiceProvider serviceProvider,
-            IExecutingRequestContextAdapter executingRequestContextAdapter)
+            IExecutingRequestContextAdapter executingRequestContextAdapter) : base(serviceProvider, executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
 
-        public async Task<StatusContract> HandleAsync(DriverTimerAssignmentCommand command)
+        protected override async Task<StatusContract> HandleAsync(DriverTimerAssignmentCommand command)
         {
             await using var databaseContext =
                 await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
-
-            var driverResponseThreshold = serviceProvider.GetRequiredService<IConfigurationProvider>()
-                .GetSettingOrDefault<int>("DriverAssignmentThreshold", 5);
-
+            
             var orders =  await databaseContext.Orders.Where(x => x.OrderType == OrderType.DeliverTo
                                                                  && x.Status == OrderStatus.Ready
                                                                  )

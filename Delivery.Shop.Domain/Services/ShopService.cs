@@ -38,7 +38,7 @@ namespace Delivery.Shop.Domain.Services
 
             var storeImageCreationStatusContract =
                 await new StoreImageCreationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .HandleCoreAsync(storeImageCreationCommand);
+                    .ExecuteAsync(storeImageCreationCommand);
 
             var shopImageCreationStatusContract = new ShopImageCreationStatusContract
             {
