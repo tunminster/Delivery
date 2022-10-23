@@ -37,9 +37,9 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
             var driverResponseThreshold = serviceProvider.GetRequiredService<IConfigurationProvider>()
                 .GetSettingOrDefault<int>("DriverAssignmentThreshold", 5);
 
-            var orders =  await databaseContext.Orders.Where(x => x.InsertionDateTime.AddMinutes(driverResponseThreshold) < DateTimeOffset.Now
-                                                                 && x.OrderType == OrderType.DeliverTo
-                                                                 && x.Status == OrderStatus.Ready)
+            var orders =  await databaseContext.Orders.Where(x => x.OrderType == OrderType.DeliverTo
+                                                                 && x.Status == OrderStatus.Ready
+                                                                 )
                 .ToListAsync();
             
             var statusContract = new StatusContract
@@ -52,7 +52,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
             {
                 var driverOrder = await databaseContext.DriverOrders
                     .FirstOrDefaultAsync(x => x.OrderId == order.Id
-                                              && x.Status != DriverOrderStatus.Rejected);
+                                              && x.Status != DriverOrderStatus.Rejected );
 
                 if (driverOrder == null)
                 {

@@ -31,6 +31,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                     && x.OrderId == command.DriverAssignmentCreationContract.OrderId 
                     && x.Status == DriverOrderStatus.None);
 
+            // driver is free to pick up the order
             if (driverOrder == null)
             {
                 var createDriverOrder = new Database.Entities.DriverOrder
