@@ -52,7 +52,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
             {
                 var driverOrder = await databaseContext.DriverOrders
                     .FirstOrDefaultAsync(x => x.OrderId == order.Id
-                                              && x.Status != DriverOrderStatus.Rejected );
+                                              && x.Status != DriverOrderStatus.Rejected || x.Status != DriverOrderStatus.SystemRejected);
 
                 if (driverOrder == null)
                 {
@@ -63,7 +63,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
                         RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
                     };
                 
-                    // request another driver
+                    // request driver
                     await new DriverRequestMessagePublisher(serviceProvider).PublishAsync(driverRequestMessageContract);
                 }
             }
