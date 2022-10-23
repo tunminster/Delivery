@@ -11,16 +11,18 @@ using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection;
 
 namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverRequest
 {
-    public class DriverRequestMessagePublisher : IMessagePublisherAsync<DriverRequestMessageContract>
+    public class DriverRequestMessagePublisher : MessagePublisherAsync<DriverRequestMessageContract>
     {
         private readonly IServiceProvider serviceProvider;
+        private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
-        public DriverRequestMessagePublisher(IServiceProvider serviceProvider)
+        public DriverRequestMessagePublisher(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter) : base(serviceProvider, executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
+            this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task PublishAsync(DriverRequestMessageContract message)
+        protected override async Task PublishAsync(DriverRequestMessageContract message)
         {
             var executingContextAdapter = new ExecutingRequestContextAdapter(message.RequestContext);
             var cloudEventMessage = message

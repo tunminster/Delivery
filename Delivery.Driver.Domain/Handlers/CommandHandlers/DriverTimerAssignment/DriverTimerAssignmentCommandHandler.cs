@@ -61,7 +61,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
                     };
                 
                     // request driver
-                    await new DriverRequestMessagePublisher(serviceProvider).PublishAsync(driverRequestMessageContract);
+                    await new DriverRequestMessagePublisher(serviceProvider, executingRequestContextAdapter).ExecuteAsync(driverRequestMessageContract);
                 }
             }
 
