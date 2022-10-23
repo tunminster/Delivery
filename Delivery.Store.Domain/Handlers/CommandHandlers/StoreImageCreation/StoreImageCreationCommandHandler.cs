@@ -24,7 +24,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public override async Task<StoreImageCreationStatusContract> HandleAsync(StoreImageCreationCommand command)
+        protected override async Task<StoreImageCreationStatusContract> HandleAsync(StoreImageCreationCommand command)
         {
             var storageAccountConnectionStringKey = $"Storage-Account-{executingRequestContextAdapter.GetShard().Key}-Connection-String";
             
