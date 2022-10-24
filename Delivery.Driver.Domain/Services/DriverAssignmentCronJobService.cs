@@ -9,6 +9,7 @@ using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection;
 
 namespace Delivery.Driver.Domain.Services
 {
+    // this should be replaced by indifinite message publish
     public class DriverAssignmentCronJobService : CronJobService
     {
         private readonly IServiceProvider serviceProvider;
@@ -24,7 +25,7 @@ namespace Delivery.Driver.Domain.Services
             var executingContextUs = GetExecutingContext("Raus");
 
             await new DriverTimerAssignmentCommandHandler(serviceProvider, executingContextUs)
-                .ExecuteAsync(new DriverTimerAssignmentCommand(executingContextUs.GetShard().Key));
+                .HandleAsync(new DriverTimerAssignmentCommand(executingContextUs.GetShard().Key));
         }
 
         private static IExecutingRequestContextAdapter GetExecutingContext(string shardKey)
