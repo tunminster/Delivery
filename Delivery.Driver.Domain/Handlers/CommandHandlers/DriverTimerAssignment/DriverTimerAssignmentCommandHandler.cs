@@ -20,19 +20,19 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
 {
     public record DriverTimerAssignmentCommand(string ShardKey);
 
-    public class DriverTimerAssignmentCommandHandler : CommandHandler<DriverTimerAssignmentCommand, StatusContract>
+    public class DriverTimerAssignmentCommandHandler
     {
         private readonly IServiceProvider serviceProvider;
         private readonly IExecutingRequestContextAdapter executingRequestContextAdapter;
 
         public DriverTimerAssignmentCommandHandler(IServiceProvider serviceProvider,
-            IExecutingRequestContextAdapter executingRequestContextAdapter) : base(serviceProvider, executingRequestContextAdapter)
+            IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
 
-        protected override async Task<StatusContract> HandleAsync(DriverTimerAssignmentCommand command)
+        public async Task<StatusContract> HandleAsync(DriverTimerAssignmentCommand command)
         {
             await using var databaseContext =
                 await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
