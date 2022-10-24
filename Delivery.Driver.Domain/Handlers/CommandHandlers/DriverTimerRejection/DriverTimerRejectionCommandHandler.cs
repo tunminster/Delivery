@@ -21,6 +21,10 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
 {
     public record DriverTimerRejectionCommand(string ShardKey);
     
+    // replace with re-schedule message publishing
+    // EG: 1. raise a message to find driver
+    // 2. at the sametime to raise a (2 minutes later)schedule message to check order has been picked by the selected developer.
+    // 3. If the drive is not picked up, try to find another driver. 
     public class DriverTimerRejectionCommandHandler : ICommandHandler<DriverTimerRejectionCommand, StatusContract>
     {
         private readonly IServiceProvider serviceProvider;
@@ -40,7 +44,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
             // todo: remove hour after testing
             var driverOrders =
                 await databaseContext.DriverOrders.Where(x =>
-                    x.Status == DriverOrderStatus.None && x.InsertionDateTime.AddHours(int.Parse(driverResponseThreshold)) > DateTimeOffset.UtcNow)
+                    x.Status == DriverOrderStatus.None && x.InsertionDateTime.AddMinutes(int.Parse(driverResponseThreshold)) < DateTimeOffset.UtcNow)
                     .Include(x => x.Driver)
                     .Include(x => x.Order)
                     .ToListAsync();
