@@ -41,8 +41,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
                                                                  && x.Status == OrderStatus.Ready
                                                                  ).ToListAsync();
             
-            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-                .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)} retrieves orders to be assigned.", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+            // serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+            //     .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)} retrieves orders to be assigned.", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
 
             var statusContract = new StatusContract
             {
@@ -56,8 +56,8 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerAssignment
                     .FirstOrDefaultAsync(x => x.OrderId == order.Id
                                               && x.Status != DriverOrderStatus.Rejected && x.Status != DriverOrderStatus.SystemRejected);
                 
-                serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-                    .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)}: driver is not empty.  Driver {driverOrder.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+                // serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                //     .TrackTrace($"{nameof(DriverTimerAssignmentCommandHandler)}: driver is not empty.  Driver {driverOrder.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
                 
                 if (driverOrder == null)
                 {
