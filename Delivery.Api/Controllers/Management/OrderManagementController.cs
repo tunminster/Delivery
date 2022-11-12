@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
-using Delivery.Database.Constants;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Order.Domain.Contracts.V1.RestContracts;
 using Delivery.Order.Domain.Handlers.QueryHandlers;
@@ -44,13 +43,39 @@ namespace Delivery.Api.Controllers.Management
             int.TryParse(pageSize, out var iPageSize);
             int.TryParse(pageNumber, out var iPageNumber);
         
-            var orderGetAllQuery =
-                new OrderGetAllQuery(string.Empty, iPageSize, iPageNumber, freeTextSearch);
+            var orderGetQuery =
+                new OrderGetQuery(string.Empty, iPageSize, iPageNumber, freeTextSearch);
             var orderPagedContract =
-                await new OrderGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(orderGetAllQuery);
+                await new OrderGetQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(orderGetQuery);
             
             return Ok(orderPagedContract);
+        }
+
+        /// <summary>
+        ///  Get order list
+        /// </summary>
+        /// <returns></returns>
+        [Route("get-orders-list", Order = 2)]
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        [ProducesResponseType(typeof(OrderPagedContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Get_All_OrdersAsync(string pageSize, string pageNumber, string? freeTextSearch)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            int.TryParse(pageSize, out var iPageSize);
+            int.TryParse(pageNumber, out var iPageNumber);
+            
+            var orderGetAllQuery =
+                new OrderGetAllQuery(iPageSize, iPageNumber, freeTextSearch);
+            
+            var orderAllPagedContract =
+                await new OrderGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
+                    .Handle(orderGetAllQuery);
+
+            return Ok(orderAllPagedContract);
         }
     }
 }
