@@ -53,7 +53,7 @@ namespace Delivery.Api.Controllers.Management
         }
 
         /// <summary>
-        ///  Get order list
+        ///  Get All order list
         /// </summary>
         /// <returns></returns>
         [Route("get-orders-list", Order = 2)]
