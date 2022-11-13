@@ -50,7 +50,7 @@ namespace Delivery.Azure.Library.Caching.Cache.Configurations
         /// <summary>
         ///     How long an item should stay in the cache
         /// </summary>
-        public virtual int DefaultCacheExpirySeconds => ConfigurationProvider.GetSettingOrDefault<int>("RedisCache_DefaultExpirySeconds", 4 * 60 * 60);
+        public virtual int DefaultCacheExpirySeconds => ConfigurationProvider.GetSettingOrDefault<int>("RedisCache_DefaultExpirySeconds", 4 * 60);
 
         public RedisCacheConfigurationDefinition(IServiceProvider serviceProvider) : base(serviceProvider)
         {
