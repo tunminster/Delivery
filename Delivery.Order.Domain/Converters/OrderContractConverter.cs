@@ -18,6 +18,7 @@ namespace Delivery.Order.Domain.Converters
                 BusinessApplicationFees = order.BusinessServiceFees,
                 OrderType = order.OrderType,
                 StoreName = order.Store?.StoreName ?? string.Empty,
+                Status = order.Status,
                 DeliveryAddress = order.Address?.AddressLine ?? string.Empty,
                 OrderItems = order.OrderItems?.Select(x => x.ConvertToOrderItemContract()).ToList() ?? new(),
                 DateCreated = order.InsertionDateTime
