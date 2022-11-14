@@ -40,8 +40,8 @@ namespace Delivery.Api.Controllers.Customers
         ///  Get address by user id
         /// </summary>
         /// <returns></returns>
-        [Route("GetAddress", Order = 1)]
-        [HttpGet("GetAddressByUserId/{customerId}")]
+        [Route("GetAddressByUserId/{customerId}", Order = 1)]
+        [HttpGet]
         [ProducesResponseType(typeof(List<AddressContract>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetAddressByUserIdAsync(int customerId,CancellationToken cancellationToken = default)
