@@ -26,6 +26,27 @@ namespace Delivery.Order.Domain.Converters
 
             return orderManagementContract;
         }
+        
+        public static OrderAdminManagementContract ConvertToOrderAdminManagementContract(this Database.Entities.Order order)
+        {
+            var orderAdminManagementContract = new OrderAdminManagementContract
+            {
+                Id = order.ExternalId,
+                CustomerId = order.Customer.ExternalId,
+                CustomerName = order.Customer.Username,
+                TotalAmount = order.TotalAmount -
+                              (order.BusinessServiceFees + order.PlatformServiceFees + order.DeliveryFees),
+                BusinessApplicationFees = order.BusinessServiceFees,
+                OrderType = order.OrderType,
+                StoreName = order.Store?.StoreName ?? string.Empty,
+                Status = order.Status,
+                DeliveryAddress = order.Address?.AddressLine ?? string.Empty,
+                OrderItems = order.OrderItems?.Select(x => x.ConvertToOrderItemContract()).ToList() ?? new(),
+                DateCreated = order.InsertionDateTime
+            };
+
+            return orderAdminManagementContract;
+        }
 
         public static OrderItemContract ConvertToOrderItemContract(this Database.Entities.OrderItem orderItem)
         {

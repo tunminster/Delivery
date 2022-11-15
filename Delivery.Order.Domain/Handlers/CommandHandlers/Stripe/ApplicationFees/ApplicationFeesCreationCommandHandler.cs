@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Database.DataAccess;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Database.Enums;
@@ -15,6 +17,10 @@ using Delivery.Order.Domain.Contracts.V1.RestContracts.Promotion;
 using Delivery.Order.Domain.Converters;
 using Delivery.Order.Domain.Factories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using ServiceStack;
+using Stripe;
+using TaxRateService = Delivery.Domain.Services.TaxRateService;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
 {
@@ -31,6 +37,10 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
+        /// <summary>
+        ///   Use google map distance metric api. The value returns in meter EG: 2133 is 2.1 km  ( divide by 1000)
+        /// </summary>
+        /// <returns></returns>
         public async Task<ApplicationFeesContract> HandleAsync(ApplicationFeesCreationCommand command)
         {
             var platformFee = ApplicationFeeGenerator.GeneratorFees(command.ApplicationFeesCreationContract.SubTotal);
@@ -43,8 +53,6 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
             int distance = 0;
             if (command.ApplicationFeesCreationContract.CustomerLatitude == null)
             {
-                
-
                 var customer = await databaseContext.Customers.Where(x =>
                     x.ExternalId == command.ApplicationFeesCreationContract.CustomerId)
                     .Include(x => x.Addresses)
@@ -61,7 +69,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
                 
                 distance = distanceMatrix.Status == "OK"
                     ? distanceMatrix.Rows.First()
-                        .Elements.First().Distance.Value : 1000;
+                        .Elements.First().Distance.Value : 1000; // default 1 km
 
             }
             else
@@ -79,6 +87,8 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
                     ? distanceMatrixContract.Rows.First()
                         .Elements.First().Distance.Value : 1000;
             }
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(DistanceMatrixService)} executed. Info: {distance.ConvertToJson()}");
             
             var deliveryFee = ApplicationFeeGenerator.GenerateDeliveryFees(distance);
             var deliveryTips = command.ApplicationFeesCreationContract.DeliveryTips;
