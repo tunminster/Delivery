@@ -108,7 +108,9 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
             
             var taxRate =
                 await new TaxRateService(serviceProvider, executingRequestContextAdapter).GetTaxRateAsync(
-                    store?.City ?? string.Empty, store?.Country ?? string.Empty);
+                    store?.County ?? string.Empty, store?.Country ?? string.Empty);
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(TaxRateService)} executed. Info: {taxRate.ConvertToJson()}");
             
             var taxFee = TaxFeeGenerator.GenerateTaxFees(command.ApplicationFeesCreationContract.SubTotal, taxRate);
 
@@ -128,6 +130,8 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.ApplicationFees
                 DeliveryTips = deliveryTips ?? 0,
                 TotalAmount = totalAmount ?? 0
             };
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackTrace($"{nameof(ApplicationFeesCreationCommandHandler)} executed. Info: {applicationFeesContract.ConvertToJson()}");
 
             return await Task.FromResult(applicationFeesContract);
         }
