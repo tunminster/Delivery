@@ -21,5 +21,10 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts
         ///  Delivery partner name if the order is a delivery
         /// </summary>
         public string DeliveryPartnerName { get; init; } = string.Empty;
+
+        /// <summary>
+        ///  Delivery partner id
+        /// </summary>
+        public string DeliveryPartnerId { get; init; } = string.Empty;
     }
 }

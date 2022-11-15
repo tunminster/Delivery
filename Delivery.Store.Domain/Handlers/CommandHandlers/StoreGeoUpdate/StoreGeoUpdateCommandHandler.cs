@@ -52,9 +52,17 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreGeoUpdate
                 await new SearchGeoLocationQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
                     searchGeoLocationQuery);
 
+            var geoResultAddress = geoResult.FormattedAddress.Split(',', StringSplitOptions.TrimEntries);
+
             store.Latitude = geoResult.Latitude;
             store.Longitude = geoResult.Longitude;
             store.FormattedAddress = geoResult.FormattedAddress;
+
+            if (geoResultAddress.Any())
+            {
+                store.City = geoResultAddress[^3];
+                store.County = geoResultAddress[^2].Split(' ').First();
+            }
 
             await databaseContext.SaveChangesAsync();
 
