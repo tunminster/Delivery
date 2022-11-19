@@ -24,6 +24,7 @@ using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
+using Delivery.Order.Domain.Contracts.V1.MessageContracts.CouponPayment;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts.PushNotification;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
 using Delivery.Order.Domain.Handlers.MessageHandlers.OrderUpdates;
@@ -209,6 +210,13 @@ namespace Delivery.Orders.Host.ContainerHosts
                     var shopActiveMessageHandler = new ShopActiveMessageHandler(ServiceProvider,
                         new ExecutingRequestContextAdapter(shopActiveMessage.RequestContext));
                     await shopActiveMessageHandler.HandleMessageAsync(shopActiveMessage, processingState);
+                    break;
+                
+                case nameof(CouponPaymentCreationMessage):
+                    var couponPaymentCreationMessage = message.Deserialize<CouponPaymentCreationMessage>();
+                    await new CouponPaymentCreationMessageHandler(ServiceProvider,
+                            new ExecutingRequestContextAdapter(couponPaymentCreationMessage.RequestContext))
+                        .HandleMessageAsync(couponPaymentCreationMessage, processingState);
                     break;
                     
                 default:

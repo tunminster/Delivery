@@ -9,9 +9,11 @@ using Delivery.Database.Entities;
 using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Constants;
+using Delivery.Order.Domain.Contracts.V1.MessageContracts.CouponPayment;
 using Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder;
 using Delivery.Order.Domain.Enum;
 using Delivery.Order.Domain.Factories;
+using Delivery.Order.Domain.Handlers.MessageHandlers;
 
 namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreation
 {
@@ -67,6 +69,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 TaxFees = command.OrderCreationStatusContract.TaxFee,
                 CurrencyCode = command.OrderCreationStatusContract.CurrencyCode,
                 CouponCode = command.StripeOrderCreationContract.PromoCode,
+                CouponDiscountAmount = command.OrderCreationStatusContract.PromotionDiscountAmount,
                 PaymentType = "Card",
                 PaymentStatus = PaymentStatusEnum.InProgress.ToString(),
                 PaymentStatusCode = OrderPaymentStatus.InProgress,
@@ -79,6 +82,8 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
                 CustomerId = command.StripeOrderCreationContract.CustomerId,
                 AddressId = command.StripeOrderCreationContract.ShippingAddressId,
                 OrderType = command.StripeOrderCreationContract.OrderType,
+                StripeTransactionFees = command.OrderCreationStatusContract.StripeTransactionFees,
+                BusinessTotalAmount = command.OrderCreationStatusContract.BusinessTotalAmount,
                 IsDeleted = false,
                 StoreId = store?.Id,
                 InsertedBy = executingRequestContextAdapter.GetAuthenticatedUser().UserEmail,
@@ -90,6 +95,27 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
 
             var orderCreationStatus = command.OrderCreationStatusContract;
             orderCreationStatus.CreatedDateTime = orderEntity.InsertionDateTime;  
+            
+            // Publish coupon payment request
+            if (!string.IsNullOrEmpty(orderEntity.CouponCode) && orderEntity.CouponDiscountAmount != null &&
+                orderEntity.CouponDiscountAmount > 0)
+            {
+                var couponPaymentCreationMessageContract = new CouponPaymentCreationMessageContract
+                {
+                    CouponCode = orderEntity.CouponCode,
+                    DiscountAmount = orderEntity.CouponDiscountAmount.Value,
+                    OrderId = orderEntity.ExternalId,
+                    ShopOwnerConnectAccount = orderEntity.ShopOwnerTransferredId
+                };
+                
+                var couponPaymentCreationMessage = new CouponPaymentCreationMessage
+                {
+                    PayloadIn = couponPaymentCreationMessageContract,
+                    RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+                };
+                
+                await new CouponPaymentCreationMessagePublisher(serviceProvider).PublishAsync(couponPaymentCreationMessage);
+            }
 
             return orderCreationStatus;
         }

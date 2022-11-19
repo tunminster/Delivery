@@ -59,7 +59,7 @@ namespace Delivery.Api.Controllers.Management
         [Route("get-orders-list", Order = 2)]
         [HttpGet]
         [Authorize(Roles = "Administrator")]
-        [ProducesResponseType(typeof(OrderPagedContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(OrderAdminManagementPagedContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Get_All_OrdersAsync(string pageSize, string pageNumber, string? freeTextSearch)
         {
@@ -71,11 +71,11 @@ namespace Delivery.Api.Controllers.Management
             var orderGetAllQuery =
                 new OrderGetAllQuery(iPageSize, iPageNumber, freeTextSearch);
             
-            var orderAllPagedContract =
+            var orderAdminManagementPagedContract =
                 await new OrderGetAllQueryHandler(serviceProvider, executingRequestContextAdapter)
                     .Handle(orderGetAllQuery);
 
-            return Ok(orderAllPagedContract);
+            return Ok(orderAdminManagementPagedContract);
         }
     }
 }

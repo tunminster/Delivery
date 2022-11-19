@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Graph;
 
 namespace Delivery.Order.Domain.Contracts.V1.RestContracts
 {
@@ -8,6 +9,12 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts
     public record OrderAdminManagementContract : OrderManagementContract
     {
         /// <summary>
+        ///  Subtotal amount that shop owner receive
+        ///   minus Delivery fees, tax fees, business service fees, platform service fees
+        /// </summary>
+        public int SubTotalAmount { get; init; }
+        
+        /// <summary>
         ///  Delivery fees
         /// </summary>
         public int DeliveryFees { get; init; }
@@ -16,15 +23,26 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts
         ///  Update date
         /// </summary>
         public DateTimeOffset UpdateDate { get; init; }
-
+        
         /// <summary>
-        ///  Delivery partner name if the order is a delivery
+        ///  Tax fees
         /// </summary>
-        public string DeliveryPartnerName { get; init; } = string.Empty;
-
+        public int TaxFees { get; init; }
+        
         /// <summary>
-        ///  Delivery partner id
+        ///  Business service fees
         /// </summary>
-        public string DeliveryPartnerId { get; init; } = string.Empty;
+        public int BusinessServiceFees { get; init; }
+        
+        /// <summary>
+        ///  Platform service fees
+        /// </summary>
+        public int PlatformServiceFees { get; init; }
+        
+        
+        /// <summary>
+        ///  Delivery requested count
+        /// </summary>
+        public int DeliveryRequested { get; init; }
     }
 }

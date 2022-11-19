@@ -93,7 +93,22 @@ namespace Delivery.Database.Entities
         
         public int? DeliveryTips { get; set; }
         
+        /// <summary>
+        ///  Coupon discount that transfer back to shop partner
+        /// </summary>
         public int? CouponDiscountPaid { get; set; }
+        
+        /// <summary>
+        ///  Coupon discount amount that used by customer.
+        /// </summary>
+        public int? CouponDiscountAmount { get; set; }
+        
+        public int? StripeTransactionFees { get; set; }
+        
+        /// <summary>
+        ///  Total amount that business partner receive
+        /// </summary>
+        public int? BusinessTotalAmount { get; set; }
         
         public OrderType OrderType { get; set; }
         public bool IsDeleted { get; set; }

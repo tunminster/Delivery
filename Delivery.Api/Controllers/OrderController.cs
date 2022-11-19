@@ -70,7 +70,7 @@ namespace Delivery.Api.Controllers
             var paymentOrderServiceRequest = new PaymentOrderServiceRequest(stripeOrderCreationContract, shardInformation!.Currency);
             var paymentIntentCreationStatusContract =
                 await new PaymentOrderService(serviceProvider, executingRequestContextAdapter)
-                    .ExecuteStripePaymentIntentWorkflow(paymentOrderServiceRequest);
+                    .ExecuteStripePaymentIntentWorkflowAsync(paymentOrderServiceRequest);
 
             return Ok(paymentIntentCreationStatusContract);
         }

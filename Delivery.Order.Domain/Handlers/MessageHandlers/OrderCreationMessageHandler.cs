@@ -31,10 +31,12 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers
                 {
                     var orderCreationCommand =
                         new OrderCreationCommand(messageAdapter.GetPayloadIn(), messageAdapter.GetPayloadOut());
-
+                    
+                    // persist order
                     var stripeOrderCreationCommandHandler =
                         new OrderCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter);
-                    await stripeOrderCreationCommandHandler.HandleAsync(orderCreationCommand);
+                    var orderCreationStatusContract = await stripeOrderCreationCommandHandler.HandleAsync(orderCreationCommand);
+                    
 
                     processingStates |= MessageProcessingStates.PersistOrder;
                 }

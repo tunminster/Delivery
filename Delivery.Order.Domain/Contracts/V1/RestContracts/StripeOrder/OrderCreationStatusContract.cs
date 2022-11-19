@@ -45,6 +45,11 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder
         public int TaxFee { get; set; }
         
         /// <summary>
+        ///  Stripe transaction fees 2.9% + 30 cents
+        /// </summary>
+        public int StripeTransactionFees { get; set; }
+        
+        /// <summary>
         ///  Currency code
         /// </summary>
         /// <example>{{currencyCode}}</example>
@@ -85,5 +90,10 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder
         /// </summary>
         /// <example>{{promotionDiscountAmount}}</example>
         public int PromotionDiscountAmount { get; set; }
+        
+        /// <summary>
+        ///  Business total amount
+        /// </summary>
+        public int BusinessTotalAmount { get; set; }
     }
 }

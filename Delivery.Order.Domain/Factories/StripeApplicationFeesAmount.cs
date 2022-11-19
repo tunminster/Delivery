@@ -1,3 +1,5 @@
+using Delivery.Order.Domain.Constants;
+
 namespace Delivery.Order.Domain.Factories
 {
     public static class StripeApplicationFeesAmount
@@ -6,6 +8,11 @@ namespace Delivery.Order.Domain.Factories
         {
             return applicationFees + deliveryFee +
                    ApplicationFeeGenerator.BusinessServiceFees(subtotal, businessServiceRate);
+        }
+
+        public static int GetStripeTransactionFees(int subtotalAmount)
+        {
+            return (int) ((OrderConstant.StripeTransactionFees / 100) * subtotalAmount);
         }
     }
 }

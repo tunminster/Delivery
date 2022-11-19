@@ -42,7 +42,14 @@ namespace Delivery.Order.Domain.Converters
                 Status = order.Status,
                 DeliveryAddress = order.Address?.AddressLine ?? string.Empty,
                 OrderItems = order.OrderItems?.Select(x => x.ConvertToOrderItemContract()).ToList() ?? new(),
-                DateCreated = order.InsertionDateTime
+                DateCreated = order.InsertionDateTime,
+                DeliveryFees = order.DeliveryFees,
+                UpdateDate = order.DateUpdated,
+                DeliveryRequested = order.DeliveryRequested,
+                TaxFees = order.TaxFees,
+                BusinessServiceFees = order.BusinessServiceFees,
+                PlatformServiceFees = order.PlatformServiceFees
+                
             };
 
             return orderAdminManagementContract;
