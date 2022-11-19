@@ -11,6 +11,7 @@ using Delivery.Database.Context;
 using Delivery.Database.Entities;
 using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
+using Delivery.Order.Domain.Contracts.V1.MessageContracts.CouponPayment;
 using Delivery.Order.Domain.Contracts.V1.ModelContracts.Stripe;
 using Delivery.Order.Domain.Contracts.V1.RestContracts.Promotion;
 using Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder;
@@ -36,7 +37,7 @@ namespace Delivery.Order.Domain.Services.Applications
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
 
-        public async Task<PaymentIntentCreationStatusContract> ExecuteStripePaymentIntentWorkflow(PaymentOrderServiceRequest paymentOrderServiceRequest)
+        public async Task<PaymentIntentCreationStatusContract> ExecuteStripePaymentIntentWorkflowAsync(PaymentOrderServiceRequest paymentOrderServiceRequest)
         {
             var orderCreateStatusContract = new OrderCreationStatusContract
             {
@@ -56,7 +57,6 @@ namespace Delivery.Order.Domain.Services.Applications
                     .HandleAsync(new StripeOrderTotalAmountCreationCommand(paymentOrderServiceRequest.StripeOrderCreationContract,
                     orderCreateStatusContract, paymentOrderServiceRequest.StripeOrderCreationContract.PromoCode, promotionDiscount));
             
-            //todo: find out store business rate
             var businessApplicationFee = ApplicationFeeGenerator.BusinessServiceFees(orderCreationStatus.SubtotalAmount,
                 OrderConstant.BusinessApplicationServiceRate);
 
@@ -98,11 +98,11 @@ namespace Delivery.Order.Domain.Services.Applications
 
             orderCreationStatus.StripePaymentIntentId = paymentIntentCreationStatusContract.StripePaymentIntentId;
             
+            // To persist order to order table
             await PublishOrderCreationMessageAsync(paymentOrderServiceRequest.StripeOrderCreationContract,
                 orderCreationStatus);
-
+            
             return paymentIntentCreationStatusContract;
-
         }
 
         /// <summary>

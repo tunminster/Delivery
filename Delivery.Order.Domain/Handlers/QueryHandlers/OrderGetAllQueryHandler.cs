@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Order.Domain.Handlers.QueryHandlers
 {
-    public record OrderGetAllQuery(int PageSize, int PageNumber, string FreeTextSearch) : IQuery<OrderPagedContract>;
-    public class OrderGetAllQueryHandler : IQueryHandler<OrderGetAllQuery, OrderPagedContract>
+    public record OrderGetAllQuery(int PageSize, int PageNumber, string FreeTextSearch) : IQuery<OrderAdminManagementPagedContract>;
+    public class OrderGetAllQueryHandler : IQueryHandler<OrderGetAllQuery, OrderAdminManagementPagedContract>
     {
         private IServiceProvider serviceProvider;
         private IExecutingRequestContextAdapter executingRequestContextAdapter;
@@ -21,7 +21,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
             this.serviceProvider = serviceProvider;
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
-        public async Task<OrderPagedContract> Handle(OrderGetAllQuery query)
+        public async Task<OrderAdminManagementPagedContract> Handle(OrderGetAllQuery query)
         {
             await using var dataAccess = new ShardedDataAccess<PlatformDbContext, Database.Entities.Order>(
                 serviceProvider, () => PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter));
@@ -47,10 +47,10 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                         .ThenInclude(x => x.Product)
                         .OrderByDescending(x => x.InsertionDateTime)
                         .Skip(query.PageSize * (query.PageNumber - 1))
-                        .Take(query.PageSize).Select(x => x.ConvertToOrderManagementContract())
+                        .Take(query.PageSize).Select(x => x.ConvertToOrderAdminManagementContract())
                         .ToListAsync());
                 
-                var orderPageContract = new OrderPagedContract
+                var orderPageContract = new OrderAdminManagementPagedContract
                 {
                     TotalPages = (orderTotal + query.PageSize - 1) / query.PageSize,
                     Data = orderManagementContractList
@@ -58,7 +58,8 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
 
                 return orderPageContract;
             }
-            var orderContractList = await dataAccess.GetCachedItemsAsync(
+            
+            var orderAdminManagementContractList = await dataAccess.GetCachedItemsAsync(
                 orderAllCacheKey,
                 databaseContext.GlobalDatabaseCacheRegion,
                 async () => await databaseContext.Orders
@@ -69,16 +70,16 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                     .ThenInclude(x => x.Product)
                     .OrderByDescending(x => x.InsertionDateTime)
                     .Skip(query.PageSize * (query.PageNumber - 1))
-                    .Take(query.PageSize).Select(x => x.ConvertToOrderManagementContract())
+                    .Take(query.PageSize).Select(x => x.ConvertToOrderAdminManagementContract())
                     .ToListAsync());
                 
-            var pageContract = new OrderPagedContract
+            var orderAdminManagementPagedContract = new OrderAdminManagementPagedContract
             {
                 TotalPages = (orderTotal + query.PageSize - 1) / query.PageSize,
-                Data = orderContractList
+                Data = orderAdminManagementContractList
             };
 
-            return pageContract;
+            return orderAdminManagementPagedContract;
         }
     }
 }

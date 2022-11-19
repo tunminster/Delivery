@@ -20,8 +20,4 @@
       <ProjectReference Include="..\Delivery.Notifications\Delivery.Notifications.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Handlers\MessageHandlers" />
-    </ItemGroup>
-
 </Project>

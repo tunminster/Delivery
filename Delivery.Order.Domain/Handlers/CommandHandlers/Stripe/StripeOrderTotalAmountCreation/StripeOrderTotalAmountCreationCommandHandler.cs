@@ -135,6 +135,8 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     PromotionDiscountAmount = command.PromotionDiscount,
                     CreatedDateTime = DateTimeOffset.UtcNow,
                     BusinessApplicationFee = businessApplicationFee,
+                    StripeTransactionFees = StripeApplicationFeesAmount.GetStripeTransactionFees(subtotalAmount),
+                    BusinessTotalAmount = subtotalAmount - StripeApplicationFeesAmount.GetStripeTransactionFees(subtotalAmount),
                     PaymentAccountNumber = store?.StorePaymentAccount?.AccountNumber ?? throw new InvalidOperationException($" {command.StripeOrderCreationContract.StoreId} doesn't have payment account number.")
                         .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties())
                 };
