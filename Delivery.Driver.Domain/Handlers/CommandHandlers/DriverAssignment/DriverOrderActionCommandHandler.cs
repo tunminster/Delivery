@@ -89,6 +89,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                 };
 
                 driver.IsOrderAssigned = false;
+                driverOrder.Status = DriverOrderStatus.Complete;
                 
                 await new DriverOrderCompleteMessagePublisher(serviceProvider).PublishAsync(
                     driverOrderCompleteMessageContract);
