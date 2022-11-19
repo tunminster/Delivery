@@ -39,10 +39,35 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts
         /// </summary>
         public int PlatformServiceFees { get; init; }
         
+        /// <summary>
+        ///  Delivery tips
+        /// </summary>
+        public int DeliveryTips { get; init; }
+        
         
         /// <summary>
         ///  Delivery requested count
         /// </summary>
         public int DeliveryRequested { get; init; }
+        
+        /// <summary>
+        ///  Driver external id
+        /// </summary>
+        public string DriverId { get; init; }
+        
+        /// <summary>
+        ///  Delivery name
+        /// </summary>
+        public string DeliveryName { get; init; }
+        
+        /// <summary>
+        ///  Delivery status
+        /// </summary>
+        public string DeliveryStatus { get; init; }
+        
+        /// <summary>
+        ///  Delivery assigned date
+        /// </summary>
+        public DateTimeOffset DeliveryAssignedDate { get; init; }
     }
 }

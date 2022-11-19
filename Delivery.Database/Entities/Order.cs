@@ -65,6 +65,8 @@ namespace Delivery.Database.Entities
 
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         
+        public virtual ICollection<DriverOrder> DriverOrders { get; set; }
+
         public string InsertedBy { get; set; }
         
         public DateTimeOffset InsertionDateTime { get; set; }
@@ -103,6 +105,9 @@ namespace Delivery.Database.Entities
         /// </summary>
         public int? CouponDiscountAmount { get; set; }
         
+        /// <summary>
+        ///  Stripe transaction fees
+        /// </summary>
         public int? StripeTransactionFees { get; set; }
         
         /// <summary>
@@ -110,6 +115,9 @@ namespace Delivery.Database.Entities
         /// </summary>
         public int? BusinessTotalAmount { get; set; }
         
+        /// <summary>
+        ///  Order type
+        /// </summary>
         public OrderType OrderType { get; set; }
         public bool IsDeleted { get; set; }
     }

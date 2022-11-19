@@ -68,6 +68,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                     .Include(x => x.Address)
                     .Include(x => x.OrderItems)
                     .ThenInclude(x => x.Product)
+                    .Include(x => x.DriverOrders).ThenInclude(x => x.Driver)
                     .OrderByDescending(x => x.InsertionDateTime)
                     .Skip(query.PageSize * (query.PageNumber - 1))
                     .Take(query.PageSize).Select(x => x.ConvertToOrderAdminManagementContract())
@@ -81,5 +82,6 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
 
             return orderAdminManagementPagedContract;
         }
+        
     }
 }
