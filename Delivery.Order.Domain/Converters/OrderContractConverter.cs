@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Delivery.Order.Domain.Contracts;
 using Delivery.Order.Domain.Contracts.V1.RestContracts;
@@ -49,7 +50,12 @@ namespace Delivery.Order.Domain.Converters
                 TaxFees = order.TaxFees,
                 BusinessServiceFees = order.BusinessServiceFees,
                 PlatformServiceFees = order.PlatformServiceFees,
-                SubTotalAmount = order.SubTotal
+                SubTotalAmount = order.SubTotal,
+                DeliveryTips = order.DeliveryTips ?? 0,
+                DriverId = order.DriverOrders.FirstOrDefault()?.Driver.ExternalId ?? string.Empty,
+                DeliveryName = order.DriverOrders.FirstOrDefault()?.Driver.FullName ?? string.Empty,
+                DeliveryStatus = order.DriverOrders.FirstOrDefault()?.Status.ToString() ?? string.Empty,
+                DeliveryAssignedDate = order.DriverOrders.FirstOrDefault()?.InsertionDateTime ?? DateTimeOffset.UtcNow
                 
             };
 
