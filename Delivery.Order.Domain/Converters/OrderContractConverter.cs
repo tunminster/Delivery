@@ -48,7 +48,8 @@ namespace Delivery.Order.Domain.Converters
                 DeliveryRequested = order.DeliveryRequested,
                 TaxFees = order.TaxFees,
                 BusinessServiceFees = order.BusinessServiceFees,
-                PlatformServiceFees = order.PlatformServiceFees
+                PlatformServiceFees = order.PlatformServiceFees,
+                SubTotalAmount = order.SubTotal
                 
             };
 
