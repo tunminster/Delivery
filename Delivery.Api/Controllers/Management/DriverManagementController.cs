@@ -18,6 +18,10 @@ using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile;
 using Delivery.Driver.Domain.Validators;
+using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
+using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
+using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -90,6 +94,10 @@ namespace Delivery.Api.Controllers.Management
             return Ok(driverApprovalStatusContract);
         }
 
+        /// <summary>
+        /// Run driver status
+        /// </summary>
+        /// <returns></returns>
         [Route("run-driver-status", Order = 3)]
         [ProducesResponseType(typeof(StatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
@@ -104,6 +112,42 @@ namespace Delivery.Api.Controllers.Management
             var statusContract =
                 await new DriverTimerRejectionCommandHandler(serviceProvider, executingRequestContextAdapter)
                     .HandleAsync(driverTimerRejectionCommand);
+
+            return Ok(statusContract);
+        }
+        
+        /// <summary>
+        ///  Request delivery driver for the order.
+        /// </summary>
+        /// <returns></returns>
+        [Route("request-delivery-driver", Order = 4)]
+        [HttpPost]
+        [ProducesResponseType(typeof(ShopOrderContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Delivery_DriverRequest_Async(ShopOrderDriverRequestContract shopOrderDriverRequestContract)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            if (string.IsNullOrEmpty(shopOrderDriverRequestContract.OrderId))
+            {
+                var errorMessage = $"{nameof(shopOrderDriverRequestContract.OrderId)} must be provided.";
+                return errorMessage.ConvertToBadRequest();
+            }
+            
+            var statusContract = new StatusContract
+            {
+                Status = true,
+                DateCreated = DateTimeOffset.UtcNow
+            };
+            
+            var shopOrderDriverRequestMessageContract = new ShopOrderDriverRequestMessageContract
+            {
+                PayloadIn = shopOrderDriverRequestContract,
+                PayloadOut = statusContract,
+                RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+            };
+            
+            await new ShopOrderDriverRequestMessagePublisher(serviceProvider).PublishAsync(shopOrderDriverRequestMessageContract);
 
             return Ok(statusContract);
         }
