@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
@@ -19,6 +20,7 @@ using Delivery.Store.Domain.Handlers.MessageHandlers.StoreGeoUpdates;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Stripe;
 
 namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
 {
@@ -90,6 +92,8 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
             command.StoreCreationStatusContract.InsertionDateTime = store.InsertionDateTime;
             return command.StoreCreationStatusContract;
         }
+
+        
         
     }
 }
