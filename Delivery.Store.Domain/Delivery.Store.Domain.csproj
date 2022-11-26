@@ -26,6 +26,7 @@
 
     <ItemGroup>
       <PackageReference Include="NEST" Version="7.10.1" />
+      <PackageReference Include="Stripe.net" Version="39.31.0" />
     </ItemGroup>
 
     <ItemGroup>

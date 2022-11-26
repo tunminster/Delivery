@@ -60,22 +60,23 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers
                     processingStates |= MessageProcessingStates.OnBoardingLinkCreated;
                 }
 
-                if (processingStates.HasFlag(MessageProcessingStates.OnBoardingLinkCreated) && 
-                    !processingStates.HasFlag(MessageProcessingStates.NotificationSent) && !string.IsNullOrEmpty(onBoardingLink))
-                {
-                    var driverOnBoardingEmailCommand = new DriverOnBoardingEmailCommand(
-                        new DriverOnBoardingEmailCreationContract
-                        {
-                            Email = driverCreationContract.EmailAddress, 
-                            Name = driverCreationContract.FullName,
-                            OnBoardingLink = onBoardingLink
-                        });
-
-                    await new DriverOnBoardingEmailCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(driverOnBoardingEmailCommand);
-
-                    processingStates |= MessageProcessingStates.NotificationSent;
-                }
+                // todo: on-boarding notification should not be sent because we are using stripe custom account type.
+                // if (processingStates.HasFlag(MessageProcessingStates.OnBoardingLinkCreated) && 
+                //     !processingStates.HasFlag(MessageProcessingStates.NotificationSent) && !string.IsNullOrEmpty(onBoardingLink))
+                // {
+                //     var driverOnBoardingEmailCommand = new DriverOnBoardingEmailCommand(
+                //         new DriverOnBoardingEmailCreationContract
+                //         {
+                //             Email = driverCreationContract.EmailAddress, 
+                //             Name = driverCreationContract.FullName,
+                //             OnBoardingLink = onBoardingLink
+                //         });
+                //
+                //     await new DriverOnBoardingEmailCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                //         .Handle(driverOnBoardingEmailCommand);
+                //
+                //     processingStates |= MessageProcessingStates.NotificationSent;
+                // }
 
                 if (processingStates.HasFlag(MessageProcessingStates.Persisted) &&
                     !processingStates.HasFlag(MessageProcessingStates.Indexed))

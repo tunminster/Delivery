@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Database.Entities;
@@ -10,6 +11,8 @@ using Delivery.Shop.Domain.Contracts.V1.RestContracts;
 using Delivery.Shop.Domain.Converters;
 using Delivery.Store.Domain.Factories.GeoLocationFactory;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Stripe;
 
 namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopCreation
 {
@@ -87,7 +90,48 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopCreation
             await new StoreGeoLocationFactory(serviceProvider, executingRequestContextAdapter)
                 .PublishStoreGeoUpdateMessageAsync(store.ExternalId);
 
+            await CreateStripeConnectAccountAsync(store.ExternalId, command.ShopCreationContract.EmailAddress,
+                databaseContext);
+
             return command.ShopCreationStatusContract;
+        }
+        
+        private async Task CreateStripeConnectAccountAsync(string storeExternalId, string shopOwnerEmailAddress, PlatformDbContext platformDbContext)
+        {
+            var stripeApiKey = await serviceProvider.GetRequiredService<ISecretProvider>().GetSecretAsync($"Stripe-{executingRequestContextAdapter.GetShard().Key}-Api-Key");
+            StripeConfiguration.ApiKey = stripeApiKey;
+
+            var options = new AccountCreateOptions
+            {
+                Country = "US",
+                //Type = "express",
+                Type = "custom",
+                Capabilities = new AccountCapabilitiesOptions
+                {
+                    Transfers = new AccountCapabilitiesTransfersOptions
+                    {
+                        Requested = true
+                    }
+                },
+                BusinessType = "individual",
+                Email = shopOwnerEmailAddress,
+                DefaultCurrency = "USD"
+            };
+            
+            var service = new AccountService();
+            var accountContract = await service.CreateAsync(options);
+
+            var store = await platformDbContext.Stores.FirstAsync(x => x.ExternalId == storeExternalId);
+
+            var storePaymentAccount = new StorePaymentAccount
+            {
+                AccountNumber = accountContract.Id,
+                InsertedBy = shopOwnerEmailAddress
+            };
+
+            store.StorePaymentAccount = storePaymentAccount;
+            await platformDbContext.SaveChangesAsync();
+            
         }
     }
 }
