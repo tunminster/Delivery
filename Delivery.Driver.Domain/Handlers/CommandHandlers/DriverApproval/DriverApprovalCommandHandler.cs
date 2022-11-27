@@ -1,10 +1,14 @@
 using System;
 using System.Threading.Tasks;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverApproval;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval
 {
@@ -22,7 +26,10 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval
         public async Task<DriverApprovalStatusContract> HandleAsync(DriverApprovalCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
-            var driver = await databaseContext.Drivers.FirstOrDefaultAsync(x => x.EmailAddress == command.DriverApprovalContract.Username);
+            var driver = await databaseContext.Drivers.FirstOrDefaultAsync(x => x.EmailAddress.ToLowerInvariant() == command.DriverApprovalContract.Username.ToLowerInvariant());
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                .TrackTrace($"{nameof(DriverApprovalCommandHandler)} executed. command: {command.ConvertToJson()}. driver: {driver.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
 
             if (driver != null)
             {
