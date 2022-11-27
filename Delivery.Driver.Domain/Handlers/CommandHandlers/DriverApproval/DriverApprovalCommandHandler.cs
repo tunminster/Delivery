@@ -29,7 +29,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval
             var driver = await databaseContext.Drivers.FirstOrDefaultAsync(x => x.EmailAddress.ToLowerInvariant() == command.DriverApprovalContract.Username.ToLowerInvariant());
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
-                .TrackTrace($"{nameof(DriverApprovalCommandHandler)} executed. command: {command.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+                .TrackTrace($"{nameof(DriverApprovalCommandHandler)} executed. command: {command.ConvertToJson()}. driver: {driver.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
 
             if (driver != null)
             {
