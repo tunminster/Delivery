@@ -23,10 +23,12 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopApproval
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var store = await databaseContext.Stores.FirstOrDefaultAsync(x => x.ExternalId == command.ShopApprovalContract.ShopId);
+            var storeUser = await databaseContext.StoreUsers.FirstOrDefaultAsync(x => x.StoreId == store.Id);
 
             if (store != null)
             {
                 store.Approved = true;
+                storeUser.Approved = true;
                 await databaseContext.SaveChangesAsync();
                 return new ShopApprovalStatusContract(true, DateTimeOffset.UtcNow);
             }
