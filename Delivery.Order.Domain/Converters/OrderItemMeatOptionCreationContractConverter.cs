@@ -11,10 +11,12 @@ namespace Delivery.Order.Domain.Converters
             var orderItemMeatOption = new OrderItemMeatOption
             {
                 MeatOptionId = orderItemMeatOptionCreationContract.MeatOptionId,
+                MeatOptionText = orderItemMeatOptionCreationContract.OptionText,
                 OrderItemMeatOptionValues = orderItemMeatOptionCreationContract.MeatOptionValues
                     .Select(x => new OrderItemMeatOptionValue
                     {
-                        MeatOptionValueId = x.MeatOptionValueId
+                        MeatOptionValueId = x.MeatOptionValueId,
+                        MeatOptionValueText = x.OptionValueText
                     }).ToList()
             };
 

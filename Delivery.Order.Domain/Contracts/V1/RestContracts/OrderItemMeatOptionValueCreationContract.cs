@@ -8,6 +8,11 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts
         /// <summary>
         ///  Meat option value id
         /// </summary>
-        public int MeatOptionValueId { get; set; }
+        public int MeatOptionValueId { get; init; }
+        
+        /// <summary>
+        ///  Option value text
+        /// </summary>
+        public string OptionValueText { get; init; }
     }
 }
