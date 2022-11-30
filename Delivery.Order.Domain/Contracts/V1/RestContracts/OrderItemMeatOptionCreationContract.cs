@@ -12,6 +12,14 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts
         /// </summary>
         public int MeatOptionId { get; init; }
         
+        /// <summary>
+        ///  Option text
+        /// </summary>
+        public string OptionText { get; init; }
+        
+        /// <summary>
+        ///  Meat option values
+        /// </summary>
         public List<OrderItemMeatOptionValueCreationContract> MeatOptionValues { get; init; }
     }
 }
