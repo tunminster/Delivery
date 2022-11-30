@@ -1,19 +1,21 @@
 using Delivery.Database.Entities;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts.MeatOptionValues;
 
-namespace Delivery.Managements.Domain.Converters;
-
-public static class MeatOptionValueCreationConverter
+namespace Delivery.Managements.Domain.Converters
 {
-    public static MeatOptionValue ConvertMeatOptionValueToEntity(this MeatOptionValueCreationContract meatOptionValueCreationContract, int meatOptionId)
+    public static class MeatOptionValueCreationConverter
     {
-        var meatOptionValue = new MeatOptionValue
+        public static MeatOptionValue ConvertMeatOptionValueToEntity(
+            this MeatOptionValueCreationContract meatOptionValueCreationContract, int meatOptionId)
         {
-            MeatOptionId = meatOptionId,
-            OptionValueText = meatOptionValueCreationContract.MeatOptionValueText,
-            AdditionalPrice = meatOptionValueCreationContract.AdditionalPrice
-        };
+            var meatOptionValue = new MeatOptionValue
+            {
+                MeatOptionId = meatOptionId,
+                OptionValueText = meatOptionValueCreationContract.MeatOptionValueText,
+                AdditionalPrice = meatOptionValueCreationContract.AdditionalPrice
+            };
 
-        return meatOptionValue;
+            return meatOptionValue;
+        }
     }
 }

@@ -8,34 +8,37 @@ using Delivery.Managements.Domain.Contracts.V1.MessageContracts.MeatOptions;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts.MeatOptions;
 using Delivery.Managements.Domain.Handlers.CommandHandlers;
 
-namespace Delivery.Managements.Domain.Handlers.MessageHandler;
-
-public class MeatOptionCreationMessageHandler : ShardedTelemeterizedMessageHandler
+namespace Delivery.Managements.Domain.Handlers.MessageHandler
 {
-    public MeatOptionCreationMessageHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter) : base(serviceProvider, executingRequestContextAdapter)
+    public class MeatOptionCreationMessageHandler : ShardedTelemeterizedMessageHandler
     {
-    }
-
-    public async Task HandleMessageAsync(MeatOptionCreationMessage message,
-        MessageProcessingStates processingStates)
-    {
-        try
+        public MeatOptionCreationMessageHandler(IServiceProvider serviceProvider,
+            IExecutingRequestContextAdapter executingRequestContextAdapter) : base(serviceProvider,
+            executingRequestContextAdapter)
         {
-            var messageAdapter = new AuditableRequestMessageAdapter<MeatOptionCreationMessageContract>(message);
-
-            if (!processingStates.HasFlag(MessageProcessingStates.Processed))
-            {
-                var meatOptionCreationCommand = new MeatOptionCreationCommand(messageAdapter.PayloadIn());
-
-                await new MeatOptionCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                    .HandleAsync(meatOptionCreationCommand);
-                
-                processingStates |= MessageProcessingStates.Processed;
-            }
         }
-        catch (Exception exception)
+
+        public async Task HandleMessageAsync(MeatOptionCreationMessage message,
+            MessageProcessingStates processingStates)
         {
-            HandleMessageProcessingFailure(processingStates, exception);
+            try
+            {
+                var messageAdapter = new AuditableRequestMessageAdapter<MeatOptionCreationMessageContract>(message);
+
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
+                {
+                    var meatOptionCreationCommand = new MeatOptionCreationCommand(messageAdapter.PayloadIn());
+
+                    await new MeatOptionCreationCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                        .HandleAsync(meatOptionCreationCommand);
+
+                    processingStates |= MessageProcessingStates.Processed;
+                }
+            }
+            catch (Exception exception)
+            {
+                HandleMessageProcessingFailure(processingStates, exception);
+            }
         }
     }
 }

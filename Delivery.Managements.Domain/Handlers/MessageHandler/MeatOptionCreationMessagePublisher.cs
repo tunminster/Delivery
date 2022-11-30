@@ -9,27 +9,28 @@ using Delivery.Domain.FrameWork.Messages;
 using Delivery.Managements.Domain.Contracts.V1.MessageContracts.MeatOptions;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts.MeatOptions;
 
-namespace Delivery.Managements.Domain.Handlers.MessageHandler;
-
-public class MeatOptionCreationMessagePublisher : IMessagePublisherAsync<MeatOptionCreationMessage>
+namespace Delivery.Managements.Domain.Handlers.MessageHandler
 {
-    private readonly IServiceProvider serviceProvider;
+    public class MeatOptionCreationMessagePublisher : IMessagePublisherAsync<MeatOptionCreationMessage>
+    {
+        private readonly IServiceProvider serviceProvider;
 
-    public MeatOptionCreationMessagePublisher(IServiceProvider serviceProvider)
-    {
-        this.serviceProvider = serviceProvider;
-    }
-    
-    public async Task PublishAsync(MeatOptionCreationMessage message)
-    {
-        var executingContextAdapter = new ExecutingRequestContextAdapter(message.RequestContext);
-        
-        var cloudEventMessage = message
-            .CreateCloudEventMessage(serviceProvider, executingContextAdapter)
-            .WithExecutingContext(executingContextAdapter);
-            
-        await serviceProvider.GetRequiredHostedService<IQueueServiceBusWorkBackgroundService>()
-            .EnqueueBackgroundWorkAsync(OrderConstants.ServiceBusEntityName,
-                OrderConstants.ServiceBusConnectionStringName, cloudEventMessage);
+        public MeatOptionCreationMessagePublisher(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
+
+        public async Task PublishAsync(MeatOptionCreationMessage message)
+        {
+            var executingContextAdapter = new ExecutingRequestContextAdapter(message.RequestContext);
+
+            var cloudEventMessage = message
+                .CreateCloudEventMessage(serviceProvider, executingContextAdapter)
+                .WithExecutingContext(executingContextAdapter);
+
+            await serviceProvider.GetRequiredHostedService<IQueueServiceBusWorkBackgroundService>()
+                .EnqueueBackgroundWorkAsync(OrderConstants.ServiceBusEntityName,
+                    OrderConstants.ServiceBusConnectionStringName, cloudEventMessage);
+        }
     }
 }
