@@ -270,7 +270,7 @@ namespace Delivery.Api.Controllers.Management
             }
 
             await new StoreDeleteCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(new StoreDeleteCommand(storeId));
+                .HandleAsync(new StoreDeleteCommand(storeId));
             
             return Accepted();
         }

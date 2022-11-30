@@ -474,6 +474,88 @@ namespace Delivery.Database.Migrations
                     b.ToTable("DriverPayments");
                 });
 
+            modelBuilder.Entity("Delivery.Database.Entities.MeatOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR(40)");
+
+                    b.Property<string>("InsertedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OptionControl")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OptionText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("MeatOptions");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.MeatOptionValue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("AdditionalPrice")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR(40)");
+
+                    b.Property<string>("InsertedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MeatOptionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OptionValueText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("MeatOptionId");
+
+                    b.ToTable("MeatOptionValues");
+                });
+
             modelBuilder.Entity("Delivery.Database.Entities.NotificationDevice", b =>
                 {
                     b.Property<int>("Id")
@@ -750,6 +832,88 @@ namespace Delivery.Database.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.OrderItemMeatOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR(40)");
+
+                    b.Property<string>("InsertedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MeatOptionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MeatOptionText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("OrderItemId");
+
+                    b.ToTable("OrderItemMeatOptions");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.OrderItemMeatOptionValue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR(40)");
+
+                    b.Property<string>("InsertedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("InsertionDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MeatOptionValueId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MeatOptionValueText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderItemMeatOptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UniqueExternalId");
+
+                    b.HasIndex("OrderItemMeatOptionId");
+
+                    b.ToTable("OrderItemMeatOptionValues");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.Product", b =>
@@ -1540,7 +1704,7 @@ namespace Delivery.Database.Migrations
                         .IsRequired();
 
                     b.HasOne("Delivery.Database.Entities.Order", "Order")
-                        .WithMany()
+                        .WithMany("DriverOrders")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1548,6 +1712,28 @@ namespace Delivery.Database.Migrations
                     b.Navigation("Driver");
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.MeatOption", b =>
+                {
+                    b.HasOne("Delivery.Database.Entities.Product", "Product")
+                        .WithMany("MeatOptions")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.MeatOptionValue", b =>
+                {
+                    b.HasOne("Delivery.Database.Entities.MeatOption", "MeatOption")
+                        .WithMany("MeatOptionValues")
+                        .HasForeignKey("MeatOptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MeatOption");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.OpeningHour", b =>
@@ -1601,6 +1787,28 @@ namespace Delivery.Database.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.OrderItemMeatOption", b =>
+                {
+                    b.HasOne("Delivery.Database.Entities.OrderItem", "OrderItem")
+                        .WithMany("OrderItemMeatOptions")
+                        .HasForeignKey("OrderItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrderItem");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.OrderItemMeatOptionValue", b =>
+                {
+                    b.HasOne("Delivery.Database.Entities.OrderItemMeatOption", "OrderItemMeatOption")
+                        .WithMany("OrderItemMeatOptionValues")
+                        .HasForeignKey("OrderItemMeatOptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrderItemMeatOption");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.Product", b =>
@@ -1726,9 +1934,31 @@ namespace Delivery.Database.Migrations
                     b.Navigation("Addresses");
                 });
 
+            modelBuilder.Entity("Delivery.Database.Entities.MeatOption", b =>
+                {
+                    b.Navigation("MeatOptionValues");
+                });
+
             modelBuilder.Entity("Delivery.Database.Entities.Order", b =>
                 {
+                    b.Navigation("DriverOrders");
+
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.OrderItem", b =>
+                {
+                    b.Navigation("OrderItemMeatOptions");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.OrderItemMeatOption", b =>
+                {
+                    b.Navigation("OrderItemMeatOptionValues");
+                });
+
+            modelBuilder.Entity("Delivery.Database.Entities.Product", b =>
+                {
+                    b.Navigation("MeatOptions");
                 });
 
             modelBuilder.Entity("Delivery.Database.Entities.Store", b =>

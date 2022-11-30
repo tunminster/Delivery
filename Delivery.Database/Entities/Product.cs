@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Delivery.Azure.Library.Contracts.Interfaces.V1.Entities;
@@ -40,5 +41,7 @@ namespace Delivery.Database.Entities
         
         public DateTimeOffset InsertionDateTime { get; set; }
         public bool IsDeleted { get; set; }
+        
+        public virtual ICollection<MeatOption> MeatOptions { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopActive
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(ShopActiveCommand command)
+        public async Task HandleAsync(ShopActiveCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var storeUser = await databaseContext.StoreUsers.Where(x => string

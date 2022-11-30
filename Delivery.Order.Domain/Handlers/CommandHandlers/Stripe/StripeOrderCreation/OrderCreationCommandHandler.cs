@@ -10,7 +10,9 @@ using Delivery.Database.Enums;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Constants;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts.CouponPayment;
+using Delivery.Order.Domain.Contracts.V1.RestContracts;
 using Delivery.Order.Domain.Contracts.V1.RestContracts.StripeOrder;
+using Delivery.Order.Domain.Converters;
 using Delivery.Order.Domain.Enum;
 using Delivery.Order.Domain.Factories;
 using Delivery.Order.Domain.Handlers.MessageHandlers;
@@ -48,12 +50,15 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
             foreach (var item in command.StripeOrderCreationContract.OrderItems)
             {
                 var id = products.FirstOrDefault(x => x.ExternalId == item.ProductId)?.Id ?? throw new InvalidOperationException($"{item.ProductId} does not exist.").WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties());
-                orderItems.Add(new OrderItem()
+                orderItems.Add(new OrderItem
                 {
                     ProductId = id,
-                    Count = item.Count
+                    Count = item.Count,
+                    OrderItemMeatOptions = item.MeatOptions?.Select(x => x.ConvertToOrderItemMeatOptionsEntity()).ToList()
+                    
                 });
             }
+            
 
             var businessServiceFee =
                 ApplicationFeeGenerator.BusinessServiceFees(command.OrderCreationStatusContract.SubtotalAmount, OrderConstant.BusinessApplicationServiceRate);
@@ -119,5 +124,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderCreat
 
             return orderCreationStatus;
         }
+
+        
     }
 }

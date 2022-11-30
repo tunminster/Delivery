@@ -31,7 +31,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment
                         new DriverOrderIndexCommand(messageAdapter.GetPayloadIn());
                     
                     await new DriverOrderIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(driverOrderIndexCommand);
+                        .HandleAsync(driverOrderIndexCommand);
                     
                     processingStates |= MessageProcessingStates.Processed;
                 }

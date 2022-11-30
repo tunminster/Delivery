@@ -67,6 +67,13 @@ namespace Delivery.Database.Context
         public DbSet<CouponCodeCustomer> CouponCodeCustomers { get; set; }
         
         public DbSet<StripePaymentRefund> StripePaymentRefunds { get; set; }
+        
+        public DbSet<MeatOption> MeatOptions { get; set; }
+        
+        public DbSet<MeatOptionValue> MeatOptionValues { get; set; }
+        
+        public DbSet<OrderItemMeatOption> OrderItemMeatOptions { get; set; }
+        public DbSet<OrderItemMeatOptionValue> OrderItemMeatOptionValues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

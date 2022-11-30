@@ -33,7 +33,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile
                         new DriverServiceAreaUpdateCommand(messageAdapter.GetPayloadIn());
 
                     await new DriverServiceAreaUpdateCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(driverServiceAreaUpdateCommand);
+                        .HandleAsync(driverServiceAreaUpdateCommand);
                     
                 }
                 

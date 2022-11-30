@@ -165,7 +165,7 @@ namespace Delivery.Api.Controllers.Management
             {
                 return $"{nameof(id)} must be provided".ConvertToBadRequest();
             }
-            await new DeleteProductManagementCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(new DeleteProductManagementCommand(id));
+            await new DeleteProductManagementCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(new DeleteProductManagementCommand(id));
             return Accepted();
         }
         

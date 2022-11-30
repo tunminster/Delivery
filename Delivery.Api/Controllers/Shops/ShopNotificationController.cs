@@ -99,7 +99,7 @@ namespace Delivery.Api.Controllers.Shops
             var command = new ShopNotificationSendToUserCommand(notificationRequestContract);
 
             await new ShopNotificationSendToUserCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(command);
+                .HandleAsync(command);
 
             var notificationResponseContract = new NotificationResponseContract
             {

@@ -6,6 +6,7 @@ using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.Contracts.V1.ModelContracts;
+using Delivery.Product.Domain.Converters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Product.Domain.Handlers.QueryHandlers
@@ -42,7 +43,8 @@ namespace Delivery.Product.Domain.Handlers.QueryHandlers
                     ProductImage = x.ProductImage,
                     ProductImageUrl = x.ProductImageUrl,
                     UnitPrice = x.UnitPrice,
-                    StoreId = x.Store.ExternalId 
+                    StoreId = x.Store.ExternalId,
+                    ProductMeatOptions = x.MeatOptions.Select(mt => mt.ConvertToProductMeatOptionContract()).ToList()
                 }).ToListAsync();
 
 

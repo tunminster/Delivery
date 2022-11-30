@@ -74,6 +74,18 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
                     if (product == null) continue;
                     var unitPrice = product.UnitPrice;
                     subtotalAmount += unitPrice * item.Count;
+
+                    // If there are meat options and additional price, then add them into the subtotal
+                    if (item.MeatOptions is not {Count: > 0}) continue;
+                    {
+                        foreach (var meatOptionValueItem in item.MeatOptions.SelectMany(meatOptionItem => meatOptionItem.MeatOptionValues))
+                        {
+                            var meatOptionValue = await databaseContext.MeatOptionValues.FirstOrDefaultAsync(x =>
+                                x.Id == meatOptionValueItem.MeatOptionValueId);
+
+                            subtotalAmount += meatOptionValue.AdditionalPrice;
+                        }
+                    }
                 }
             }
 

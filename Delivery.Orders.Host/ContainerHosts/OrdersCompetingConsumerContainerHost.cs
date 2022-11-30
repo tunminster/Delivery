@@ -23,6 +23,8 @@ using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile;
+using Delivery.Managements.Domain.Contracts.V1.MessageContracts.MeatOptions;
+using Delivery.Managements.Domain.Handlers.MessageHandler;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts.CouponPayment;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts.PushNotification;
@@ -218,7 +220,14 @@ namespace Delivery.Orders.Host.ContainerHosts
                             new ExecutingRequestContextAdapter(couponPaymentCreationMessage.RequestContext))
                         .HandleMessageAsync(couponPaymentCreationMessage, processingState);
                     break;
-                    
+                
+                case nameof(MeatOptionCreationMessage):
+                    var meatOptionCreationMessage = message.Deserialize<MeatOptionCreationMessage>();
+                    await new MeatOptionCreationMessageHandler(ServiceProvider,
+                            new ExecutingRequestContextAdapter(meatOptionCreationMessage.RequestContext))
+                        .HandleMessageAsync(meatOptionCreationMessage, processingState);
+                    break;
+                
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");
             }
