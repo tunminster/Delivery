@@ -9,6 +9,6 @@ namespace Delivery.Domain.CommandHandlers
     
     public interface ICommandHandler<TCommand>
     {
-        Task Handle(TCommand command);
+        Task HandleAsync(TCommand command);
     }
 }

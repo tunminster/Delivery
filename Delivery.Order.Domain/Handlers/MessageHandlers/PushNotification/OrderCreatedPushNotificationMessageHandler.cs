@@ -35,7 +35,7 @@ namespace Delivery.Order.Domain.Handlers.MessageHandlers.PushNotification
                         new OrderCreatedPushNotificationCommand(messageAdapter.GetPayloadIn());
 
                     await new OrderCreatedPushNotificationCommandHandler(ServiceProvider,
-                        ExecutingRequestContextAdapter).Handle(orderCreatedPushNotificationCommand);
+                        ExecutingRequestContextAdapter).HandleAsync(orderCreatedPushNotificationCommand);
                     
                     ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                         .TrackTrace($"{nameof(OrderCreatedPushNotificationCommandHandler)} processed {orderCreatedPushNotificationCommand.OrderCreatedPushNotificationRequestContract.ConvertToJson()}", SeverityLevel.Information, ExecutingRequestContextAdapter.GetTelemetryProperties());

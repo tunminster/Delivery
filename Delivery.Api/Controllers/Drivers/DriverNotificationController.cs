@@ -100,7 +100,7 @@ namespace Delivery.Api.Controllers.Drivers
             var command = new DriverSendNotificationToUserCommand(notificationRequestContract);
 
             await new DriverSendNotificationToUserCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(command);
+                .HandleAsync(command);
 
             var notificationResponseContract = new NotificationResponseContract
             {

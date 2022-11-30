@@ -59,7 +59,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
                             { OrderId = messageAdapter.GetPayloadIn().Id });
                     await new OrderCompletePushNotificationCommandHandler(ServiceProvider,
                             ExecutingRequestContextAdapter)
-                        .Handle(orderCompletePushNotificationCommand);
+                        .HandleAsync(orderCompletePushNotificationCommand);
                     
                     // push notification to customer
                     var customerOrderArrivedPushNotificationCommand =
@@ -67,7 +67,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement
 
                     await new CustomerOrderPushNotificationCommandHandler(ServiceProvider,
                             ExecutingRequestContextAdapter)
-                        .Handle(customerOrderArrivedPushNotificationCommand);
+                        .HandleAsync(customerOrderArrivedPushNotificationCommand);
                         
                     processingStates |= MessageProcessingStates.Processed;
                 }

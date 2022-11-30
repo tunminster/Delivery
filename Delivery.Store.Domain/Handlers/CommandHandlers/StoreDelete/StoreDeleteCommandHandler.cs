@@ -22,7 +22,7 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreDelete
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(StoreDeleteCommand command)
+        public async Task HandleAsync(StoreDeleteCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

@@ -22,7 +22,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopMenu
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(ShopMenuStatusCommand command)
+        public async Task HandleAsync(ShopMenuStatusCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

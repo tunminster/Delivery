@@ -20,7 +20,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(DriverOrderIndexDeleteAllCommand command)
+        public async Task HandleAsync(DriverOrderIndexDeleteAllCommand command)
         {
             var elasticClient = serviceProvider.GetRequiredService<IElasticClient>();
             var indexExist = await elasticClient.Indices.ExistsAsync($"{ElasticSearchIndexConstants.DriverOrdersIndex}{executingRequestContextAdapter.GetShard().Key.ToLower()}");

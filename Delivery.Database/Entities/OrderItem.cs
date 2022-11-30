@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Delivery.Azure.Library.Database.Entities.V1;
@@ -15,5 +16,7 @@ namespace Delivery.Database.Entities
 
         [ForeignKey("ProductId")]
         public virtual Product Product { get; set; }
+        
+        public virtual ICollection<OrderItemMeatOption> OrderItemMeatOptions { get; set; }
     }
 }

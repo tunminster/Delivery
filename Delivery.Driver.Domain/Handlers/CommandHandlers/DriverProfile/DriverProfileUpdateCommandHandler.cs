@@ -20,7 +20,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverProfile
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(DriverProfileUpdateCommand command)
+        public async Task HandleAsync(DriverProfileUpdateCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

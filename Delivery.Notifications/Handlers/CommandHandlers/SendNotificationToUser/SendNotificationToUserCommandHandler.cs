@@ -25,7 +25,7 @@ namespace Delivery.Notifications.Handlers.CommandHandlers.SendNotificationToUser
         }
         
         
-        public async Task Handle(SendNotificationToUserCommand command)
+        public async Task HandleAsync(SendNotificationToUserCommand command)
         {
             var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationHubName, NotificationHubConstants.NotificationHubConnectionStringName);
 

@@ -24,7 +24,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverOnBoardingEmail
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(DriverOnBoardingEmailCommand command)
+        public async Task HandleAsync(DriverOnBoardingEmailCommand command)
         {
             var configurationProvider = serviceProvider.GetRequiredService<IConfigurationProvider>();
             var notificationUniqueId = $"{Guid.NewGuid()}-driver-on-boarding-link";

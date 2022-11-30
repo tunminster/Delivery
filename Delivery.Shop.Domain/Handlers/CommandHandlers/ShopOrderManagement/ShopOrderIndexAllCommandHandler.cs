@@ -29,7 +29,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(ShopOrderIndexAllCommand command)
+        public async Task HandleAsync(ShopOrderIndexAllCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var storeUser = await databaseContext.StoreUsers.SingleOrDefaultAsync(x => x.Username == command.UserEmail);

@@ -24,7 +24,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopNotification
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(ShopNotificationSendToUserCommand command)
+        public async Task HandleAsync(ShopNotificationSendToUserCommand command)
         {
             var notificationClient = await NotificationClient.CreateAsync(serviceProvider, NotificationHubConstants.NotificationShopHubName, NotificationHubConstants.NotificationShopHubConnectionStringName);
             

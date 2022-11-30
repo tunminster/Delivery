@@ -31,7 +31,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopMenu
                         new ShopMenuStatusCommand(messageAdapter.GetPayloadIn());
                     
                     await new ShopMenuStatusCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(shopOrderStatusCommand);
+                        .HandleAsync(shopOrderStatusCommand);
                     
                     processingStates |= MessageProcessingStates.Processed;
                 }

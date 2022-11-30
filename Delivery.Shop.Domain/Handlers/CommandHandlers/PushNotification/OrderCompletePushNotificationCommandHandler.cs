@@ -31,7 +31,7 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.PushNotification
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(OrderCompletePushNotificationCommand command)
+        public async Task HandleAsync(OrderCompletePushNotificationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             

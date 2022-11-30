@@ -276,7 +276,7 @@ namespace Delivery.Api.Controllers.Drivers
             var driverProfileUpdateCommand = new DriverProfileUpdateCommand(driverProfileUpdateContract,
                 driverImageCreationStatusContract.DriverImageUri);
 
-            await new DriverProfileUpdateCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+            await new DriverProfileUpdateCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                 driverProfileUpdateCommand);
             
             var statusContract = new StatusContract
@@ -309,7 +309,7 @@ namespace Delivery.Api.Controllers.Drivers
 
             var driverProfileBankDetailsCommand = new DriverProfileBankDetailsCommand(driverProfileBankDetailsContract);
 
-            await new DriverProfileBankDetailsCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+            await new DriverProfileBankDetailsCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                 driverProfileBankDetailsCommand);
             
             var statusContract = new DriverProfileBankDetailsStatusContract

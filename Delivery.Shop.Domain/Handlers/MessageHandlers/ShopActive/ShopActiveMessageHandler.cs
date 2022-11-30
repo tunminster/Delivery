@@ -34,7 +34,7 @@ namespace Delivery.Shop.Domain.Handlers.MessageHandlers.ShopActive
                         new ShopActiveCommand(messageAdapter.GetPayloadIn());
 
                     await new ShopActiveCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                        .Handle(shopActiveCommand);
+                        .HandleAsync(shopActiveCommand);
 
                     processingStates |= MessageProcessingStates.Processed;
                 }

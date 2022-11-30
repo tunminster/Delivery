@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.Contracts.V1.ModelContracts;
+using Delivery.Product.Domain.Converters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delivery.Product.Domain.Handlers.QueryHandlers
@@ -36,7 +38,8 @@ namespace Delivery.Product.Domain.Handlers.QueryHandlers
                 ProductImageUrl = product.ProductImageUrl,
                 ProductName = product.ProductName,
                 UnitPrice = product.UnitPrice,
-                StoreId = product.Store.ExternalId
+                StoreId = product.Store.ExternalId,
+                ProductMeatOptions = product.MeatOptions?.Select(x => x.ConvertToProductMeatOptionContract()).ToList()
             };
             return productContract;
         }

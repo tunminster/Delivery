@@ -240,7 +240,7 @@ namespace Delivery.Api.Controllers.Shops
             var shopOrderIndexAllCommand =
                 new ShopOrderIndexAllCommand(executingRequestContextAdapter.GetAuthenticatedUser().UserEmail ?? throw new InvalidOperationException("Expected an authenticated user"));
 
-            await new ShopOrderIndexAllCommandHandler(serviceProvider, executingRequestContextAdapter).Handle(
+            await new ShopOrderIndexAllCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
                 shopOrderIndexAllCommand);
             
             return Ok(new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow});

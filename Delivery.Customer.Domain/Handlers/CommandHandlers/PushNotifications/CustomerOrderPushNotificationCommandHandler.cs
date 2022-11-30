@@ -34,7 +34,7 @@ namespace Delivery.Customer.Domain.Handlers.CommandHandlers.PushNotifications
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(CustomerOrderPushNotificationCommand command)
+        public async Task HandleAsync(CustomerOrderPushNotificationCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var order = await databaseContext.Orders.Where(x => x.ExternalId == command.OrderId)

@@ -126,7 +126,7 @@ namespace Delivery.Api.Controllers.Management
             var command = new SendNotificationToUserCommand(notificationRequestContract);
 
             await new SendNotificationToUserCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(command);
+                .HandleAsync(command);
 
             var notificationResponseContract = new NotificationResponseContract
             {

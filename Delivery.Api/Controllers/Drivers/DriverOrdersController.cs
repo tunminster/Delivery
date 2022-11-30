@@ -175,7 +175,7 @@ namespace Delivery.Api.Controllers.Drivers
             }
 
             await new DriverOrderIndexAllCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(new DriverOrderIndexAllCommand(driverOrderIndexAllCreationContract.CreateDate));
+                .HandleAsync(new DriverOrderIndexAllCommand(driverOrderIndexAllCreationContract.CreateDate));
 
             return Accepted();
         }
@@ -202,7 +202,7 @@ namespace Delivery.Api.Controllers.Drivers
             }
             
             await new DriverOrderIndexDeleteAllCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(new DriverOrderIndexDeleteAllCommand(driverOrderIndexAllCreationContract.CreateDate));
+                .HandleAsync(new DriverOrderIndexDeleteAllCommand(driverOrderIndexAllCreationContract.CreateDate));
 
             return Accepted();
         }

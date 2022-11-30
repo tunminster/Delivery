@@ -103,7 +103,7 @@ namespace Delivery.Api.Controllers
             var command = new CustomerSendNotificationToUserCommand(notificationRequestContract);
 
             await new CustomerSendNotificationToUserCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(command);
+                .HandleAsync(command);
 
             var notificationResponseContract = new NotificationResponseContract
             {
@@ -136,7 +136,7 @@ namespace Delivery.Api.Controllers
             var command = new CustomerOrderPushNotificationCommand(customerOrderNotificationRequestContract.OrderId, customerOrderNotificationRequestContract.Filter);
 
             await new CustomerOrderPushNotificationCommandHandler(serviceProvider, executingRequestContextAdapter)
-                .Handle(command);
+                .HandleAsync(command);
 
             var notificationResponseContract = new NotificationResponseContract
             {

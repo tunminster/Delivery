@@ -28,7 +28,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(DriverOrderIndexCommand command)
+        public async Task HandleAsync(DriverOrderIndexCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
 

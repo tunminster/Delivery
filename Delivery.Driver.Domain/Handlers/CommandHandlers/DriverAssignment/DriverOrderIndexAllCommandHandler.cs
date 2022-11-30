@@ -24,7 +24,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             this.executingRequestContextAdapter = executingRequestContextAdapter;
         }
         
-        public async Task Handle(DriverOrderIndexAllCommand command)
+        public async Task HandleAsync(DriverOrderIndexAllCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             var driverOrders = await databaseContext.DriverOrders
@@ -36,7 +36,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             foreach (var item in driverOrders)
             {
                 await new DriverOrderIndexCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .Handle(new DriverOrderIndexCommand(new DriverOrderIndexCreationContract
+                    .HandleAsync(new DriverOrderIndexCommand(new DriverOrderIndexCreationContract
                     {
                         DriverId = item.Driver.ExternalId,
                         OrderId = item.Order.ExternalId
