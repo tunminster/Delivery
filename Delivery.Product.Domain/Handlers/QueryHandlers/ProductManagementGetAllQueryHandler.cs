@@ -44,7 +44,7 @@ namespace Delivery.Product.Domain.Handlers.QueryHandlers
                     ProductImageUrl = x.ProductImageUrl,
                     UnitPrice = x.UnitPrice,
                     StoreId = x.Store.ExternalId,
-                    ProductMeatOptions = x.MeatOptions.Select(mt => mt.ConvertToProductMeatOptionContract()).ToList()
+                    ProductMeatOptions = x.MeatOptions.Count > 0 ? x.MeatOptions.Select(mt => mt.ConvertToProductMeatOptionContract()).ToList() : null
                 }).ToListAsync();
 
 
