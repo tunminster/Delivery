@@ -20,6 +20,8 @@ using Delivery.Store.Domain.Contracts.V1.RestContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreImageCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate;
+using Delivery.Store.Domain.ElasticSearch.Contracts.V1.RestContracts.StoreRemove;
+using Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreIndexRemove;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreDelete;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation;
@@ -271,6 +273,10 @@ namespace Delivery.Api.Controllers.Management
 
             await new StoreDeleteCommandHandler(serviceProvider, executingRequestContextAdapter)
                 .HandleAsync(new StoreDeleteCommand(storeId));
+
+            var storeIndexRemoveCommand = new StoreIndexRemoveCommand(new StoreDeletionContract {StoreId = storeId});
+            await new StoreIndexRemoveCommandHandler(serviceProvider, executingRequestContextAdapter)
+                .HandleAsync(storeIndexRemoveCommand);
             
             return Accepted();
         }

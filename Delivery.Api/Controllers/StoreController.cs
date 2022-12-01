@@ -18,7 +18,9 @@ using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreImageCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate;
 using Delivery.Store.Domain.ElasticSearch.Contracts.V1.RestContracts.StoreIndexing;
+using Delivery.Store.Domain.ElasticSearch.Contracts.V1.RestContracts.StoreRemove;
 using Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreIndexing;
+using Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreIndexRemove;
 using Delivery.Store.Domain.ElasticSearch.Handlers.QueryHandlers.StoreSearchQueries;
 using Delivery.Store.Domain.ElasticSearch.Validators;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation;
@@ -288,6 +290,31 @@ namespace Delivery.Api.Controllers
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             return Ok(executingRequestContextAdapter.GetShard().GenerateExternalId());
+        }
+        
+        /// <summary>
+        ///  Store: indexing remove
+        /// </summary>
+        /// <returns></returns>
+        [Route("Index-Store-Delete", Order = 9)]
+        [HttpPost]
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> StoreIndexDeleteAsync(StoreDeletionContract storeDeletionContract)
+        {
+            var validationResult =
+                await new StoreIndexRemoveValidator().ValidateAsync(storeDeletionContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var storeIndexRemoveCommand = new StoreIndexRemoveCommand(storeDeletionContract);
+            var storeIndexRemoveStatusContract =
+                await new StoreIndexRemoveCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(storeIndexRemoveCommand);
+
+            return Ok(storeIndexRemoveStatusContract);
         }
         
         private async Task IndexStoreAsync(StoreContract storeContract)
