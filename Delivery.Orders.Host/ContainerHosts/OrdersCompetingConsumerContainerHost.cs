@@ -24,6 +24,7 @@ using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverProfile;
 using Delivery.Managements.Domain.Contracts.V1.MessageContracts.MeatOptions;
+using Delivery.Managements.Domain.Contracts.V1.MessageContracts.MeatOptionValues;
 using Delivery.Managements.Domain.Handlers.MessageHandler;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts;
 using Delivery.Order.Domain.Contracts.V1.MessageContracts.CouponPayment;
@@ -226,6 +227,13 @@ namespace Delivery.Orders.Host.ContainerHosts
                     await new MeatOptionCreationMessageHandler(ServiceProvider,
                             new ExecutingRequestContextAdapter(meatOptionCreationMessage.RequestContext))
                         .HandleMessageAsync(meatOptionCreationMessage, processingState);
+                    break;
+                
+                case nameof(MeatOptionValueCreationMessage):
+                    var meatOptionValueCreationMessage = message.Deserialize<MeatOptionValueCreationMessage>();
+                    await new MeatOptionValueCreationMessageHandler(ServiceProvider,
+                            new ExecutingRequestContextAdapter(meatOptionValueCreationMessage.RequestContext))
+                        .HandleMessageAsync(meatOptionValueCreationMessage, processingState);
                     break;
                 
                 default:
