@@ -25,6 +25,8 @@ namespace Delivery.Product.Domain.Handlers.QueryHandlers
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
             
             var product = await databaseContext.Products
+                .Include(x => x.MeatOptions)
+                .ThenInclude(x => x.MeatOptionValues)
                 .Include(x => x.Category)
                 .Include(x => x.Store)
                 .FirstOrDefaultAsync(x => x.ExternalId == query.ProductId);

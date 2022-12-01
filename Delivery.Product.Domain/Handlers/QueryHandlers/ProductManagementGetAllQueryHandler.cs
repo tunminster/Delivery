@@ -31,6 +31,8 @@ namespace Delivery.Product.Domain.Handlers.QueryHandlers
             
             var productContractList =  await databaseContext.Products
                 .Where(x => x.StoreId == storeUser.StoreId && x.IsDeleted == false)
+                .Include(x => x.MeatOptions)
+                .ThenInclude(x => x.MeatOptionValues)
                 .Include(x => x.Category)
                 .Include(x => x.Store)
                 .Select(x => new ProductContract
