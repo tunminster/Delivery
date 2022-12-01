@@ -28,6 +28,8 @@ namespace Delivery.Product.Domain.Handlers.QueryHandlers
             var category = await databaseContext.Categories.FirstOrDefaultAsync(x => x.ExternalId == query.CategoryId);
             
             var productList = await databaseContext.Products.Where(x => x.CategoryId == category.Id)
+                .Include(x => x.MeatOptions)
+                .ThenInclude(x => x.MeatOptionValues)
                 .Include(x => x.Category)
                 .Include(x => x.Store)
                 .Select(x => new ProductContract
