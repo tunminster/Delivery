@@ -10,6 +10,7 @@ using Delivery.Database.Context;
 using Delivery.Domain.QueryHandlers;
 using Delivery.Product.Domain.Contracts;
 using Delivery.Product.Domain.Contracts.V1.ModelContracts;
+using Delivery.Product.Domain.Converters;
 using Delivery.Store.Domain.Contracts.V1.ModelContracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,7 +50,11 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreDetailsQueries
             
             var store = await databaseContext.Stores.FirstOrDefaultAsync(x => x.ExternalId == query.StoreId);
 
-            var products = await databaseContext.Products.Where(x => x.StoreId == store.Id).Include(x => x.Category).ToListAsync();
+            var products = await databaseContext.Products.Where(x => x.StoreId == store.Id)
+                .Include(x => x.Category)
+                .Include(x => x.MeatOptions)
+                .ThenInclude(x => x.MeatOptionValues)
+                .ToListAsync();
             var categories = products.Select(x => x.Category).Distinct().ToList();
 
             var storeCategoriesContractList = new List<StoreCategoriesContract>();
@@ -71,7 +76,8 @@ namespace Delivery.Store.Domain.Handlers.QueryHandlers.StoreDetailsQueries
                         CategoryId = p.Category.ExternalId,
                         CategoryName = p.Category.CategoryName,
                         StoreId = store.ExternalId,
-                        UnitPrice = p.UnitPrice
+                        UnitPrice = p.UnitPrice,
+                        ProductMeatOptions = p.MeatOptions.Select(x => x.ConvertToProductMeatOptionContract()).ToList()
                     }).ToList()
                 });
             }
