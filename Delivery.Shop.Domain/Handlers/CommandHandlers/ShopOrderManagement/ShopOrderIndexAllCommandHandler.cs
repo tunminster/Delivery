@@ -39,6 +39,9 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                 .Include(x => x.Address)
                 .Include(x => x.OrderItems)
                 .ThenInclude(x => x.Product)
+                .Include(x => x.OrderItems)
+                .ThenInclude(x => x.OrderItemMeatOptions)
+                .ThenInclude(x => x.OrderItemMeatOptionValues)
                 .ToListAsync();
 
             foreach (var order in orders)

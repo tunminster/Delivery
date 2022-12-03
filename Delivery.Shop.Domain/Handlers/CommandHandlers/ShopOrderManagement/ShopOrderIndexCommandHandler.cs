@@ -14,6 +14,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
+using ServiceStack;
 
 namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
 {
@@ -41,6 +42,9 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                     .Include(x => x.Address)
                     .Include(x => x.OrderItems)
                     .ThenInclude(x => x.Product)
+                    .Include(x => x.OrderItems)
+                    .ThenInclude(x => x.OrderItemMeatOptions)
+                    .ThenInclude(x => x.OrderItemMeatOptionValues)
                     .FirstOrDefaultAsync() ??
                 throw new InvalidOperationException($"Expected an order by order id {command.OrderId}.");
             

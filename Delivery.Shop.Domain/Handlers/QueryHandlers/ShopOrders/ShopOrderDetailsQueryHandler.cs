@@ -7,6 +7,7 @@ using Delivery.Domain.QueryHandlers;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
 using Delivery.Shop.Domain.Converters;
 using Microsoft.EntityFrameworkCore;
+using ServiceStack;
 
 namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
 {
@@ -37,6 +38,9 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
                     .Include(x => x.Address)
                     .Include(x => x.OrderItems)
                     .ThenInclude(x => x.Product)
+                    .Include(x => x.OrderItems)
+                    .ThenInclude(x => x.OrderItemMeatOptions)
+                    .ThenInclude(x => x.OrderItemMeatOptionValues)
                     .SingleOrDefaultAsync();
             
             var driverOrder = await databaseContext.DriverOrders
