@@ -309,6 +309,10 @@ namespace Delivery.Api.Controllers
                 return validationResult.ConvertToBadRequest();
             }
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            
+            // replace system allowed index name.
+            // todo:consider to expose index name to client. 
+            storeDeletionContract.IndexName =  $"stores{executingRequestContextAdapter.GetShard().Key.ToLower()}";
 
             var storeIndexRemoveCommand = new StoreIndexRemoveCommand(storeDeletionContract);
             var storeIndexRemoveStatusContract =
