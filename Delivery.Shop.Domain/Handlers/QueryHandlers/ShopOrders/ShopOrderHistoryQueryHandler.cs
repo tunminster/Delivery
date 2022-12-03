@@ -44,7 +44,10 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
                                                         && x.InsertionDateTime >= query.DateFrom)
                     .Include(x => x.Store)
                     .Include(x => x.OrderItems)
-                    .ThenInclude(x => x.Product)
+                        .ThenInclude(x => x.Product)
+                    .Include(x => x.OrderItems)
+                    .ThenInclude(x => x.OrderItemMeatOptions)
+                    .ThenInclude(x => x.OrderItemMeatOptionValues)
                     .ToListAsync();
             
             if (orderList == null || orderList.Count == 0)
