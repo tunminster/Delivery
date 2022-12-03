@@ -42,6 +42,9 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
                     .Include(x => x.Address)
                     .Include(x => x.OrderItems)
                     .ThenInclude(x => x.Product)
+                    .Include(x => x.OrderItems)
+                    .ThenInclude(x => x.OrderItemMeatOptions)
+                    .ThenInclude(x => x.OrderItemMeatOptionValues)
                     .ToListAsync();
 
             if (orderList == null || orderList.Count == 0)

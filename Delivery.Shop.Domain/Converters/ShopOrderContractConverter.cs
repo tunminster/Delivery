@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Delivery.Azure.Library.Core.Extensions.Collections;
 using Delivery.Database.Entities;
+using Delivery.Database.Enums;
 using Delivery.Shop.Domain.Constants;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
 using Microsoft.Graph;
@@ -77,7 +78,8 @@ namespace Delivery.Shop.Domain.Converters
         {
             return orderItems
                 .Select(item => new ShopOrderItemContract 
-                    { ItemName = item.Product.ProductName, Count = item.Count, Price = item.Product.UnitPrice * item.Count }).ToList();
+                    { ItemName = $"{item.Product.ProductName} ({string.Join(",",item.OrderItemMeatOptions.Select(x => x.OrderItemMeatOptionValues.Select(ot => ot.MeatOptionValueText)).ToList())})", Count = item.Count, Price = item.Product.UnitPrice * item.Count }).ToList();
         }
+        
     }
 }
