@@ -274,7 +274,7 @@ namespace Delivery.Api.Controllers.Management
             await new StoreDeleteCommandHandler(serviceProvider, executingRequestContextAdapter)
                 .HandleAsync(new StoreDeleteCommand(storeId));
 
-            var storeIndexRemoveCommand = new StoreIndexRemoveCommand(new StoreDeletionContract {StoreId = storeId});
+            var storeIndexRemoveCommand = new StoreIndexRemoveCommand(new StoreDeletionContract {StoreId = storeId, IndexName = $"stores{executingRequestContextAdapter.GetShard().Key.ToLower()}"});
             await new StoreIndexRemoveCommandHandler(serviceProvider, executingRequestContextAdapter)
                 .HandleAsync(storeIndexRemoveCommand);
             
