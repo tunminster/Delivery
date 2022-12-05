@@ -7,8 +7,9 @@ namespace Delivery.Order.Domain.Constants
 
         /// <summary>
         ///  Default business application service rate eg: 5%
+        ///  Stripe payment fee 2.9 
         /// </summary>
-        public const int BusinessApplicationServiceRate = 5;
+        public const int BusinessApplicationServiceRate = 8;
         
         /// <summary>
         ///  Default customer application service rate eg: 5%
