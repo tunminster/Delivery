@@ -131,7 +131,7 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             var totalAmount = subtotalAmount + customerApplicationFee + deliveryFee + taxFee + command.StripeOrderCreationContract.DeliveryTips;
             
             var businessApplicationFee = ApplicationFeeGenerator.BusinessServiceFees(subtotalAmount,
-                OrderConstant.BusinessApplicationServiceRate);
+                OrderConstant.BusinessApplicationServiceRate) + taxFee;  // take tax fees to platform.
             
             var orderCreationStatus =
                 new OrderCreationStatusContract
