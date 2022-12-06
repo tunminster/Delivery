@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Sharding.Contracts.V1;
 using Delivery.Azure.Library.Sharding.Interfaces;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Domain.CommandHandlers;
 using Delivery.Order.Domain.Contracts.V1.ModelContracts.Stripe;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
 
@@ -38,6 +41,10 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripePaymentInt
             var createOptions = CreatePaymentIntentCreateOptions(false, command, shardInformation);
             
             var requestOptions = new RequestOptions {StripeAccount = command.PaymentIntentCreationContract.StoreConnectedStripeAccountId};
+            
+            serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                .TrackTrace($"{nameof(PaymentIntent)} created options: {createOptions.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
+            
             var paymentIntent = await paymentIntentService.CreateAsync(createOptions, requestOptions);
             //var paymentIntent = await paymentIntentService.CreateAsync(createOptions);
             
