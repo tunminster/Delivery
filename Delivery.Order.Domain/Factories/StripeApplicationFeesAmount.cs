@@ -6,7 +6,7 @@ namespace Delivery.Order.Domain.Factories
     {
         public static int CalculateStripeApplicationFeeAmount(int subtotal, int applicationFees, int deliveryFee, int deliveryTips, int taxFee, double businessServiceRate)
         {
-            return applicationFees + deliveryFee + deliveryTips +
+            return applicationFees + deliveryFee + deliveryTips + taxFee +
                    ApplicationFeeGenerator.BusinessServiceFees(subtotal, businessServiceRate) + 30;  // stripe charges 2.0 % + 30 cents every transaction
         }
 
