@@ -5,14 +5,21 @@ namespace Delivery.Order.Domain.Factories
 {
     public static class ApplicationFeeGenerator
     {
+        /// <summary>
+        ///  charging $1 for customer application fees flat
+        /// </summary>
+        /// <param name="subTotalAmount"></param>
+        /// <returns></returns>
         public static int GeneratorFees(int subTotalAmount)
         {
-            if (subTotalAmount < 2000)
-            {
-                return 100;
-            }
-            
-            return (int)(Math.Round(((decimal)OrderConstant.CustomerApplicationServiceRate / 100) * subTotalAmount)) ;
+            return 100;
+                
+            // if (subTotalAmount < 2000)
+            // {
+            //     return 100;
+            // }
+            //
+            // return (int)(Math.Round(((decimal)OrderConstant.CustomerApplicationServiceRate / 100) * subTotalAmount)) ;
         }
 
         /// <summary>
@@ -44,7 +51,7 @@ namespace Delivery.Order.Domain.Factories
             return deliverfee > 0 ? deliverfee : throw new ArgumentOutOfRangeException(nameof(radius));
         }
         
-        public static int BusinessServiceFees(int subTotalAmount, int serviceRate)
+        public static int BusinessServiceFees(int subTotalAmount, double serviceRate)
         {
             return (int)(Math.Round(((decimal)serviceRate / 100) * subTotalAmount)) ;
         }
