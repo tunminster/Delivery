@@ -108,6 +108,10 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopCreation
                 Type = "custom",
                 Capabilities = new AccountCapabilitiesOptions
                 {
+                    CardPayments = new AccountCapabilitiesCardPaymentsOptions
+                    {
+                        Requested = true,
+                    },
                     Transfers = new AccountCapabilitiesTransfersOptions
                     {
                         Requested = true
