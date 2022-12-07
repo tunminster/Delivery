@@ -27,7 +27,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval
         public async Task<DriverApprovalStatusContract> HandleAsync(DriverApprovalCommand command)
         {
             await using var databaseContext = await PlatformDbContext.CreateAsync(serviceProvider, executingRequestContextAdapter);
-            var driver = await databaseContext.Drivers.Where(x => x.EmailAddress.ToLowerInvariant() == command.DriverApprovalContract.Username.ToLowerInvariant()).FirstOrDefaultAsync();
+            var driver = await databaseContext.Drivers.Where(x => x.EmailAddress == command.DriverApprovalContract.Username).FirstOrDefaultAsync();
             
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace($"{nameof(DriverApprovalCommandHandler)} executed. command: {command.ConvertToJson()}. driver: {driver.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
