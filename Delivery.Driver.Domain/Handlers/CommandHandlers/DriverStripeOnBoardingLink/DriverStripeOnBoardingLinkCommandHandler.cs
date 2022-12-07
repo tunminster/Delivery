@@ -55,6 +55,10 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverStripeOnBoarding
             driver.PaymentAccountId = accountContract.Id;
             await databaseContext.SaveChangesAsync();
             
+            // to create update and Accept account
+            await AcceptAccountAsync(accountContract.Id);
+            
+            
             
 
             // using custom account for delivery partner
@@ -86,6 +90,21 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverStripeOnBoarding
             };
 
             return driverOnBoardingLinkStatusContract;
+        }
+
+        private async Task AcceptAccountAsync(string stripeAccountId)
+        {
+            var options = new AccountUpdateOptions
+            {
+                TosAcceptance = new AccountTosAcceptanceOptions
+                {
+                    Date = DateTimeOffset.FromUnixTimeSeconds(1609798905).UtcDateTime,
+                    Ip = "8.8.8.8"
+                }
+            };
+            
+            var service = new AccountService();
+            await service.UpdateAsync(stripeAccountId, options);
         }
     }
 }
