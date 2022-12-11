@@ -45,13 +45,11 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
                 x.ExternalId == command.DriverReAssignmentCreationContract.OrderId);
 
             var driverOrder = await databaseContext.DriverOrders
-                .Where(x => x.OrderId == order.Id && x.Status == DriverOrderStatus.None)
+                .Where(x => x.OrderId == order.Id)
                 .OrderByDescending(x => x.InsertionDateTime)
                 .Include(x => x.Driver)
                 .FirstOrDefaultAsync();
-
-            await RejectOrderAndRequestDriverAsync(driverOrder, order.ExternalId, databaseContext);
-
+            
             var driverReAssignmentDispatcher =
                 new DriverReAssignmentDispatcher(serviceProvider, executingRequestContextAdapter);
 
@@ -71,9 +69,10 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             serviceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace($"{nameof(DriverReAssignmentCommandHandler)} executed. Output: {nameof(driverReAssignmentCreationStatusContract)}: {driverReAssignmentCreationStatusContract.ConvertToJson()}", SeverityLevel.Information, executingRequestContextAdapter.GetTelemetryProperties());
 
+            // if the order is not complete, keep sending the message to perform the above strategy
             if (!driverReAssignmentCreationStatusContract.DriverOrderStatus.Equals(DriverOrderStatus.Complete))
             {
-                await new DriverReAssignmentMessagePublisher(serviceProvider)
+                await new DriverReAssignmentScheduledMessagePublisher(serviceProvider)
                     .PublishAsync(new DriverReAssignmentMessage
                     {
                         PayloadIn = command.DriverReAssignmentCreationContract,
@@ -82,32 +81,6 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             }
 
             return driverReAssignmentCreationStatusContract;
-        }
-
-        private async Task RejectOrderAndRequestDriverAsync(DriverOrder driverOrder, string orderExternalId, PlatformDbContext databaseContext)
-        {
-            var dateTimeDiff = driverOrder.InsertionDateTime.Subtract(DateTimeOffset.UtcNow);
-            var totalDifferentMinute = dateTimeDiff.TotalMinutes;
-
-            // if driver is not accepting after 3 minutes
-            if (totalDifferentMinute > 3)
-            {
-                driverOrder.Status = DriverOrderStatus.SystemRejected;
-                driverOrder.Reason = "System rejected";
-
-                driverOrder.Driver.IsOrderAssigned = false;
-                await databaseContext.SaveChangesAsync();
-                
-                var driverRequestMessageContract = new DriverRequestMessageContract
-                {
-                    PayloadIn = new DriverRequestContract {OrderId = orderExternalId},
-                    PayloadOut = new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow},
-                    RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
-                };
-                
-                // request driver
-                await new DriverRequestMessagePublisher(serviceProvider, executingRequestContextAdapter).ExecuteAsync(driverRequestMessageContract);
-            }
         }
     }
 }

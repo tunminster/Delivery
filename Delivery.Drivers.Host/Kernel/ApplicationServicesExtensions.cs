@@ -77,19 +77,20 @@ namespace Delivery.Drivers.Host.Kernel
             
             serviceCollection.AddElasticSearch(configuration);
             
-            serviceCollection.AddCronJob<DriverRejectionCronJobService>(c =>
-            {
-                c.TimeZoneInfo = TimeZoneInfo.Utc;
-                c.CronExpression = @"*/3 * * * *";
-                
-            });
-            
-            serviceCollection.AddCronJob<DriverAssignmentCronJobService>(c =>
-            {
-                c.TimeZoneInfo = TimeZoneInfo.Utc;
-                c.CronExpression = @"*/5 * * * *";
-                
-            });
+            // retire cron job. replaced with scheduled message.
+            // serviceCollection.AddCronJob<DriverRejectionCronJobService>(c =>
+            // {
+            //     c.TimeZoneInfo = TimeZoneInfo.Utc;
+            //     c.CronExpression = @"*/3 * * * *";
+            //     
+            // });
+            //
+            // serviceCollection.AddCronJob<DriverAssignmentCronJobService>(c =>
+            // {
+            //     c.TimeZoneInfo = TimeZoneInfo.Utc;
+            //     c.CronExpression = @"*/5 * * * *";
+            //     
+            // });
             
             serviceCollection.AddHostedService(serviceProvider => new MultipleTasksBackgroundService(
                 new QueueServiceBusWorkBackgroundService(serviceProvider),

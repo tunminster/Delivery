@@ -104,6 +104,13 @@ namespace Delivery.Drivers.Host.ContainerHosts
                         processingState);
                     break;
                 
+                case nameof(DriverReAssignmentMessage):
+                    var driverReAssignmentMessage = message.Deserialize<DriverReAssignmentMessage>();
+                    await new DriverReAssignmentMessageHandler(ServiceProvider,
+                            new ExecutingRequestContextAdapter(driverReAssignmentMessage.RequestContext))
+                        .HandleMessageAsync(driverReAssignmentMessage, processingState);
+                    break;
+                
                 case nameof(DriverOrderActionMessageContract):
                     var driverOrderActionMessageContract = message.Deserialize<DriverOrderActionMessageContract>();
                     var driverOrderActionMessageHandler = new DriverOrderActionMessageHandler(ServiceProvider,
