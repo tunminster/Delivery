@@ -18,6 +18,7 @@ using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverIndex;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverPayments;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverProfile;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverReAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverActive;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
@@ -152,10 +153,7 @@ namespace Delivery.Orders.Host.ContainerHosts
                     break;
                 case nameof(ShopOrderDriverRequestMessageContract):
                     var shopOrderDriverRequestContract = message.Deserialize<ShopOrderDriverRequestMessageContract>();
-                    var shopOrderDriverRequestMessageHandler = new ShopOrderDriverRequestMessageHandler(ServiceProvider,
-                        new ExecutingRequestContextAdapter(shopOrderDriverRequestContract.RequestContext));
-                    await shopOrderDriverRequestMessageHandler.HandleMessageAsync(shopOrderDriverRequestContract,
-                        processingState);
+                    await HandleDriverRequestMessageAsync(shopOrderDriverRequestContract, processingState);
                     break;
                 case nameof(ShopProfileMessageContract):
                     var shopProfileMessageContract = message.Deserialize<ShopProfileMessageContract>();
@@ -239,6 +237,26 @@ namespace Delivery.Orders.Host.ContainerHosts
                 default:
                     throw new NotImplementedException($"Message type {messageType} is not implemented.");
             }
+        }
+
+        public async Task HandleDriverRequestMessageAsync(ShopOrderDriverRequestMessageContract shopOrderDriverRequestMessageContract, MessageProcessingStates processingState)
+        {
+            var shopOrderDriverRequestMessageHandler = new ShopOrderDriverRequestMessageHandler(ServiceProvider,
+                new ExecutingRequestContextAdapter(shopOrderDriverRequestMessageContract.RequestContext));
+            await shopOrderDriverRequestMessageHandler.HandleMessageAsync(shopOrderDriverRequestMessageContract,
+                processingState);
+
+            
+            // send the scheduled message to re-assign driver in case the previous assigned driver is not reacting.
+            await new DriverReAssignmentScheduledMessagePublisher(ServiceProvider)
+                .PublishAsync(new DriverReAssignmentMessage
+                {
+                    PayloadIn = new DriverReAssignmentCreationContract
+                    {
+                        OrderId = shopOrderDriverRequestMessageContract.PayloadIn!.OrderId
+                    },
+                    RequestContext = shopOrderDriverRequestMessageContract.RequestContext
+                });
         }
     }
 }

@@ -9,11 +9,11 @@ using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 
 namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 
-public class DriverReAssignmentMessagePublisher : IMessagePublisherAsync<DriverReAssignmentMessage>
+public class DriverReAssignmentScheduledMessagePublisher : IMessagePublisherAsync<DriverReAssignmentMessage>
 {
     private readonly IServiceProvider serviceProvider;
 
-    public DriverReAssignmentMessagePublisher(IServiceProvider serviceProvider)
+    public DriverReAssignmentScheduledMessagePublisher(IServiceProvider serviceProvider)
     {
         this.serviceProvider = serviceProvider;
     }
@@ -23,7 +23,7 @@ public class DriverReAssignmentMessagePublisher : IMessagePublisherAsync<DriverR
         var executingContextAdapter = new ExecutingRequestContextAdapter(message.RequestContext);
         var cloudEventMessage = message
             .CreateCloudEventMessage(serviceProvider, executingContextAdapter)
-            .WithScheduledEnqueueTimeUtc(DateTimeOffset.UtcNow.AddMinutes(3))  // schedule to 3 minutes later
+            .WithScheduledEnqueueTimeUtc(DateTimeOffset.UtcNow.AddMinutes(3))  // schedule every 3 minutes
             .WithExecutingContext(executingContextAdapter);
             
         await serviceProvider.GetRequiredHostedService<IQueueServiceBusWorkBackgroundService>()
