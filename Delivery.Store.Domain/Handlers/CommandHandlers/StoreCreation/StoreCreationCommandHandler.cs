@@ -92,8 +92,5 @@ namespace Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation
             command.StoreCreationStatusContract.InsertionDateTime = store.InsertionDateTime;
             return command.StoreCreationStatusContract;
         }
-
-        
-        
     }
 }

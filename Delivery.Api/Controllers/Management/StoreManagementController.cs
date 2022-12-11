@@ -20,8 +20,11 @@ using Delivery.Store.Domain.Contracts.V1.RestContracts;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreImageCreations;
 using Delivery.Store.Domain.Contracts.V1.RestContracts.StoreUpdate;
+using Delivery.Store.Domain.ElasticSearch.Contracts.V1.RestContracts.StoreIndexing;
 using Delivery.Store.Domain.ElasticSearch.Contracts.V1.RestContracts.StoreRemove;
+using Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreIndexing;
 using Delivery.Store.Domain.ElasticSearch.Handlers.CommandHandlers.StoreIndexRemove;
+using Delivery.Store.Domain.ElasticSearch.Validators;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreCreation;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreDelete;
 using Delivery.Store.Domain.Handlers.CommandHandlers.StoreImageCreation;
@@ -279,6 +282,32 @@ namespace Delivery.Api.Controllers.Management
                 .HandleAsync(storeIndexRemoveCommand);
             
             return Accepted();
+        }
+        
+        /// <summary>
+        ///  Store: indexing 
+        /// </summary>
+        /// <param name="storeIndexCreationContract"></param>
+        /// <returns></returns>
+        [Route("Index-Store", Order = 7)]
+        [HttpPost]
+        [ProducesResponseType(typeof(StoreIndexCreationContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> StoreIndexAsync(StoreIndexCreationContract storeIndexCreationContract)
+        {
+            var validationResult =
+                await new StoreIndexCreationValidator().ValidateAsync(storeIndexCreationContract);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ConvertToBadRequest();
+            }
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var storeIndexCommand = new StoreIndexCommand(storeIndexCreationContract, new StoreIndexStatusContract());
+            var storeIndexStatusContract =
+                await new StoreIndexCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(storeIndexCommand);
+
+            return Ok(storeIndexStatusContract);
         }
         
         private async Task<StoreImageCreationStatusContract> UploadStoreImageAsync(string storeId, string storeName, IFormFile storeImage, IExecutingRequestContextAdapter executingRequestContextAdapter)

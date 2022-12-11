@@ -41,7 +41,6 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
             
             var driverResponseThreshold = serviceProvider.GetRequiredService<IConfigurationProvider>().GetSettingOrDefault<string>("DriverResponseThreshold", "5");
             
-            // todo: remove hour after testing
             var driverOrders =
                 await databaseContext.DriverOrders.Where(x =>
                     x.Status == DriverOrderStatus.None && x.InsertionDateTime.AddMinutes(int.Parse(driverResponseThreshold)) < DateTimeOffset.UtcNow)
@@ -69,15 +68,16 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                 await databaseContext.SaveChangesAsync();
                 
                 
-                var driverRequestMessageContract = new DriverRequestMessageContract
-                {
-                    PayloadIn = new DriverRequestContract {OrderId = driverOrder.Order.ExternalId},
-                    PayloadOut = statusContract,
-                    RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
-                };
+                // var driverRequestMessageContract = new DriverRequestMessageContract
+                // {
+                //     PayloadIn = new DriverRequestContract {OrderId = driverOrder.Order.ExternalId},
+                //     PayloadOut = statusContract,
+                //     RequestContext = executingRequestContextAdapter.GetExecutingRequestContext()
+                // };
                 
-                // request another driver
-                await new DriverRequestMessagePublisher(serviceProvider, executingRequestContextAdapter).ExecuteAsync(driverRequestMessageContract);
+                // request another driver  
+                // reason of comment - orders are being requested after completed.
+                //await new DriverRequestMessagePublisher(serviceProvider, executingRequestContextAdapter).ExecuteAsync(driverRequestMessageContract);
             }
 
             
