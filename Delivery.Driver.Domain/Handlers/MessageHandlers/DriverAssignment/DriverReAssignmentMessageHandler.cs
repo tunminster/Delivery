@@ -10,40 +10,45 @@ using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverReAssignment;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
-
-public class DriverReAssignmentMessageHandler : ShardedTelemeterizedMessageHandler
+namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment
 {
-    public DriverReAssignmentMessageHandler(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter) : base(serviceProvider, executingRequestContextAdapter)
-    {
-    }
 
-    public async Task HandleMessageAsync(DriverReAssignmentMessage message,
-        MessageProcessingStates processingStates)
+    public class DriverReAssignmentMessageHandler : ShardedTelemeterizedMessageHandler
     {
-        try
+        public DriverReAssignmentMessageHandler(IServiceProvider serviceProvider,
+            IExecutingRequestContextAdapter executingRequestContextAdapter) : base(serviceProvider,
+            executingRequestContextAdapter)
         {
-            var messageAdapter =
-                new AuditableRequestMessageAdapter<DriverReAssignmentCreationContract>(message);
-
-            if (!processingStates.HasFlag(MessageProcessingStates.Processed))
-            {
-                var driverReAssignmentCommand =
-                    new DriverReAssignmentCommand(messageAdapter.PayloadIn());
-                    
-                await new DriverReAssignmentCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
-                    .HandleAsync(driverReAssignmentCommand);
-                    
-                processingStates |= MessageProcessingStates.Processed;
-            }
-                
-            ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric("Driver Re assignment requested",
-                value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());
-                
         }
-        catch (Exception exception)
+
+        public async Task HandleMessageAsync(DriverReAssignmentMessage message,
+            MessageProcessingStates processingStates)
         {
-            HandleMessageProcessingFailure(processingStates, exception);
+            try
+            {
+                var messageAdapter =
+                    new AuditableRequestMessageAdapter<DriverReAssignmentCreationContract>(message);
+
+                if (!processingStates.HasFlag(MessageProcessingStates.Processed))
+                {
+                    var driverReAssignmentCommand =
+                        new DriverReAssignmentCommand(messageAdapter.PayloadIn());
+
+                    await new DriverReAssignmentCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                        .HandleAsync(driverReAssignmentCommand);
+
+                    processingStates |= MessageProcessingStates.Processed;
+                }
+
+                ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>().TrackMetric(
+                    "Driver Re assignment requested",
+                    value: 1, ExecutingRequestContextAdapter.GetTelemetryProperties());
+
+            }
+            catch (Exception exception)
+            {
+                HandleMessageProcessingFailure(processingStates, exception);
+            }
         }
     }
 }
