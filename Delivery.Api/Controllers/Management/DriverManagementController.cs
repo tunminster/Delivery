@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
@@ -13,9 +14,11 @@ using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverAssignment;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverApproval;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverAssignment;
+using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverSearch;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverApproval;
 using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
+using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile;
 using Delivery.Driver.Domain.Validators;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
@@ -150,6 +153,55 @@ namespace Delivery.Api.Controllers.Management
             await new ShopOrderDriverRequestMessagePublisher(serviceProvider).PublishAsync(shopOrderDriverRequestMessageContract);
 
             return Ok(statusContract);
+        }
+        
+        /// <summary>
+        ///  Search driver
+        /// </summary>
+        /// <returns></returns>
+        [Route("search-driver")]
+        [HttpPost]
+        [ProducesResponseType(typeof(List<DriverContract>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Get_Nearest_Drivers_Async(DriverSearchCreationContract driverSearchCreationContract, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+
+            var driverByNearestLocationQuery = new DriverByNearestLocationQuery
+            {
+                Latitude = driverSearchCreationContract.Latitude,
+                Longitude = driverSearchCreationContract.Longitude,
+                Distance = driverSearchCreationContract.Distance,
+                Page = driverSearchCreationContract.Page,
+                PageSize = driverSearchCreationContract.PageSize
+            };
+
+            var driverContracts =
+                await new DriverByNearestLocationQueryHandler(serviceProvider, executingRequestContextAdapter).Handle(
+                    driverByNearestLocationQuery);
+
+            return Ok(driverContracts);
+        }
+        
+        /// <summary>
+        ///  Search drivers by freetext
+        /// </summary>
+        /// <returns></returns>
+        [Route("search-driver-name")]
+        [HttpPost]
+        [ProducesResponseType(typeof(List<DriverContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Search_Drivers_by_Name_Async(
+            DriverSearchByNameContract driverSearchByNameContract, CancellationToken cancellationToken = default)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var driverSearchQuery = new DriverByNameQuery(driverSearchByNameContract.FreeTextSearch,
+                driverSearchByNameContract.Page, driverSearchByNameContract.PageSize);
+
+            var drivers = await new DriverByNameQueryHandler(serviceProvider, executingRequestContextAdapter)
+                .HandleAsync(driverSearchQuery);
+
+            return Ok(drivers);
         }
         
     }

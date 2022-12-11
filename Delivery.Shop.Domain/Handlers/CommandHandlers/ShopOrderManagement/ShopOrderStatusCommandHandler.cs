@@ -66,6 +66,19 @@ namespace Delivery.Shop.Domain.Handlers.CommandHandlers.ShopOrderManagement
                     DateCreated = DateTimeOffset.UtcNow
                 };
 
+            if (statusCommand.ShopOrderStatusCreationContract.OrderStatus == OrderStatus.Accepted)
+            {
+                // to do: delivery request in 15 mins or force shop owner to make ready
+            }
+
+            if (statusCommand.ShopOrderStatusCreationContract.OrderStatus == OrderStatus.Ready)
+            {
+                // to do: delivery request.
+            }
+            
+            
+            
+
             // if order is complete, removed from the indexing.
             if (statusCommand.ShopOrderStatusCreationContract.OrderStatus != OrderStatus.Completed)
             {
