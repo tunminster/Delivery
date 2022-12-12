@@ -43,7 +43,7 @@ namespace Delivery.Api.Controllers
     /// </summary>
     [Route("api/v1/[controller]", Name = "7 - Store apis")]
     [ApiController]
-    [Authorize(Policy = "CustomerApiUser")]
+    
     [PlatformSwaggerCategory(ApiCategory.Customer)]
     public class StoreController : Controller
     {
@@ -66,6 +66,7 @@ namespace Delivery.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "CustomerApiUser")]
         public async Task<IActionResult> CreateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreCreationContract storeCreationContract, IFormFile? storeImage)
         {
             var validationResult =
@@ -110,6 +111,7 @@ namespace Delivery.Api.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(StoreCreationStatusContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "CustomerApiUser")]
         public async Task<IActionResult> UpdateStoreAsync([ModelBinder(BinderType = typeof(JsonModelBinder))] StoreUpdateContract storeUpdateContract, IFormFile storeImage)
         {
             var validationResult =
@@ -155,6 +157,7 @@ namespace Delivery.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(StoreIndexCreationContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "CustomerApiUser")]
         public async Task<IActionResult> StoreIndexAsync(StoreIndexCreationContract storeIndexCreationContract)
         {
             var validationResult =
@@ -264,6 +267,7 @@ namespace Delivery.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<StoreContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "CustomerApiUser")]
         public async Task<IActionResult> GetStoreDetailsByIdAsync(string storeId)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -286,6 +290,7 @@ namespace Delivery.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "CustomerApiUser")]
         public IActionResult GetExternalId()
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
@@ -300,6 +305,7 @@ namespace Delivery.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "CustomerApiUser")]
         public async Task<IActionResult> StoreIndexDeleteAsync(StoreDeletionContract storeDeletionContract)
         {
             var validationResult =
