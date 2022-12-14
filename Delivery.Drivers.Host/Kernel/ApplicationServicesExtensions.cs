@@ -78,12 +78,12 @@ namespace Delivery.Drivers.Host.Kernel
             serviceCollection.AddElasticSearch(configuration);
             
             // retire cron job. replaced with scheduled message.
-            // serviceCollection.AddCronJob<DriverRejectionCronJobService>(c =>
-            // {
-            //     c.TimeZoneInfo = TimeZoneInfo.Utc;
-            //     c.CronExpression = @"*/3 * * * *";
-            //     
-            // });
+            serviceCollection.AddCronJob<DriverRejectionCronJobService>(c =>
+            {
+                c.TimeZoneInfo = TimeZoneInfo.Utc;
+                c.CronExpression = @"*/30 * * * *";
+                
+            });
             //
             // serviceCollection.AddCronJob<DriverAssignmentCronJobService>(c =>
             // {
