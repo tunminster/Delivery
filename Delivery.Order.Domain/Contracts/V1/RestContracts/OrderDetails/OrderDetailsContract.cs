@@ -99,6 +99,11 @@ namespace Delivery.Order.Domain.Contracts.V1.RestContracts.OrderDetails
         /// <example>{{orderItems}}</example>
         public List<OrderItemContract> OrderItems { get; set; }
         
+        /// <summary>
+        ///  Delivery tip
+        /// </summary>
+        public int DeliveryTips { get; set; }
+        
         public override string ToString()
         {
             return $"{GetType().Name}" +
