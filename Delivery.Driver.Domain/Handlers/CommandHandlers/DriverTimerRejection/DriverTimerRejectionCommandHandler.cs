@@ -93,10 +93,11 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                     StoreName = string.Empty
                 };
                 
+                // you don't need to send push notification for rejection
                 // Send delivery rejection push notification to shop owner
-                await new DriverSendOrderRejectionCommandHandler(serviceProvider, executingRequestContextAdapter)
-                    .HandleAsync(new DriverSendOrderRejectionCommand(driverOrderRejectedNotificationContract,
-                        driverOrder.Driver.ExternalId));
+                // await new DriverSendOrderRejectionCommandHandler(serviceProvider, executingRequestContextAdapter)
+                //     .HandleAsync(new DriverSendOrderRejectionCommand(driverOrderRejectedNotificationContract,
+                //         driverOrder.Driver.ExternalId));
             }
 
             return new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow };
