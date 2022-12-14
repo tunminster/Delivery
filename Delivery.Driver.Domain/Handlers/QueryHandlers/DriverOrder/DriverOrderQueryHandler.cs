@@ -38,10 +38,13 @@ namespace Delivery.Driver.Domain.Handlers.QueryHandlers.DriverOrder
             var driver = await databaseContext.Drivers.SingleOrDefaultAsync(x => x.EmailAddress == userEmail);
             
             var driverOrders = await databaseContext.DriverOrders
-                .Include(x => x.Order.Store)
-                .Include(x => x.Order.OrderItems)
+                .Include(x => x.Order)
+                .ThenInclude(x => x.Store)
+                .Include(x => x.Order)
+                .ThenInclude(x => x.OrderItems)
                 .ThenInclude(x => x.Product)
-                .Include(x => x.Order.Customer)
+                .Include(x => x.Order)
+                .ThenInclude(x => x.Customer)
                 .Include(x => x.Order)
                 .ThenInclude(x => x.Address)
                 .FirstOrDefaultAsync(x => x.DriverId == driver.Id && (x.Status == DriverOrderStatus.None || x.Status == DriverOrderStatus.Accepted || x.Status == DriverOrderStatus.InProgress));
