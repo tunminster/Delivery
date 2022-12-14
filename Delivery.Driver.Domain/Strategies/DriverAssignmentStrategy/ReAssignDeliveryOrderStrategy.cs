@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Sharding.Adapters;
+using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
 using Delivery.Database.Context;
 using Delivery.Database.Enums;
 using Delivery.Domain.Contracts.V1.RestContracts;
@@ -9,7 +10,9 @@ using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverReAssignment;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverRequest;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Driver.Domain.Strategies.DriverAssignmentStrategy
 {
@@ -34,18 +37,10 @@ namespace Delivery.Driver.Domain.Strategies.DriverAssignmentStrategy
             
             var dateTimeDiff = driverOrder.InsertionDateTime.Subtract(DateTimeOffset.UtcNow);
             var totalDifferentMinute = dateTimeDiff.TotalMinutes;
-
-            // if driver is not accepting before 3 minutes, it's ok to wait until 3 mins. Awaiting minute should be 3 min
-            if (!(totalDifferentMinute > awaitingMinutes))
-            {
-                return new DriverReAssignmentCreationStatusContract
-                {
-                    DriverId = driverOrder.Driver.ExternalId,
-                    OrderId = driverOrder.Order.ExternalId, AssignedDateTime = DateTimeOffset.Now,
-                    DriverOrderStatus = driverOrder.Status
-                };
-            }
-
+            
+            ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                .TrackTrace($"Awaited time to accept the order {totalDifferentMinute}. OrderId: {driverOrder.Order.ExternalId}", SeverityLevel.Information, ExecutingRequestContextAdapter.GetTelemetryProperties());
+            
             driverOrder.Status = DriverOrderStatus.SystemRejected;
             driverOrder.Reason = "System rejected";
 

@@ -55,12 +55,12 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
 
             var driverReAssignmentCreationStatusContract = driverOrder.Status switch
             {
-                DriverOrderStatus.None => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 3, DriverOrderStatus.None),
+                DriverOrderStatus.None => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 2, DriverOrderStatus.None),
                 DriverOrderStatus.Accepted => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 60, DriverOrderStatus.Accepted),
                 DriverOrderStatus.InProgress => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 60, DriverOrderStatus.Accepted),
                 DriverOrderStatus.Complete => new DriverReAssignmentCreationStatusContract {DriverId = driverOrder.Driver.ExternalId, OrderId = driverOrder.Order.ExternalId, AssignedDateTime = DateTimeOffset.UtcNow, DriverOrderStatus = DriverOrderStatus.Complete},
-                DriverOrderStatus.Rejected => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 3, DriverOrderStatus.Rejected),
-                DriverOrderStatus.SystemRejected => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 3, DriverOrderStatus.SystemRejected),
+                DriverOrderStatus.Rejected => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 2, DriverOrderStatus.Rejected),
+                DriverOrderStatus.SystemRejected => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 2, DriverOrderStatus.SystemRejected),
                 _ => throw new InvalidOperationException(
                         $"{nameof(DriverOrderStatus)} must be valid. Instead: {driverOrder.Status}")
                     .WithTelemetry(executingRequestContextAdapter.GetTelemetryProperties())
