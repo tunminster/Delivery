@@ -102,6 +102,7 @@ namespace Delivery.Order.Domain.Handlers.QueryHandlers
                 TaxFees = order.TaxFees,
                 OrderType = order.OrderType,
                 ImageUri = order.OrderItems.FirstOrDefault()?.Product.ProductImageUrl,
+                DeliveryTips = order.DeliveryTips ?? 0,
                 OrderItems = order.OrderItems.Select(oi => new OrderItemContract
                 {
                     Count = oi.Count,
