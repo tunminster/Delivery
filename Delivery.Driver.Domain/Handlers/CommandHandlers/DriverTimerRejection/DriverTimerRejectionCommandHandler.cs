@@ -48,12 +48,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                     .Include(x => x.Order)
                     .ToListAsync();
             
-            var statusContract = new StatusContract
-            {
-                Status = true,
-                DateCreated = DateTimeOffset.UtcNow
-            };
-
+            
             if (driverOrders.Count == 0)
             {
                 return new StatusContract { Status = true, DateCreated = DateTimeOffset.UtcNow };
