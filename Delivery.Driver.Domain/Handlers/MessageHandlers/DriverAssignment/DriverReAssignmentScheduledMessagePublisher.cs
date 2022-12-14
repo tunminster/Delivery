@@ -23,7 +23,7 @@ namespace Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment
             var executingContextAdapter = new ExecutingRequestContextAdapter(message.RequestContext);
             var cloudEventMessage = message
                 .CreateCloudEventMessage(serviceProvider, executingContextAdapter)
-                .WithScheduledEnqueueTimeUtc(DateTimeOffset.UtcNow.AddMinutes(3)) // schedule every 3 minutes
+                .WithScheduledEnqueueTimeUtc(DateTimeOffset.UtcNow.AddMinutes(2)) // schedule every 3 minutes
                 .WithExecutingContext(executingContextAdapter);
 
             await serviceProvider.GetRequiredHostedService<IQueueServiceBusWorkBackgroundService>()
