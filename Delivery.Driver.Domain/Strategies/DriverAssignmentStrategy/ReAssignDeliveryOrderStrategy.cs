@@ -9,6 +9,7 @@ using Delivery.Domain.Contracts.V1.RestContracts;
 using Delivery.Driver.Domain.Contracts.V1.MessageContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverOrderRejection;
 using Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverReAssignment;
+using Delivery.Driver.Domain.Handlers.CommandHandlers.DriverIndex;
 using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverRequest;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,10 @@ namespace Delivery.Driver.Domain.Strategies.DriverAssignmentStrategy
 
             driverOrder.Driver.IsOrderAssigned = false;
             await databaseContext.SaveChangesAsync();
+            
+            // re-index driver after rejection 
+            await new DriverIndexCommandHandler(ServiceProvider, ExecutingRequestContextAdapter)
+                .HandleAsync(new DriverIndexCommand(driverOrder.Driver.ExternalId));
 
             var driverRequestMessageContract = new DriverRequestMessageContract
             {

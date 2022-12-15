@@ -62,6 +62,9 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverTimerRejection
                 driverOrder.Driver.IsOrderAssigned = false;
                 await databaseContext.SaveChangesAsync();
                 
+                await new DriverIndexCommandHandler(serviceProvider, executingRequestContextAdapter)
+                    .HandleAsync(new DriverIndexCommand(driverOrder.Driver.ExternalId));
+                
                 
                 // var driverRequestMessageContract = new DriverRequestMessageContract
                 // {
