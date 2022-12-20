@@ -37,7 +37,9 @@ namespace Delivery.Shop.Domain.Handlers.QueryHandlers.ShopOrders
             var storeUser = await databaseContext.StoreUsers.SingleOrDefaultAsync(x => x.Username == query.Email);
 
             var orderList =
-                await databaseContext.Orders.Where(x => x.Status == query.Status && x.StoreId == storeUser.StoreId)
+                await databaseContext.Orders.Where(x => x.Status == query.Status 
+                                                        && x.StoreId == storeUser.StoreId
+                                                        && x.PaymentStatus == "succeeded")
                     .Include(x => x.Store)
                     .Include(x => x.Address)
                     .Include(x => x.OrderItems)
