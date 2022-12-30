@@ -3,6 +3,9 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <OutputType>Library</OutputType>
+        <Platforms>AnyCPU</Platforms>
+        <Nullable>enable</Nullable>
+        <NoWarn>1591;NU1608;NU5104</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup>

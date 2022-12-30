@@ -3,6 +3,9 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <OutputType>Library</OutputType>
+        <Platforms>AnyCPU</Platforms>
+        <Nullable>enable</Nullable>
+        <NoWarn>1591;NU1608;NU5104</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -17,6 +20,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.8.55" />
+      <PackageReference Include="WorkflowCore" Version="3.8.0" />
     </ItemGroup>
 
 </Project>
