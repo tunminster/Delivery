@@ -6,7 +6,6 @@ namespace Delivery.Azure.Library.Microservices.Hosting.Exceptions
 {
     [Serializable]
 	public class StatefulMessageProcessingException<TState> : MessageProcessingException
-		where TState : Enum
 	{
 		/// <summary>
 		///     Constructor

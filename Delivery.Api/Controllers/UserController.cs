@@ -127,13 +127,30 @@ namespace Delivery.Api.Controllers
         [Authorize]
         [ProducesResponseType(typeof(UserContract), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
-        public IActionResult GetUserAsync()
+        public async Task<IActionResult> GetUserAsync()
         {
-            string userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var result = new UserContract { UserName = userName };
-            return Ok(result);
+            var userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var result = new UserContract { UserName = userName! };
+            return Ok(await Task.FromResult(result));
         }
+        
+        /// <summary>
+        ///  Delete user
+        /// </summary>
+        /// <returns></returns>
+        [Route("delete-account", Order = 3)]
+        [HttpPost]
+        [ProducesResponseType(typeof(UserContract), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> DeleteAccountAsync()
+        {
+            var userName = HttpContext?.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            await new DeleteCustomerCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
+                new DeleteCustomerCommand(userName!));
 
+            return Ok();
+        }
         
     }
 }

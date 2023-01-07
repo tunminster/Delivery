@@ -1,3 +1,4 @@
+using System;
 using Delivery.Database.Enums;
 
 namespace Delivery.Managements.Domain.Contracts.V1.RestContracts.Coupon
@@ -42,5 +43,10 @@ namespace Delivery.Managements.Domain.Contracts.V1.RestContracts.Coupon
         ///  Discount amount
         /// </summary>
         public int DiscountAmount { get; init; }
+        
+        /// <summary>
+        ///  Redeem by
+        /// </summary>
+        public DateTimeOffset RedeemBy { get; init; }
     }
 }

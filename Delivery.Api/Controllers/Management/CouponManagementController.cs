@@ -7,6 +7,7 @@ using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts.Coupon;
+using Delivery.Managements.Domain.Handlers.CommandHandlers.Coupon;
 using Delivery.Managements.Domain.Validators.Coupon;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,6 @@ namespace Delivery.Api.Controllers.Management
     public class CouponManagementController : Controller
     {
         private readonly IServiceProvider serviceProvider;
-
         public CouponManagementController(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
@@ -48,9 +48,10 @@ namespace Delivery.Api.Controllers.Management
             
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
             
-            // todo category management creation
+            await new CreateCouponCodeCommandHandler(serviceProvider, executingRequestContextAdapter)
+                .HandleAsync(new CreateCouponCodeCommand(couponManagementCreationContract));
 
-            return Ok(new CouponManagementCreationStatusContract());
+            return Ok(new CouponManagementCreationStatusContract { CouponCode = couponManagementCreationContract.PromotionCode});
         }
     }
 }
