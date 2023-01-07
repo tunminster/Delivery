@@ -205,7 +205,7 @@ stages:
           
   - stage: DeployDev
     displayName: Deploy Development Env
-    dependsOn: InfraProvisions
+    #dependsOn: InfraProvisions
     condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
 
     variables:
