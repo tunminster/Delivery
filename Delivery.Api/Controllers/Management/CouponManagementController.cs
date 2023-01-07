@@ -24,7 +24,6 @@ namespace Delivery.Api.Controllers.Management
     public class CouponManagementController : Controller
     {
         private readonly IServiceProvider serviceProvider;
-
         public CouponManagementController(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
