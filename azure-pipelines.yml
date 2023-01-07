@@ -16,6 +16,11 @@ parameters:
     type: boolean
     default: false
 
+  - name: DeployDev
+    displayName: Deploy Dev
+    type: boolean
+    default: true
+
   - name: RunPostmanStage
     displayName: Run Postman stage
     type: boolean
@@ -205,8 +210,9 @@ stages:
           
   - stage: DeployDev
     displayName: Deploy Development Env
-    #dependsOn: InfraProvisions
-    condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
+    dependsOn: InfraProvisions
+    #condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
+    condition: eq('${{ parameters.DeployDev }}' , true)
 
     variables:
         - group: Hn-Platform-Infra-Variables
