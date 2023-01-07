@@ -210,9 +210,9 @@ stages:
           
   - stage: DeployDev
     displayName: Deploy Development Env
-    #dependsOn: InfraProvisions
-    #condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
-    condition: eq('${{ parameters.DeployDev }}' , true)
+    dependsOn: InfraProvisions
+    condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
+    #condition: eq('${{ parameters.DeployDev }}' , true)
 
     variables:
         - group: Hn-Platform-Infra-Variables
