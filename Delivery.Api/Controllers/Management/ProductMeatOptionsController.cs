@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
@@ -7,6 +8,8 @@ using Delivery.Azure.Library.Database.Factories;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.FrameWork.Context;
+using Delivery.Domain.MeatOptions.Contracts.V1.RestContracts;
+using Delivery.Domain.MeatOptions.Handlers.QueryHandlers;
 using Delivery.Managements.Domain.Contracts.V1.MessageContracts.MeatOptions;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts.MeatOptions;
 using Delivery.Managements.Domain.Converters;
@@ -66,6 +69,44 @@ namespace Delivery.Api.Controllers.Management
                 meatOptionCreationMessage);
 
             return Ok(meatOptionCreationStatusContract);
+        }
+
+        /// <summary>
+        ///  Get meat option by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("get-meat-option", Order = 2)]
+        [HttpPost]
+        [ProducesResponseType(typeof(MeatOptionContract), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetMeatOptionAsync(string id)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var meatOptionQuery = new MeatOptionGetByIdQuery(id);
+            var meatOptionContract = await new MeatOptionGetByIdQueryHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
+                meatOptionQuery);
+
+            return Ok(meatOptionContract);
+        }
+        
+        /// <summary>
+        ///  Get meat options by product id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("get-meat-options-by-product", Order = 2)]
+        [HttpPost]
+        [ProducesResponseType(typeof(List<MeatOptionContract>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetMeatOptionsByProductAsync(string id)
+        {
+            var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
+            var meatOptionsByProductId = new MeatOptionsByProductId(id);
+            var meatOptionContracts = await new MeatOptionsGetByProductQueryHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
+                meatOptionsByProductId);
+
+            return Ok(meatOptionContracts);
         }
     }
 }
