@@ -77,7 +77,7 @@ namespace Delivery.Api.Controllers.Management
         /// <param name="id"></param>
         /// <returns></returns>
         [Route("get-meat-option", Order = 2)]
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(MeatOptionContract), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetMeatOptionAsync(string id)
@@ -96,7 +96,7 @@ namespace Delivery.Api.Controllers.Management
         /// <param name="id"></param>
         /// <returns></returns>
         [Route("get-meat-options-by-product", Order = 2)]
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(List<MeatOptionContract>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestContract), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetMeatOptionsByProductAsync(string id)
