@@ -57,7 +57,7 @@ namespace Delivery.Driver.Domain.Handlers.CommandHandlers.DriverAssignment
             {
                 DriverOrderStatus.None => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 2, DriverOrderStatus.None),
                 DriverOrderStatus.Accepted => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 60, DriverOrderStatus.Accepted),
-                DriverOrderStatus.InProgress => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 60, DriverOrderStatus.Accepted),
+                DriverOrderStatus.InProgress => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 60, DriverOrderStatus.InProgress),
                 DriverOrderStatus.Complete => new DriverReAssignmentCreationStatusContract {DriverId = driverOrder.Driver.ExternalId, OrderId = driverOrder.Order.ExternalId, AssignedDateTime = DateTimeOffset.UtcNow, DriverOrderStatus = DriverOrderStatus.Complete},
                 DriverOrderStatus.Rejected => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 2, DriverOrderStatus.Rejected),
                 DriverOrderStatus.SystemRejected => await driverReAssignmentDispatcher.DispatchAsync(driverOrder.Id, 2, DriverOrderStatus.SystemRejected),
