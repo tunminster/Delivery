@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Delivery.Database.Enums;
+using Delivery.Domain.MeatOptions.Contracts.V1.RestContracts;
 
 namespace Delivery.Managements.Domain.Contracts.V1.RestContracts.MeatOptions
 {
@@ -21,8 +23,13 @@ namespace Delivery.Managements.Domain.Contracts.V1.RestContracts.MeatOptions
         ///  Option control type. EG checkbox or radio button
         /// </summary>
         public OptionControlType OptionControlType { get; init; }
-        
-        
+
+        /// <summary>
+        ///  Product meat option values
+        /// </summary>
+        public List<MeatOptionValueContract> MeatOptionValues { get; init; } = new();
+
+
     }
 }
 

@@ -31,7 +31,7 @@ namespace Delivery.Domain.Services
         
         public async Task<decimal> GetTaxRateAsync(string stateCode, string country)
         {
-            if (!string.Equals(country,OrderConstants.TaxRateCountry) || string.IsNullOrEmpty(stateCode) || string.IsNullOrEmpty(country))
+            if (!string.Equals(country,OrderConstants.TaxRateCountry, StringComparison.InvariantCultureIgnoreCase) || string.IsNullOrEmpty(stateCode) || string.IsNullOrEmpty(country))
             {
                 return 0;
             }

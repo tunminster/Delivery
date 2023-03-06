@@ -124,9 +124,9 @@ namespace Delivery.Order.Domain.Handlers.CommandHandlers.Stripe.StripeOrderTotal
             }
             
             var taxRate =
-                await new TaxRateService(serviceProvider, executingRequestContextAdapter).GetTaxRateAsync(store?.City ?? string.Empty,
+                await new TaxRateService(serviceProvider, executingRequestContextAdapter).GetTaxRateAsync(store?.County ?? string.Empty,
                     store?.Country ?? string.Empty);
-            
+
             var taxFee = TaxFeeGenerator.GenerateTaxFees(subtotalAmount, taxRate);
             var totalAmount = subtotalAmount + customerApplicationFee + deliveryFee + taxFee + command.StripeOrderCreationContract.DeliveryTips;
             

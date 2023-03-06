@@ -36,11 +36,25 @@ namespace Delivery.Driver.Domain.Strategies.DriverAssignmentStrategy
                 .Include(x => x.Driver)
                 .Include(x => x.Order).FirstAsync();
             
-            var dateTimeDiff = driverOrder.InsertionDateTime.Subtract(DateTimeOffset.UtcNow);
-            var totalDifferentMinute = dateTimeDiff.TotalMinutes;
+            var dateTimeDiff = DateTimeOffset.UtcNow.Subtract(driverOrder.InsertionDateTime);
+            var totalDifferentMinute = (int)dateTimeDiff.TotalMinutes;
             
             ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
                 .TrackTrace($"Awaited time to accept the order {totalDifferentMinute}. OrderId: {driverOrder.Order.ExternalId}", SeverityLevel.Information, ExecutingRequestContextAdapter.GetTelemetryProperties());
+
+            if (totalDifferentMinute < awaitingMinutes)
+            {
+                ServiceProvider.GetRequiredService<IApplicationInsightsTelemetry>()
+                    .TrackTrace($"Waited minutes is {totalDifferentMinute}. Still sticking with the current delivery partner {driverOrder.Driver.FullName}. OrderId: {driverOrder.Order.ExternalId}", 
+                        SeverityLevel.Information, ExecutingRequestContextAdapter.GetTelemetryProperties());
+                return new DriverReAssignmentCreationStatusContract
+                {
+                    DriverId = driverOrder.Driver.ExternalId,
+                    OrderId = driverOrder.Order.ExternalId, 
+                    AssignedDateTime = driverOrder.InsertionDateTime,
+                    DriverOrderStatus = driverOrder.Status
+                };
+            }
             
             driverOrder.Status = DriverOrderStatus.SystemRejected;
             driverOrder.Reason = "System rejected";
