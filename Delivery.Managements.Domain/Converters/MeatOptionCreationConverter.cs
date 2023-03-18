@@ -1,3 +1,4 @@
+using System.Linq;
 using Delivery.Database.Entities;
 using Delivery.Managements.Domain.Contracts.V1.MessageContracts.MeatOptions;
 using Delivery.Managements.Domain.Contracts.V1.RestContracts.MeatOptions;
@@ -16,6 +17,12 @@ namespace Delivery.Managements.Domain.Converters
                 OptionControl = meatOptionCreationMessageContract.OptionControlType,
                 OptionText = meatOptionCreationMessageContract.MeatOptionText
             };
+
+            if (!meatOptionCreationMessageContract.MeatOptionValues.Any()) return meatOption;
+            foreach (var item in meatOptionCreationMessageContract.MeatOptionValues)
+            {
+                meatOption.MeatOptionValues.Add(new MeatOptionValue{ OptionValueText = item.OptionValueText, AdditionalPrice = item.AdditionalPrice});
+            }
 
             return meatOption;
         }
