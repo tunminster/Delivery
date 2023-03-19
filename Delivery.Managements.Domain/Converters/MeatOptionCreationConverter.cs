@@ -35,7 +35,8 @@ namespace Delivery.Managements.Domain.Converters
                 ProductId = meatOptionCreationContract.ProductId,
                 OptionControlType = meatOptionCreationContract.OptionControlType,
                 MeatOptionText = meatOptionCreationContract.MeatOptionText,
-                MeatOptionId = externalId
+                MeatOptionId = externalId,
+                MeatOptionValues = meatOptionCreationContract.MeatOptionValues
             };
             return meatOptionCreationMessageContract;
         }
