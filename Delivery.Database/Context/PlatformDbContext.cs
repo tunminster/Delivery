@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Contracts.Contracts;
 using Delivery.Azure.Library.Contracts.Interfaces.V1.Entities;
 using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Azure.Library.Database.Context;
@@ -125,6 +126,11 @@ namespace Delivery.Database.Context
         public static async Task<PlatformDbContext> CreateAsync(IServiceProvider serviceProvider, IExecutingRequestContextAdapter executingRequestContextAdapter)
         {
             return await DatabaseContextFactory.CreateAsync(serviceProvider, executingRequestContextAdapter, (requestContextAdapter, options) => new PlatformDbContext(serviceProvider, requestContextAdapter, options));
+        }
+        
+        public static async Task<PlatformDbContext> CreateAsync(IServiceProvider serviceProvider, ExecutingRequestContext executingRequestContext)
+        {
+            return await DatabaseContextFactory.CreateAsync(serviceProvider, new ExecutingRequestContextAdapter(executingRequestContext), (requestContextAdapter, options) => new PlatformDbContext(serviceProvider, requestContextAdapter, options));
         }
         
         public override int SaveChanges()

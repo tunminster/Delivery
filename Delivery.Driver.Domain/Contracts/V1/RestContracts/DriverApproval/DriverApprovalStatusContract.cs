@@ -11,5 +11,15 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverApproval
         ///  Date created
         /// </summary>
         public DateTimeOffset DateCreated { get; init; }
+
+        /// <summary>
+        ///  Driver name
+        /// </summary>
+        public string DriverName { get; init; } = string.Empty;
+
+        /// <summary>
+        ///  Email address
+        /// </summary>
+        public string EmailAddress { get; init; } = string.Empty;
     }
 }

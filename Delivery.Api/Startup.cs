@@ -8,6 +8,8 @@ using Delivery.Api.Utils.Configs;
 using Delivery.Azure.Library.Caching.Cache;
 using Delivery.Azure.Library.Caching.Cache.Extensions;
 using Delivery.Azure.Library.Caching.Cache.Interfaces;
+using Delivery.Azure.Library.Communications.SendGrid.Connections;
+using Delivery.Azure.Library.Communications.SendGrid.Interfaces;
 using Delivery.Azure.Library.Configuration.Environments;
 using Delivery.Azure.Library.Configuration.Environments.Interfaces;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.Interfaces;
@@ -23,6 +25,7 @@ using Delivery.Azure.Library.Messaging.HostedServices;
 using Delivery.Azure.Library.Messaging.ServiceBus.Connections;
 using Delivery.Azure.Library.Messaging.ServiceBus.Connections.Interfaces;
 using Delivery.Azure.Library.Microservices.Hosting.HostedServices;
+using Delivery.Azure.Library.Microservices.Hosting.Workflows.Extensions;
 using Delivery.Azure.Library.NotificationHub.Connections;
 using Delivery.Azure.Library.NotificationHub.Connections.Interfaces;
 using Delivery.Azure.Library.Resiliency.Stability;
@@ -41,6 +44,7 @@ using Delivery.Database.Seeding;
 using Delivery.Domain.Factories.Auth;
 using Delivery.Domain.HttpClients.Extensions;
 using Delivery.Domain.Models;
+using Delivery.Driver.Domain;
 using Delivery.Store.Domain.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -230,7 +234,9 @@ namespace Delivery.Api
             services.AddSingleton<IServiceBusSenderConnectionManager, ServiceBusSenderConnectionManager>();
             services.AddSingleton<IBlobStorageConnectionManager, BlobStorageConnectionManager>();
             services.AddSingleton<INotificationHubSenderConnectionManager, NotificationHubSenderConnectionManager>();
+            services.AddSingleton<ISendGridConnectionManager, SendGridConnectionManager>();
             services.AddSingleton<IShardMetadataManager, ShardMetadataManager>();
+            services.AddWorkflowCore<ApplicationSwaggerConfiguration>();
             
             var useInMemory = Configuration.GetValue<bool?>("Test_Use_In_Memory");
             if (useInMemory.GetValueOrDefault())
@@ -298,10 +304,18 @@ namespace Delivery.Api
             
             app.UsePlatformSwaggerServices();
 
+            // register workflows
+            app
+                .RegisterDriverWorkflows()
+                .StartWorkflowHost();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
         }
+
+        
     }
 }
+ 

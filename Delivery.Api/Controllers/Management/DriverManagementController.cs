@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Delivery.Api.OpenApi;
 using Delivery.Api.OpenApi.Enums;
+using Delivery.Azure.Library.Contracts.Contracts;
+using Delivery.Azure.Library.Microservices.Hosting.Workflows.Managers;
 using Delivery.Azure.Library.Telemetry.ApplicationInsights.WebApi.Contracts;
 using Delivery.Azure.Library.WebApi.Extensions;
 using Delivery.Domain.Contracts.V1.RestContracts;
@@ -21,12 +23,14 @@ using Delivery.Driver.Domain.Handlers.MessageHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverAssignment;
 using Delivery.Driver.Domain.Handlers.QueryHandlers.DriverProfile;
 using Delivery.Driver.Domain.Validators;
+using Delivery.Driver.Domain.WorkflowDefinitions.ApproveDriver;
 using Delivery.Shop.Domain.Contracts.V1.MessageContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrderManagement;
 using Delivery.Shop.Domain.Contracts.V1.RestContracts.ShopOrders;
 using Delivery.Shop.Domain.Handlers.MessageHandlers.ShopOrderManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Delivery.Api.Controllers.Management
 {
@@ -88,13 +92,30 @@ namespace Delivery.Api.Controllers.Management
         public async Task<IActionResult> Post_ApproveAsync(DriverApprovalContract driverApprovalContract)
         {
             var executingRequestContextAdapter = Request.GetExecutingRequestContextAdapter();
-            
-            var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract);
+            //
+            // var driverApprovalCommand = new DriverApprovalCommand(driverApprovalContract);
+            //
+            // var driverApprovalStatusContract = await new DriverApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
+            //     driverApprovalCommand);
 
-            var driverApprovalStatusContract = await new DriverApprovalCommandHandler(serviceProvider, executingRequestContextAdapter).HandleAsync(
-                driverApprovalCommand);
+            var test = executingRequestContextAdapter.GetExecutingRequestContext();
+
+            var workflowDataContract = new ApproveDriverWorkflowDataContract
+            {
+                Start = new ApproveDriverWorkflowDataCommand(executingRequestContextAdapter.GetExecutingRequestContext(),
+                    driverApprovalContract)
+            };
             
-            return Ok(driverApprovalStatusContract);
+            var workflowResult = await serviceProvider.GetRequiredService<IWorkflowManager>()
+                .ExecuteWorkflowAsync<ApproveDriverWorkflowDefinition, ApproveDriverWorkflowDataContract>(
+                    workflowDataContract);
+
+            if (!workflowResult.Data.ValidationResult.IsValid)
+            {
+                return workflowResult.Data.ValidationResult.ConvertToBadRequest();
+            }
+            
+            return Ok(workflowResult.Data.SendApprovedEmailStepResult!.DriverApprovalStatusContract);
         }
 
         /// <summary>
