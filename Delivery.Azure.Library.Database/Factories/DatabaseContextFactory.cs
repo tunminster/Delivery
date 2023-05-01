@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Delivery.Azure.Library.Configuration.Configurations.Interfaces;
+using Delivery.Azure.Library.Contracts.Contracts;
 using Delivery.Azure.Library.Database.Context;
 using Delivery.Azure.Library.Sharding.Adapters;
 using Delivery.Azure.Library.Sharding.Interfaces;
@@ -34,6 +35,7 @@ namespace Delivery.Azure.Library.Database.Factories
 
 			return sampleDatabaseContext;
 		}
+		
 
 		/// <summary>
 		///     Configures the sql database connection options builder

@@ -3,7 +3,7 @@ namespace Delivery.Driver.Domain.Contracts.V1.RestContracts.DriverApproval
     /// <summary>
     ///  Driver approval contract
     /// </summary>
-    public record DriverApprovalContract
+    public record  DriverApprovalContract
     {
         /// <summary>
         ///  Username

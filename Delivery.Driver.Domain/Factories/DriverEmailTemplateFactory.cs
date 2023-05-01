@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Delivery.Azure.Library.Communications.SendGrid.Contracts.V1.RestContracts;
+using Delivery.Azure.Library.Core.Extensions.Json;
 using Delivery.Driver.Domain.Configurations;
 
 namespace Delivery.Driver.Domain.Factories
